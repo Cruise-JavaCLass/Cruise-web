@@ -6,6 +6,7 @@
 > - [KAN-36](https://huytran20052022.atlassian.net/browse/KAN-36) - *Add Basic Application Entry Point — Tạo điểm khởi chạy ứng dụng*  
 > - [KAN-50](https://huytran20052022.atlassian.net/browse/KAN-50) - *Configure Frontend Testing Tools — Thiết lập công cụ kiểm thử frontend*  
 > - [KAN-52](https://huytran20052022.atlassian.net/browse/KAN-52) - *Add Sample Frontend Test — Tạo một test mẫu cho frontend*  
+> - [KAN-54](https://huytran20052022.atlassian.net/browse/KAN-54) - *Configure Test Execution Commands — Thiết lập lệnh chạy test*  
 
 ---
 
@@ -15,7 +16,7 @@
 * **Styling:** Tailwind CSS v4 (Thiết kế hiện đại, responsive, tông màu sang trọng chuyên cho Luxury Cruise)
 * **Icons:** Lucide React
 * **API Client:** Axios (Tích hợp sẵn cấu hình kết nối trực tiếp với Backend Gateway tại `http://localhost:8080/api`)
-* **Testing Stack:** Vitest, React Testing Library (`@testing-library/react`), `@testing-library/jest-dom`, `@testing-library/user-event`, jsdom
+* **Testing Stack:** Vitest, React Testing Library (`@testing-library/react`), `@testing-library/jest-dom`, `@testing-library/user-event`, jsdom, `@vitest/coverage-v8`
 
 ---
 
@@ -37,13 +38,24 @@ Giao diện sẽ chạy tại: **http://localhost:3000**
 npm run build
 ```
 
-### Chạy kiểm thử tự động (Unit & Integration Tests):
-```bash
-# Chạy toàn bộ test suites (Vitest run)
-npm test
+### 2.1. Thiết lập lệnh chạy test (Test Execution Commands):
+Hệ thống cung cấp đầy đủ bộ lệnh thực thi kiểm thử chuẩn hóa qua npm:
 
-# Chạy test ở chế độ theo dõi thay đổi (Watch mode)
-npm run test:watch
+| Lệnh npm | Chức năng thực thi | Mô tả chi tiết |
+| :--- | :--- | :--- |
+| `npm test` | `vitest run` | Chạy toàn bộ test suites một lần duy nhất và thoát với exit code chuẩn |
+| `npm run test:watch` | `vitest` | Chế độ Interactive Watch, tự động chạy lại test khi file mã nguồn thay đổi |
+| `npm run test:coverage` | `vitest run --coverage` | Tính toán tỷ lệ bao phủ mã nguồn (V8 coverage) và xuất báo cáo HTML tại `./coverage/index.html` |
+| `npm run test:ui` | `vitest --ui` | Mở giao diện Dashboard trực quan Vitest trên trình duyệt web |
+| `npm run test:run` | `vitest run` | Lệnh headless tương đương `npm test`, tiện lợi cho scripts |
+| `npm run test:ci` | `vitest run --coverage --reporter=verbose` | Lệnh chuẩn cho CI/CD pipeline, hiển thị log chi tiết và tính coverage |
+
+```bash
+# Ví dụ chạy test với báo cáo coverage
+npm run test:coverage
+
+# Chạy riêng 1 file test cụ thể
+npx vitest run src/pages/PassengersPage.test.tsx
 ```
 
 Các bộ test mẫu chuẩn hóa bao gồm:
