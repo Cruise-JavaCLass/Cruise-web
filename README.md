@@ -4,6 +4,7 @@
 > **Jira Tasks:**  
 > - [KAN-35](https://huytran20052022.atlassian.net/browse/KAN-35) - *Initialize Frontend Project — Khởi tạo dự án frontend*  
 > - [KAN-36](https://huytran20052022.atlassian.net/browse/KAN-36) - *Add Basic Application Entry Point — Tạo điểm khởi chạy ứng dụng*  
+> - [KAN-50](https://huytran20052022.atlassian.net/browse/KAN-50) - *Configure Frontend Testing Tools — Thiết lập công cụ kiểm thử frontend*  
 
 ---
 
@@ -13,6 +14,7 @@
 * **Styling:** Tailwind CSS v4 (Thiết kế hiện đại, responsive, tông màu sang trọng chuyên cho Luxury Cruise)
 * **Icons:** Lucide React
 * **API Client:** Axios (Tích hợp sẵn cấu hình kết nối trực tiếp với Backend Gateway tại `http://localhost:8080/api`)
+* **Testing Stack:** Vitest, React Testing Library (`@testing-library/react`), `@testing-library/jest-dom`, `@testing-library/user-event`, jsdom
 
 ---
 
@@ -32,6 +34,15 @@ Giao diện sẽ chạy tại: **http://localhost:3000**
 ### Đóng gói ứng dụng (Production Build):
 ```bash
 npm run build
+```
+
+### Chạy kiểm thử tự động (Unit & Integration Tests):
+```bash
+# Chạy toàn bộ test suites (Vitest run)
+npm test
+
+# Chạy test ở chế độ theo dõi thay đổi (Watch mode)
+npm run test:watch
 ```
 
 ---
