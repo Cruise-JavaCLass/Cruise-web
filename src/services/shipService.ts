@@ -181,8 +181,8 @@ export async function getShips(): Promise<Ship[]> {
   }
 }
 
-export async function createShip(data: ShipFormData): Promise<Ship> {
-  const payload = {
+function formatShipPayload(data: ShipFormData) {
+  return {
     ...data,
     code: data.code.trim().toUpperCase(),
     name: data.name.trim(),
@@ -196,25 +196,17 @@ export async function createShip(data: ShipFormData): Promise<Ship> {
     beamMeters: data.beamMeters ? Number(data.beamMeters) : undefined,
     draftMeters: data.draftMeters ? Number(data.draftMeters) : undefined,
   };
+}
+
+export async function createShip(data: ShipFormData): Promise<Ship> {
+  const payload = formatShipPayload(data);
   const res = await apiClient.post<{ success: boolean; data: Ship }>('/itinerary/ships', payload);
   return res.data.data;
 }
 
 export async function updateShip(id: number, data: ShipFormData): Promise<Ship> {
-  const payload = {
-    ...data,
-    code: data.code.trim().toUpperCase(),
-    name: data.name.trim(),
-    operator: data.operator.trim(),
-    capacity: Number(data.capacity),
-    crewCapacity: Number(data.crewCapacity),
-    totalCabins: Number(data.totalCabins),
-    totalDecks: Number(data.totalDecks),
-    manufacturingYear: data.manufacturingYear ? Number(data.manufacturingYear) : undefined,
-    lengthMeters: data.lengthMeters ? Number(data.lengthMeters) : undefined,
-    beamMeters: data.beamMeters ? Number(data.beamMeters) : undefined,
-    draftMeters: data.draftMeters ? Number(data.draftMeters) : undefined,
-  };
+  const payload = formatShipPayload(data);
   const res = await apiClient.put<{ success: boolean; data: Ship }>(`/itinerary/ships/${id}`, payload);
   return res.data.data;
 }
+

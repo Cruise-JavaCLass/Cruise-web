@@ -2,27 +2,43 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ShipFormModal } from './ShipFormModal';
-import type { Ship } from '../../services/shipService';
+import { INITIAL_SHIPS } from '../../services/shipService';
 
-const mockShip: Ship = {
-  id: 1,
-  name: 'Halong Grand Harmony',
-  code: 'SHIP-001',
-  operator: 'Paradise Vietnam Cruises',
-  capacity: 2400,
-  crewCapacity: 750,
-  totalCabins: 1100,
-  totalDecks: 14,
-  manufacturingYear: 2023,
-  lengthMeters: 315.5,
-  beamMeters: 38.0,
-  draftMeters: 8.5,
-  status: 'ACTIVE',
-  description: 'Du thuyền 5 sao đẳng cấp quốc tế',
-  amenities: 'Sky Pool, Luxury Spa',
-  imageUrl: 'https://cruise.com/ship-001.jpg',
-  active: true,
-};
+const mockShip = INITIAL_SHIPS[0];
+
+interface FormValues {
+  name?: string;
+  code?: string;
+  operator?: string;
+  capacity?: string;
+  crewCapacity?: string;
+  totalCabins?: string;
+  totalDecks?: string;
+  lengthMeters?: string;
+  beamMeters?: string;
+  draftMeters?: string;
+}
+
+async function fillShipForm(user: ReturnType<typeof userEvent.setup>, values: FormValues) {
+  const fields: [RegExp, string | undefined][] = [
+    [/Tên du thuyền/i, values.name],
+    [/Mã định danh tàu/i, values.code],
+    [/Đơn vị khai thác/i, values.operator],
+    [/Khách tối đa/i, values.capacity],
+    [/Thủy thủ đoàn/i, values.crewCapacity],
+    [/Tổng cabin/i, values.totalCabins],
+    [/Số tầng\/boong/i, values.totalDecks],
+    [/Dài \(mét\)/i, values.lengthMeters],
+    [/Rộng \(mét\)/i, values.beamMeters],
+    [/Mớn nước \(mét\)/i, values.draftMeters],
+  ];
+
+  for (const [label, val] of fields) {
+    if (val !== undefined) {
+      await user.type(screen.getByLabelText(label), val);
+    }
+  }
+}
 
 describe('ShipFormModal Component Tests', () => {
   it('does not render when isOpen is false', () => {
@@ -84,16 +100,17 @@ describe('ShipFormModal Component Tests', () => {
 
     render(<ShipFormModal isOpen={true} onClose={vi.fn()} onSubmit={handleSubmit} />);
 
-    await user.type(screen.getByLabelText(/Tên du thuyền/i), 'Sea Pearl');
-    await user.type(screen.getByLabelText(/Mã định danh tàu/i), 'SHIP-PEARL');
-    await user.type(screen.getByLabelText(/Đơn vị khai thác/i), 'Sea Lines');
-    await user.type(screen.getByLabelText(/Khách tối đa/i), '500');
-    await user.type(screen.getByLabelText(/Thủy thủ đoàn/i), '200');
-    await user.type(screen.getByLabelText(/Tổng cabin/i), '600'); // > 500
-    await user.type(screen.getByLabelText(/Số tầng\/boong/i), '8');
+    await fillShipForm(user, {
+      name: 'Sea Pearl',
+      code: 'SHIP-PEARL',
+      operator: 'Sea Lines',
+      capacity: '500',
+      crewCapacity: '200',
+      totalCabins: '600',
+      totalDecks: '8',
+    });
 
-    const submitBtn = screen.getByRole('button', { name: /Thêm Tàu Du Lịch/i });
-    await user.click(submitBtn);
+    await user.click(screen.getByRole('button', { name: /Thêm Tàu Du Lịch/i }));
 
     expect(handleSubmit).not.toHaveBeenCalled();
     expect(
@@ -107,21 +124,20 @@ describe('ShipFormModal Component Tests', () => {
 
     render(<ShipFormModal isOpen={true} onClose={vi.fn()} onSubmit={handleSubmit} />);
 
-    await user.type(screen.getByLabelText(/Tên du thuyền/i), 'Sea Pearl');
-    await user.type(screen.getByLabelText(/Mã định danh tàu/i), 'SHIP-PEARL');
-    await user.type(screen.getByLabelText(/Đơn vị khai thác/i), 'Sea Lines');
-    await user.type(screen.getByLabelText(/Khách tối đa/i), '1000');
-    await user.type(screen.getByLabelText(/Thủy thủ đoàn/i), '300');
-    await user.type(screen.getByLabelText(/Tổng cabin/i), '500');
-    await user.type(screen.getByLabelText(/Số tầng\/boong/i), '10');
+    await fillShipForm(user, {
+      name: 'Sea Pearl',
+      code: 'SHIP-PEARL',
+      operator: 'Sea Lines',
+      capacity: '1000',
+      crewCapacity: '300',
+      totalCabins: '500',
+      totalDecks: '10',
+      lengthMeters: '30',
+      beamMeters: '35',
+      draftMeters: '40',
+    });
 
-    // Length smaller than beam
-    await user.type(screen.getByLabelText(/Dài \(mét\)/i), '30');
-    await user.type(screen.getByLabelText(/Rộng \(mét\)/i), '35');
-    await user.type(screen.getByLabelText(/Mớn nước \(mét\)/i), '40'); // draft > beam
-
-    const submitBtn = screen.getByRole('button', { name: /Thêm Tàu Du Lịch/i });
-    await user.click(submitBtn);
+    await user.click(screen.getByRole('button', { name: /Thêm Tàu Du Lịch/i }));
 
     expect(handleSubmit).not.toHaveBeenCalled();
     expect(
@@ -138,16 +154,17 @@ describe('ShipFormModal Component Tests', () => {
 
     render(<ShipFormModal isOpen={true} onClose={vi.fn()} onSubmit={handleSubmit} />);
 
-    await user.type(screen.getByLabelText(/Tên du thuyền/i), 'Ha Long Luxury');
-    await user.type(screen.getByLabelText(/Mã định danh tàu/i), 'SHIP-HL01');
-    await user.type(screen.getByLabelText(/Đơn vị khai thác/i), 'Paradise Cruises');
-    await user.type(screen.getByLabelText(/Khách tối đa/i), '1500');
-    await user.type(screen.getByLabelText(/Thủy thủ đoàn/i), '450');
-    await user.type(screen.getByLabelText(/Tổng cabin/i), '700');
-    await user.type(screen.getByLabelText(/Số tầng\/boong/i), '12');
+    await fillShipForm(user, {
+      name: 'Ha Long Luxury',
+      code: 'SHIP-HL01',
+      operator: 'Paradise Cruises',
+      capacity: '1500',
+      crewCapacity: '450',
+      totalCabins: '700',
+      totalDecks: '12',
+    });
 
-    const submitBtn = screen.getByRole('button', { name: /Thêm Tàu Du Lịch/i });
-    await user.click(submitBtn);
+    await user.click(screen.getByRole('button', { name: /Thêm Tàu Du Lịch/i }));
 
     expect(handleSubmit).toHaveBeenCalledTimes(1);
     expect(handleSubmit).toHaveBeenCalledWith(
