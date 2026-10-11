@@ -44,8 +44,8 @@ describe('App Routing Integration Tests', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 2, name: /Quản Lý Hải Trình & Cảng Dừng/i })).toBeInTheDocument();
-      expect(screen.getByText('Cảng Tuần Châu (Hạ Long)')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: /Quản Lý Tour Du Lịch Du Thuyền/i })).toBeInTheDocument();
+      expect(screen.getByText('Hải Trình Kỳ Quan Vịnh Bắc Bộ 4N3Đ')).toBeInTheDocument();
     });
   });
 
