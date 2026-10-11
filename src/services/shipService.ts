@@ -181,7 +181,7 @@ export async function getShips(): Promise<Ship[]> {
   }
 }
 
-function formatShipPayload(data: ShipFormData) {
+export function formatShipPayload(data: ShipFormData) {
   return {
     ...data,
     code: data.code.trim().toUpperCase(),

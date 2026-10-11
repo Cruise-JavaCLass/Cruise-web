@@ -29,6 +29,67 @@ const defaultFormData: ShipFormData = {
   imageUrl: '',
 };
 
+function mapShipToFormData(initialData?: Ship | null): ShipFormData {
+  if (!initialData) return defaultFormData;
+  return {
+    ...defaultFormData,
+    ...initialData,
+    manufacturingYear: initialData.manufacturingYear ?? '',
+    lengthMeters: initialData.lengthMeters ?? '',
+    beamMeters: initialData.beamMeters ?? '',
+    draftMeters: initialData.draftMeters ?? '',
+    description: initialData.description ?? '',
+    amenities: initialData.amenities ?? '',
+    imageUrl: initialData.imageUrl ?? '',
+  };
+}
+
+interface NumberInputFieldProps {
+  id: string;
+  label: string;
+  placeholder: string;
+  value: string | number | undefined;
+  error?: string;
+  required?: boolean;
+  step?: string;
+  min?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+function NumberInputField({
+  id,
+  label,
+  placeholder,
+  value,
+  error,
+  required = false,
+  step,
+  min,
+  onChange,
+}: NumberInputFieldProps) {
+  return (
+    <div>
+      <label htmlFor={id} className="block text-xs font-medium text-slate-300 mb-1">
+        {label} {required && <span className="text-rose-400">*</span>}
+      </label>
+      <input
+        id={id}
+        name={id}
+        type="number"
+        min={min}
+        step={step}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 focus:outline-none ${
+          error ? 'border-rose-500' : 'border-slate-800 focus:border-cyan-500'
+        }`}
+      />
+      {error && <p className="text-[11px] text-rose-400 mt-1">{error}</p>}
+    </div>
+  );
+}
+
 export function ShipFormModal({
   isOpen,
   onClose,
@@ -42,27 +103,7 @@ export function ShipFormModal({
   const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialData) {
-      setFormData({
-        name: initialData.name,
-        code: initialData.code,
-        operator: initialData.operator,
-        capacity: initialData.capacity,
-        crewCapacity: initialData.crewCapacity,
-        totalCabins: initialData.totalCabins,
-        totalDecks: initialData.totalDecks,
-        manufacturingYear: initialData.manufacturingYear ?? '',
-        lengthMeters: initialData.lengthMeters ?? '',
-        beamMeters: initialData.beamMeters ?? '',
-        draftMeters: initialData.draftMeters ?? '',
-        status: initialData.status,
-        description: initialData.description ?? '',
-        amenities: initialData.amenities ?? '',
-        imageUrl: initialData.imageUrl ?? '',
-      });
-    } else {
-      setFormData(defaultFormData);
-    }
+    setFormData(mapShipToFormData(initialData));
     setErrors({});
     setApiError(null);
   }, [initialData, isOpen]);
@@ -234,81 +275,46 @@ export function ShipFormModal({
               <Users className="w-3.5 h-3.5" /> Sức chứa & Cơ cấu phòng
             </span>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div>
-                <label htmlFor="capacity" className="block text-xs font-medium text-slate-300 mb-1">
-                  Khách tối đa <span className="text-rose-400">*</span>
-                </label>
-                <input
-                  id="capacity"
-                  name="capacity"
-                  type="number"
-                  min="1"
-                  placeholder="2400"
-                  value={formData.capacity}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 focus:outline-none ${
-                    errors.capacity ? 'border-rose-500' : 'border-slate-800 focus:border-cyan-500'
-                  }`}
-                />
-                {errors.capacity && <p className="text-[11px] text-rose-400 mt-1">{errors.capacity}</p>}
-              </div>
-
-              <div>
-                <label htmlFor="crewCapacity" className="block text-xs font-medium text-slate-300 mb-1">
-                  Thủy thủ đoàn <span className="text-rose-400">*</span>
-                </label>
-                <input
-                  id="crewCapacity"
-                  name="crewCapacity"
-                  type="number"
-                  min="1"
-                  placeholder="750"
-                  value={formData.crewCapacity}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 focus:outline-none ${
-                    errors.crewCapacity ? 'border-rose-500' : 'border-slate-800 focus:border-cyan-500'
-                  }`}
-                />
-                {errors.crewCapacity && <p className="text-[11px] text-rose-400 mt-1">{errors.crewCapacity}</p>}
-              </div>
-
-              <div>
-                <label htmlFor="totalCabins" className="block text-xs font-medium text-slate-300 mb-1">
-                  Tổng cabin <span className="text-rose-400">*</span>
-                </label>
-                <input
-                  id="totalCabins"
-                  name="totalCabins"
-                  type="number"
-                  min="1"
-                  placeholder="1100"
-                  value={formData.totalCabins}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 focus:outline-none ${
-                    errors.totalCabins ? 'border-rose-500' : 'border-slate-800 focus:border-cyan-500'
-                  }`}
-                />
-                {errors.totalCabins && <p className="text-[11px] text-rose-400 mt-1">{errors.totalCabins}</p>}
-              </div>
-
-              <div>
-                <label htmlFor="totalDecks" className="block text-xs font-medium text-slate-300 mb-1">
-                  Số tầng/boong <span className="text-rose-400">*</span>
-                </label>
-                <input
-                  id="totalDecks"
-                  name="totalDecks"
-                  type="number"
-                  min="1"
-                  placeholder="14"
-                  value={formData.totalDecks}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 focus:outline-none ${
-                    errors.totalDecks ? 'border-rose-500' : 'border-slate-800 focus:border-cyan-500'
-                  }`}
-                />
-                {errors.totalDecks && <p className="text-[11px] text-rose-400 mt-1">{errors.totalDecks}</p>}
-              </div>
+              <NumberInputField
+                id="capacity"
+                label="Khách tối đa"
+                placeholder="2400"
+                min="1"
+                required
+                value={formData.capacity}
+                error={errors.capacity}
+                onChange={handleChange}
+              />
+              <NumberInputField
+                id="crewCapacity"
+                label="Thủy thủ đoàn"
+                placeholder="750"
+                min="1"
+                required
+                value={formData.crewCapacity}
+                error={errors.crewCapacity}
+                onChange={handleChange}
+              />
+              <NumberInputField
+                id="totalCabins"
+                label="Tổng cabin"
+                placeholder="1100"
+                min="1"
+                required
+                value={formData.totalCabins}
+                error={errors.totalCabins}
+                onChange={handleChange}
+              />
+              <NumberInputField
+                id="totalDecks"
+                label="Số tầng/boong"
+                placeholder="14"
+                min="1"
+                required
+                value={formData.totalDecks}
+                error={errors.totalDecks}
+                onChange={handleChange}
+              />
             </div>
           </div>
 
@@ -318,79 +324,41 @@ export function ShipFormModal({
               <Compass className="w-3.5 h-3.5" /> Thông số kích thước hàng hải
             </span>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div>
-                <label htmlFor="manufacturingYear" className="block text-xs font-medium text-slate-300 mb-1">
-                  Năm đóng tàu
-                </label>
-                <input
-                  id="manufacturingYear"
-                  name="manufacturingYear"
-                  type="number"
-                  placeholder="2023"
-                  value={formData.manufacturingYear}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 focus:outline-none ${
-                    errors.manufacturingYear ? 'border-rose-500' : 'border-slate-800 focus:border-cyan-500'
-                  }`}
-                />
-                {errors.manufacturingYear && (
-                  <p className="text-[11px] text-rose-400 mt-1">{errors.manufacturingYear}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="lengthMeters" className="block text-xs font-medium text-slate-300 mb-1">
-                  Dài (mét)
-                </label>
-                <input
-                  id="lengthMeters"
-                  name="lengthMeters"
-                  type="number"
-                  step="0.1"
-                  placeholder="315.5"
-                  value={formData.lengthMeters}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 focus:outline-none ${
-                    errors.lengthMeters ? 'border-rose-500' : 'border-slate-800 focus:border-cyan-500'
-                  }`}
-                />
-                {errors.lengthMeters && <p className="text-[11px] text-rose-400 mt-1">{errors.lengthMeters}</p>}
-              </div>
-
-              <div>
-                <label htmlFor="beamMeters" className="block text-xs font-medium text-slate-300 mb-1">
-                  Rộng (mét)
-                </label>
-                <input
-                  id="beamMeters"
-                  name="beamMeters"
-                  type="number"
-                  step="0.1"
-                  placeholder="38.0"
-                  value={formData.beamMeters}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="draftMeters" className="block text-xs font-medium text-slate-300 mb-1">
-                  Mớn nước (mét)
-                </label>
-                <input
-                  id="draftMeters"
-                  name="draftMeters"
-                  type="number"
-                  step="0.1"
-                  placeholder="8.5"
-                  value={formData.draftMeters}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 focus:outline-none ${
-                    errors.draftMeters ? 'border-rose-500' : 'border-slate-800 focus:border-cyan-500'
-                  }`}
-                />
-                {errors.draftMeters && <p className="text-[11px] text-rose-400 mt-1">{errors.draftMeters}</p>}
-              </div>
+              <NumberInputField
+                id="manufacturingYear"
+                label="Năm đóng tàu"
+                placeholder="2023"
+                value={formData.manufacturingYear}
+                error={errors.manufacturingYear}
+                onChange={handleChange}
+              />
+              <NumberInputField
+                id="lengthMeters"
+                label="Dài (mét)"
+                placeholder="315.5"
+                step="0.1"
+                value={formData.lengthMeters}
+                error={errors.lengthMeters}
+                onChange={handleChange}
+              />
+              <NumberInputField
+                id="beamMeters"
+                label="Rộng (mét)"
+                placeholder="38.0"
+                step="0.1"
+                value={formData.beamMeters}
+                error={errors.beamMeters}
+                onChange={handleChange}
+              />
+              <NumberInputField
+                id="draftMeters"
+                label="Mớn nước (mét)"
+                placeholder="8.5"
+                step="0.1"
+                value={formData.draftMeters}
+                error={errors.draftMeters}
+                onChange={handleChange}
+              />
             </div>
           </div>
 

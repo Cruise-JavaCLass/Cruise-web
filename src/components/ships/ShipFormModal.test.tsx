@@ -94,58 +94,52 @@ describe('ShipFormModal Component Tests', () => {
     expect(screen.getByText('Sức chứa hành khách phải lớn hơn 0')).toBeInTheDocument();
   });
 
-  it('validates maritime rules: cabin count cannot exceed passenger capacity', async () => {
+  it.each([
+    {
+      ruleDescription: 'cabin count cannot exceed passenger capacity',
+      fields: {
+        name: 'Sea Pearl',
+        code: 'SHIP-PEARL',
+        operator: 'Sea Lines',
+        capacity: '500',
+        crewCapacity: '200',
+        totalCabins: '600',
+        totalDecks: '8',
+      },
+      expectedErrors: ['Số lượng cabin không thể lớn hơn sức chứa hành khách'],
+    },
+    {
+      ruleDescription: 'length must be greater than beam and draft less than beam',
+      fields: {
+        name: 'Sea Pearl',
+        code: 'SHIP-PEARL',
+        operator: 'Sea Lines',
+        capacity: '1000',
+        crewCapacity: '300',
+        totalCabins: '500',
+        totalDecks: '10',
+        lengthMeters: '30',
+        beamMeters: '35',
+        draftMeters: '40',
+      },
+      expectedErrors: [
+        'Chiều dài thân tàu phải lớn hơn chiều rộng',
+        'Mớn nước phải nhỏ hơn chiều rộng thân tàu',
+      ],
+    },
+  ])('validates maritime rules: $ruleDescription', async ({ fields, expectedErrors }) => {
     const user = userEvent.setup();
     const handleSubmit = vi.fn();
 
     render(<ShipFormModal isOpen={true} onClose={vi.fn()} onSubmit={handleSubmit} />);
 
-    await fillShipForm(user, {
-      name: 'Sea Pearl',
-      code: 'SHIP-PEARL',
-      operator: 'Sea Lines',
-      capacity: '500',
-      crewCapacity: '200',
-      totalCabins: '600',
-      totalDecks: '8',
-    });
-
+    await fillShipForm(user, fields);
     await user.click(screen.getByRole('button', { name: /Thêm Tàu Du Lịch/i }));
 
     expect(handleSubmit).not.toHaveBeenCalled();
-    expect(
-      screen.getByText('Số lượng cabin không thể lớn hơn sức chứa hành khách')
-    ).toBeInTheDocument();
-  });
-
-  it('validates maritime rules: length must be greater than beam and draft less than beam', async () => {
-    const user = userEvent.setup();
-    const handleSubmit = vi.fn();
-
-    render(<ShipFormModal isOpen={true} onClose={vi.fn()} onSubmit={handleSubmit} />);
-
-    await fillShipForm(user, {
-      name: 'Sea Pearl',
-      code: 'SHIP-PEARL',
-      operator: 'Sea Lines',
-      capacity: '1000',
-      crewCapacity: '300',
-      totalCabins: '500',
-      totalDecks: '10',
-      lengthMeters: '30',
-      beamMeters: '35',
-      draftMeters: '40',
-    });
-
-    await user.click(screen.getByRole('button', { name: /Thêm Tàu Du Lịch/i }));
-
-    expect(handleSubmit).not.toHaveBeenCalled();
-    expect(
-      screen.getByText('Chiều dài thân tàu phải lớn hơn chiều rộng')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('Mớn nước phải nhỏ hơn chiều rộng thân tàu')
-    ).toBeInTheDocument();
+    for (const msg of expectedErrors) {
+      expect(screen.getByText(msg)).toBeInTheDocument();
+    }
   });
 
   it('submits form successfully when all inputs and business rules are valid', async () => {

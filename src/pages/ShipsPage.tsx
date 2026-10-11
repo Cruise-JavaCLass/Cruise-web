@@ -15,6 +15,7 @@ import {
   getShips,
   createShip,
   updateShip,
+  formatShipPayload,
 } from '../services/shipService';
 import { ShipFormModal } from '../components/ships/ShipFormModal';
 
@@ -33,7 +34,7 @@ export function ShipsPage() {
   };
 
   useEffect(() => {
-    loadShips();
+    void loadShips();
   }, []);
 
   const handleOpenCreate = () => {
@@ -49,19 +50,12 @@ export function ShipsPage() {
   const handleFormSubmit = async (formData: ShipFormData) => {
     setIsSubmitting(true);
     try {
+      const formatted = formatShipPayload(formData);
       if (editingShip) {
         // Edit mode
         const updated = await updateShip(editingShip.id, formData).catch(() => ({
           ...editingShip,
-          ...formData,
-          capacity: Number(formData.capacity),
-          crewCapacity: Number(formData.crewCapacity),
-          totalCabins: Number(formData.totalCabins),
-          totalDecks: Number(formData.totalDecks),
-          manufacturingYear: formData.manufacturingYear ? Number(formData.manufacturingYear) : undefined,
-          lengthMeters: formData.lengthMeters ? Number(formData.lengthMeters) : undefined,
-          beamMeters: formData.beamMeters ? Number(formData.beamMeters) : undefined,
-          draftMeters: formData.draftMeters ? Number(formData.draftMeters) : undefined,
+          ...formatted,
         }));
         setShips((prev) =>
           prev.map((s) => (s.id === editingShip.id ? (updated as Ship) : s))
@@ -71,17 +65,8 @@ export function ShipsPage() {
         // Create mode
         const newShip = await createShip(formData).catch(() => ({
           id: Date.now(),
-          ...formData,
-          code: formData.code.toUpperCase(),
-          capacity: Number(formData.capacity),
-          crewCapacity: Number(formData.crewCapacity),
-          totalCabins: Number(formData.totalCabins),
-          totalDecks: Number(formData.totalDecks),
-          manufacturingYear: formData.manufacturingYear ? Number(formData.manufacturingYear) : undefined,
-          lengthMeters: formData.lengthMeters ? Number(formData.lengthMeters) : undefined,
-          beamMeters: formData.beamMeters ? Number(formData.beamMeters) : undefined,
-          draftMeters: formData.draftMeters ? Number(formData.draftMeters) : undefined,
           active: true,
+          ...formatted,
         }));
         setShips((prev) => [newShip as Ship, ...prev]);
         showNotification(`Đã tạo mới du thuyền ${formData.name} (${formData.code}) thành công!`);
