@@ -6,6 +6,7 @@ import { ActivitiesPage } from './pages/ActivitiesPage';
 import { PosPage } from './pages/PosPage';
 import { PassengersPage } from './pages/PassengersPage';
 import { ShipsPage } from './pages/ShipsPage';
+import { ShipDetailPage } from './pages/ShipDetailPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export function App() {
@@ -14,6 +15,7 @@ export function App() {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="ships" element={<ShipsPage />} />
+        <Route path="ships/:id" element={<ShipDetailPage />} />
         <Route path="itinerary" element={<ItineraryPage />} />
         <Route path="activities" element={<ActivitiesPage />} />
         <Route path="pos" element={<PosPage />} />

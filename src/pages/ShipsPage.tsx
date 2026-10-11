@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Ship as ShipIcon,
   Plus,
   Search,
   Edit2,
+  Eye,
   Anchor,
   Users,
   Compass,
@@ -263,14 +265,24 @@ export function ShipsPage() {
                       </span>
                     </td>
                     <td className="p-3.5 text-right">
-                      <button
-                        onClick={() => handleOpenEdit(ship)}
-                        aria-label={`Chỉnh sửa ${ship.name}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-cyan-400 hover:text-white hover:bg-cyan-600/20 border border-cyan-500/30 transition-all"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                        <span>Sửa</span>
-                      </button>
+                      <div className="inline-flex items-center gap-2">
+                        <Link
+                          to={`/ships/${ship.id}`}
+                          aria-label={`Xem chi tiết ${ship.name}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-700/40 border border-slate-700/50 transition-all"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Xem</span>
+                        </Link>
+                        <button
+                          onClick={() => handleOpenEdit(ship)}
+                          aria-label={`Chỉnh sửa ${ship.name}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-cyan-400 hover:text-white hover:bg-cyan-600/20 border border-cyan-500/30 transition-all"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                          <span>Sửa</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

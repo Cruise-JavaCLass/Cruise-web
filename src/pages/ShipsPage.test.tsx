@@ -1,11 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { ShipsPage } from './ShipsPage';
 
+function renderWithRouter(ui: React.ReactElement) {
+  return render(<MemoryRouter>{ui}</MemoryRouter>);
+}
+
 describe('ShipsPage Component Tests', () => {
   it('renders page header and initial cruise ships', async () => {
-    render(<ShipsPage />);
+    renderWithRouter(<ShipsPage />);
 
     expect(screen.getByRole('heading', { level: 2, name: /Quản Lý Đội Tàu Du Lịch/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Thêm Tàu Mới/i })).toBeInTheDocument();
@@ -19,7 +24,7 @@ describe('ShipsPage Component Tests', () => {
 
   it('filters ships list when typing in search box', async () => {
     const user = userEvent.setup();
-    render(<ShipsPage />);
+    renderWithRouter(<ShipsPage />);
 
     const searchInput = screen.getByRole('searchbox', { name: /Tìm kiếm tàu du lịch/i });
     await user.type(searchInput, 'Phu Quoc');
@@ -33,7 +38,7 @@ describe('ShipsPage Component Tests', () => {
 
   it('opens Create Ship Form modal when clicking "+ Thêm Tàu Mới"', async () => {
     const user = userEvent.setup();
-    render(<ShipsPage />);
+    renderWithRouter(<ShipsPage />);
 
     const addBtn = screen.getByRole('button', { name: /Thêm Tàu Mới/i });
     await user.click(addBtn);
@@ -44,7 +49,7 @@ describe('ShipsPage Component Tests', () => {
 
   it('opens Edit Ship Form modal pre-filled when clicking "Sửa" on a ship', async () => {
     const user = userEvent.setup();
-    render(<ShipsPage />);
+    renderWithRouter(<ShipsPage />);
 
     await waitFor(() => {
       expect(screen.getByText('Halong Grand Harmony')).toBeInTheDocument();
@@ -61,7 +66,7 @@ describe('ShipsPage Component Tests', () => {
 
   it('filters ships by status dropdown and displays empty state when none match', async () => {
     const user = userEvent.setup();
-    render(<ShipsPage />);
+    renderWithRouter(<ShipsPage />);
 
     const statusFilter = screen.getByRole('combobox', { name: /Lọc theo trạng thái/i });
     await user.selectOptions(statusFilter, 'DOCKED');
@@ -76,7 +81,7 @@ describe('ShipsPage Component Tests', () => {
 
   it('creates a new ship and shows success toast notification', async () => {
     const user = userEvent.setup();
-    render(<ShipsPage />);
+    renderWithRouter(<ShipsPage />);
 
     await user.click(screen.getByRole('button', { name: /Thêm Tàu Mới/i }));
 
@@ -98,7 +103,7 @@ describe('ShipsPage Component Tests', () => {
 
   it('edits a ship and allows closing modal with cancel button', async () => {
     const user = userEvent.setup();
-    render(<ShipsPage />);
+    renderWithRouter(<ShipsPage />);
 
     await waitFor(() => expect(screen.getByText('Halong Grand Harmony')).toBeInTheDocument());
 
