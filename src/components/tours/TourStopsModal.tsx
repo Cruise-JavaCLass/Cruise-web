@@ -25,7 +25,7 @@ export const TourStopsModal: React.FC<TourStopsModalProps> = ({
   useEffect(() => {
     if (isOpen && tour) {
       setLoading(true);
-      getTourStops(tour.id)
+      void getTourStops(tour.id)
         .then(setStops)
         .finally(() => setLoading(false));
     }
