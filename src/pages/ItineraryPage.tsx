@@ -15,6 +15,7 @@ import {
   ArrowRightCircle,
   AlertTriangle,
   CheckCircle2,
+  Anchor,
 } from 'lucide-react';
 import type { CruiseTour, TourFormData, TourStatus } from '../services/tourService';
 import {
@@ -27,8 +28,11 @@ import {
 } from '../services/tourService';
 import type { Ship as ShipType } from '../services/shipService';
 import { getShips } from '../services/shipService';
+import type { Port } from '../services/portStopService';
+import { getPorts } from '../services/portStopService';
 import { TourFormModal } from '../components/tours/TourFormModal';
 import { StatusTransitionModal } from '../components/tours/StatusTransitionModal';
+import { TourStopsModal } from '../components/tours/TourStopsModal';
 
 const STATUS_BADGES: Record<TourStatus, { label: string; bg: string; text: string; border: string }> = {
   DRAFT: {
@@ -66,6 +70,7 @@ const STATUS_BADGES: Record<TourStatus, { label: string; bg: string; text: strin
 export function ItineraryPage() {
   const [tours, setTours] = useState<CruiseTour[]>([]);
   const [ships, setShips] = useState<ShipType[]>([]);
+  const [ports, setPorts] = useState<Port[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [shipFilter, setShipFilter] = useState<string>('ALL');
@@ -76,14 +81,18 @@ export function ItineraryPage() {
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [statusTour, setStatusTour] = useState<CruiseTour | null>(null);
 
+  const [isStopsModalOpen, setIsStopsModalOpen] = useState(false);
+  const [stopsTour, setStopsTour] = useState<CruiseTour | null>(null);
+
   const [isDeleting, setIsDeleting] = useState<CruiseTour | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loadData = async () => {
-    const [tourList, shipList] = await Promise.all([getTours(), getShips()]);
+    const [tourList, shipList, portList] = await Promise.all([getTours(), getShips(), getPorts()]);
     setTours(tourList);
     setShips(shipList);
+    setPorts(portList);
   };
 
   useEffect(() => {
@@ -411,6 +420,16 @@ export function ItineraryPage() {
 
                   <div className="flex items-center gap-1.5">
                     <button
+                      onClick={() => {
+                        setStopsTour(tour);
+                        setIsStopsModalOpen(true);
+                      }}
+                      className="p-1.5 bg-slate-800 hover:bg-slate-700 text-teal-400 rounded-lg transition-colors cursor-pointer"
+                      title="Quản lý điểm dừng hải trình"
+                    >
+                      <Anchor className="w-4 h-4" />
+                    </button>
+                    <button
                       onClick={() => handleStatusModalOpen(tour)}
                       className="p-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg transition-colors cursor-pointer"
                       title="Chuyển trạng thái tour"
@@ -438,6 +457,14 @@ export function ItineraryPage() {
           })}
         </div>
       )}
+
+      {/* Tour Stops Modal */}
+      <TourStopsModal
+        isOpen={isStopsModalOpen}
+        onClose={() => setIsStopsModalOpen(false)}
+        tour={stopsTour}
+        ports={ports}
+      />
 
       {/* Tour Form Modal (Create / Edit) */}
       <TourFormModal
