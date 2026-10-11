@@ -186,4 +186,31 @@ describe('ShipFormModal Component Tests', () => {
     await user.click(closeIconBtn);
     expect(handleClose).toHaveBeenCalledTimes(2);
   });
+
+  it('displays API error alert when onSubmit rejects', async () => {
+    const user = userEvent.setup();
+    render(
+      <ShipFormModal
+        isOpen={true}
+        onClose={vi.fn()}
+        onSubmit={() => Promise.reject(new Error('Mã tàu đã tồn tại trong hệ thống'))}
+        initialData={mockShip}
+      />
+    );
+
+    await user.click(screen.getByRole('button', { name: /Lưu Thay Đổi/i }));
+    expect(await screen.findByText('Mã tàu đã tồn tại trong hệ thống')).toBeInTheDocument();
+  });
+
+  it('clears validation error when user modifies an invalid field', async () => {
+    const user = userEvent.setup();
+    render(<ShipFormModal isOpen={true} onClose={vi.fn()} onSubmit={vi.fn()} />);
+
+    await user.click(screen.getByRole('button', { name: /Thêm Tàu Du Lịch/i }));
+    expect(screen.getByText('Tên tàu không được để trống')).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText(/Tên du thuyền/i), 'Sea');
+    expect(screen.queryByText('Tên tàu không được để trống')).not.toBeInTheDocument();
+  });
 });
+
