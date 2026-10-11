@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, MapPin, Plus, Trash2, Calendar, Clock, Anchor } from 'lucide-react';
+import { X, MapPin, Plus, Trash2, Clock, Anchor } from 'lucide-react';
 import type { CruiseTour } from '../../services/tourService';
 import type { Port, CruiseStop, StopFormData } from '../../services/portStopService';
 import { getTourStops, createTourStop, deleteTourStop } from '../../services/portStopService';
@@ -25,7 +25,7 @@ export const TourStopsModal: React.FC<TourStopsModalProps> = ({
   useEffect(() => {
     if (isOpen && tour) {
       setLoading(true);
-      getTourStops(tour.id)
+      void getTourStops(tour.id)
         .then(setStops)
         .finally(() => setLoading(false));
     }

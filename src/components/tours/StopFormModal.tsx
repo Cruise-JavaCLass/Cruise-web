@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Clock, MapPin } from 'lucide-react';
+import { X, MapPin } from 'lucide-react';
 import type { Port, StopFormData } from '../../services/portStopService';
 
 interface StopFormModalProps {
