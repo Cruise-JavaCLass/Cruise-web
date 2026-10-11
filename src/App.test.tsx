@@ -23,6 +23,19 @@ describe('App Routing Integration Tests', () => {
     });
   });
 
+  it('renders ShipsPage when navigating to "/ships"', async () => {
+    render(
+      <MemoryRouter initialEntries={['/ships']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 2, name: /Quản Lý Đội Tàu Du Lịch/i })).toBeInTheDocument();
+      expect(screen.getByText('Halong Grand Harmony')).toBeInTheDocument();
+    });
+  });
+
   it('renders ItineraryPage when navigating to "/itinerary"', async () => {
     render(
       <MemoryRouter initialEntries={['/itinerary']}>
