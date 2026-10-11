@@ -33,6 +33,7 @@ describe('MainLayout (Layout & Async State Tests)', () => {
       expect(screen.getByText('CRUISE MANAGER')).toBeInTheDocument();
       expect(screen.getByText('Grand Pearl Voyager')).toBeInTheDocument();
       expect(screen.getByText('Dashboard Tổng quan')).toBeInTheDocument();
+      expect(screen.getByText('Quản lý Đội tàu')).toBeInTheDocument();
       expect(screen.getByText('Hải trình & Cảng dừng')).toBeInTheDocument();
       expect(screen.getByText('Hoạt động & Excursion')).toBeInTheDocument();
       expect(screen.getByText('POS & Chi tiêu Onboard')).toBeInTheDocument();

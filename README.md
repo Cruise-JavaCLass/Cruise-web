@@ -8,6 +8,7 @@
 > - [KAN-52](https://huytran20052022.atlassian.net/browse/KAN-52) - *Add Sample Frontend Test — Tạo một test mẫu cho frontend*  
 > - [KAN-54](https://huytran20052022.atlassian.net/browse/KAN-54) - *Configure Test Execution Commands — Thiết lập lệnh chạy test*  
 > - [KAN-57](https://huytran20052022.atlassian.net/browse/KAN-57) - *Configure Git Workflow and CI — Thiết lập quy trình Git và luồng CI*  
+> - [KAN-92](https://huytran20052022.atlassian.net/browse/KAN-92) - *Build Create and Edit Ship Forms — Form tạo và sửa thông tin tàu*  
 
 ---
 
@@ -65,6 +66,8 @@ Các bộ test mẫu chuẩn hóa bao gồm:
 * `src/layouts/MainLayout.test.tsx`: Kiểm thử khung giao diện, link điều hướng, và cơ chế polling kiểm tra kết nối Backend Gateway trực tuyến / ngoại tuyến.
 * `src/pages/DashboardPage.test.tsx`: Kiểm thử render các chỉ số KPI vận hành, hero banner và cảng dừng.
 * `src/components/common/ErrorBoundary.test.tsx`: Kiểm thử cơ chế bắt lỗi an toàn (Fallback UI).
+* `src/components/ships/ShipFormModal.test.tsx`: Kiểm thử Form tạo và sửa thông tin tàu, kiểm tra dữ liệu bắt buộc và các quy tắc nghiệp vụ hàng hải (cabin <= capacity, crew ratio, length > beam, draft < beam, code regex).
+* `src/pages/ShipsPage.test.tsx`: Kiểm thử trang quản lý đội tàu, tìm kiếm theo từ khóa và mở Modal tạo/sửa thông tin tàu.
 * `src/services/api.test.ts`: Kiểm thử cấu hình Axios client và mock API gateway.
 
 ---
@@ -102,6 +105,7 @@ Cruise-web/
 
 ## 4. Danh sách các Tuyến đường (Application Routes)
 * **`/`**: Dashboard Tổng quan (Chỉ số vận hành, doanh thu, thời tiết, an toàn).
+* **`/ships`**: Quản lý Đội tàu du lịch (Danh mục tàu, Form tạo mới và chỉnh sửa thông tin tàu kèm kiểm tra tính hợp lệ nghiệp vụ — KAN-92).
 * **`/itinerary`**: Quản lý lịch trình, cảng dừng (Ports of call), giờ tàu đến/rời bến.
 * **`/activities`**: Quản lý hoạt động giải trí và các tour du lịch trên bờ (Shore Excursions).
 * **`/pos`**: Quản lý tài khoản chi tiêu phi tiền mặt (Cashless), đồng bộ giao dịch ngoại tuyến (Offline Sync).

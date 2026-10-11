@@ -39,6 +39,7 @@ export function MainLayout() {
 
   const navItems = [
     { to: '/', label: 'Dashboard Tổng quan', icon: Compass },
+    { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship },
     { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin },
     { to: '/activities', label: 'Hoạt động & Excursion', icon: Activity },
     { to: '/pos', label: 'POS & Chi tiêu Onboard', icon: CreditCard },
