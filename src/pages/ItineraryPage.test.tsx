@@ -151,4 +151,42 @@ describe('ItineraryPage (Cruise Tour Management Interface)', () => {
 
     expect(screen.getByText('Chuyển Trạng Thái Tour')).toBeInTheDocument();
   });
+
+  it('opens TourFormModal prefilled when clicking edit button', async () => {
+    render(
+      <BrowserRouter>
+        <ItineraryPage />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Hải Trình Kỳ Quan Vịnh Bắc Bộ 4N3Đ')).toBeInTheDocument();
+    });
+
+    const editBtns = screen.getAllByTitle('Chỉnh sửa tour');
+    fireEvent.click(editBtns[0]);
+
+    expect(screen.getByText('Cập Nhật Hải Trình Tour Du Lịch')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('TOUR-HL-001')).toBeInTheDocument();
+  });
+
+  it('opens delete confirmation modal when clicking delete button', async () => {
+    render(
+      <BrowserRouter>
+        <ItineraryPage />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Hải Trình Kỳ Quan Vịnh Bắc Bộ 4N3Đ')).toBeInTheDocument();
+    });
+
+    const deleteBtns = screen.getAllByTitle('Xóa tour');
+    fireEvent.click(deleteBtns[0]);
+
+    expect(screen.getByText('Xác Nhận Xóa Tour')).toBeInTheDocument();
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveTextContent('Xác Nhận Xóa Tour');
+  });
 });
