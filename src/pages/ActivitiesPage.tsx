@@ -50,28 +50,32 @@ export function ActivitiesPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const loadActivities = useCallback(async () => {
+  const fetchActivityList = useCallback(async () => {
     setLoading(true);
-    try {
-      const res = await fetchActivitiesPaged(selectedTourId, {
-        dayNumber: selectedDay === 'ALL' ? undefined : selectedDay,
-        category: selectedCategory === 'ALL' ? undefined : selectedCategory,
-        keyword: searchTerm,
-        page: 0,
-        size: 50,
+    const filterParams = {
+      dayNumber: selectedDay === 'ALL' ? undefined : selectedDay,
+      category: selectedCategory === 'ALL' ? undefined : selectedCategory,
+      keyword: searchTerm,
+      page: 0,
+      size: 50,
+    };
+
+    fetchActivitiesPaged(selectedTourId, filterParams)
+      .then((response) => {
+        setActivities(response.content);
+        setTotalCount(response.totalElements);
+      })
+      .catch(() => {
+        showToast('Không thể tải danh sách hoạt động.');
+      })
+      .finally(() => {
+        setLoading(false);
       });
-      setActivities(res.content);
-      setTotalCount(res.totalElements);
-    } catch {
-      showToast('Không thể tải danh sách hoạt động.');
-    } finally {
-      setLoading(false);
-    }
   }, [selectedTourId, selectedDay, selectedCategory, searchTerm]);
 
   useEffect(() => {
-    void loadActivities();
-  }, [loadActivities]);
+    void fetchActivityList();
+  }, [fetchActivityList]);
 
   const handleOpenCreateModal = () => {
     setActivityToEdit(null);
@@ -95,7 +99,7 @@ export function ActivitiesPage() {
     try {
       await deleteActivity(id);
       showToast(`Đã xóa hoạt động "${title}" thành công!`);
-      loadActivities();
+      void fetchActivityList();
     } catch {
       showToast('Có lỗi xảy ra khi xóa hoạt động.');
     }
@@ -150,7 +154,7 @@ export function ActivitiesPage() {
         </div>
         <div className="flex items-center gap-2.5">
           <button
-            onClick={loadActivities}
+            onClick={() => void fetchActivityList()}
             className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition-colors"
             title="Làm mới"
           >
@@ -395,7 +399,7 @@ export function ActivitiesPage() {
               ? 'Cập nhật thông tin hoạt động thành công!'
               : 'Tạo mới hoạt động du thuyền thành công!'
           );
-          loadActivities();
+          void fetchActivityList();
         }}
       />
 
@@ -406,7 +410,7 @@ export function ActivitiesPage() {
         activity={activityToChangeStatus}
         onSuccess={(updated) => {
           showToast(`Chuyển trạng thái sang "${updated.status}" thành công!`);
-          loadActivities();
+          void fetchActivityList();
         }}
       />
     </div>

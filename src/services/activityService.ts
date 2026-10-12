@@ -260,38 +260,27 @@ export const fetchActivitiesPaged = async (
     // fallback to local mock
   }
 
-  let filtered = inMemoryActivities.filter((a) => a.tourId === tourId && a.active);
+  const query = params.keyword?.toLowerCase().trim();
+  const day = params.dayNumber;
+  const categoryFilter = params.category && params.category !== 'ALL' ? params.category.toLowerCase() : null;
 
-  if (params.dayNumber !== undefined && params.dayNumber !== null && params.dayNumber > 0) {
-    filtered = filtered.filter((a) => a.dayNumber === params.dayNumber);
-  }
+  const filtered = inMemoryActivities.filter((act) => {
+    if (act.tourId !== tourId || !act.active) return false;
+    if (day && day > 0 && act.dayNumber !== day) return false;
+    if (categoryFilter && !act.category.toLowerCase().includes(categoryFilter)) return false;
+    if (query) {
+      const haystack = `${act.title} ${act.location} ${act.description ?? ''}`.toLowerCase();
+      if (!haystack.includes(query)) return false;
+    }
+    return true;
+  });
 
-  if (params.category && params.category !== 'ALL') {
-    filtered = filtered.filter((a) =>
-      a.category.toLowerCase().includes(params.category!.toLowerCase())
-    );
-  }
-
-  if (params.keyword && params.keyword.trim() !== '') {
-    const q = params.keyword.toLowerCase().trim();
-    filtered = filtered.filter(
-      (a) =>
-        a.title.toLowerCase().includes(q) ||
-        a.location.toLowerCase().includes(q) ||
-        (a.description && a.description.toLowerCase().includes(q))
-    );
-  }
-
-  const page = params.page || 0;
-  const size = params.size || 10;
-  const totalElements = filtered.length;
-  const totalPages = Math.ceil(totalElements / size) || 1;
-  const pagedContent = filtered.slice(page * size, (page + 1) * size);
-
+  const page = params.page ?? 0;
+  const size = params.size ?? 10;
   return {
-    content: pagedContent,
-    totalElements,
-    totalPages,
+    content: filtered.slice(page * size, (page + 1) * size),
+    totalElements: filtered.length,
+    totalPages: Math.max(1, Math.ceil(filtered.length / size)),
     size,
     number: page,
   };

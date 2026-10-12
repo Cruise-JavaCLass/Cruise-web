@@ -125,12 +125,15 @@ export function ActivityDetailPage() {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Toast Notification */}
+      {/* Notification Toast */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-slate-900 border border-cyan-500/40 text-cyan-300 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs animate-in fade-in slide-in-from-top-4 duration-200">
+        <aside
+          role="status"
+          className="fixed top-24 right-8 z-50 bg-slate-950/95 border border-cyan-400/50 text-cyan-200 px-5 py-3 rounded-xl shadow-xl flex items-center gap-3 text-xs"
+        >
           <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
-          <span className="font-medium">{toastMessage}</span>
-        </div>
+          <p className="font-semibold">{toastMessage}</p>
+        </aside>
       )}
 
       {/* Navigation Breadcrumb */}
@@ -321,25 +324,27 @@ export function ActivityDetailPage() {
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Detail Edit & Status Modals */}
       <ActivityModal
+        key={`edit-detail-modal-${activity.id}`}
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         activityToEdit={activity}
         defaultTourId={activity.tourId}
-        onSuccess={(updated) => {
-          setActivity(updated);
-          showToast('Cập nhật thông tin hoạt động thành công!');
+        onSuccess={(updatedRecord) => {
+          setActivity(updatedRecord);
+          showToast(`Đã lưu thay đổi cho "${updatedRecord.title}"!`);
         }}
       />
 
       <ActivityStatusModal
+        key={`status-detail-modal-${activity.id}`}
         isOpen={isStatusModalOpen}
         onClose={() => setIsStatusModalOpen(false)}
         activity={activity}
-        onSuccess={(updated) => {
-          setActivity(updated);
-          showToast(`Chuyển trạng thái sang "${updated.status}" thành công!`);
+        onSuccess={(updatedRecord) => {
+          setActivity(updatedRecord);
+          showToast(`Hoạt động đã cập nhật sang trạng thái: ${updatedRecord.status}`);
         }}
       />
     </div>

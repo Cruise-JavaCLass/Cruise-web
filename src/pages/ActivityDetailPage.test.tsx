@@ -5,22 +5,8 @@ import { ActivityDetailPage } from './ActivityDetailPage';
 import * as activityService from '../services/activityService';
 
 const mockActivity: activityService.OnboardActivity = {
-  id: 1,
-  tourId: 101,
-  dayNumber: 2,
-  title: 'Lớp Học Nấu Ăn Ẩm Thực Ý & Rượu Vang',
-  description: 'Học cách làm pasta tươi thủ công và thưởng thức 4 dòng vang vùng Tuscany',
-  category: 'Culinary & Ẩm Thực',
-  location: 'Tầng 8 - Gourmet Culinary Studio',
-  activityDate: '2026-11-02',
-  startTime: '14:00',
-  endTime: '16:00',
-  maxCapacity: 25,
+  ...activityService.INITIAL_ACTIVITIES[2],
   currentParticipants: 20,
-  price: 350000,
-  isIncluded: false,
-  status: 'SCHEDULED',
-  active: true,
 };
 
 describe('ActivityDetailPage Component Tests (KAN-139)', () => {
