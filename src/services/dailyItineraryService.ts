@@ -30,6 +30,8 @@ export interface TourDailyItinerary {
   tourCode: string;
   startDate: string;
   endDate: string;
+  lastUpdated?: string;
+  updateNotice?: string;
   days: DailyItineraryDay[];
 }
 
@@ -90,6 +92,8 @@ export const INITIAL_DAILY_ITINERARIES: Record<number, TourDailyItinerary> = {
     tourCode: 'TOUR-HL-001',
     startDate: '2026-10-15',
     endDate: '2026-10-18',
+    lastUpdated: '2026-10-12 09:30',
+    updateNotice: 'Lịch trình đã được cập nhật: Điều chỉnh thời gian cập cảng Tiên Sa và thêm tiệc Gala Dinner',
     days: [
       {
         dayNumber: 1,
@@ -303,6 +307,7 @@ export async function addDailyActivity(
       if (day) {
         day.activities.push(newAct);
         day.activities.sort((a, b) => a.time.localeCompare(b.time));
+        localDailyItineraries[tourId].lastUpdated = new Date().toISOString().replace('T', ' ').substring(0, 16);
       }
     }
     return newAct;
@@ -335,6 +340,7 @@ export async function updateDailyActivity(
       if (day) {
         day.activities = day.activities.map((a) => (a.id === activityId ? { ...a, ...updated } : a));
         day.activities.sort((a, b) => a.time.localeCompare(b.time));
+        localDailyItineraries[tourId].lastUpdated = new Date().toISOString().replace('T', ' ').substring(0, 16);
       }
     }
     return updated;
@@ -360,6 +366,7 @@ export async function reorderDailyActivities(
         day.activities = orderedActivityIds
           .map((id) => idMap.get(id))
           .filter((act): act is DailyActivityItem => act !== undefined);
+        localDailyItineraries[tourId].lastUpdated = new Date().toISOString().replace('T', ' ').substring(0, 16);
         return day.activities;
       }
     }
