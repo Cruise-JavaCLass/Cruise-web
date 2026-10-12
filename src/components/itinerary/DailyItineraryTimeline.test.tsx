@@ -271,4 +271,47 @@ describe('DailyItineraryTimeline (KAN-119)', () => {
       ).toBeInTheDocument();
     });
   });
+
+  it('opens and closes itinerary change history modal (KAN-130)', async () => {
+    vi.spyOn(dailyItineraryService, 'getDailyItinerary').mockResolvedValue({
+      ...mockItineraryData,
+      changeHistory: [
+        {
+          id: 11,
+          timestamp: '2026-10-12 09:30',
+          author: 'Nguyễn Quản Trị',
+          action: 'CẬP NHẬT HOẠT ĐỘNG',
+          description: 'Thay đổi địa điểm Gala Dinner',
+          dayNumber: 1,
+          details: 'Chuyển sang Grand Ballroom',
+          field: 'Địa điểm',
+          oldValue: 'Sundeck',
+          newValue: 'Grand Ballroom',
+        },
+      ],
+    });
+
+    render(<DailyItineraryTimeline tour={mockTour} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Xem lịch sử thay đổi lịch trình/i })).toBeInTheDocument();
+    });
+
+    // Modal is initially not in document
+    expect(screen.queryByText('Lịch Sử Thay Đổi Lịch Trình')).not.toBeInTheDocument();
+
+    // Click button to open modal
+    fireEvent.click(screen.getByRole('button', { name: /Xem lịch sử thay đổi lịch trình/i }));
+
+    // Verify modal content
+    expect(screen.getByText('Lịch Sử Thay Đổi Lịch Trình')).toBeInTheDocument();
+    expect(screen.getByText('Nguyễn Quản Trị')).toBeInTheDocument();
+    expect(screen.getByText('Thay đổi địa điểm Gala Dinner')).toBeInTheDocument();
+    expect(screen.getByText('Sundeck')).toBeInTheDocument();
+    expect(screen.getByText('Grand Ballroom')).toBeInTheDocument();
+
+    // Close modal via close button
+    fireEvent.click(screen.getByRole('button', { name: /Đóng lịch sử thay đổi/i }));
+    expect(screen.queryByText('Lịch Sử Thay Đổi Lịch Trình')).not.toBeInTheDocument();
+  });
 });

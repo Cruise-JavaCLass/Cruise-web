@@ -8,7 +8,23 @@
 > - [KAN-52](https://huytran20052022.atlassian.net/browse/KAN-52) - *Add Sample Frontend Test — Tạo một test mẫu cho frontend*  
 > - [KAN-54](https://huytran20052022.atlassian.net/browse/KAN-54) - *Configure Test Execution Commands — Thiết lập lệnh chạy test*  
 > - [KAN-57](https://huytran20052022.atlassian.net/browse/KAN-57) - *Configure Git Workflow and CI — Thiết lập quy trình Git và luồng CI*  
+> - [KAN-91](https://huytran20052022.atlassian.net/browse/KAN-91) - *Build Cruise Ship List and Detail Pages — Trang danh sách và chi tiết tàu du lịch*  
 > - [KAN-92](https://huytran20052022.atlassian.net/browse/KAN-92) - *Build Create and Edit Ship Forms — Form tạo và sửa thông tin tàu*  
+> - [KAN-93](https://huytran20052022.atlassian.net/browse/KAN-93) - *Write Component Tests for Ship Management — Viết component test cho quản lý tàu*  
+> - [KAN-94](https://huytran20052022.atlassian.net/browse/KAN-94) - *Test Form Validation and API Error Handling — Test validation và xử lý lỗi form*  
+> - [KAN-100](https://huytran20052022.atlassian.net/browse/KAN-100) - *Build Cruise Tour Management Interface — Giao diện quản lý tour du lịch*  
+> - [KAN-101](https://huytran20052022.atlassian.net/browse/KAN-101) - *Build Tour Create and Edit Forms — Form tạo và sửa tour du thuyền*  
+> - [KAN-102](https://huytran20052022.atlassian.net/browse/KAN-102) - *Write Component Tests for Tour Management — Test các thành phần quản lý tour*  
+> - [KAN-103](https://huytran20052022.atlassian.net/browse/KAN-103) - *Test Tour Status Changes and Validation — Test thay đổi trạng thái tour và validation*  
+> - [KAN-110](https://huytran20052022.atlassian.net/browse/KAN-110) - *Build Port and Stop Management Interface — Giao diện quản lý cảng và điểm dừng*  
+> - [KAN-111](https://huytran20052022.atlassian.net/browse/KAN-111) - *Test Arrival and Departure Time Validation — Test kiểm tra giờ cập cảng và rời bến*  
+> - [KAN-112](https://huytran20052022.atlassian.net/browse/KAN-112) - *Write Component Tests for Port and Stop Forms — Test form cảng và điểm dừng*  
+> - [KAN-119](https://huytran20052022.atlassian.net/browse/KAN-119) - *Build Daily Itinerary Interface — Giao diện lịch trình hàng ngày*  
+> - [KAN-120](https://huytran20052022.atlassian.net/browse/KAN-120) - *Implement Itinerary Update and Reordering UI — Giao diện cập nhật và sắp xếp lịch trình*  
+> - [KAN-121](https://huytran20052022.atlassian.net/browse/KAN-121) - *Write Component Tests for Itinerary Management — Test các thành phần giao diện lịch trình*  
+> - [KAN-122](https://huytran20052022.atlassian.net/browse/KAN-122) - *Test Itinerary Validation and Error States — Test kiểm tra dữ liệu và trạng thái lỗi lịch trình*  
+> - [KAN-129](https://huytran20052022.atlassian.net/browse/KAN-129) - *Display Updated Itinerary Information — Hiển thị thông tin lịch trình đã cập nhật*  
+> - [KAN-130](https://huytran20052022.atlassian.net/browse/KAN-130) - *Display Itinerary Change History — Hiển thị lịch sử thay đổi lịch trình*  
 
 ---
 
@@ -61,14 +77,21 @@ npx vitest run src/pages/PassengersPage.test.tsx
 ```
 
 Các bộ test mẫu chuẩn hóa bao gồm:
-* `src/App.test.tsx`: Kiểm thử tích hợp định tuyến (Routing integration) qua các trang Dashboard, Itinerary, Activities, POS, Passengers và trang 404.
+* `src/App.test.tsx`: Kiểm thử tích hợp định tuyến (Routing integration) qua các trang Dashboard, Ships, Itinerary, Activities, POS, Passengers và trang 404.
 * `src/pages/PassengersPage.test.tsx`: Kiểm thử tương tác người dùng (`user-event`), tìm kiếm thời gian thực theo tên, cabin, mã RFID và hiển thị trạng thái rỗng (empty state).
 * `src/layouts/MainLayout.test.tsx`: Kiểm thử khung giao diện, link điều hướng, và cơ chế polling kiểm tra kết nối Backend Gateway trực tuyến / ngoại tuyến.
 * `src/pages/DashboardPage.test.tsx`: Kiểm thử render các chỉ số KPI vận hành, hero banner và cảng dừng.
 * `src/components/common/ErrorBoundary.test.tsx`: Kiểm thử cơ chế bắt lỗi an toàn (Fallback UI).
 * `src/components/ships/ShipFormModal.test.tsx`: Kiểm thử Form tạo và sửa thông tin tàu, kiểm tra dữ liệu bắt buộc và các quy tắc nghiệp vụ hàng hải (cabin <= capacity, crew ratio, length > beam, draft < beam, code regex).
 * `src/pages/ShipsPage.test.tsx`: Kiểm thử trang quản lý đội tàu, tìm kiếm theo từ khóa và mở Modal tạo/sửa thông tin tàu.
-* `src/services/api.test.ts`: Kiểm thử cấu hình Axios client và mock API gateway.
+* `src/pages/ItineraryPage.test.tsx`: Kiểm thử trang quản lý tour du thuyền, tìm kiếm, lọc theo trạng thái, mở modal tạo/sửa và điều hướng sang Daily Itinerary.
+* `src/components/tours/TourFormModal.test.tsx`: Kiểm thử Modal tạo/sửa tour du thuyền, validation ngày khởi hành, cảng xuất phát, cảng đích và sức chứa.
+* `src/components/tours/StatusTransitionModal.test.tsx`: Kiểm thử chuyển đổi trạng thái tour (DRAFT -> PUBLISHED -> IN_PROGRESS -> COMPLETED / CANCELLED) kèm lý do hủy.
+* `src/components/tours/StopFormModal.test.tsx` & `StopTimeValidation.test.tsx`: Kiểm thử form cảng dừng và validation thời gian cập cảng, rời bến, giờ lên tàu (`all-aboard`).
+* `src/components/itinerary/DailyItineraryTimeline.test.tsx`: Kiểm thử trục thời gian lịch trình hàng ngày, chuyển đổi ngày, thêm, cập nhật (`KAN-120`), đổi thứ tự hoạt động, hiển thị thông tin cập nhật (`KAN-129`) và modal lịch sử thay đổi (`KAN-130`).
+* `src/components/itinerary/ActivityFormModal.test.tsx`: Kiểm thử form thêm/sửa hoạt động hàng ngày, phân loại danh mục, tính phụ thu và sức chứa.
+* `src/components/itinerary/ItineraryValidationErrors.test.tsx`: Kiểm thử toàn diện các trường hợp lỗi dữ liệu, empty state và fallback skeleton.
+* `src/services/api.test.ts`, `shipService.test.ts`, `tourService.test.ts`: Kiểm thử tầng API client và logic dịch vụ dữ liệu.
 
 ---
 
@@ -78,23 +101,37 @@ Cruise-web/
 ├── public/                 # Static assets
 ├── src/
 │   ├── components/
-│   │   └── common/
-│   │       └── ErrorBoundary.tsx   # Xử lý lỗi UI toàn cục
+│   │   ├── common/
+│   │   │   └── ErrorBoundary.tsx             # Xử lý lỗi UI toàn cục
+│   │   ├── itinerary/
+│   │   │   ├── ActivityFormModal.tsx         # Modal thêm & cập nhật hoạt động lịch trình
+│   │   │   ├── DailyItineraryTimeline.tsx    # Trục thời gian lịch trình hàng ngày & banner cập nhật
+│   │   │   └── ItineraryChangeHistoryModal.tsx # Modal hiển thị lịch sử thay đổi lịch trình (Audit Log - KAN-130)
+│   │   ├── ships/
+│   │   │   └── ShipFormModal.tsx             # Form tạo và cập nhật tàu kèm validation nghiệp vụ
+│   │   └── tours/
+│   │       ├── StatusTransitionModal.tsx     # Modal chuyển đổi trạng thái tour
+│   │       ├── StopFormModal.tsx             # Modal thêm & cập nhật cảng dừng
+│   │       └── TourFormModal.tsx             # Modal tạo và cập nhật tour du thuyền
 │   ├── layouts/
-│   │   └── MainLayout.tsx          # Khung giao diện chuẩn (Sidebar, Header, Outlet)
+│   │   └── MainLayout.tsx                 # Khung giao diện chuẩn (Sidebar, Header, Outlet)
 │   ├── pages/
-│   │   ├── DashboardPage.tsx       # Bảng điều khiển vận hành tổng quan
-│   │   ├── ItineraryPage.tsx       # Lịch trình & Cảng dừng
-│   │   ├── ActivitiesPage.tsx      # Hoạt động trên tàu & Tour trên bờ
-│   │   ├── PosPage.tsx             # Chi tiêu phi tiền mặt & Offline Sync
-│   │   ├── PassengersPage.tsx      # Hành khách & Check-in QR/RFID
-│   │   └── NotFoundPage.tsx        # Trang 404
+│   │   ├── DashboardPage.tsx              # Bảng điều khiển vận hành tổng quan
+│   │   ├── ItineraryPage.tsx              # Quản lý tour, cảng dừng & lịch trình chi tiết
+│   │   ├── PassengersPage.tsx             # Hành khách & Check-in QR/RFID
+│   │   ├── ShipsPage.tsx                  # Quản lý danh mục đội tàu
+│   │   ├── ActivitiesPage.tsx             # Hoạt động trên tàu & Tour trên bờ
+│   │   ├── PosPage.tsx                    # Chi tiêu phi tiền mặt & Offline Sync
+│   │   └── NotFoundPage.tsx               # Trang 404
 │   ├── services/
-│   │   └── api.ts                  # Axios API client & backend health check
-│   ├── App.tsx                     # Định tuyến trung tâm (React Router)
-│   ├── index.css                   # Tailwind CSS styling
-│   └── main.tsx                    # React Root Entry Point & Bootstrap Logger
-├── .env                            # Cấu hình biến môi trường
+│   │   ├── api.ts                         # Axios API client & backend health check
+│   │   ├── dailyItineraryService.ts       # Dịch vụ quản lý hoạt động lịch trình chi tiết
+│   │   ├── shipService.ts                 # Dịch vụ quản lý danh mục và thông số tàu
+│   │   └── tourService.ts                 # Dịch vụ quản lý tour du thuyền & cảng dừng
+│   ├── App.tsx                            # Định tuyến trung tâm (React Router)
+│   ├── index.css                          # Tailwind CSS styling
+│   └── main.tsx                           # React Root Entry Point & Bootstrap Logger
+├── .env                                   # Cấu hình biến môi trường
 ├── .env.example
 ├── index.html
 ├── package.json

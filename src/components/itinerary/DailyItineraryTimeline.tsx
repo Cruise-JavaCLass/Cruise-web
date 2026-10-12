@@ -16,6 +16,7 @@ import {
   ArrowDown,
   AlertCircle,
   RefreshCw,
+  History,
 } from 'lucide-react';
 import type { CruiseTour } from '../../services/tourService';
 import type {
@@ -32,6 +33,7 @@ import {
   CATEGORY_LABELS,
 } from '../../services/dailyItineraryService';
 import { ActivityFormModal } from './ActivityFormModal';
+import { ItineraryChangeHistoryModal } from './ItineraryChangeHistoryModal';
 
 interface DailyItineraryTimelineProps {
   tour: CruiseTour;
@@ -43,6 +45,7 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
   const [selectedDayNumber, setSelectedDayNumber] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [isFormModalOpen, setIsFormModalOpen] = useState<boolean>(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
   const [editingActivity, setEditingActivity] = useState<DailyActivityItem | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -217,12 +220,26 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
           </div>
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 cursor-pointer shrink-0"
-        >
-          <Plus className="w-4 h-4" /> Thêm Hoạt Động Vào Ngày {selectedDayNumber}
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setIsHistoryModalOpen(true)}
+            aria-label="Xem lịch sử thay đổi lịch trình"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-slate-600 rounded-xl text-xs font-semibold shadow-sm cursor-pointer transition-colors"
+          >
+            <History className="w-4 h-4 text-cyan-400" /> Lịch Sử Thay Đổi
+            {dailyData?.changeHistory && dailyData.changeHistory.length > 0 && (
+              <span className="ml-1 px-1.5 py-0.2 bg-cyan-500/20 text-cyan-300 rounded-full text-[10px] font-mono">
+                {dailyData.changeHistory.length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={handleOpenAdd}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" /> Thêm Hoạt Động Vào Ngày {selectedDayNumber}
+          </button>
+        </div>
       </div>
 
       {/* Updated Itinerary Notice Banner */}
@@ -447,6 +464,14 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
           initialData={editingActivity}
         />
       )}
+
+      {/* Modal Itinerary Change History (KAN-130) */}
+      <ItineraryChangeHistoryModal
+        isOpen={isHistoryModalOpen}
+        onClose={() => setIsHistoryModalOpen(false)}
+        tourName={tour.name}
+        history={dailyData?.changeHistory || []}
+      />
     </div>
   );
 };
