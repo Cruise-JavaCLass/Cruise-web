@@ -204,7 +204,10 @@ export function ActivityModal({
               id="activity-form-title"
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) => {
+                setFormData({ ...formData, title: e.target.value });
+                if (errors.title) setErrors((prev) => ({ ...prev, title: '' }));
+              }}
               placeholder="VD: Yoga Bình Minh Trên Boong Tàu"
               className="w-full px-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
             />
@@ -243,7 +246,10 @@ export function ActivityModal({
                   id="activity-form-location"
                   type="text"
                   value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, location: e.target.value });
+                    if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
+                  }}
                   placeholder="VD: Tầng 12 - Sundeck"
                   className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
@@ -279,7 +285,10 @@ export function ActivityModal({
                   id="activity-form-date"
                   type="date"
                   value={formData.activityDate}
-                  onChange={(e) => setFormData({ ...formData, activityDate: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, activityDate: e.target.value });
+                    if (errors.activityDate) setErrors((prev) => ({ ...prev, activityDate: '' }));
+                  }}
                   className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
@@ -299,7 +308,10 @@ export function ActivityModal({
                   id="activity-form-start-time"
                   type="time"
                   value={formData.startTime}
-                  onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, startTime: e.target.value });
+                    if (errors.startTime) setErrors((prev) => ({ ...prev, startTime: '' }));
+                  }}
                   className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
@@ -316,7 +328,10 @@ export function ActivityModal({
                   id="activity-form-end-time"
                   type="time"
                   value={formData.endTime}
-                  onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, endTime: e.target.value });
+                    if (errors.endTime) setErrors((prev) => ({ ...prev, endTime: '' }));
+                  }}
                   className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
@@ -335,10 +350,13 @@ export function ActivityModal({
                 <input
                   id="activity-form-capacity"
                   type="number"
-                  min="1"
+                  min="0"
                   max="1000"
                   value={formData.maxCapacity}
-                  onChange={(e) => setFormData({ ...formData, maxCapacity: Number(e.target.value) })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, maxCapacity: Number(e.target.value) });
+                    if (errors.maxCapacity) setErrors((prev) => ({ ...prev, maxCapacity: '' }));
+                  }}
                   className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
@@ -383,7 +401,10 @@ export function ActivityModal({
                   min="0"
                   step="1000"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, price: Number(e.target.value) });
+                    if (errors.price) setErrors((prev) => ({ ...prev, price: '' }));
+                  }}
                   placeholder="VD: 250000"
                   className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
                 />
