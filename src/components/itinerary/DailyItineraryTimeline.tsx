@@ -106,40 +106,32 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
     setIsFormModalOpen(true);
   };
 
+  const updateActivitiesForCurrentDay = (updater: (activities: DailyActivityItem[]) => DailyActivityItem[]) => {
+    setDailyData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        days: prev.days.map((day) =>
+          day.dayNumber === selectedDayNumber
+            ? { ...day, activities: updater(day.activities) }
+            : day
+        ),
+      };
+    });
+  };
+
   const handleSaveActivity = async (formData: ActivityFormData) => {
     if (!dailyData) return;
 
     if (editingActivity) {
       const updated = await updateDailyActivity(tour.id, selectedDayNumber, editingActivity.id, formData);
-      setDailyData((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          days: prev.days.map((day) => {
-            if (day.dayNumber === selectedDayNumber) {
-              const updatedList = day.activities.map((a) => (a.id === editingActivity.id ? updated : a));
-              return { ...day, activities: updatedList };
-            }
-            return day;
-          }),
-        };
-      });
+      updateActivitiesForCurrentDay((acts) => acts.map((a) => (a.id === editingActivity.id ? updated : a)));
       showToast(`Đã cập nhật hoạt động "${updated.title}"`);
     } else {
       const created = await addDailyActivity(tour.id, selectedDayNumber, formData);
-      setDailyData((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          days: prev.days.map((day) => {
-            if (day.dayNumber === selectedDayNumber) {
-              const updatedList = [...day.activities, created].sort((a, b) => a.time.localeCompare(b.time));
-              return { ...day, activities: updatedList };
-            }
-            return day;
-          }),
-        };
-      });
+      updateActivitiesForCurrentDay((acts) =>
+        [...acts, created].sort((a, b) => a.time.localeCompare(b.time))
+      );
       showToast(`Đã thêm "${created.title}" vào lịch trình Ngày ${selectedDayNumber}`);
     }
   };
@@ -155,39 +147,13 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
 
     const orderedIds = activities.map((a) => a.id);
     await reorderDailyActivities(tour.id, selectedDayNumber, orderedIds);
-
-    setDailyData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        days: prev.days.map((day) => {
-          if (day.dayNumber === selectedDayNumber) {
-            return { ...day, activities };
-          }
-          return day;
-        }),
-      };
-    });
+    updateActivitiesForCurrentDay(() => activities);
     showToast(`Đã thay đổi thứ tự hoạt động`);
   };
 
   const handleDeleteActivity = async (actId: number, actTitle: string) => {
     await deleteDailyActivity(tour.id, selectedDayNumber, actId);
-    setDailyData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        days: prev.days.map((day) => {
-          if (day.dayNumber === selectedDayNumber) {
-            return {
-              ...day,
-              activities: day.activities.filter((a) => a.id !== actId),
-            };
-          }
-          return day;
-        }),
-      };
-    });
+    updateActivitiesForCurrentDay((acts) => acts.filter((a) => a.id !== actId));
     showToast(`Đã xóa hoạt động "${actTitle}"`);
   };
 

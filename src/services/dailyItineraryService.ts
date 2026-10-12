@@ -260,6 +260,24 @@ export async function getDailyItinerary(tourId: number): Promise<TourDailyItiner
   }
 }
 
+function buildActivityItem(id: number, data: ActivityFormData): DailyActivityItem {
+  const price = data.price ? Number(data.price) : undefined;
+  const capacity = data.capacity ? Number(data.capacity) : undefined;
+  return {
+    id,
+    time: data.time,
+    title: data.title,
+    location: data.location,
+    category: data.category,
+    isIncluded: data.isIncluded,
+    price,
+    currency: price ? 'VND' : undefined,
+    capacity,
+    enrolledCount: 0,
+    description: data.description,
+  };
+}
+
 export async function addDailyActivity(
   tourId: number,
   dayNumber: number,
@@ -278,19 +296,7 @@ export async function addDailyActivity(
     );
     return res.data.data;
   } catch {
-    const newAct: DailyActivityItem = {
-      id: Date.now(),
-      time: payload.time,
-      title: payload.title,
-      location: payload.location,
-      category: payload.category,
-      isIncluded: payload.isIncluded,
-      price: payload.price,
-      currency: payload.price ? 'VND' : undefined,
-      capacity: payload.capacity,
-      enrolledCount: 0,
-      description: payload.description,
-    };
+    const newAct = buildActivityItem(Date.now(), activityData);
 
     if (localDailyItineraries[tourId]) {
       const day = localDailyItineraries[tourId].days.find((d) => d.dayNumber === dayNumber);
@@ -322,19 +328,7 @@ export async function updateDailyActivity(
     );
     return res.data.data;
   } catch {
-    const updated: DailyActivityItem = {
-      id: activityId,
-      time: payload.time,
-      title: payload.title,
-      location: payload.location,
-      category: payload.category,
-      isIncluded: payload.isIncluded,
-      price: payload.price,
-      currency: payload.price ? 'VND' : undefined,
-      capacity: payload.capacity,
-      enrolledCount: 0,
-      description: payload.description,
-    };
+    const updated = buildActivityItem(activityId, activityData);
 
     if (localDailyItineraries[tourId]) {
       const day = localDailyItineraries[tourId].days.find((d) => d.dayNumber === dayNumber);
