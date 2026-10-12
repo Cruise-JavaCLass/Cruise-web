@@ -189,4 +189,31 @@ describe('ItineraryPage (Cruise Tour Management Interface)', () => {
     expect(dialog).toBeInTheDocument();
     expect(dialog).toHaveTextContent('Xác Nhận Xóa Tour');
   });
+
+  it('navigates to Daily Itinerary Timeline and back to tours list (KAN-121)', async () => {
+    render(
+      <BrowserRouter>
+        <ItineraryPage />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Hải Trình Kỳ Quan Vịnh Bắc Bộ 4N3Đ')).toBeInTheDocument();
+    });
+
+    const dailyBtn = screen.getAllByTitle('Xem lịch trình hàng ngày')[0];
+    fireEvent.click(dailyBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Giao diện Lịch Trình Hàng Ngày/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Quay Lại Danh Sách Hải Trình/i })).toBeInTheDocument();
+    });
+
+    const backBtn = screen.getByRole('button', { name: /Quay Lại Danh Sách Hải Trình/i });
+    fireEvent.click(backBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Quản Lý Tour Du Lịch Du Thuyền/i)).toBeInTheDocument();
+    });
+  });
 });
