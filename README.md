@@ -25,6 +25,7 @@
 > - [KAN-122](https://huytran20052022.atlassian.net/browse/KAN-122) - *Test Itinerary Validation and Error States — Test kiểm tra dữ liệu và trạng thái lỗi lịch trình*  
 > - [KAN-129](https://huytran20052022.atlassian.net/browse/KAN-129) - *Display Updated Itinerary Information — Hiển thị thông tin lịch trình đã cập nhật*  
 > - [KAN-130](https://huytran20052022.atlassian.net/browse/KAN-130) - *Display Itinerary Change History — Hiển thị lịch sử thay đổi lịch trình*  
+> - [KAN-131](https://huytran20052022.atlassian.net/browse/KAN-131) - *Test Itinerary Update Display — Test hiển thị cập nhật lịch trình và lịch sử thay đổi*  
 
 ---
 
@@ -89,6 +90,7 @@ Các bộ test mẫu chuẩn hóa bao gồm:
 * `src/components/tours/StatusTransitionModal.test.tsx`: Kiểm thử chuyển đổi trạng thái tour (DRAFT -> PUBLISHED -> IN_PROGRESS -> COMPLETED / CANCELLED) kèm lý do hủy.
 * `src/components/tours/StopFormModal.test.tsx` & `StopTimeValidation.test.tsx`: Kiểm thử form cảng dừng và validation thời gian cập cảng, rời bến, giờ lên tàu (`all-aboard`).
 * `src/components/itinerary/DailyItineraryTimeline.test.tsx`: Kiểm thử trục thời gian lịch trình hàng ngày, chuyển đổi ngày, thêm, cập nhật (`KAN-120`), đổi thứ tự hoạt động, hiển thị thông tin cập nhật (`KAN-129`) và modal lịch sử thay đổi (`KAN-130`).
+* `src/components/itinerary/ItineraryChangeHistoryModal.test.tsx`: Kiểm thử hiển thị danh sách lịch sử thay đổi lịch trình, trạng thái rỗng (empty state), chi tiết người thực hiện, thời gian, sự kiện thay đổi và so sánh giá trị cũ/mới (`KAN-131`).
 * `src/components/itinerary/ActivityFormModal.test.tsx`: Kiểm thử form thêm/sửa hoạt động hàng ngày, phân loại danh mục, tính phụ thu và sức chứa.
 * `src/components/itinerary/ItineraryValidationErrors.test.tsx`: Kiểm thử toàn diện các trường hợp lỗi dữ liệu, empty state và fallback skeleton.
 * `src/services/api.test.ts`, `shipService.test.ts`, `tourService.test.ts`: Kiểm thử tầng API client và logic dịch vụ dữ liệu.
