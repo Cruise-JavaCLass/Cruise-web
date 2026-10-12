@@ -186,4 +186,71 @@ describe('DailyItineraryTimeline (KAN-119)', () => {
       expect(dailyItineraryService.deleteDailyActivity).toHaveBeenCalledWith(1, 1, 101);
     });
   });
+
+  it('opens edit modal and updates existing activity (KAN-120)', async () => {
+    vi.spyOn(dailyItineraryService, 'updateDailyActivity').mockResolvedValue({
+      id: 101,
+      time: '08:30',
+      title: 'Làm thủ tục Check-in & VIP Lounge Welcome',
+      location: 'Nhà ga VIP Tuần Châu',
+      category: 'NAVIGATION',
+      isIncluded: true,
+    });
+
+    render(<DailyItineraryTimeline tour={mockTour} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Làm thủ tục Check-in & Nhận phòng')).toBeInTheDocument();
+    });
+
+    const editBtn = screen.getByRole('button', {
+      name: /Cập nhật hoạt động Làm thủ tục Check-in & Nhận phòng/i,
+    });
+    fireEvent.click(editBtn);
+
+    expect(screen.getByText('Cập Nhật Hoạt Động Lịch Trình')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Làm thủ tục Check-in & Nhận phòng')).toBeInTheDocument();
+
+    const titleInput = screen.getByDisplayValue('Làm thủ tục Check-in & Nhận phòng');
+    fireEvent.change(titleInput, { target: { value: 'Làm thủ tục Check-in & VIP Lounge Welcome' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Lưu Thay Đổi/i });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(dailyItineraryService.updateDailyActivity).toHaveBeenCalledWith(
+        1,
+        1,
+        101,
+        expect.objectContaining({
+          title: 'Làm thủ tục Check-in & VIP Lounge Welcome',
+        })
+      );
+    });
+  });
+
+  it('reorders activities using move up and move down buttons (KAN-120)', async () => {
+    vi.spyOn(dailyItineraryService, 'reorderDailyActivities').mockResolvedValue([
+      mockItineraryData.days[0].activities[1],
+      mockItineraryData.days[0].activities[0],
+    ]);
+
+    render(<DailyItineraryTimeline tour={mockTour} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Làm thủ tục Check-in & Nhận phòng')).toBeInTheDocument();
+      expect(screen.getByText('Gala Dinner & Vũ Điệu Biển Hoàng Gia')).toBeInTheDocument();
+    });
+
+    const moveDownBtn = screen.getByRole('button', {
+      name: /Di chuyển xuống dưới Làm thủ tục Check-in & Nhận phòng/i,
+    });
+    expect(moveDownBtn).not.toBeDisabled();
+
+    fireEvent.click(moveDownBtn);
+
+    await waitFor(() => {
+      expect(dailyItineraryService.reorderDailyActivities).toHaveBeenCalledWith(1, 1, [102, 101]);
+    });
+  });
 });

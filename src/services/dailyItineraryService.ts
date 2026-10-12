@@ -260,6 +260,24 @@ export async function getDailyItinerary(tourId: number): Promise<TourDailyItiner
   }
 }
 
+function buildActivityItem(id: number, data: ActivityFormData): DailyActivityItem {
+  const price = data.price ? Number(data.price) : undefined;
+  const capacity = data.capacity ? Number(data.capacity) : undefined;
+  return {
+    id,
+    time: data.time,
+    title: data.title,
+    location: data.location,
+    category: data.category,
+    isIncluded: data.isIncluded,
+    price,
+    currency: price ? 'VND' : undefined,
+    capacity,
+    enrolledCount: 0,
+    description: data.description,
+  };
+}
+
 export async function addDailyActivity(
   tourId: number,
   dayNumber: number,
@@ -278,19 +296,7 @@ export async function addDailyActivity(
     );
     return res.data.data;
   } catch {
-    const newAct: DailyActivityItem = {
-      id: Date.now(),
-      time: payload.time,
-      title: payload.title,
-      location: payload.location,
-      category: payload.category,
-      isIncluded: payload.isIncluded,
-      price: payload.price,
-      currency: payload.price ? 'VND' : undefined,
-      capacity: payload.capacity,
-      enrolledCount: 0,
-      description: payload.description,
-    };
+    const newAct = buildActivityItem(Date.now(), activityData);
 
     if (localDailyItineraries[tourId]) {
       const day = localDailyItineraries[tourId].days.find((d) => d.dayNumber === dayNumber);
@@ -300,6 +306,64 @@ export async function addDailyActivity(
       }
     }
     return newAct;
+  }
+}
+
+export async function updateDailyActivity(
+  tourId: number,
+  dayNumber: number,
+  activityId: number,
+  activityData: ActivityFormData
+): Promise<DailyActivityItem> {
+  const payload = {
+    ...activityData,
+    price: activityData.price ? Number(activityData.price) : undefined,
+    capacity: activityData.capacity ? Number(activityData.capacity) : undefined,
+  };
+
+  try {
+    const res = await apiClient.put<{ data: DailyActivityItem }>(
+      `/itinerary/tours/${tourId}/days/${dayNumber}/activities/${activityId}`,
+      payload
+    );
+    return res.data.data;
+  } catch {
+    const updated = buildActivityItem(activityId, activityData);
+
+    if (localDailyItineraries[tourId]) {
+      const day = localDailyItineraries[tourId].days.find((d) => d.dayNumber === dayNumber);
+      if (day) {
+        day.activities = day.activities.map((a) => (a.id === activityId ? { ...a, ...updated } : a));
+        day.activities.sort((a, b) => a.time.localeCompare(b.time));
+      }
+    }
+    return updated;
+  }
+}
+
+export async function reorderDailyActivities(
+  tourId: number,
+  dayNumber: number,
+  orderedActivityIds: number[]
+): Promise<DailyActivityItem[]> {
+  try {
+    const res = await apiClient.put<{ data: DailyActivityItem[] }>(
+      `/itinerary/tours/${tourId}/days/${dayNumber}/activities/reorder`,
+      { orderedActivityIds }
+    );
+    return res.data.data;
+  } catch {
+    if (localDailyItineraries[tourId]) {
+      const day = localDailyItineraries[tourId].days.find((d) => d.dayNumber === dayNumber);
+      if (day) {
+        const idMap = new Map(day.activities.map((act) => [act.id, act]));
+        day.activities = orderedActivityIds
+          .map((id) => idMap.get(id))
+          .filter((act): act is DailyActivityItem => act !== undefined);
+        return day.activities;
+      }
+    }
+    return [];
   }
 }
 
