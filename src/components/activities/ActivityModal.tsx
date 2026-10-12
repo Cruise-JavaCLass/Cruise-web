@@ -159,12 +159,17 @@ export function ActivityModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="activity-modal-title"
+      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+    >
       <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col my-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-800 shrink-0">
           <div>
-            <h3 className="text-lg font-bold text-white">
+            <h3 id="activity-modal-title" className="text-lg font-bold text-white">
               {isEditing ? 'Cập Nhật Hoạt Động Du Thuyền' : 'Tạo Hoạt Động Du Thuyền Mới'}
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -172,6 +177,7 @@ export function ActivityModal({
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
             aria-label="Đóng"
@@ -374,7 +380,7 @@ export function ActivityModal({
                 <input
                   id="activity-form-price"
                   type="number"
-                  min="1000"
+                  min="0"
                   step="1000"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
