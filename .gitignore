@@ -26,3 +26,7 @@ coverage
 
 # CodeGraph
 .codegraph/
+
+# AI Agent Skills (local tooling)
+.agents/
+skills-lock.json
