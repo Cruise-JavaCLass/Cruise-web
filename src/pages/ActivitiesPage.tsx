@@ -21,6 +21,7 @@ import {
   type ActivityStatus,
   fetchActivitiesPaged,
   deleteActivity,
+  getActivityStatusConfig,
 } from '../services/activityService';
 import { INITIAL_TOURS } from '../services/tourService';
 import { ActivityModal } from '../components/activities/ActivityModal';
@@ -101,38 +102,21 @@ export function ActivitiesPage() {
   };
 
   const getStatusBadge = (status: ActivityStatus) => {
-    switch (status) {
-      case 'SCHEDULED':
-        return {
-          cls: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-          label: 'Lên lịch (SCHEDULED)',
-          icon: Clock,
-        };
-      case 'IN_PROGRESS':
-        return {
-          cls: 'bg-amber-500/10 text-amber-300 border-amber-500/20 animate-pulse',
-          label: 'Đang diễn ra (IN_PROGRESS)',
-          icon: Activity,
-        };
-      case 'COMPLETED':
-        return {
-          cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-          label: 'Hoàn thành (COMPLETED)',
-          icon: CheckCircle2,
-        };
-      case 'CANCELLED':
-        return {
-          cls: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-          label: 'Đã hủy (CANCELLED)',
-          icon: XCircle,
-        };
-      default:
-        return {
-          cls: 'bg-slate-700 text-slate-300 border-slate-600',
-          label: status,
-          icon: Clock,
-        };
-    }
+    const config = getActivityStatusConfig(status);
+    const icon =
+      status === 'SCHEDULED'
+        ? Clock
+        : status === 'IN_PROGRESS'
+        ? Activity
+        : status === 'COMPLETED'
+        ? CheckCircle2
+        : XCircle;
+
+    return {
+      cls: config.cls,
+      label: config.label,
+      icon,
+    };
   };
 
   const categories = [

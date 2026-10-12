@@ -23,6 +23,7 @@ import {
   type ActivityStatus,
   fetchActivityById,
   deleteActivity,
+  getActivityStatusConfig,
 } from '../services/activityService';
 import { ActivityModal } from '../components/activities/ActivityModal';
 import { ActivityStatusModal } from '../components/activities/ActivityStatusModal';
@@ -73,43 +74,22 @@ export function ActivityDetailPage() {
   };
 
   const getStatusBadge = (status: ActivityStatus) => {
-    switch (status) {
-      case 'SCHEDULED':
-        return {
-          cls: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-          label: 'Lên lịch (SCHEDULED)',
-          icon: Clock,
-          desc: 'Hoạt động đã được ấn định thời gian, địa điểm và đang mở tiếp nhận đăng ký.',
-        };
-      case 'IN_PROGRESS':
-        return {
-          cls: 'bg-amber-500/10 text-amber-300 border-amber-500/20 animate-pulse',
-          label: 'Đang diễn ra (IN_PROGRESS)',
-          icon: Activity,
-          desc: 'Chương trình đang diễn ra tại điểm tổ chức trên tàu. Đang tiến hành check-in.',
-        };
-      case 'COMPLETED':
-        return {
-          cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-          label: 'Đã hoàn thành (COMPLETED)',
-          icon: CheckCircle2,
-          desc: 'Hoạt động đã kết thúc thành công. Đã chốt danh sách tham gia.',
-        };
-      case 'CANCELLED':
-        return {
-          cls: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-          label: 'Đã hủy bỏ (CANCELLED)',
-          icon: XCircle,
-          desc: 'Hoạt động đã bị hủy do lý do bất khả kháng (thời tiết hoặc vận hành).',
-        };
-      default:
-        return {
-          cls: 'bg-slate-700 text-slate-300 border-slate-600',
-          label: status,
-          icon: Clock,
-          desc: '',
-        };
-    }
+    const config = getActivityStatusConfig(status);
+    const icon =
+      status === 'SCHEDULED'
+        ? Clock
+        : status === 'IN_PROGRESS'
+        ? Activity
+        : status === 'COMPLETED'
+        ? CheckCircle2
+        : XCircle;
+
+    return {
+      cls: config.cls,
+      label: config.label,
+      desc: config.desc || '',
+      icon,
+    };
   };
 
   if (loading) {

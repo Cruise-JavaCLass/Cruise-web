@@ -67,6 +67,43 @@ export interface UpdateActivityStatusPayload {
   cancellationReason?: string;
 }
 
+export interface ActivityStatusBadgeConfig {
+  cls: string;
+  label: string;
+  desc?: string;
+}
+
+export const ACTIVITY_STATUS_MAP: Record<ActivityStatus, ActivityStatusBadgeConfig> = {
+  SCHEDULED: {
+    cls: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+    label: 'Lên lịch (SCHEDULED)',
+    desc: 'Hoạt động đã được ấn định thời gian, địa điểm và đang mở tiếp nhận đăng ký.',
+  },
+  IN_PROGRESS: {
+    cls: 'bg-amber-500/10 text-amber-300 border-amber-500/20 animate-pulse',
+    label: 'Đang diễn ra (IN_PROGRESS)',
+    desc: 'Chương trình đang diễn ra tại điểm tổ chức trên tàu. Đang tiến hành check-in.',
+  },
+  COMPLETED: {
+    cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    label: 'Hoàn thành (COMPLETED)',
+    desc: 'Hoạt động đã kết thúc thành công. Đã chốt danh sách tham gia.',
+  },
+  CANCELLED: {
+    cls: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+    label: 'Đã hủy (CANCELLED)',
+    desc: 'Hoạt động đã bị hủy do lý do bất khả kháng (thời tiết hoặc vận hành).',
+  },
+};
+
+export const getActivityStatusConfig = (status: ActivityStatus): ActivityStatusBadgeConfig => {
+  return ACTIVITY_STATUS_MAP[status] || {
+    cls: 'bg-slate-700 text-slate-300 border-slate-600',
+    label: status,
+    desc: '',
+  };
+};
+
 export interface PageResponse<T> {
   content: T[];
   totalElements: number;
