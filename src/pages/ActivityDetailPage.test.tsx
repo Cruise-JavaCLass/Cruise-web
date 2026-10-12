@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ActivityDetailPage } from './ActivityDetailPage';
 import * as activityService from '../services/activityService';
@@ -9,7 +10,7 @@ const mockActivity: activityService.OnboardActivity = {
   currentParticipants: 20,
 };
 
-describe('ActivityDetailPage Component Tests (KAN-139)', () => {
+describe('ActivityDetailPage Component Tests (KAN-141)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -49,5 +50,71 @@ describe('ActivityDetailPage Component Tests (KAN-139)', () => {
       expect(screen.getByText('Không tìm thấy hoạt động')).toBeInTheDocument();
       expect(screen.getByText(/Quay lại Danh sách Hoạt động/i)).toBeInTheDocument();
     });
+  });
+
+  it('opens ActivityStatusModal when clicking "Đổi trạng thái"', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(activityService, 'fetchActivityById').mockResolvedValue(mockActivity);
+
+    render(
+      <MemoryRouter initialEntries={['/activities/1']}>
+        <Routes>
+          <Route path="/activities/:id" element={<ActivityDetailPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Đổi trạng thái/i })).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: /Đổi trạng thái/i }));
+
+    expect(screen.getByText('Chuyển Trạng Thái Hoạt Động')).toBeInTheDocument();
+  });
+
+  it('opens ActivityModal in edit mode when clicking "Sửa thông tin"', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(activityService, 'fetchActivityById').mockResolvedValue(mockActivity);
+
+    render(
+      <MemoryRouter initialEntries={['/activities/1']}>
+        <Routes>
+          <Route path="/activities/:id" element={<ActivityDetailPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Sửa thông tin/i })).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: /Sửa thông tin/i }));
+
+    expect(screen.getByRole('heading', { name: /Cập Nhật Hoạt Động Du Thuyền/i })).toBeInTheDocument();
+  });
+
+  it('deletes activity when confirmed and navigates back', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(activityService, 'fetchActivityById').mockResolvedValue(mockActivity);
+    const spyDelete = vi.spyOn(activityService, 'deleteActivity').mockResolvedValueOnce(undefined);
+    const spyConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    render(
+      <MemoryRouter initialEntries={['/activities/1']}>
+        <Routes>
+          <Route path="/activities/:id" element={<ActivityDetailPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTitle('Xóa hoạt động')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByTitle('Xóa hoạt động'));
+
+    expect(spyConfirm).toHaveBeenCalled();
+    expect(spyDelete).toHaveBeenCalledWith(mockActivity.id);
   });
 });
