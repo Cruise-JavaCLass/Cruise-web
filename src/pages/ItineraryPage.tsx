@@ -16,7 +16,10 @@ import {
   AlertTriangle,
   CheckCircle2,
   Anchor,
+  CalendarDays,
+  ArrowLeft,
 } from 'lucide-react';
+import { DailyItineraryTimeline } from '../components/itinerary/DailyItineraryTimeline';
 import type { CruiseTour, TourFormData, TourStatus } from '../services/tourService';
 import {
   getTours,
@@ -83,6 +86,8 @@ export function ItineraryPage() {
 
   const [isStopsModalOpen, setIsStopsModalOpen] = useState(false);
   const [stopsTour, setStopsTour] = useState<CruiseTour | null>(null);
+
+  const [selectedDailyTour, setSelectedDailyTour] = useState<CruiseTour | null>(null);
 
   const [isDeleting, setIsDeleting] = useState<CruiseTour | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
@@ -199,6 +204,25 @@ export function ItineraryPage() {
   const totalActiveTours = tours.filter((t) => t.status !== 'CANCELLED').length;
   const inProgressTours = tours.filter((t) => t.status === 'IN_PROGRESS').length;
   const publishedTours = tours.filter((t) => t.status === 'PUBLISHED').length;
+
+  if (selectedDailyTour) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setSelectedDailyTour(null)}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-semibold cursor-pointer transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Quay Lại Danh Sách Hải Trình
+          </button>
+          <span className="text-xs text-cyan-400 font-semibold bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 rounded-full">
+            Giao diện Lịch Trình Hàng Ngày (Daily Itinerary)
+          </span>
+        </div>
+        <DailyItineraryTimeline tour={selectedDailyTour} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -419,6 +443,14 @@ export function ItineraryPage() {
                   </div>
 
                   <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setSelectedDailyTour(tour)}
+                      className="p-1.5 bg-cyan-950/60 hover:bg-cyan-900/60 text-cyan-400 border border-cyan-500/30 rounded-lg transition-colors cursor-pointer"
+                      title="Xem lịch trình hàng ngày"
+                      aria-label="Xem lịch trình hàng ngày"
+                    >
+                      <CalendarDays className="w-4 h-4" />
+                    </button>
                     <button
                       onClick={() => {
                         setStopsTour(tour);
