@@ -171,4 +171,41 @@ describe('PassengersPage (Component & User Interaction Tests)', () => {
 
     expect(await screen.findByRole('status')).toBeInTheDocument();
   });
+
+  it('clears search input when clicking clear button (KAN-153)', async () => {
+    const user = userEvent.setup();
+    render(<PassengersPage />);
+
+    const searchInput = screen.getByRole('searchbox', { name: /Tìm kiếm hành khách/i });
+    await user.type(searchInput, 'Minh');
+    expect(searchInput).toHaveValue('Minh');
+
+    const clearBtn = screen.getByRole('button', { name: /Xóa tìm kiếm/i });
+    expect(clearBtn).toBeInTheDocument();
+    await user.click(clearBtn);
+
+    expect(searchInput).toHaveValue('');
+    expect(await screen.findByText('Trần Thị Thu Thảo')).toBeInTheDocument();
+  });
+
+  it('resets all filters when clicking Đặt lại button (KAN-153)', async () => {
+    const user = userEvent.setup();
+    render(<PassengersPage />);
+
+    // Select status filter
+    const pendingBtn = screen.getByRole('button', { name: 'Chờ duyệt' });
+    await user.click(pendingBtn);
+
+    const searchInput = screen.getByRole('searchbox', { name: /Tìm kiếm hành khách/i });
+    await user.type(searchInput, 'Phạm');
+
+    const resetBtn = screen.getByRole('button', { name: /Đặt lại/i });
+    expect(resetBtn).toBeInTheDocument();
+
+    await user.click(resetBtn);
+
+    expect(searchInput).toHaveValue('');
+    expect(await screen.findByText('Nguyễn Văn Minh')).toBeInTheDocument();
+    expect(screen.getByText('Trần Thị Thu Thảo')).toBeInTheDocument();
+  });
 });
