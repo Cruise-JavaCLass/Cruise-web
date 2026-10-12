@@ -204,6 +204,55 @@ export function PassengersPage() {
         </div>
       </div>
 
+      {/* Registration & Check-in Status KPI Summary Cards (KAN-152) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tổng Đăng Ký</p>
+            <p className="text-xl font-bold text-white mt-1">{totalCount}</p>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+            <Users className="w-4 h-4" />
+          </div>
+        </div>
+
+        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Đã Xác Nhận</p>
+            <p className="text-xl font-bold text-emerald-400 mt-1">
+              {passengers.filter((p) => p.registrationStatus === 'CONFIRMED').length}
+            </p>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+            <CheckCircle2 className="w-4 h-4" />
+          </div>
+        </div>
+
+        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Chờ Duyệt</p>
+            <p className="text-xl font-bold text-amber-400 mt-1">
+              {passengers.filter((p) => p.registrationStatus === 'PENDING').length}
+            </p>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+            <Clock className="w-4 h-4" />
+          </div>
+        </div>
+
+        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Đã Lên Tàu</p>
+            <p className="text-xl font-bold text-cyan-300 mt-1">
+              {passengers.filter((p) => p.checkInStatus === 'BOARDED').length}
+            </p>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+            <Radio className="w-4 h-4" />
+          </div>
+        </div>
+      </div>
+
       {/* Filter and Tour Selection Bar */}
       <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         <div className="flex items-center gap-3 flex-wrap">
@@ -347,16 +396,27 @@ export function PassengersPage() {
                       </div>
                     </td>
                     <td className="p-3.5">
-                      <button
-                        onClick={() => handleCheckInToggle(p)}
-                        className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition-colors ${
-                          p.checkInStatus === 'BOARDED'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30'
-                            : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'
-                        }`}
-                      >
-                        {p.checkInStatus === 'BOARDED' ? 'Đã lên tàu' : 'Chưa check-in'}
-                      </button>
+                      <div className="flex flex-col items-start gap-1">
+                        <button
+                          onClick={() => handleCheckInToggle(p)}
+                          className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition-colors ${
+                            p.checkInStatus === 'BOARDED'
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30'
+                              : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'
+                          }`}
+                        >
+                          {p.checkInStatus === 'BOARDED' ? 'Đã lên tàu' : 'Chưa check-in'}
+                        </button>
+                        {p.boardedAt && (
+                          <span className="text-[10px] text-slate-400 flex items-center gap-1 font-mono">
+                            <Clock className="w-3 h-3 text-cyan-400" />
+                            {new Date(p.boardedAt).toLocaleTimeString('vi-VN', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
