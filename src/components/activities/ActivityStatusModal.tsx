@@ -91,6 +91,7 @@ export function ActivityStatusModal({
           <button
             type="button"
             onClick={onClose}
+            aria-label="Đóng"
             className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />

@@ -133,4 +133,47 @@ describe('ActivitiesPage Component Tests (KAN-139)', () => {
 
     expect(screen.getByText('Chuyển Trạng Thái Hoạt Động')).toBeInTheDocument();
   });
+
+  it('opens ActivityModal in edit mode when clicking "Sửa" button on activity card', async () => {
+    render(
+      <BrowserRouter>
+        <ActivitiesPage />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Yoga Bình Minh Trên Boong Tàu')).toBeInTheDocument();
+    });
+
+    const editBtns = screen.getAllByRole('button', { name: 'Sửa' });
+    expect(editBtns.length).toBeGreaterThan(0);
+    fireEvent.click(editBtns[0]);
+
+    expect(screen.getByText('Cập Nhật Hoạt Động Du Thuyền')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Yoga Bình Minh Trên Boong Tàu')).toBeInTheDocument();
+  });
+
+  it('deletes activity after user confirms window prompt', async () => {
+    const spyConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const spyDelete = vi.spyOn(activityService, 'deleteActivity').mockResolvedValue(undefined);
+
+    render(
+      <BrowserRouter>
+        <ActivitiesPage />
+      </BrowserRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Yoga Bình Minh Trên Boong Tàu')).toBeInTheDocument();
+    });
+
+    const deleteBtns = screen.getAllByTitle('Xóa hoạt động');
+    expect(deleteBtns.length).toBeGreaterThan(0);
+    fireEvent.click(deleteBtns[0]);
+
+    expect(spyConfirm).toHaveBeenCalledWith(
+      expect.stringContaining('Yoga Bình Minh Trên Boong Tàu')
+    );
+    expect(spyDelete).toHaveBeenCalledWith(mockActivities[0].id);
+  });
 });
