@@ -16,6 +16,11 @@ export function ActivityStatusModal({
   onSuccess,
   activity,
 }: ActivityStatusModalProps) {
+  const [selectedStatus, setSelectedStatus] = useState<ActivityStatus | null>(null);
+  const [cancellationReason, setCancellationReason] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
   if (!isOpen || !activity) return null;
 
   const currentStatus = activity.status;
@@ -36,12 +41,7 @@ export function ActivityStatusModal({
   };
 
   const allowedStatuses = getAllowedStatuses();
-  const [selectedStatus, setSelectedStatus] = useState<ActivityStatus>(
-    allowedStatuses[0] || currentStatus
-  );
-  const [cancellationReason, setCancellationReason] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const activeStatus = selectedStatus ?? (allowedStatuses[0] || currentStatus);
 
   const getStatusLabel = (status: ActivityStatus) => {
     switch (status) {
@@ -58,7 +58,7 @@ export function ActivityStatusModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedStatus === 'CANCELLED' && !cancellationReason.trim()) {
+    if (activeStatus === 'CANCELLED' && !cancellationReason.trim()) {
       setError('Vui lòng nhập lý do hủy hoạt động để thông báo cho hành khách');
       return;
     }
@@ -67,8 +67,8 @@ export function ActivityStatusModal({
     setError(null);
     try {
       const updated = await updateActivityStatus(activity.id, {
-        status: selectedStatus,
-        cancellationReason: selectedStatus === 'CANCELLED' ? cancellationReason.trim() : undefined,
+        status: activeStatus,
+        cancellationReason: activeStatus === 'CANCELLED' ? cancellationReason.trim() : undefined,
       });
       onSuccess(updated);
       onClose();
@@ -89,6 +89,7 @@ export function ActivityStatusModal({
             <p className="text-xs text-slate-400 truncate max-w-xs">{activity.title}</p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
           >
@@ -127,7 +128,7 @@ export function ActivityStatusModal({
                   <label
                     key={st}
                     className={`flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer transition-all ${
-                      selectedStatus === st
+                      activeStatus === st
                         ? 'border-cyan-500 bg-cyan-500/10 text-white'
                         : 'border-slate-800 bg-slate-800/50 text-slate-300 hover:border-slate-700'
                     }`}
@@ -136,7 +137,7 @@ export function ActivityStatusModal({
                       type="radio"
                       name="targetStatus"
                       value={st}
-                      checked={selectedStatus === st}
+                      checked={activeStatus === st}
                       onChange={() => setSelectedStatus(st)}
                       className="text-cyan-600 focus:ring-cyan-500"
                     />
@@ -147,7 +148,7 @@ export function ActivityStatusModal({
             )}
           </div>
 
-          {selectedStatus === 'CANCELLED' && (
+          {activeStatus === 'CANCELLED' && (
             <div>
               <label htmlFor="cancel-reason-textarea" className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Lý do hủy hoạt động <span className="text-rose-400">*</span>

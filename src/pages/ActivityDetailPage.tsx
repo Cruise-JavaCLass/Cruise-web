@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Activity,
@@ -43,7 +43,7 @@ export function ActivityDetailPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const loadDetail = async () => {
+  const loadDetail = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     try {
@@ -54,11 +54,11 @@ export function ActivityDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     void loadDetail();
-  }, [id]);
+  }, [loadDetail]);
 
   const handleDelete = async () => {
     if (!activity) return;
