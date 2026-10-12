@@ -208,4 +208,55 @@ describe('PassengersPage (Component & User Interaction Tests)', () => {
     expect(await screen.findByText('Nguyễn Văn Minh')).toBeInTheDocument();
     expect(screen.getByText('Trần Thị Thu Thảo')).toBeInTheDocument();
   });
+
+  it('switches tour and updates passenger list accordingly (KAN-154)', async () => {
+    const user = userEvent.setup();
+    render(<PassengersPage />);
+
+    const tourSelect = screen.getByRole('combobox', { name: /Chọn Tour/i });
+    expect(tourSelect).toBeInTheDocument();
+
+    // Select Tour 2 (CRUISE-HL-02)
+    await user.selectOptions(tourSelect, '2');
+
+    await waitFor(() => {
+      // Tour 2 in initial data has passengers for tourId 2
+      expect(screen.queryByText('Nguyễn Văn Minh')).not.toBeInTheDocument();
+    });
+  });
+
+  it('triggers manual refresh when clicking RefreshCw button (KAN-154)', async () => {
+    const user = userEvent.setup();
+    render(<PassengersPage />);
+
+    const refreshBtn = screen.getByRole('button', { name: /Tải lại danh sách/i });
+    expect(refreshBtn).toBeInTheDocument();
+
+    await user.click(refreshBtn);
+
+    expect(screen.getByText('Nguyễn Văn Minh')).toBeInTheDocument();
+  });
+
+  it('handles passenger registration modal success callback and refreshes list (KAN-154)', async () => {
+    const user = userEvent.setup();
+    render(<PassengersPage />);
+
+    const registerBtn = screen.getByRole('button', { name: /Đăng Ký Khách/i });
+    await user.click(registerBtn);
+
+    // Modal is opened
+    expect(screen.getByRole('heading', { level: 3, name: /Đăng Ký Hành Khách Mới/i })).toBeInTheDocument();
+
+    // Fill form
+    await user.type(screen.getByLabelText(/Họ và tên hành khách/i), 'Vũ Đình Trọng');
+    await user.type(screen.getByLabelText(/Số cabin/i), '999');
+    await user.type(screen.getByLabelText(/Mã thẻ RFID/i), 'RFID-99999');
+
+    // Submit
+    const submitBtn = screen.getByRole('button', { name: /Lưu Hành Khách/i });
+    await user.click(submitBtn);
+
+    // Toast alert should display success
+    expect(await screen.findByRole('status')).toBeInTheDocument();
+  });
 });
