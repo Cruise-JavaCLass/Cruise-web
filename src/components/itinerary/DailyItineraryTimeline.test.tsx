@@ -253,4 +253,22 @@ describe('DailyItineraryTimeline (KAN-119)', () => {
       expect(dailyItineraryService.reorderDailyActivities).toHaveBeenCalledWith(1, 1, [102, 101]);
     });
   });
+
+  it('displays updated itinerary timestamp and notice banner (KAN-129)', async () => {
+    vi.spyOn(dailyItineraryService, 'getDailyItinerary').mockResolvedValue({
+      ...mockItineraryData,
+      lastUpdated: '2026-10-12 10:15',
+      updateNotice: 'Hải trình cập nhật do ảnh hưởng áp thấp nhiệt đới: Tránh vùng biển động',
+    });
+
+    render(<DailyItineraryTimeline tour={mockTour} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Cập nhật: 2026-10-12 10:15/i)).toBeInTheDocument();
+      expect(screen.getByText(/Thông báo điều chỉnh hải trình:/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Hải trình cập nhật do ảnh hưởng áp thấp nhiệt đới: Tránh vùng biển động/i)
+      ).toBeInTheDocument();
+    });
+  });
 });

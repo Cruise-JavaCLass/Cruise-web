@@ -14,6 +14,8 @@ import {
   Edit2,
   ArrowUp,
   ArrowDown,
+  AlertCircle,
+  RefreshCw,
 } from 'lucide-react';
 import type { CruiseTour } from '../../services/tourService';
 import type {
@@ -191,6 +193,12 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
             <span className="text-xs text-slate-400">
               {tour.durationDays} Ngày {tour.durationNights} Đêm
             </span>
+            {dailyData?.lastUpdated && (
+              <span className="flex items-center gap-1 text-[10px] text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded-full border border-cyan-800/50">
+                <RefreshCw className="w-3 h-3 text-cyan-400" />
+                Cập nhật: {dailyData.lastUpdated}
+              </span>
+            )}
           </div>
           <h2 className="text-lg font-bold text-white">{tour.name}</h2>
           <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-2">
@@ -216,6 +224,17 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
           <Plus className="w-4 h-4" /> Thêm Hoạt Động Vào Ngày {selectedDayNumber}
         </button>
       </div>
+
+      {/* Updated Itinerary Notice Banner */}
+      {dailyData?.updateNotice && (
+        <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2.5 shadow-sm">
+          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+          <div className="flex-1">
+            <span className="font-semibold text-amber-200">Thông báo điều chỉnh hải trình: </span>
+            <span>{dailyData.updateNotice}</span>
+          </div>
+        </div>
+      )}
 
       {/* Day Selector Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
