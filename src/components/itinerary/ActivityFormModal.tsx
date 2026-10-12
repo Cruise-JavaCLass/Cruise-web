@@ -31,6 +31,9 @@ export const ActivityFormModal: React.FC<ActivityFormModalProps> = ({
     description: '',
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -57,9 +60,6 @@ export const ActivityFormModal: React.FC<ActivityFormModalProps> = ({
     }
     setErrors({});
   }, [initialData, isOpen]);
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
