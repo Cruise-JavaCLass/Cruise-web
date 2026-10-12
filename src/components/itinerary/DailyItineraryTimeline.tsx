@@ -41,36 +41,41 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
-    getDailyItinerary(tour.id).then((res) => {
-      if (isMounted) {
-        if (res) {
-          setDailyData(res);
-          setSelectedDayNumber(res.days[0]?.dayNumber || 1);
-        } else {
-          // Generate fallback skeleton days if no custom data exists
-          const daysCount = tour.durationDays || 3;
-          const fallbackDays = Array.from({ length: daysCount }, (_, i) => ({
-            dayNumber: i + 1,
-            date: tour.startDate,
-            title: `Ngày ${i + 1}: Hải trình khám phá`,
-            portName: i === 0 ? tour.departurePort : i === daysCount - 1 ? tour.destinationPort : 'Trên biển',
-            portStatus: (i === 0 ? 'DEPARTURE' : i === daysCount - 1 ? 'ARRIVAL' : 'AT_SEA') as any,
-            seaDay: i > 0 && i < daysCount - 1,
-            activities: [],
-          }));
-          setDailyData({
-            tourId: tour.id,
-            tourName: tour.name,
-            tourCode: tour.code,
-            startDate: tour.startDate,
-            endDate: tour.endDate,
-            days: fallbackDays,
-          });
-          setSelectedDayNumber(1);
+    void getDailyItinerary(tour.id)
+      .then((res) => {
+        if (isMounted) {
+          if (res) {
+            setDailyData(res);
+            setSelectedDayNumber(res.days[0]?.dayNumber || 1);
+          } else {
+            // Generate fallback skeleton days if no custom data exists
+            const daysCount = tour.durationDays || 3;
+            const fallbackDays = Array.from({ length: daysCount }, (_, i) => ({
+              dayNumber: i + 1,
+              date: tour.startDate,
+              title: `Ngày ${i + 1}: Hải trình khám phá`,
+              portName: i === 0 ? tour.departurePort : i === daysCount - 1 ? tour.destinationPort : 'Trên biển',
+              portStatus: (i === 0 ? 'DEPARTURE' : i === daysCount - 1 ? 'ARRIVAL' : 'AT_SEA') as any,
+              seaDay: i > 0 && i < daysCount - 1,
+              activities: [],
+            }));
+            setDailyData({
+              tourId: tour.id,
+              tourName: tour.name,
+              tourCode: tour.code,
+              startDate: tour.startDate,
+              endDate: tour.endDate,
+              days: fallbackDays,
+            });
+            setSelectedDayNumber(1);
+          }
         }
-        setLoading(false);
-      }
-    });
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
 
     return () => {
       isMounted = false;
@@ -334,7 +339,7 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
 
                   <div className="flex items-center justify-end gap-2 shrink-0">
                     <button
-                      onClick={() => handleDeleteActivity(act.id, act.title)}
+                      onClick={() => void handleDeleteActivity(act.id, act.title)}
                       className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 rounded-xl transition-colors cursor-pointer"
                       title="Xóa hoạt động khỏi ngày này"
                       aria-label={`Xóa hoạt động ${act.title}`}
