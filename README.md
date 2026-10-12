@@ -24,6 +24,7 @@
 > - [KAN-121](https://huytran20052022.atlassian.net/browse/KAN-121) - *Write Component Tests for Itinerary Management — Test các thành phần giao diện lịch trình*  
 > - [KAN-122](https://huytran20052022.atlassian.net/browse/KAN-122) - *Test Itinerary Validation and Error States — Test kiểm tra dữ liệu và trạng thái lỗi lịch trình*  
 > - [KAN-129](https://huytran20052022.atlassian.net/browse/KAN-129) - *Display Updated Itinerary Information — Hiển thị thông tin lịch trình đã cập nhật*  
+> - [KAN-130](https://huytran20052022.atlassian.net/browse/KAN-130) - *Display Itinerary Change History — Hiển thị lịch sử thay đổi lịch trình*  
 
 ---
 
@@ -87,7 +88,7 @@ Các bộ test mẫu chuẩn hóa bao gồm:
 * `src/components/tours/TourFormModal.test.tsx`: Kiểm thử Modal tạo/sửa tour du thuyền, validation ngày khởi hành, cảng xuất phát, cảng đích và sức chứa.
 * `src/components/tours/StatusTransitionModal.test.tsx`: Kiểm thử chuyển đổi trạng thái tour (DRAFT -> PUBLISHED -> IN_PROGRESS -> COMPLETED / CANCELLED) kèm lý do hủy.
 * `src/components/tours/StopFormModal.test.tsx` & `StopTimeValidation.test.tsx`: Kiểm thử form cảng dừng và validation thời gian cập cảng, rời bến, giờ lên tàu (`all-aboard`).
-* `src/components/itinerary/DailyItineraryTimeline.test.tsx`: Kiểm thử trục thời gian lịch trình hàng ngày, chuyển đổi ngày, thêm, cập nhật (`KAN-120`), đổi thứ tự hoạt động và hiển thị thông tin cập nhật (`KAN-129`).
+* `src/components/itinerary/DailyItineraryTimeline.test.tsx`: Kiểm thử trục thời gian lịch trình hàng ngày, chuyển đổi ngày, thêm, cập nhật (`KAN-120`), đổi thứ tự hoạt động, hiển thị thông tin cập nhật (`KAN-129`) và modal lịch sử thay đổi (`KAN-130`).
 * `src/components/itinerary/ActivityFormModal.test.tsx`: Kiểm thử form thêm/sửa hoạt động hàng ngày, phân loại danh mục, tính phụ thu và sức chứa.
 * `src/components/itinerary/ItineraryValidationErrors.test.tsx`: Kiểm thử toàn diện các trường hợp lỗi dữ liệu, empty state và fallback skeleton.
 * `src/services/api.test.ts`, `shipService.test.ts`, `tourService.test.ts`: Kiểm thử tầng API client và logic dịch vụ dữ liệu.
@@ -101,16 +102,17 @@ Cruise-web/
 ├── src/
 │   ├── components/
 │   │   ├── common/
-│   │   │   └── ErrorBoundary.tsx          # Xử lý lỗi UI toàn cục
+│   │   │   └── ErrorBoundary.tsx             # Xử lý lỗi UI toàn cục
 │   │   ├── itinerary/
-│   │   │   ├── ActivityFormModal.tsx      # Modal thêm & cập nhật hoạt động lịch trình
-│   │   │   └── DailyItineraryTimeline.tsx # Trục thời gian lịch trình hàng ngày & banner cập nhật
+│   │   │   ├── ActivityFormModal.tsx         # Modal thêm & cập nhật hoạt động lịch trình
+│   │   │   ├── DailyItineraryTimeline.tsx    # Trục thời gian lịch trình hàng ngày & banner cập nhật
+│   │   │   └── ItineraryChangeHistoryModal.tsx # Modal hiển thị lịch sử thay đổi lịch trình (Audit Log - KAN-130)
 │   │   ├── ships/
-│   │   │   └── ShipFormModal.tsx          # Form tạo và cập nhật tàu kèm validation nghiệp vụ
+│   │   │   └── ShipFormModal.tsx             # Form tạo và cập nhật tàu kèm validation nghiệp vụ
 │   │   └── tours/
-│   │       ├── StatusTransitionModal.tsx  # Modal chuyển đổi trạng thái tour
-│   │       ├── StopFormModal.tsx          # Modal thêm & cập nhật cảng dừng
-│   │       └── TourFormModal.tsx          # Modal tạo và cập nhật tour du thuyền
+│   │       ├── StatusTransitionModal.tsx     # Modal chuyển đổi trạng thái tour
+│   │       ├── StopFormModal.tsx             # Modal thêm & cập nhật cảng dừng
+│   │       └── TourFormModal.tsx             # Modal tạo và cập nhật tour du thuyền
 │   ├── layouts/
 │   │   └── MainLayout.tsx                 # Khung giao diện chuẩn (Sidebar, Header, Outlet)
 │   ├── pages/

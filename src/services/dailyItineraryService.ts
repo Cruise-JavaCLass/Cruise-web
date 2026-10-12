@@ -24,6 +24,19 @@ export interface DailyItineraryDay {
   activities: DailyActivityItem[];
 }
 
+export interface ItineraryChangeHistoryItem {
+  id: number;
+  timestamp: string;
+  author: string;
+  action: string; // e.g. "CẬP NHẬT HOẠT ĐỘNG", "THÊM HOẠT ĐỘNG", "ĐỔI THỨ TỰ", "ĐIỀU CHỈNH CẢNG"
+  description: string;
+  dayNumber?: number;
+  details?: string;
+  field?: string;
+  oldValue?: string;
+  newValue?: string;
+}
+
 export interface TourDailyItinerary {
   tourId: number;
   tourName: string;
@@ -32,6 +45,7 @@ export interface TourDailyItinerary {
   endDate: string;
   lastUpdated?: string;
   updateNotice?: string;
+  changeHistory?: ItineraryChangeHistoryItem[];
   days: DailyItineraryDay[];
 }
 
@@ -94,6 +108,52 @@ export const INITIAL_DAILY_ITINERARIES: Record<number, TourDailyItinerary> = {
     endDate: '2026-10-18',
     lastUpdated: '2026-10-12 09:30',
     updateNotice: 'Lịch trình đã được cập nhật: Điều chỉnh thời gian cập cảng Tiên Sa và thêm tiệc Gala Dinner',
+    changeHistory: [
+      {
+        id: 1,
+        timestamp: '2026-10-12 09:30',
+        author: 'Nguyễn Văn Quản Trị (Ops Manager)',
+        action: 'CẬP NHẬT HOẠT ĐỘNG',
+        description: 'Bổ sung Gala Dinner & Vũ Điệu Biển Hoàng Gia vào Ngày 1',
+        dayNumber: 1,
+        details: 'Tăng sức chứa lên 500 khách và bổ sung nghệ sĩ biểu diễn live acoustic',
+        field: 'Hoạt động tối',
+        oldValue: 'Tự do ngắm cảnh vịnh',
+        newValue: 'Gala Dinner & Vũ Điệu Biển Hoàng Gia',
+      },
+      {
+        id: 2,
+        timestamp: '2026-10-11 16:45',
+        author: 'Lê Hàng Hải (Cruise Coordinator)',
+        action: 'ĐIỀU CHỈNH CẢNG',
+        description: 'Điều chỉnh thời gian cập cảng Tiên Sa, Đà Nẵng',
+        dayNumber: 3,
+        details: 'Cập nhật theo thông báo luồng hàng hải của Cảng vụ Đà Nẵng',
+        field: 'Giờ cập cảng',
+        oldValue: '08:00',
+        newValue: '08:30',
+      },
+      {
+        id: 3,
+        timestamp: '2026-10-10 14:00',
+        author: 'Trần Điều Hành (Tour Director)',
+        action: 'THÊM TOUR TRÊN BỜ',
+        description: 'Mở bán Tour Tham Quan Phố Cổ Hội An & Chùa Cầu',
+        dayNumber: 3,
+        details: 'Bổ sung 120 suất vé tham quan Hội An kèm bữa tối đặc sản Quảng Nam',
+        field: 'Dịch vụ phụ thu',
+        oldValue: 'Không có',
+        newValue: 'Tour Hội An 1,500,000 VND',
+      },
+      {
+        id: 4,
+        timestamp: '2026-10-09 10:15',
+        author: 'Nguyễn Văn Quản Trị (Ops Manager)',
+        action: 'KHỞI TẠO LỊCH TRÌNH',
+        description: 'Khởi tạo khung lịch trình chi tiết 4 ngày 3 đêm cho tour',
+        details: 'Hoàn thiện lịch trình sơ bộ theo phê duyệt hải trình',
+      },
+    ],
     days: [
       {
         dayNumber: 1,
@@ -307,7 +367,21 @@ export async function addDailyActivity(
       if (day) {
         day.activities.push(newAct);
         day.activities.sort((a, b) => a.time.localeCompare(b.time));
-        localDailyItineraries[tourId].lastUpdated = new Date().toISOString().replace('T', ' ').substring(0, 16);
+        const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
+        localDailyItineraries[tourId].lastUpdated = now;
+        if (!localDailyItineraries[tourId].changeHistory) {
+          localDailyItineraries[tourId].changeHistory = [];
+        }
+        localDailyItineraries[tourId].changeHistory.unshift({
+          id: Date.now(),
+          timestamp: now,
+          author: 'Quản trị viên (Admin)',
+          action: 'THÊM HOẠT ĐỘNG',
+          description: `Thêm hoạt động "${newAct.title}" vào Ngày ${dayNumber}`,
+          dayNumber,
+          details: `Địa điểm: ${newAct.location}, Thời gian: ${newAct.time}`,
+          newValue: newAct.title,
+        });
       }
     }
     return newAct;
@@ -338,9 +412,24 @@ export async function updateDailyActivity(
     if (localDailyItineraries[tourId]) {
       const day = localDailyItineraries[tourId].days.find((d) => d.dayNumber === dayNumber);
       if (day) {
+        const oldAct = day.activities.find((a) => a.id === activityId);
         day.activities = day.activities.map((a) => (a.id === activityId ? { ...a, ...updated } : a));
         day.activities.sort((a, b) => a.time.localeCompare(b.time));
-        localDailyItineraries[tourId].lastUpdated = new Date().toISOString().replace('T', ' ').substring(0, 16);
+        const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
+        localDailyItineraries[tourId].lastUpdated = now;
+        if (!localDailyItineraries[tourId].changeHistory) {
+          localDailyItineraries[tourId].changeHistory = [];
+        }
+        localDailyItineraries[tourId].changeHistory.unshift({
+          id: Date.now(),
+          timestamp: now,
+          author: 'Quản trị viên (Admin)',
+          action: 'CẬP NHẬT HOẠT ĐỘNG',
+          description: `Cập nhật hoạt động "${updated.title}" tại Ngày ${dayNumber}`,
+          dayNumber,
+          oldValue: oldAct?.title,
+          newValue: updated.title,
+        });
       }
     }
     return updated;
@@ -366,7 +455,19 @@ export async function reorderDailyActivities(
         day.activities = orderedActivityIds
           .map((id) => idMap.get(id))
           .filter((act): act is DailyActivityItem => act !== undefined);
-        localDailyItineraries[tourId].lastUpdated = new Date().toISOString().replace('T', ' ').substring(0, 16);
+        const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
+        localDailyItineraries[tourId].lastUpdated = now;
+        if (!localDailyItineraries[tourId].changeHistory) {
+          localDailyItineraries[tourId].changeHistory = [];
+        }
+        localDailyItineraries[tourId].changeHistory.unshift({
+          id: Date.now(),
+          timestamp: now,
+          author: 'Quản trị viên (Admin)',
+          action: 'ĐỔI THỨ TỰ HOẠT ĐỘNG',
+          description: `Thay đổi thứ tự sắp xếp các hoạt động trong Ngày ${dayNumber}`,
+          dayNumber,
+        });
         return day.activities;
       }
     }
@@ -385,7 +486,22 @@ export async function deleteDailyActivity(
     if (localDailyItineraries[tourId]) {
       const day = localDailyItineraries[tourId].days.find((d) => d.dayNumber === dayNumber);
       if (day) {
+        const removed = day.activities.find((a) => a.id === activityId);
         day.activities = day.activities.filter((a) => a.id !== activityId);
+        const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
+        localDailyItineraries[tourId].lastUpdated = now;
+        if (!localDailyItineraries[tourId].changeHistory) {
+          localDailyItineraries[tourId].changeHistory = [];
+        }
+        localDailyItineraries[tourId].changeHistory.unshift({
+          id: Date.now(),
+          timestamp: now,
+          author: 'Quản trị viên (Admin)',
+          action: 'XÓA HOẠT ĐỘNG',
+          description: `Xóa hoạt động "${removed?.title || activityId}" khỏi Ngày ${dayNumber}`,
+          dayNumber,
+          oldValue: removed?.title,
+        });
       }
     }
   }
