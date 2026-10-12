@@ -191,10 +191,11 @@ export function ActivityModal({
 
           {/* Title */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label htmlFor="activity-form-title" className="block text-xs font-semibold text-slate-300 mb-1.5">
               Tên hoạt động <span className="text-rose-400">*</span>
             </label>
             <input
+              id="activity-form-title"
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
@@ -207,10 +208,11 @@ export function ActivityModal({
           {/* Category & Location */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label htmlFor="activity-form-category" className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Danh mục <span className="text-rose-400">*</span>
               </label>
               <select
+                id="activity-form-category"
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 className="w-full px-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
@@ -226,12 +228,13 @@ export function ActivityModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label htmlFor="activity-form-location" className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Địa điểm tổ chức <span className="text-rose-400">*</span>
               </label>
               <div className="relative">
                 <MapPin className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
+                  id="activity-form-location"
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -246,10 +249,11 @@ export function ActivityModal({
           {/* Day & Date */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label htmlFor="activity-form-day-number" className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Ngày số trong Tour
               </label>
               <input
+                id="activity-form-day-number"
                 type="number"
                 min="1"
                 max="30"
@@ -260,12 +264,13 @@ export function ActivityModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label htmlFor="activity-form-date" className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Ngày diễn ra <span className="text-rose-400">*</span>
               </label>
               <div className="relative">
                 <Calendar className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
+                  id="activity-form-date"
                   type="date"
                   value={formData.activityDate}
                   onChange={(e) => setFormData({ ...formData, activityDate: e.target.value })}
@@ -279,12 +284,13 @@ export function ActivityModal({
           {/* Time Slot */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label htmlFor="activity-form-start-time" className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Giờ bắt đầu <span className="text-rose-400">*</span>
               </label>
               <div className="relative">
                 <Clock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
+                  id="activity-form-start-time"
                   type="time"
                   value={formData.startTime}
                   onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
@@ -295,12 +301,13 @@ export function ActivityModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label htmlFor="activity-form-end-time" className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Giờ kết thúc <span className="text-rose-400">*</span>
               </label>
               <div className="relative">
                 <Clock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
+                  id="activity-form-end-time"
                   type="time"
                   value={formData.endTime}
                   onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
@@ -314,12 +321,13 @@ export function ActivityModal({
           {/* Capacity & Price */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label htmlFor="activity-form-capacity" className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Sức chứa tối đa (Khách) <span className="text-rose-400">*</span>
               </label>
               <div className="relative">
                 <Users className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
+                  id="activity-form-capacity"
                   type="number"
                   min="1"
                   max="1000"
@@ -332,12 +340,13 @@ export function ActivityModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <span className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Gói dịch vụ & Chi phí
-              </label>
+              </span>
               <div className="flex items-center gap-2 mt-2">
-                <label className="inline-flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <label htmlFor="activity-form-included" className="inline-flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
                   <input
+                    id="activity-form-included"
                     type="checkbox"
                     checked={formData.isIncluded}
                     onChange={(e) =>
@@ -357,12 +366,13 @@ export function ActivityModal({
 
           {!formData.isIncluded && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label htmlFor="activity-form-price" className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Mức phí tham gia (VNĐ) <span className="text-rose-400">*</span>
               </label>
               <div className="relative">
                 <DollarSign className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
+                  id="activity-form-price"
                   type="number"
                   min="1000"
                   step="1000"
@@ -378,10 +388,11 @@ export function ActivityModal({
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label htmlFor="activity-form-desc" className="block text-xs font-semibold text-slate-300 mb-1.5">
               Mô tả chi tiết hoạt động
             </label>
             <textarea
+              id="activity-form-desc"
               rows={3}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}

@@ -57,7 +57,7 @@ export function ActivityDetailPage() {
   };
 
   useEffect(() => {
-    loadDetail();
+    void loadDetail();
   }, [id]);
 
   const handleDelete = async () => {

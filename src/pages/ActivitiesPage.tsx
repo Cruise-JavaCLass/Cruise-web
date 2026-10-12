@@ -70,7 +70,7 @@ export function ActivitiesPage() {
   }, [selectedTourId, selectedDay, selectedCategory, searchTerm]);
 
   useEffect(() => {
-    loadActivities();
+    void loadActivities();
   }, [loadActivities]);
 
   const handleOpenCreateModal = () => {
@@ -170,10 +170,11 @@ export function ActivitiesPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {/* Select Tour */}
           <div>
-            <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+            <label htmlFor="filter-tour-select" className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
               Tour Du Thuyền
             </label>
             <select
+              id="filter-tour-select"
               value={selectedTourId}
               onChange={(e) => setSelectedTourId(Number(e.target.value))}
               className="w-full px-3 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500 transition-colors"
@@ -188,12 +189,13 @@ export function ActivitiesPage() {
 
           {/* Search Keyword */}
           <div className="lg:col-span-2">
-            <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+            <label htmlFor="filter-keyword-input" className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
               Tìm kiếm theo Tên hoặc Địa điểm
             </label>
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
+                id="filter-keyword-input"
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -205,10 +207,11 @@ export function ActivitiesPage() {
 
           {/* Select Day */}
           <div>
-            <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+            <label htmlFor="filter-day-select" className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
               Lọc Theo Ngày Số
             </label>
             <select
+              id="filter-day-select"
               value={selectedDay}
               onChange={(e) => setSelectedDay(e.target.value === 'ALL' ? 'ALL' : Number(e.target.value))}
               className="w-full px-3 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500 transition-colors"

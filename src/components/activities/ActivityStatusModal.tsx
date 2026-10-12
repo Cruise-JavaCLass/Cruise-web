@@ -105,18 +105,18 @@ export function ActivityStatusModal({
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <span className="block text-xs font-semibold text-slate-300 mb-1.5">
               Trạng thái hiện tại
-            </label>
+            </span>
             <div className="px-3 py-2 bg-slate-800/80 border border-slate-700/60 rounded-xl text-xs font-medium text-cyan-300">
               {getStatusLabel(currentStatus)}
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <span className="block text-xs font-semibold text-slate-300 mb-1.5">
               Chọn trạng thái chuyển tiếp
-            </label>
+            </span>
             {allowedStatuses.length === 0 ? (
               <p className="text-xs text-slate-500 italic">
                 Hoạt động đã kết thúc (COMPLETED) và không thể chuyển trạng thái tiếp.
@@ -149,10 +149,11 @@ export function ActivityStatusModal({
 
           {selectedStatus === 'CANCELLED' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label htmlFor="cancel-reason-textarea" className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Lý do hủy hoạt động <span className="text-rose-400">*</span>
               </label>
               <textarea
+                id="cancel-reason-textarea"
                 rows={3}
                 value={cancellationReason}
                 onChange={(e) => setCancellationReason(e.target.value)}
