@@ -301,21 +301,50 @@ export function PassengersPage() {
           </div>
         </div>
 
-        {/* Search Input */}
-        <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-          <input
-            type="text"
-            role="searchbox"
-            aria-label="Tìm kiếm hành khách"
-            placeholder="Tìm theo tên, cabin, mã RFID..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setPage(0);
-            }}
-            className="pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 w-full md:w-72"
-          />
+        {/* Search Input & Reset */}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 md:w-72">
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+            <input
+              type="text"
+              role="searchbox"
+              aria-label="Tìm kiếm hành khách"
+              placeholder="Tìm theo tên, cabin, mã RFID..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(0);
+              }}
+              className="pl-9 pr-8 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 w-full"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                aria-label="Xóa tìm kiếm"
+                onClick={() => {
+                  setSearchTerm('');
+                  setPage(0);
+                }}
+                className="absolute right-2.5 top-2.5 text-slate-400 hover:text-white"
+              >
+                <XCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+          {(searchTerm || statusFilter !== 'ALL') && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchTerm('');
+                setStatusFilter('ALL');
+                setPage(0);
+              }}
+              className="px-2.5 py-2 text-xs text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700/80 rounded-xl whitespace-nowrap transition-colors"
+              title="Đặt lại bộ lọc"
+            >
+              Đặt lại
+            </button>
+          )}
         </div>
       </div>
 
