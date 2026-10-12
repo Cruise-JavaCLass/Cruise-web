@@ -342,6 +342,24 @@ function buildActivityItem(id: number, data: ActivityFormData): DailyActivityIte
   };
 }
 
+function recordHistoryEntry(
+  tourId: number,
+  entry: Omit<ItineraryChangeHistoryItem, 'id' | 'timestamp'>
+) {
+  const target = localDailyItineraries[tourId];
+  if (!target) return;
+  const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
+  target.lastUpdated = now;
+  if (!target.changeHistory) {
+    target.changeHistory = [];
+  }
+  target.changeHistory.unshift({
+    ...entry,
+    id: Date.now(),
+    timestamp: now,
+  });
+}
+
 export async function addDailyActivity(
   tourId: number,
   dayNumber: number,
@@ -367,14 +385,7 @@ export async function addDailyActivity(
       if (day) {
         day.activities.push(newAct);
         day.activities.sort((a, b) => a.time.localeCompare(b.time));
-        const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
-        localDailyItineraries[tourId].lastUpdated = now;
-        if (!localDailyItineraries[tourId].changeHistory) {
-          localDailyItineraries[tourId].changeHistory = [];
-        }
-        localDailyItineraries[tourId].changeHistory.unshift({
-          id: Date.now(),
-          timestamp: now,
+        recordHistoryEntry(tourId, {
           author: 'Quản trị viên (Admin)',
           action: 'THÊM HOẠT ĐỘNG',
           description: `Thêm hoạt động "${newAct.title}" vào Ngày ${dayNumber}`,
@@ -415,14 +426,7 @@ export async function updateDailyActivity(
         const oldAct = day.activities.find((a) => a.id === activityId);
         day.activities = day.activities.map((a) => (a.id === activityId ? { ...a, ...updated } : a));
         day.activities.sort((a, b) => a.time.localeCompare(b.time));
-        const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
-        localDailyItineraries[tourId].lastUpdated = now;
-        if (!localDailyItineraries[tourId].changeHistory) {
-          localDailyItineraries[tourId].changeHistory = [];
-        }
-        localDailyItineraries[tourId].changeHistory.unshift({
-          id: Date.now(),
-          timestamp: now,
+        recordHistoryEntry(tourId, {
           author: 'Quản trị viên (Admin)',
           action: 'CẬP NHẬT HOẠT ĐỘNG',
           description: `Cập nhật hoạt động "${updated.title}" tại Ngày ${dayNumber}`,
@@ -455,14 +459,7 @@ export async function reorderDailyActivities(
         day.activities = orderedActivityIds
           .map((id) => idMap.get(id))
           .filter((act): act is DailyActivityItem => act !== undefined);
-        const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
-        localDailyItineraries[tourId].lastUpdated = now;
-        if (!localDailyItineraries[tourId].changeHistory) {
-          localDailyItineraries[tourId].changeHistory = [];
-        }
-        localDailyItineraries[tourId].changeHistory.unshift({
-          id: Date.now(),
-          timestamp: now,
+        recordHistoryEntry(tourId, {
           author: 'Quản trị viên (Admin)',
           action: 'ĐỔI THỨ TỰ HOẠT ĐỘNG',
           description: `Thay đổi thứ tự sắp xếp các hoạt động trong Ngày ${dayNumber}`,
@@ -488,14 +485,7 @@ export async function deleteDailyActivity(
       if (day) {
         const removed = day.activities.find((a) => a.id === activityId);
         day.activities = day.activities.filter((a) => a.id !== activityId);
-        const now = new Date().toISOString().replace('T', ' ').substring(0, 16);
-        localDailyItineraries[tourId].lastUpdated = now;
-        if (!localDailyItineraries[tourId].changeHistory) {
-          localDailyItineraries[tourId].changeHistory = [];
-        }
-        localDailyItineraries[tourId].changeHistory.unshift({
-          id: Date.now(),
-          timestamp: now,
+        recordHistoryEntry(tourId, {
           author: 'Quản trị viên (Admin)',
           action: 'XÓA HOẠT ĐỘNG',
           description: `Xóa hoạt động "${removed?.title || activityId}" khỏi Ngày ${dayNumber}`,
