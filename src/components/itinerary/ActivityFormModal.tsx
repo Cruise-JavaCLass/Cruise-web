@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Clock, MapPin, Tag, PlusCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Clock, MapPin, Tag, PlusCircle, Edit3 } from 'lucide-react';
 import type { ActivityFormData, DailyActivityItem } from '../../services/dailyItineraryService';
 import { CATEGORY_LABELS } from '../../services/dailyItineraryService';
 
@@ -9,6 +9,7 @@ interface ActivityFormModalProps {
   onSubmit: (data: ActivityFormData) => Promise<void>;
   dayNumber: number;
   dayTitle: string;
+  initialData?: DailyActivityItem | null;
 }
 
 export const ActivityFormModal: React.FC<ActivityFormModalProps> = ({
@@ -17,6 +18,7 @@ export const ActivityFormModal: React.FC<ActivityFormModalProps> = ({
   onSubmit,
   dayNumber,
   dayTitle,
+  initialData,
 }) => {
   const [formData, setFormData] = useState<ActivityFormData>({
     time: '09:00',
@@ -28,6 +30,33 @@ export const ActivityFormModal: React.FC<ActivityFormModalProps> = ({
     capacity: undefined,
     description: '',
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        time: initialData.time,
+        title: initialData.title,
+        location: initialData.location,
+        category: initialData.category,
+        isIncluded: initialData.isIncluded,
+        price: initialData.price,
+        capacity: initialData.capacity,
+        description: initialData.description || '',
+      });
+    } else {
+      setFormData({
+        time: '09:00',
+        title: '',
+        location: '',
+        category: 'ENTERTAINMENT',
+        isIncluded: true,
+        price: undefined,
+        capacity: undefined,
+        description: '',
+      });
+    }
+    setErrors({});
+  }, [initialData, isOpen]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -87,10 +116,12 @@ export const ActivityFormModal: React.FC<ActivityFormModalProps> = ({
 
         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
           <div className="w-10 h-10 rounded-xl bg-cyan-600/20 text-cyan-400 flex items-center justify-center">
-            <PlusCircle className="w-5 h-5" />
+            {initialData ? <Edit3 className="w-5 h-5" /> : <PlusCircle className="w-5 h-5" />}
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">Thêm Hoạt Động Vào Lịch Trình</h3>
+            <h3 className="text-base font-bold text-white">
+              {initialData ? 'Cập Nhật Hoạt Động Lịch Trình' : 'Thêm Hoạt Động Vào Lịch Trình'}
+            </h3>
             <p className="text-xs text-slate-400">
               Ngày {dayNumber}: {dayTitle}
             </p>
@@ -253,7 +284,11 @@ export const ActivityFormModal: React.FC<ActivityFormModalProps> = ({
               disabled={isSubmitting}
               className="px-4 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20"
             >
-              {isSubmitting ? 'Đang lưu...' : 'Thêm Vào Lịch Trình'}
+              {isSubmitting
+                ? 'Đang lưu...'
+                : initialData
+                ? 'Lưu Thay Đổi'
+                : 'Thêm Vào Lịch Trình'}
             </button>
           </div>
         </form>

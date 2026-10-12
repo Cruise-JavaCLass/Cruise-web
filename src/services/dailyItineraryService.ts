@@ -303,6 +303,76 @@ export async function addDailyActivity(
   }
 }
 
+export async function updateDailyActivity(
+  tourId: number,
+  dayNumber: number,
+  activityId: number,
+  activityData: ActivityFormData
+): Promise<DailyActivityItem> {
+  const payload = {
+    ...activityData,
+    price: activityData.price ? Number(activityData.price) : undefined,
+    capacity: activityData.capacity ? Number(activityData.capacity) : undefined,
+  };
+
+  try {
+    const res = await apiClient.put<{ data: DailyActivityItem }>(
+      `/itinerary/tours/${tourId}/days/${dayNumber}/activities/${activityId}`,
+      payload
+    );
+    return res.data.data;
+  } catch {
+    const updated: DailyActivityItem = {
+      id: activityId,
+      time: payload.time,
+      title: payload.title,
+      location: payload.location,
+      category: payload.category,
+      isIncluded: payload.isIncluded,
+      price: payload.price,
+      currency: payload.price ? 'VND' : undefined,
+      capacity: payload.capacity,
+      enrolledCount: 0,
+      description: payload.description,
+    };
+
+    if (localDailyItineraries[tourId]) {
+      const day = localDailyItineraries[tourId].days.find((d) => d.dayNumber === dayNumber);
+      if (day) {
+        day.activities = day.activities.map((a) => (a.id === activityId ? { ...a, ...updated } : a));
+        day.activities.sort((a, b) => a.time.localeCompare(b.time));
+      }
+    }
+    return updated;
+  }
+}
+
+export async function reorderDailyActivities(
+  tourId: number,
+  dayNumber: number,
+  orderedActivityIds: number[]
+): Promise<DailyActivityItem[]> {
+  try {
+    const res = await apiClient.put<{ data: DailyActivityItem[] }>(
+      `/itinerary/tours/${tourId}/days/${dayNumber}/activities/reorder`,
+      { orderedActivityIds }
+    );
+    return res.data.data;
+  } catch {
+    if (localDailyItineraries[tourId]) {
+      const day = localDailyItineraries[tourId].days.find((d) => d.dayNumber === dayNumber);
+      if (day) {
+        const idMap = new Map(day.activities.map((act) => [act.id, act]));
+        day.activities = orderedActivityIds
+          .map((id) => idMap.get(id))
+          .filter((act): act is DailyActivityItem => act !== undefined);
+        return day.activities;
+      }
+    }
+    return [];
+  }
+}
+
 export async function deleteDailyActivity(
   tourId: number,
   dayNumber: number,

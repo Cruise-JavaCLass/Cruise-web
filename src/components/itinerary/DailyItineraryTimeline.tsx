@@ -11,15 +11,21 @@ import {
   Anchor,
   CheckCircle2,
   Info,
+  Edit2,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
 import type { CruiseTour } from '../../services/tourService';
 import type {
   TourDailyItinerary,
+  DailyActivityItem,
   ActivityFormData,
 } from '../../services/dailyItineraryService';
 import {
   getDailyItinerary,
   addDailyActivity,
+  updateDailyActivity,
+  reorderDailyActivities,
   deleteDailyActivity,
   CATEGORY_LABELS,
 } from '../../services/dailyItineraryService';
@@ -34,7 +40,8 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
   const [dailyData, setDailyData] = useState<TourDailyItinerary | null>(null);
   const [selectedDayNumber, setSelectedDayNumber] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState<boolean>(false);
+  const [editingActivity, setEditingActivity] = useState<DailyActivityItem | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -89,23 +96,79 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
 
   const currentDay = dailyData?.days.find((d) => d.dayNumber === selectedDayNumber);
 
-  const handleAddActivity = async (formData: ActivityFormData) => {
+  const handleOpenAdd = () => {
+    setEditingActivity(null);
+    setIsFormModalOpen(true);
+  };
+
+  const handleOpenEdit = (act: DailyActivityItem) => {
+    setEditingActivity(act);
+    setIsFormModalOpen(true);
+  };
+
+  const handleSaveActivity = async (formData: ActivityFormData) => {
     if (!dailyData) return;
-    const created = await addDailyActivity(tour.id, selectedDayNumber, formData);
+
+    if (editingActivity) {
+      const updated = await updateDailyActivity(tour.id, selectedDayNumber, editingActivity.id, formData);
+      setDailyData((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          days: prev.days.map((day) => {
+            if (day.dayNumber === selectedDayNumber) {
+              const updatedList = day.activities.map((a) => (a.id === editingActivity.id ? updated : a));
+              return { ...day, activities: updatedList };
+            }
+            return day;
+          }),
+        };
+      });
+      showToast(`Đã cập nhật hoạt động "${updated.title}"`);
+    } else {
+      const created = await addDailyActivity(tour.id, selectedDayNumber, formData);
+      setDailyData((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          days: prev.days.map((day) => {
+            if (day.dayNumber === selectedDayNumber) {
+              const updatedList = [...day.activities, created].sort((a, b) => a.time.localeCompare(b.time));
+              return { ...day, activities: updatedList };
+            }
+            return day;
+          }),
+        };
+      });
+      showToast(`Đã thêm "${created.title}" vào lịch trình Ngày ${selectedDayNumber}`);
+    }
+  };
+
+  const handleMoveActivity = async (index: number, direction: 'UP' | 'DOWN') => {
+    if (!currentDay) return;
+    const activities = [...currentDay.activities];
+    const targetIndex = direction === 'UP' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= activities.length) return;
+
+    const [moved] = activities.splice(index, 1);
+    activities.splice(targetIndex, 0, moved);
+
+    const orderedIds = activities.map((a) => a.id);
+    await reorderDailyActivities(tour.id, selectedDayNumber, orderedIds);
+
     setDailyData((prev) => {
       if (!prev) return prev;
       return {
         ...prev,
         days: prev.days.map((day) => {
           if (day.dayNumber === selectedDayNumber) {
-            const updated = [...day.activities, created].sort((a, b) => a.time.localeCompare(b.time));
-            return { ...day, activities: updated };
+            return { ...day, activities };
           }
           return day;
         }),
       };
     });
-    showToast(`Đã thêm "${created.title}" vào lịch trình Ngày ${selectedDayNumber}`);
+    showToast(`Đã thay đổi thứ tự hoạt động`);
   };
 
   const handleDeleteActivity = async (actId: number, actTitle: string) => {
@@ -181,7 +244,7 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
         </div>
 
         <button
-          onClick={() => setIsAddModalOpen(true)}
+          onClick={handleOpenAdd}
           className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" /> Thêm Hoạt Động Vào Ngày {selectedDayNumber}
@@ -274,7 +337,7 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
             Chưa có hoạt động nào trong Ngày {selectedDayNumber} với bộ lọc hiện tại.
           </p>
           <button
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={handleOpenAdd}
             className="mt-3 text-xs text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer"
           >
             + Thêm hoạt động đầu tiên cho ngày này
@@ -282,7 +345,7 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
         </div>
       ) : (
         <div className="relative pl-6 sm:pl-8 space-y-6 before:content-[''] before:absolute before:left-3 sm:before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-800">
-          {filteredActivities.map((act) => {
+          {filteredActivities.map((act, index) => {
             const catBadge = CATEGORY_LABELS[act.category] || CATEGORY_LABELS.OTHER;
             return (
               <div key={act.id} className="relative group">
@@ -337,10 +400,41 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
                     )}
                   </div>
 
-                  <div className="flex items-center justify-end gap-2 shrink-0">
+                  <div className="flex items-center justify-end gap-1.5 shrink-0">
+                    {/* Reorder Buttons */}
+                    <button
+                      onClick={() => void handleMoveActivity(index, 'UP')}
+                      disabled={index === 0}
+                      className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-slate-800 disabled:opacity-30 disabled:hover:text-slate-400 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
+                      title="Di chuyển lên trên"
+                      aria-label={`Di chuyển lên trên ${act.title}`}
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => void handleMoveActivity(index, 'DOWN')}
+                      disabled={index === filteredActivities.length - 1}
+                      className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-slate-800 disabled:opacity-30 disabled:hover:text-slate-400 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
+                      title="Di chuyển xuống dưới"
+                      aria-label={`Di chuyển xuống dưới ${act.title}`}
+                    >
+                      <ArrowDown className="w-4 h-4" />
+                    </button>
+
+                    {/* Edit Button */}
+                    <button
+                      onClick={() => handleOpenEdit(act)}
+                      className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                      title="Cập nhật hoạt động"
+                      aria-label={`Cập nhật hoạt động ${act.title}`}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+
+                    {/* Delete Button */}
                     <button
                       onClick={() => void handleDeleteActivity(act.id, act.title)}
-                      className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 rounded-xl transition-colors cursor-pointer"
+                      className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 rounded-lg transition-colors cursor-pointer"
                       title="Xóa hoạt động khỏi ngày này"
                       aria-label={`Xóa hoạt động ${act.title}`}
                     >
@@ -354,14 +448,18 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
         </div>
       )}
 
-      {/* Modal Add Activity */}
+      {/* Modal Add / Edit Activity */}
       {currentDay && (
         <ActivityFormModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-          onSubmit={handleAddActivity}
+          isOpen={isFormModalOpen}
+          onClose={() => {
+            setIsFormModalOpen(false);
+            setEditingActivity(null);
+          }}
+          onSubmit={handleSaveActivity}
           dayNumber={currentDay.dayNumber}
           dayTitle={currentDay.title}
+          initialData={editingActivity}
         />
       )}
     </div>
