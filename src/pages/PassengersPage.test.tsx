@@ -148,4 +148,27 @@ describe('PassengersPage (Component & User Interaction Tests)', () => {
     expect(await screen.findByRole('status')).toBeInTheDocument();
     expect(createObjectURLMock).toHaveBeenCalled();
   });
+
+  it('displays registration and check-in KPI summary cards correctly (KAN-152)', () => {
+    render(<PassengersPage />);
+
+    expect(screen.getByText('Tổng Đăng Ký')).toBeInTheDocument();
+    expect(screen.getByText('Đã Xác Nhận')).toBeInTheDocument();
+    expect(screen.getByText('Chờ Duyệt')).toBeInTheDocument();
+    expect(screen.getByText('Đã Lên Tàu')).toBeInTheDocument();
+  });
+
+  it('updates registration status via row dropdown selector (KAN-152)', async () => {
+    const user = userEvent.setup();
+    render(<PassengersPage />);
+
+    const statusSelect = screen.getByRole('combobox', {
+      name: /Đổi trạng thái đăng ký của Nguyễn Văn Minh/i,
+    });
+    expect(statusSelect).toBeInTheDocument();
+
+    await user.selectOptions(statusSelect, 'CANCELLED');
+
+    expect(await screen.findByRole('status')).toBeInTheDocument();
+  });
 });
