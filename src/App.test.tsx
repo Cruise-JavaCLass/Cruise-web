@@ -62,6 +62,19 @@ describe('App Routing Integration Tests', () => {
     });
   });
 
+  it('renders ExcursionsPage when navigating to "/excursions"', async () => {
+    render(
+      <MemoryRouter initialEntries={['/excursions']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 2, name: /Quản Lý Tour Trên Bờ/i })).toBeInTheDocument();
+      expect(screen.getByText('Khám phá Hang Sửng Sốt & Đảo Ti Tốp')).toBeInTheDocument();
+    });
+  });
+
   it('renders PosPage when navigating to "/pos"', async () => {
     render(
       <MemoryRouter initialEntries={['/pos']}>

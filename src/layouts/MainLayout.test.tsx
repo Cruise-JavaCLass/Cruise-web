@@ -35,6 +35,7 @@ describe('MainLayout (Layout & Async State Tests)', () => {
       expect(screen.getByText('Dashboard Tổng quan')).toBeInTheDocument();
       expect(screen.getByText('Quản lý Đội tàu')).toBeInTheDocument();
       expect(screen.getByText('Hải trình & Cảng dừng')).toBeInTheDocument();
+      expect(screen.getByText('Tour Trên Bờ (Excursion)')).toBeInTheDocument();
       expect(screen.getByText('Hoạt động & Excursion')).toBeInTheDocument();
       expect(screen.getByText('POS & Chi tiêu Onboard')).toBeInTheDocument();
       expect(screen.getByText('Hành khách & Check-in')).toBeInTheDocument();

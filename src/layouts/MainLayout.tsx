@@ -13,7 +13,8 @@ import {
   XCircle,
   RefreshCw,
   Clock,
-  Server
+  Server,
+  Navigation
 } from 'lucide-react';
 import { checkBackendHealth, getBackendInfo } from '../services/api';
 import type { SystemHealth, SystemInfo } from '../services/api';
@@ -41,6 +42,7 @@ export function MainLayout() {
     { to: '/', label: 'Dashboard Tổng quan', icon: Compass },
     { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship },
     { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin },
+    { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation },
     { to: '/activities', label: 'Hoạt động & Excursion', icon: Activity },
     { to: '/pos', label: 'POS & Chi tiêu Onboard', icon: CreditCard },
     { to: '/passengers', label: 'Hành khách & Check-in', icon: Users },
