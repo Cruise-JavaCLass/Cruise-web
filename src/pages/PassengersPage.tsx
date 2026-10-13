@@ -156,12 +156,12 @@ export function PassengersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       {/* Toast Alert */}
       {toastMessage && (
         <div
           role="status"
-          className="fixed top-5 right-5 z-50 bg-cyan-950 border border-cyan-500/50 text-cyan-200 px-4 py-2.5 rounded-xl shadow-xl text-xs flex items-center gap-2 animate-in fade-in slide-in-from-top-2"
+          className="fixed top-5 right-5 z-50 bg-[#030303]/80 backdrop-blur-xl border border-cyan-500/50 text-cyan-200 px-4 py-2.5 rounded-xl shadow-xl text-xs flex items-center gap-2 animate-in fade-in slide-in-from-top-2"
         >
           <CheckCircle2 className="w-4 h-4 text-cyan-400" />
           <span>{toastMessage}</span>
@@ -189,7 +189,7 @@ export function PassengersPage() {
           <button
             onClick={handleExportCsv}
             disabled={isExporting}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#030303]/60 hover:bg-white/[0.06] backdrop-blur-xl text-slate-200 border border-white/10 rounded-xl text-xs font-semibold transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4 text-emerald-400" /> {isExporting ? 'Đang xuất...' : 'Xuất CSV'}
           </button>
@@ -197,7 +197,7 @@ export function PassengersPage() {
             onClick={loadPassengers}
             disabled={loading}
             aria-label="Tải lại danh sách"
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl text-xs transition-colors"
+            className="p-2 bg-[#030303]/60 hover:bg-white/[0.06] backdrop-blur-xl text-slate-300 border border-white/10 rounded-xl text-xs transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -206,20 +206,20 @@ export function PassengersPage() {
 
       {/* Registration & Check-in Status KPI Summary Cards (KAN-152) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-cyan-500/30 transition-all">
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tổng Đăng Ký</p>
-            <p className="text-xl font-bold text-white mt-1">{totalCount}</p>
+            <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Tổng Đăng Ký</p>
+            <p className="text-2xl font-display text-white mt-1">{totalCount}</p>
           </div>
           <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
             <Users className="w-4 h-4" />
           </div>
         </div>
 
-        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-emerald-500/30 transition-all">
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Đã Xác Nhận</p>
-            <p className="text-xl font-bold text-emerald-400 mt-1">
+            <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Đã Xác Nhận</p>
+            <p className="text-2xl font-display text-emerald-400 mt-1">
               {passengers.filter((p) => p.registrationStatus === 'CONFIRMED').length}
             </p>
           </div>
@@ -228,10 +228,10 @@ export function PassengersPage() {
           </div>
         </div>
 
-        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-amber-500/30 transition-all">
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Chờ Duyệt</p>
-            <p className="text-xl font-bold text-amber-400 mt-1">
+            <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Chờ Duyệt</p>
+            <p className="text-2xl font-display text-amber-400 mt-1">
               {passengers.filter((p) => p.registrationStatus === 'PENDING').length}
             </p>
           </div>
@@ -240,10 +240,10 @@ export function PassengersPage() {
           </div>
         </div>
 
-        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-purple-500/30 transition-all">
           <div>
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Đã Lên Tàu</p>
-            <p className="text-xl font-bold text-cyan-300 mt-1">
+            <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Đã Lên Tàu</p>
+            <p className="text-2xl font-display text-cyan-300 mt-1">
               {passengers.filter((p) => p.checkInStatus === 'BOARDED').length}
             </p>
           </div>

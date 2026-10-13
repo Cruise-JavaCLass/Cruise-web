@@ -225,10 +225,10 @@ export function ItineraryPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       {/* Toast Notification */}
       {notification && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md animate-fade-in text-sm">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-xl animate-fade-in text-sm">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{notification}</span>
         </div>
@@ -252,30 +252,30 @@ export function ItineraryPage() {
         </button>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards — Translucent Glass */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-slate-900/70 border border-slate-800 p-4 rounded-xl flex items-center justify-between">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-xl hover:border-cyan-500/30 transition-all">
           <div>
-            <span className="text-xs text-slate-400">Tổng tour đang quản lý</span>
-            <p className="text-xl font-bold text-white mt-1">{totalActiveTours}</p>
+            <span className="text-xs text-slate-400 font-mono">Tổng tour đang quản lý</span>
+            <p className="text-2xl font-display text-white mt-1">{totalActiveTours}</p>
           </div>
           <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
             <Compass className="w-5 h-5" />
           </div>
         </div>
-        <div className="bg-slate-900/70 border border-slate-800 p-4 rounded-xl flex items-center justify-between">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-xl hover:border-cyan-500/30 transition-all">
           <div>
-            <span className="text-xs text-slate-400">Tour đang hành trình</span>
-            <p className="text-xl font-bold text-cyan-400 mt-1">{inProgressTours}</p>
+            <span className="text-xs text-slate-400 font-mono">Tour đang hành trình</span>
+            <p className="text-2xl font-display text-cyan-400 mt-1">{inProgressTours}</p>
           </div>
           <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
             <Ship className="w-5 h-5" />
           </div>
         </div>
-        <div className="bg-slate-900/70 border border-slate-800 p-4 rounded-xl flex items-center justify-between">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-xl hover:border-emerald-500/30 transition-all">
           <div>
-            <span className="text-xs text-slate-400">Tour đang mở bán</span>
-            <p className="text-xl font-bold text-emerald-400 mt-1">{publishedTours}</p>
+            <span className="text-xs text-slate-400 font-mono">Tour đang mở bán</span>
+            <p className="text-2xl font-display text-emerald-400 mt-1">{publishedTours}</p>
           </div>
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
             <Tag className="w-5 h-5" />
@@ -284,7 +284,7 @@ export function ItineraryPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between shadow-xl">
         <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
