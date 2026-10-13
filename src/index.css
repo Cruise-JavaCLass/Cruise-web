@@ -24,8 +24,11 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    selection-background-color: rgba(56, 189, 248, 0.25);
-    selection-color: #38bdf8;
+  }
+
+  ::selection {
+    background-color: rgba(56, 189, 248, 0.25);
+    color: #38bdf8;
   }
 
   /* Sleek modern scrollbars */

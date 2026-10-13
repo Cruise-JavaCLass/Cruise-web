@@ -42,7 +42,8 @@ export function DashboardPage() {
             muted
             loop
             playsInline
-            aria-hidden="true"
+            tabIndex={-1}
+            disableRemotePlayback
             className="w-full h-full object-cover object-center opacity-80"
           >
             <source
