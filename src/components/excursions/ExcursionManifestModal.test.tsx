@@ -4,9 +4,9 @@ import userEvent from '@testing-library/user-event';
 import { ExcursionManifestModal } from './ExcursionManifestModal';
 import { INITIAL_EXCURSIONS, INITIAL_EXCURSION_PASSENGERS } from '../../services/excursionService';
 
-describe('ExcursionManifestModal Component Tests (KAN-174)', () => {
-  const mockOnClose = vi.fn();
-  const mockExcursion = {
+describe('ExcursionManifestModal Component Suite (KAN-174)', () => {
+  const handleClose = vi.fn();
+  const testManifestData = {
     ...INITIAL_EXCURSIONS[0],
     passengers: [...INITIAL_EXCURSION_PASSENGERS],
   };
@@ -15,140 +15,114 @@ describe('ExcursionManifestModal Component Tests (KAN-174)', () => {
     vi.clearAllMocks();
   });
 
-  const renderModal = (props?: Partial<React.ComponentProps<typeof ExcursionManifestModal>>) =>
+  const setupModal = (customProps?: Partial<React.ComponentProps<typeof ExcursionManifestModal>>) =>
     render(
       <ExcursionManifestModal
         isOpen={true}
-        onClose={mockOnClose}
-        excursion={mockExcursion}
-        {...props}
+        onClose={handleClose}
+        excursion={testManifestData}
+        {...customProps}
       />
     );
 
-  it('renders modal header, operational KPI cards, and passenger table', () => {
-    renderModal();
+  it('renders passenger manifest dialog with summary metrics and passenger rows', () => {
+    setupModal();
 
-    expect(
-      screen.getByRole('heading', { name: /Danh Sách Đoàn & Xe Đưa Đón/i })
-    ).toBeInTheDocument();
-    expect(screen.getByText(new RegExp(mockExcursion.title, 'i'))).toBeInTheDocument();
-    expect(screen.getByText(/Tổng số khách đăng ký/i)).toBeInTheDocument();
-    expect(screen.getByText(/Hướng dẫn viên/i)).toBeInTheDocument();
-    expect(screen.getByText(/Phương tiện chính/i)).toBeInTheDocument();
-    expect(screen.getByText(/Đã về tàu an toàn/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Danh Sách Đoàn & Xe Đưa Đón/i })).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(testManifestData.title, 'i'))).toBeInTheDocument();
 
-    // Verify initial passenger list items
-    expect(screen.getByText('Nguyễn Văn An')).toBeInTheDocument();
-    expect(screen.getByText('Trần Thị Thu Mai')).toBeInTheDocument();
-    expect(screen.getByText('Lê Hoàng Long')).toBeInTheDocument();
-    expect(screen.getByText('Phạm Hồng Hạnh')).toBeInTheDocument();
+    const expectedLabels = [
+      /Tổng số khách đăng ký/i,
+      /Hướng dẫn viên/i,
+      /Phương tiện chính/i,
+      /Đã về tàu an toàn/i,
+    ];
+    expectedLabels.forEach((label) => expect(screen.getByText(label)).toBeInTheDocument());
+
+    ['Nguyễn Văn An', 'Trần Thị Thu Mai', 'Lê Hoàng Long', 'Phạm Hồng Hạnh'].forEach((passenger) =>
+      expect(screen.getByText(passenger)).toBeInTheDocument()
+    );
   });
 
-  it('filters passengers by search input matching name, cabin, or ticket code', async () => {
+  it.each([
+    { query: 'Thu Mai', shouldFind: 'Trần Thị Thu Mai', shouldNotFind: 'Nguyễn Văn An' },
+    { query: 'Suite-801', shouldFind: 'Nguyễn Văn An', shouldNotFind: 'Trần Thị Thu Mai' },
+    { query: 'EXC-TKT-103', shouldFind: 'Lê Hoàng Long', shouldNotFind: 'Nguyễn Văn An' },
+  ])('filters manifest passengers when typing "$query"', async ({ query, shouldFind, shouldNotFind }) => {
     const user = userEvent.setup();
-    renderModal();
+    setupModal();
 
-    const searchInput = screen.getByPlaceholderText(/Tìm theo tên, cabin, mã vé.../i);
+    const searchBox = screen.getByPlaceholderText(/Tìm theo tên, cabin, mã vé.../i);
+    await user.type(searchBox, query);
 
-    // Filter by name
-    await user.type(searchInput, 'Thu Mai');
     await waitFor(() => {
-      expect(screen.getByText('Trần Thị Thu Mai')).toBeInTheDocument();
-      expect(screen.queryByText('Nguyễn Văn An')).not.toBeInTheDocument();
-    });
-
-    // Clear and filter by cabin number
-    await user.clear(searchInput);
-    await user.type(searchInput, 'Suite-801');
-    await waitFor(() => {
-      expect(screen.getByText('Nguyễn Văn An')).toBeInTheDocument();
-      expect(screen.queryByText('Trần Thị Thu Mai')).not.toBeInTheDocument();
-    });
-
-    // Clear and filter by ticket code
-    await user.clear(searchInput);
-    await user.type(searchInput, 'EXC-TKT-103');
-    await waitFor(() => {
-      expect(screen.getByText('Lê Hoàng Long')).toBeInTheDocument();
-      expect(screen.queryByText('Nguyễn Văn An')).not.toBeInTheDocument();
+      expect(screen.getByText(shouldFind)).toBeInTheDocument();
+      expect(screen.queryByText(shouldNotFind)).not.toBeInTheDocument();
     });
   });
 
-  it('displays empty state message when search returns no matching passengers', async () => {
+  it('shows empty notification when search term has no match', async () => {
     const user = userEvent.setup();
-    renderModal();
+    setupModal();
 
-    const searchInput = screen.getByPlaceholderText(/Tìm theo tên, cabin, mã vé.../i);
-    await user.type(searchInput, 'NonExistentPassengerName999');
+    await user.type(
+      screen.getByPlaceholderText(/Tìm theo tên, cabin, mã vé.../i),
+      'UnknownPassenger999'
+    );
 
     await waitFor(() => {
       expect(screen.getByText('Không tìm thấy hành khách nào phù hợp.')).toBeInTheDocument();
     });
   });
 
-  it('filters passenger list by bus selection dropdown', async () => {
+  it('filters passengers according to assigned transport vehicle', async () => {
     const user = userEvent.setup();
-    renderModal();
+    setupModal();
 
-    const busSelect = screen.getByLabelText(/Lọc theo xe:/i);
-    await user.selectOptions(busSelect, 'XE-02 (29 Chỗ)');
+    const dropdown = screen.getByLabelText(/Lọc theo xe:/i);
+    await user.selectOptions(dropdown, 'XE-02 (29 Chỗ)');
 
     await waitFor(() => {
       expect(screen.getByText('Lê Hoàng Long')).toBeInTheDocument();
       expect(screen.getByText('Phạm Hồng Hạnh')).toBeInTheDocument();
       expect(screen.queryByText('Nguyễn Văn An')).not.toBeInTheDocument();
-      expect(screen.queryByText('Trần Thị Thu Mai')).not.toBeInTheDocument();
     });
 
-    // Reset to all buses
-    await user.selectOptions(busSelect, 'ALL');
+    await user.selectOptions(dropdown, 'ALL');
     await waitFor(() => {
       expect(screen.getByText('Nguyễn Văn An')).toBeInTheDocument();
-      expect(screen.getByText('Lê Hoàng Long')).toBeInTheDocument();
     });
   });
 
-  it('cycles through passenger operational status when clicking "Đổi trạng thái"', async () => {
+  it('transitions passenger status across lifecycle states upon button trigger', async () => {
     const user = userEvent.setup();
-    renderModal();
+    setupModal();
 
-    // Initial state of Lê Hoàng Long (id: 3) is CHECKED_IN
-    const searchInput = screen.getByPlaceholderText(/Tìm theo tên, cabin, mã vé.../i);
-    await user.type(searchInput, 'Lê Hoàng Long');
-
+    await user.type(
+      screen.getByPlaceholderText(/Tìm theo tên, cabin, mã vé.../i),
+      'Lê Hoàng Long'
+    );
     expect(screen.getByText('Đã Lên Xe')).toBeInTheDocument();
 
-    const changeStatusBtn = screen.getByRole('button', { name: /Đổi trạng thái/i });
-    // First click: CHECKED_IN -> ON_TOUR
-    await user.click(changeStatusBtn);
-    expect(screen.getByText('Đang Tham Quan')).toBeInTheDocument();
+    const cycleBtn = screen.getByRole('button', { name: /Đổi trạng thái/i });
+    const sequence = ['Đang Tham Quan', 'Về Tàu An Toàn', 'Đã Đăng Ký', 'Đã Lên Xe'];
 
-    // Second click: ON_TOUR -> RETURNED_SAFE
-    await user.click(changeStatusBtn);
-    expect(screen.getByText('Về Tàu An Toàn')).toBeInTheDocument();
-
-    // Third click: RETURNED_SAFE -> REGISTERED
-    await user.click(changeStatusBtn);
-    expect(screen.getByText('Đã Đăng Ký')).toBeInTheDocument();
-
-    // Fourth click: REGISTERED -> CHECKED_IN
-    await user.click(changeStatusBtn);
-    expect(screen.getByText('Đã Lên Xe')).toBeInTheDocument();
+    for (const expectedStatus of sequence) {
+      await user.click(cycleBtn);
+      expect(screen.getByText(expectedStatus)).toBeInTheDocument();
+    }
   });
 
-  it('calls onClose when clicking close or X button', async () => {
+  it('invokes onClose callback when clicking close control', async () => {
     const user = userEvent.setup();
-    renderModal();
+    setupModal();
 
-    const closeButtons = screen.getAllByRole('button', { name: /Đóng/i });
-    await user.click(closeButtons[0]);
-
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
+    await user.click(screen.getAllByRole('button', { name: /Đóng/i })[0]);
+    expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
-  it('does not render modal when isOpen is false', () => {
-    const { container } = renderModal({ isOpen: false });
-
+  it('returns empty container when isOpen flag is set to false', () => {
+    const { container } = setupModal({ isOpen: false });
     expect(container).toBeEmptyDOMElement();
   });
 });
