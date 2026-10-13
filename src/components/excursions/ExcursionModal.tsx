@@ -197,7 +197,7 @@ export function ExcursionModal({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} noValidate className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
           {apiError && (
             <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-center gap-2 text-xs text-rose-300">
               <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
@@ -615,20 +615,20 @@ export function ExcursionModal({
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+          {/* Form Action Controls */}
+          <div className="pt-4 border-t border-slate-800/90 flex items-center justify-end gap-3.5">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition-colors"
+              className="px-4 py-2 bg-slate-800/90 hover:bg-slate-750 text-slate-300 rounded-xl text-xs font-medium active:scale-95 transition-all"
             >
               Hủy Bỏ
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 transition-all flex items-center gap-2"
+              className="px-5 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 active:scale-95 transition-all flex items-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{submitting ? 'Đang lưu...' : isEditMode ? 'Lưu Cập Nhật' : 'Tạo Excursion'}</span>

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { ExcursionModal } from './ExcursionModal';
 import * as excursionService from '../../services/excursionService';
 
-describe('ExcursionModal Component Tests (KAN-172)', () => {
+describe('ExcursionModal Component Tests (KAN-172 & KAN-174)', () => {
   const mockOnClose = vi.fn();
   const mockOnSuccess = vi.fn();
 
@@ -27,6 +27,18 @@ describe('ExcursionModal Component Tests (KAN-172)', () => {
     expect(screen.getByLabelText(/Tên Tour Trên Bờ/i)).toHaveValue('');
     expect(screen.getByLabelText(/Mã Excursion/i)).toHaveValue('');
     expect(screen.getByLabelText(/Nhà Cung Cấp Tour Địa Phương/i)).toHaveValue('');
+  });
+
+  it('does not render anything when isOpen is false', () => {
+    const { container } = render(
+      <ExcursionModal
+        isOpen={false}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('renders correctly in Edit mode with pre-filled excursion data', () => {
@@ -76,6 +88,43 @@ describe('ExcursionModal Component Tests (KAN-172)', () => {
     expect(mockOnSuccess).not.toHaveBeenCalled();
   });
 
+  it('validates timing order: departure must be after meeting time', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ExcursionModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    const titleInput = screen.getByLabelText(/Tên Tour Trên Bờ/i);
+    const codeInput = screen.getByLabelText(/Mã Excursion/i);
+    const opInput = screen.getByLabelText(/Nhà Cung Cấp Tour Địa Phương/i);
+    const meetingInput = screen.getByLabelText(/Giờ Tập Trung/i);
+    const departureInput = screen.getByLabelText(/Giờ Xuất Bến/i);
+
+    await user.type(titleInput, 'Tour Chợ Đêm');
+    await user.type(codeInput, 'EXC-CHODEM-01');
+    await user.type(opInput, 'Night Market Co');
+
+    // Departure time earlier than meeting time
+    await user.clear(meetingInput);
+    await user.type(meetingInput, '18:30');
+    await user.clear(departureInput);
+    await user.type(departureInput, '18:00');
+
+    const submitBtn = screen.getByRole('button', { name: /Tạo Excursion/i });
+    await user.click(submitBtn);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Giờ khởi hành phải sau hoặc cùng giờ tập trung')
+      ).toBeInTheDocument();
+    });
+  });
+
   it('validates timing order: return to ship must not be later than all-aboard time', async () => {
     const user = userEvent.setup();
 
@@ -111,6 +160,45 @@ describe('ExcursionModal Component Tests (KAN-172)', () => {
         screen.getByText('Giờ quay lại tàu không thể trễ hơn giờ tàu nhổ neo (All Aboard)')
       ).toBeInTheDocument();
     });
+  });
+
+  it('dynamically displays safety margin messages based on return time and all-aboard time', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ExcursionModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    const returnInput = screen.getByLabelText(/Về Lại Tàu/i);
+    const allAboardInput = screen.getByLabelText(/All-Aboard/i);
+
+    // Case 1: Standard safe margin >= 30 mins (e.g. 11:30 return, 12:00 all aboard = 30m)
+    await user.clear(returnInput);
+    await user.type(returnInput, '11:30');
+    await user.clear(allAboardInput);
+    await user.type(allAboardInput, '12:00');
+
+    expect(
+      screen.getByText(/Đạt chuẩn an toàn hải hành \(>= 30 phút\)/i)
+    ).toBeInTheDocument();
+
+    // Case 2: Short margin < 30 mins but >= 0 (e.g. 11:45 return, 12:00 all aboard = 15m)
+    await user.clear(returnInput);
+    await user.type(returnInput, '11:45');
+    expect(
+      screen.getByText(/Cảnh báo: Khoảng cách ngắn dưới 30 phút/i)
+    ).toBeInTheDocument();
+
+    // Case 3: Negative margin (e.g. 12:15 return, 12:00 all aboard)
+    await user.clear(returnInput);
+    await user.type(returnInput, '12:15');
+    expect(
+      screen.getByText(/Nguy hiểm: Giờ về tàu muộn hơn giờ xuất bến/i)
+    ).toBeInTheDocument();
   });
 
   it('validates paid tour requires price greater than zero', async () => {
@@ -150,6 +238,64 @@ describe('ExcursionModal Component Tests (KAN-172)', () => {
         screen.getByText('Tour có tính phí bắt buộc phải có giá lớn hơn 0')
       ).toBeInTheDocument();
     });
+  });
+
+  it('validates max capacity boundaries (greater than 0 and <= 1000)', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ExcursionModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    await user.type(screen.getByLabelText(/Tên Tour Trên Bờ/i), 'Tour Lặn Biển San Hô');
+    await user.type(screen.getByLabelText(/Mã Excursion/i), 'EXC-LANBIEN-01');
+    await user.type(screen.getByLabelText(/Nhà Cung Cấp Tour Địa Phương/i), 'Coral Reef Co');
+
+    const capacityInput = screen.getByLabelText(/Sức Chứa Tối Đa/i);
+
+    // Empty or 0
+    await user.clear(capacityInput);
+
+    const submitBtn = screen.getByRole('button', { name: /Tạo Excursion/i });
+    await user.click(submitBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText('Số lượng chỗ tối đa phải lớn hơn 0')).toBeInTheDocument();
+    });
+
+    // Exceeds 1000
+    await user.type(capacityInput, '1500');
+    await user.click(submitBtn);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Sức chứa của một đoàn tour trên bờ không quá 1000 khách')
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('updates category and difficulty dropdown selections', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ExcursionModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    const categorySelect = screen.getByLabelText(/Chủ Đề \/ Thể Loại/i);
+    await user.selectOptions(categorySelect, 'CULINARY');
+    expect(categorySelect).toHaveValue('CULINARY');
+
+    const difficultySelect = screen.getByLabelText(/Mức Độ Vận Động/i);
+    await user.selectOptions(difficultySelect, 'CHALLENGING');
+    expect(difficultySelect).toHaveValue('CHALLENGING');
   });
 
   it('submits form successfully and calls onSuccess & onClose in Create mode', async () => {

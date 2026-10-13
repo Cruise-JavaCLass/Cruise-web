@@ -102,31 +102,32 @@ export function ExcursionStatusModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="status-modal-title"
+      aria-labelledby="excursion-status-modal-title"
+      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4"
     >
       <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/25 flex items-center justify-center text-cyan-400">
               <RefreshCw className="w-4 h-4" />
             </div>
             <div>
-              <h3 id="status-modal-title" className="text-sm font-bold text-white">
+              <h3 id="excursion-status-modal-title" className="text-sm font-bold text-white tracking-wide">
                 Chuyển Đổi Trạng Thái Tour Trên Bờ
               </h3>
-              <p className="text-xs text-slate-400 truncate max-w-[280px]">
+              <span className="text-xs text-slate-400 block truncate max-w-[280px]">
                 {excursion.title} ({excursion.code})
-              </p>
+              </span>
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-            title="Đóng"
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/80 transition-all cursor-pointer"
+            title="Đóng hộp thoại"
           >
             <X className="w-4 h-4" />
           </button>
@@ -215,20 +216,20 @@ export function ExcursionStatusModal({
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2.5">
+          {/* Modal Action Controls */}
+          <div className="pt-3.5 border-t border-slate-800 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700/80 active:scale-95 transition-all"
             >
-              Hủy
+              Hủy bỏ
             </button>
             <button
               type="submit"
               disabled={submitting || allowedTransitions.length === 0}
-              className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5"
+              className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 shadow-md shadow-cyan-900/30"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{submitting ? 'Đang cập nhật...' : 'Xác Nhận Đổi'}</span>

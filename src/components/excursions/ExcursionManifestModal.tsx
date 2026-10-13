@@ -260,18 +260,19 @@ export function ExcursionManifestModal({
             </table>
           </div>
 
-          {/* Modal Footer */}
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+          {/* Modal Footer Controls */}
+          <footer className="pt-3 border-t border-slate-800 flex items-center justify-between">
             <span className="text-[11px] text-slate-500">
               Hiển thị {filteredPassengers.length} / {passengers.length} hành khách
             </span>
             <button
+              type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium transition-colors"
+              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 rounded-xl text-xs font-medium transition-all"
             >
               Đóng
             </button>
-          </div>
+          </footer>
         </div>
       </div>
     </div>

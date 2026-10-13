@@ -159,4 +159,39 @@ describe('ExcursionDetailPage Component Tests (KAN-172)', () => {
       expect(screen.getByText('Danh sách tour đã điều hướng')).toBeInTheDocument();
     });
   });
+
+  it('renders DELAYED warning alert banner when excursion is delayed', async () => {
+    render(
+      <MemoryRouter initialEntries={['/excursions/4']}>
+        <Routes>
+          <Route path="/excursions/:id" element={<ExcursionDetailPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/CẢNH BÁO: CHUYẾN TOUR ĐANG BỊ TRỄ GIỜ/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Xe trung chuyển bị kẹt do thời tiết mưa lớn cục bộ/i)
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('displays paid pricing details and estimated revenue for paid excursion', async () => {
+    render(
+      <MemoryRouter initialEntries={['/excursions/2']}>
+        <Routes>
+          <Route path="/excursions/:id" element={<ExcursionDetailPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Phụ thu dịch vụ')).toBeInTheDocument();
+      expect(screen.getByText('Đơn giá vé:')).toBeInTheDocument();
+      expect(screen.getByText('Doanh thu dự kiến:')).toBeInTheDocument();
+    });
+  });
 });
