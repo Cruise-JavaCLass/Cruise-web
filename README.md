@@ -26,6 +26,7 @@
 > - [KAN-129](https://huytran20052022.atlassian.net/browse/KAN-129) - *Display Updated Itinerary Information — Hiển thị thông tin lịch trình đã cập nhật*  
 > - [KAN-130](https://huytran20052022.atlassian.net/browse/KAN-130) - *Display Itinerary Change History — Hiển thị lịch sử thay đổi lịch trình*  
 > - [KAN-131](https://huytran20052022.atlassian.net/browse/KAN-131) - *Test Itinerary Update Display — Test hiển thị cập nhật lịch trình và lịch sử thay đổi*  
+> - [KAN-172](https://huytran20052022.atlassian.net/browse/KAN-172) - *Build Excursion Management Interface — Giao diện quản lý tour trên bờ (Shore Excursions)*  
 
 ---
 
@@ -146,7 +147,9 @@ Cruise-web/
 * **`/`**: Dashboard Tổng quan (Chỉ số vận hành, doanh thu, thời tiết, an toàn).
 * **`/ships`**: Quản lý Đội tàu du lịch (Danh mục tàu, Form tạo mới và chỉnh sửa thông tin tàu kèm kiểm tra tính hợp lệ nghiệp vụ — KAN-92).
 * **`/itinerary`**: Quản lý lịch trình, cảng dừng (Ports of call), giờ tàu đến/rời bến.
-* **`/activities`**: Quản lý hoạt động giải trí và các tour du lịch trên bờ (Shore Excursions).
+* **`/excursions`**: Quản lý Tour trên bờ (Shore Excursion Management — KAN-172: Điều phối đối tác địa phương, giờ All-Aboard an toàn, danh sách đoàn & xe đưa đón).
+* **`/excursions/:id`**: Chi tiết Tour trên bờ (Lịch trình thời gian, đối tác, xe đưa đón và danh sách hành khách đoàn).
+* **`/activities`**: Quản lý hoạt động giải trí và các dịch vụ trên tàu (Onboard Activities).
 * **`/pos`**: Quản lý tài khoản chi tiêu phi tiền mặt (Cashless), đồng bộ giao dịch ngoại tuyến (Offline Sync).
 * **`/passengers`**: Danh sách hành khách, gán thẻ QR/RFID và theo dõi vùng định vị BLE.
 * **`*`**: Trang 404 (Not Found).
