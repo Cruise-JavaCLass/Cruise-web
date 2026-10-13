@@ -15,14 +15,18 @@ describe('ExcursionManifestModal Component Tests (KAN-174)', () => {
     vi.clearAllMocks();
   });
 
-  it('renders modal header, operational KPI cards, and passenger table', () => {
+  const renderModal = (props?: Partial<React.ComponentProps<typeof ExcursionManifestModal>>) =>
     render(
       <ExcursionManifestModal
         isOpen={true}
         onClose={mockOnClose}
         excursion={mockExcursion}
+        {...props}
       />
     );
+
+  it('renders modal header, operational KPI cards, and passenger table', () => {
+    renderModal();
 
     expect(
       screen.getByRole('heading', { name: /Danh Sách Đoàn & Xe Đưa Đón/i })
@@ -42,14 +46,7 @@ describe('ExcursionManifestModal Component Tests (KAN-174)', () => {
 
   it('filters passengers by search input matching name, cabin, or ticket code', async () => {
     const user = userEvent.setup();
-
-    render(
-      <ExcursionManifestModal
-        isOpen={true}
-        onClose={mockOnClose}
-        excursion={mockExcursion}
-      />
-    );
+    renderModal();
 
     const searchInput = screen.getByPlaceholderText(/Tìm theo tên, cabin, mã vé.../i);
 
@@ -79,14 +76,7 @@ describe('ExcursionManifestModal Component Tests (KAN-174)', () => {
 
   it('displays empty state message when search returns no matching passengers', async () => {
     const user = userEvent.setup();
-
-    render(
-      <ExcursionManifestModal
-        isOpen={true}
-        onClose={mockOnClose}
-        excursion={mockExcursion}
-      />
-    );
+    renderModal();
 
     const searchInput = screen.getByPlaceholderText(/Tìm theo tên, cabin, mã vé.../i);
     await user.type(searchInput, 'NonExistentPassengerName999');
@@ -98,14 +88,7 @@ describe('ExcursionManifestModal Component Tests (KAN-174)', () => {
 
   it('filters passenger list by bus selection dropdown', async () => {
     const user = userEvent.setup();
-
-    render(
-      <ExcursionManifestModal
-        isOpen={true}
-        onClose={mockOnClose}
-        excursion={mockExcursion}
-      />
-    );
+    renderModal();
 
     const busSelect = screen.getByLabelText(/Lọc theo xe:/i);
     await user.selectOptions(busSelect, 'XE-02 (29 Chỗ)');
@@ -127,14 +110,7 @@ describe('ExcursionManifestModal Component Tests (KAN-174)', () => {
 
   it('cycles through passenger operational status when clicking "Đổi trạng thái"', async () => {
     const user = userEvent.setup();
-
-    render(
-      <ExcursionManifestModal
-        isOpen={true}
-        onClose={mockOnClose}
-        excursion={mockExcursion}
-      />
-    );
+    renderModal();
 
     // Initial state of Lê Hoàng Long (id: 3) is CHECKED_IN
     const searchInput = screen.getByPlaceholderText(/Tìm theo tên, cabin, mã vé.../i);
@@ -162,14 +138,7 @@ describe('ExcursionManifestModal Component Tests (KAN-174)', () => {
 
   it('calls onClose when clicking close or X button', async () => {
     const user = userEvent.setup();
-
-    render(
-      <ExcursionManifestModal
-        isOpen={true}
-        onClose={mockOnClose}
-        excursion={mockExcursion}
-      />
-    );
+    renderModal();
 
     const closeButtons = screen.getAllByRole('button', { name: /Đóng/i });
     await user.click(closeButtons[0]);
@@ -178,13 +147,7 @@ describe('ExcursionManifestModal Component Tests (KAN-174)', () => {
   });
 
   it('does not render modal when isOpen is false', () => {
-    const { container } = render(
-      <ExcursionManifestModal
-        isOpen={false}
-        onClose={mockOnClose}
-        excursion={mockExcursion}
-      />
-    );
+    const { container } = renderModal({ isOpen: false });
 
     expect(container).toBeEmptyDOMElement();
   });
