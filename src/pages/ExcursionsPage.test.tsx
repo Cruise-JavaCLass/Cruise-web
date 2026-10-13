@@ -220,4 +220,106 @@ describe('ExcursionsPage Component Tests (KAN-172)', () => {
       expect(deleteSpy).toHaveBeenCalled();
     });
   });
+
+  it('filters excursions by Category pills and resets to all', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <ExcursionsPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Di Sản Phố Cổ Hội An & Rừng Dừa Bảy Mẫu')).toBeInTheDocument();
+      expect(screen.getByText('Khám phá Hang Sửng Sốt & Đảo Ti Tốp')).toBeInTheDocument();
+    });
+
+    const culturalPill = screen.getByRole('button', { name: 'Văn hóa & Di sản' });
+    await user.click(culturalPill);
+
+    await waitFor(() => {
+      expect(screen.getByText('Di Sản Phố Cổ Hội An & Rừng Dừa Bảy Mẫu')).toBeInTheDocument();
+      expect(screen.queryByText('Khám phá Hang Sửng Sốt & Đảo Ti Tốp')).not.toBeInTheDocument();
+    });
+
+    // Reset via Tất cả pill
+    const allPill = screen.getByRole('button', { name: 'Tất cả' });
+    await user.click(allPill);
+
+    await waitFor(() => {
+      expect(screen.getByText('Khám phá Hang Sửng Sốt & Đảo Ti Tốp')).toBeInTheDocument();
+    });
+  });
+
+  it('filters excursions by multi-day cruise Tour selection', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <ExcursionsPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Khám phá Hang Sửng Sốt & Đảo Ti Tốp')).toBeInTheDocument();
+    });
+
+    const tourSelect = screen.getByLabelText(/Tour Du Thuyền/i);
+    // Select Tour 3: Phu Quoc tour
+    await user.selectOptions(tourSelect, '3');
+
+    await waitFor(() => {
+      expect(screen.getByText('Khám Phá Quần Đảo An Thới & Sunset Sanato')).toBeInTheDocument();
+      expect(screen.queryByText('Khám phá Hang Sửng Sốt & Đảo Ti Tốp')).not.toBeInTheDocument();
+    });
+  });
+
+  it('re-fetches excursions when user clicks the Refresh button', async () => {
+    const user = userEvent.setup();
+    const fetchSpy = vi.spyOn(excursionService, 'fetchExcursions');
+
+    render(
+      <MemoryRouter>
+        <ExcursionsPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Khám phá Hang Sửng Sốt & Đảo Ti Tốp')).toBeInTheDocument();
+    });
+
+    const refreshBtn = screen.getByTitle('Làm mới');
+    await user.click(refreshBtn);
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalled();
+    });
+  });
+
+  it('opens ExcursionModal in Edit mode when clicking edit button on a tour card', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <ExcursionsPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Khám phá Hang Sửng Sốt & Đảo Ti Tốp')).toBeInTheDocument();
+    });
+
+    const editButtons = screen.getAllByTitle('Chỉnh sửa tour');
+    await user.click(editButtons[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: /Chỉnh Sửa Tour Trên Bờ/i })
+      ).toBeInTheDocument();
+      expect(screen.getByLabelText(/Tên Tour Trên Bờ/i)).toHaveValue(
+        'Khám phá Hang Sửng Sốt & Đảo Ti Tốp'
+      );
+    });
+  });
 });
