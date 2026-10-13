@@ -112,7 +112,7 @@ export function ShipsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -134,40 +134,40 @@ export function ShipsPage() {
 
       {/* Notification Toast */}
       {notification && (
-        <div className="p-3 bg-emerald-950/40 border border-emerald-800/60 rounded-xl flex items-center gap-2 text-emerald-300 text-xs transition-all">
+        <div className="p-3 bg-emerald-950/60 backdrop-blur-xl border border-emerald-800/60 rounded-xl flex items-center gap-2 text-emerald-300 text-xs transition-all">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{notification}</span>
         </div>
       )}
 
-      {/* Metrics Cards */}
+      {/* Metrics Cards — Translucent Glass */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-slate-900/70 border border-slate-800 p-4 rounded-xl">
-          <span className="text-xs text-slate-400">Tổng số tàu</span>
-          <p className="text-xl font-bold text-white mt-1">{ships.length}</p>
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-xl hover:border-cyan-500/30 transition-all">
+          <span className="text-xs text-slate-400 font-mono">Tổng số tàu</span>
+          <p className="text-2xl font-display text-white mt-1">{ships.length}</p>
         </div>
-        <div className="bg-slate-900/70 border border-slate-800 p-4 rounded-xl">
-          <span className="text-xs text-slate-400">Đang hoạt động / Biển</span>
-          <p className="text-xl font-bold text-emerald-400 mt-1">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-xl hover:border-cyan-500/30 transition-all">
+          <span className="text-xs text-slate-400 font-mono">Đang hoạt động / Biển</span>
+          <p className="text-2xl font-display text-emerald-400 mt-1">
             {ships.filter((s) => s.status === 'ACTIVE' || s.status === 'ON_VOYAGE').length}
           </p>
         </div>
-        <div className="bg-slate-900/70 border border-slate-800 p-4 rounded-xl">
-          <span className="text-xs text-slate-400">Đang neo đậu cảng</span>
-          <p className="text-xl font-bold text-blue-400 mt-1">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-xl hover:border-cyan-500/30 transition-all">
+          <span className="text-xs text-slate-400 font-mono">Đang neo đậu cảng</span>
+          <p className="text-2xl font-display text-blue-400 mt-1">
             {ships.filter((s) => s.status === 'DOCKED').length}
           </p>
         </div>
-        <div className="bg-slate-900/70 border border-slate-800 p-4 rounded-xl">
-          <span className="text-xs text-slate-400">Bảo dưỡng kỹ thuật</span>
-          <p className="text-xl font-bold text-amber-400 mt-1">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-xl hover:border-cyan-500/30 transition-all">
+          <span className="text-xs text-slate-400 font-mono">Bảo dưỡng kỹ thuật</span>
+          <p className="text-2xl font-display text-amber-400 mt-1">
             {ships.filter((s) => s.status === 'UNDER_MAINTENANCE').length}
           </p>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden p-4">
+      <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden p-4 shadow-xl">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="relative w-full sm:w-72">
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />

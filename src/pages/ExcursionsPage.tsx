@@ -129,10 +129,10 @@ export function ExcursionsPage() {
   const occupancyRate = totalCapacity > 0 ? Math.round((totalBooked / totalCapacity) * 100) : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-slate-900 border border-cyan-500/40 text-cyan-300 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs animate-in fade-in slide-in-from-top-4 duration-200">
+        <div className="fixed top-20 right-6 z-50 bg-[#030303]/80 backdrop-blur-xl border border-cyan-500/40 text-cyan-300 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs animate-in fade-in slide-in-from-top-4 duration-200">
           <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
           <span className="font-medium">{toastMessage}</span>
         </div>
@@ -149,7 +149,7 @@ export function ExcursionsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center bg-slate-800/80 p-0.5 rounded-xl border border-slate-700/60">
+          <div className="flex items-center bg-[#030303]/60 backdrop-blur-xl p-0.5 rounded-xl border border-white/10">
             <button
               onClick={() => setViewMode('grid')}
               className={`p-1.5 rounded-lg text-xs transition-colors ${
@@ -171,7 +171,7 @@ export function ExcursionsPage() {
           </div>
           <button
             onClick={() => void loadExcursionList()}
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition-colors"
+            className="p-2 bg-[#030303]/60 hover:bg-white/[0.06] backdrop-blur-xl text-slate-300 border border-white/10 rounded-xl text-xs font-medium transition-colors"
             title="Làm mới"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -185,12 +185,12 @@ export function ExcursionsPage() {
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards — Translucent Frosted Glass */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-cyan-500/30 transition-all">
           <div>
-            <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Tổng Chuyến Tour</p>
-            <h3 className="text-xl font-bold text-white mt-1">{totalCount} Tour</h3>
+            <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Tổng Chuyến Tour</p>
+            <h3 className="text-2xl font-display text-white mt-1">{totalCount} Tour</h3>
             <p className="text-[10px] text-cyan-400 mt-0.5">Theo các điểm cập cảng</p>
           </div>
           <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
@@ -198,10 +198,10 @@ export function ExcursionsPage() {
           </div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-blue-500/30 transition-all">
           <div>
-            <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Đang Khởi Hành</p>
-            <h3 className="text-xl font-bold text-blue-400 mt-1">{inProgressCount} Đoàn</h3>
+            <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Đang Khởi Hành</p>
+            <h3 className="text-2xl font-display text-blue-400 mt-1">{inProgressCount} Đoàn</h3>
             <p className="text-[10px] text-slate-400 mt-0.5">Khách đang ở trên bờ</p>
           </div>
           <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
@@ -210,15 +210,15 @@ export function ExcursionsPage() {
         </div>
 
         <div
-          className={`border rounded-2xl p-4 flex items-center justify-between ${
+          className={`border rounded-2xl p-4 flex items-center justify-between backdrop-blur-xl shadow-xl transition-all ${
             delayedCount > 0
-              ? 'bg-amber-950/30 border-amber-500/40'
-              : 'bg-slate-900/80 border-slate-800'
+              ? 'bg-amber-950/40 border-amber-500/40'
+              : 'bg-[#030303]/60 border-white/10 hover:border-amber-500/30'
           }`}
         >
           <div>
-            <p className="text-[11px] font-medium text-amber-400 uppercase tracking-wider">Cảnh Báo Trễ Giờ</p>
-            <h3 className="text-xl font-bold text-amber-300 mt-1">{delayedCount} Chuyến</h3>
+            <p className="text-[11px] font-mono text-amber-400 uppercase tracking-wider">Cảnh Báo Trễ Giờ</p>
+            <h3 className="text-2xl font-display text-amber-300 mt-1">{delayedCount} Chuyến</h3>
             <p className="text-[10px] text-amber-400/80 mt-0.5">
               {delayedCount > 0 ? 'Cần hỗ trợ đưa khách về tàu' : 'Lịch trình đúng kế hoạch'}
             </p>
@@ -228,10 +228,10 @@ export function ExcursionsPage() {
           </div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-emerald-500/30 transition-all">
           <div>
-            <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Lấp Đầy Chỗ</p>
-            <h3 className="text-xl font-bold text-emerald-400 mt-1">{occupancyRate}%</h3>
+            <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Lấp Đầy Chỗ</p>
+            <h3 className="text-2xl font-display text-emerald-400 mt-1">{occupancyRate}%</h3>
             <p className="text-[10px] text-slate-400 mt-0.5">
               {totalBooked} / {totalCapacity} chỗ đã đặt
             </p>
