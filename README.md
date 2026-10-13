@@ -28,6 +28,7 @@
 > - [KAN-131](https://huytran20052022.atlassian.net/browse/KAN-131) - *Test Itinerary Update Display — Test hiển thị cập nhật lịch trình và lịch sử thay đổi*  
 > - [KAN-172](https://huytran20052022.atlassian.net/browse/KAN-172) - *Build Excursion Management Interface — Giao diện quản lý tour trên bờ (Shore Excursions)*  
 > - [KAN-174](https://huytran20052022.atlassian.net/browse/KAN-174) - *Write Component Tests for Excursion Management — Test các thành phần giao diện tour bờ*  
+> - [KAN-175](https://huytran20052022.atlassian.net/browse/KAN-175) - *Test Price, Capacity and Schedule Validation — Test kiểm tra giá, sức chứa và lịch trình tour trên bờ*  
 
 ---
 

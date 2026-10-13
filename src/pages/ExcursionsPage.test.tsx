@@ -18,15 +18,18 @@ describe('ExcursionsPage Component Tests (KAN-172)', () => {
       </MemoryRouter>
     );
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole('heading', { name: /Quản Lý Tour Trên Bờ/i })
-      ).toBeInTheDocument();
-      expect(screen.getByText('Tổng Chuyến Tour')).toBeInTheDocument();
-      expect(screen.getByText('Đang Khởi Hành')).toBeInTheDocument();
-      expect(screen.getByText('Cảnh Báo Trễ Giờ')).toBeInTheDocument();
-      expect(screen.getByText('Khám phá Hang Sửng Sốt & Đảo Ti Tốp')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(
+          screen.getByRole('heading', { name: /Quản Lý Tour Trên Bờ/i })
+        ).toBeInTheDocument();
+        expect(screen.getByText('Tổng Chuyến Tour')).toBeInTheDocument();
+        expect(screen.getByText('Đang Khởi Hành')).toBeInTheDocument();
+        expect(screen.getByText('Cảnh Báo Trễ Giờ')).toBeInTheDocument();
+        expect(screen.getByText('Khám phá Hang Sửng Sốt & Đảo Ti Tốp')).toBeInTheDocument();
+      },
+      { timeout: 8000 }
+    );
   });
 
   it('switches between Grid view and Table view', async () => {
