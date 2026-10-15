@@ -703,10 +703,14 @@ export async function addPassengerToExcursion(
       throw new Error(`Tour đã đạt sức chứa tối đa (${existing.maxCapacity} khách)`);
     }
 
+    const maxId = passengers.reduce((max, p) => (p.id > max ? p.id : max), 0);
+    const newPassengerId = maxId + 1;
     const newPassenger: ExcursionPassenger = {
       ...passengerData,
-      id: Date.now() + Math.floor(Math.random() * 1000),
-      ticketCode: passengerData.ticketCode || `EXC-TKT-${Date.now().toString().slice(-4)}`,
+      id: newPassengerId,
+      ticketCode:
+        passengerData.ticketCode ||
+        `EXC-TKT-${String(newPassengerId).padStart(3, '0')}`,
     };
     passengers.push(newPassenger);
 

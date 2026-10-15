@@ -236,11 +236,14 @@ export function ExcursionManifestModal({
     const targetGroup =
       DEFAULT_EXCURSION_GROUPS.find((g) => g.id === newGroupId) || DEFAULT_EXCURSION_GROUPS[0];
 
+    const maxId = passengers.reduce((max, p) => (p.id > max ? p.id : max), 0);
+    const newPassengerId = maxId + 1;
+
     const newPassenger: ExcursionPassenger = {
-      id: Date.now() + Math.floor(Math.random() * 1000),
+      id: newPassengerId,
       passengerName: newPassengerName.trim(),
       cabinNumber: newCabinNumber.trim(),
-      ticketCode: `EXC-TKT-${Date.now().toString().slice(-4)}`,
+      ticketCode: `EXC-TKT-${String(newPassengerId).padStart(3, '0')}`,
       busNumber: targetGroup.busNumber,
       groupName: targetGroup.groupName,
       emergencyPhone: newPhone.trim() || '+84 900 000 000',
