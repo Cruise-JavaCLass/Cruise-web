@@ -29,7 +29,6 @@ import {
 } from '../services/excursionService';
 import { ExcursionModal } from '../components/excursions/ExcursionModal';
 import { ExcursionStatusModal } from '../components/excursions/ExcursionStatusModal';
-import { ExcursionManifestModal } from '../components/excursions/ExcursionManifestModal';
 
 export function ExcursionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -44,7 +43,6 @@ export function ExcursionDetailPage() {
   // Modals
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [isManifestModalOpen, setIsManifestModalOpen] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -175,12 +173,6 @@ export function ExcursionDetailPage() {
         </div>
 
         <div className="flex items-center gap-2.5">
-          <button
-            onClick={() => setIsManifestModalOpen(true)}
-            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
-          >
-            <Users className="w-3.5 h-3.5" /> Đoàn & Xe
-          </button>
           <button
             onClick={() => setIsStatusModalOpen(true)}
             className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
@@ -496,27 +488,6 @@ export function ExcursionDetailPage() {
             void loadExcursion();
           }}
           excursion={excursion}
-        />
-      )}
-
-      {/* Manifest Modal */}
-      {isManifestModalOpen && excursion && (
-        <ExcursionManifestModal
-          isOpen={isManifestModalOpen}
-          onClose={() => setIsManifestModalOpen(false)}
-          excursion={{ ...excursion, passengers }}
-          onUpdatePassengers={(updatedPassengers) => {
-            setPassengers(updatedPassengers);
-            setExcursion((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    passengers: updatedPassengers,
-                    bookedCount: updatedPassengers.length,
-                  }
-                : null
-            );
-          }}
         />
       )}
     </div>
