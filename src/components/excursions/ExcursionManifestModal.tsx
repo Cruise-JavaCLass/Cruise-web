@@ -99,13 +99,23 @@ export function ExcursionManifestModal({
     onUpdatePassengers?.(newPassengerList);
   };
 
+  // Helper to resolve a passenger's group ID matching groupName first, then busNumber
+  const resolvePassengerGroupId = (p: ExcursionPassenger): string => {
+    const byGroupName = DEFAULT_EXCURSION_GROUPS.find((g) => g.groupName === p.groupName);
+    if (byGroupName) return byGroupName.id;
+    const byBus = DEFAULT_EXCURSION_GROUPS.find((g) => g.busNumber === p.busNumber);
+    return byBus?.id || DEFAULT_EXCURSION_GROUPS[0].id;
+  };
+
   const filteredPassengers = passengers.filter((p) => {
     const matchSearch =
       p.passengerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.cabinNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.ticketCode.toLowerCase().includes(searchTerm.toLowerCase());
+    const passengerGroupId = resolvePassengerGroupId(p);
     const matchGroup =
       selectedGroup === 'ALL' ||
+      passengerGroupId === selectedGroup ||
       p.busNumber === selectedGroup ||
       p.groupName === selectedGroup;
     return matchSearch && matchGroup;
@@ -118,14 +128,6 @@ export function ExcursionManifestModal({
       ...DEFAULT_EXCURSION_GROUPS.map((g) => g.busNumber),
     ])
   );
-
-  // Helper to resolve a passenger's group ID matching groupName first, then busNumber
-  const resolvePassengerGroupId = (p: ExcursionPassenger): string => {
-    const byGroupName = DEFAULT_EXCURSION_GROUPS.find((g) => g.groupName === p.groupName);
-    if (byGroupName) return byGroupName.id;
-    const byBus = DEFAULT_EXCURSION_GROUPS.find((g) => g.busNumber === p.busNumber);
-    return byBus?.id || DEFAULT_EXCURSION_GROUPS[0].id;
-  };
 
   // Group breakdown calculations matching groupName first, then fallback to busNumber
   const groupCounts = DEFAULT_EXCURSION_GROUPS.map((g) => {
@@ -680,7 +682,7 @@ export function ExcursionManifestModal({
                 Tất cả các đoàn ({passengers.length})
               </button>
               {groupCounts.map((group) => {
-                const isSelected = selectedGroup === group.busNumber || selectedGroup === group.groupName;
+                const isSelected = selectedGroup === group.id || selectedGroup === group.busNumber || selectedGroup === group.groupName;
                 const isFull = group.currentCount >= group.maxSeats;
                 return (
                   <button
@@ -688,7 +690,7 @@ export function ExcursionManifestModal({
                     type="button"
                     role="tab"
                     aria-selected={isSelected}
-                    onClick={() => setSelectedGroup(isSelected ? 'ALL' : group.busNumber)}
+                    onClick={() => setSelectedGroup(isSelected ? 'ALL' : group.id)}
                     className={`px-2.5 py-1 rounded-lg border text-[11px] flex items-center gap-2 transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 font-semibold shadow-sm ring-1 ring-cyan-500/30'
