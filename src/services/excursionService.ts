@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios';
 import { apiClient } from './api';
 
 export type ExcursionStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'DELAYED';
@@ -616,8 +617,9 @@ export async function assignPassengerToGroup(
       if (idx !== -1) localExcursions[idx] = res.data.data;
       return res.data.data;
     }
-  } catch {
-    // fallback
+  } catch (err) {
+    if (isAxiosError(err) && err.response) throw err;
+    // network unavailable: fallback
   }
 
   const idx = localExcursions.findIndex((e) => e.id === excursionId);
@@ -654,8 +656,9 @@ export async function bulkAssignPassengersToGroup(
       if (idx !== -1) localExcursions[idx] = res.data.data;
       return res.data.data;
     }
-  } catch {
-    // fallback
+  } catch (err) {
+    if (isAxiosError(err) && err.response) throw err;
+    // network unavailable: fallback
   }
 
   const idx = localExcursions.findIndex((e) => e.id === excursionId);
@@ -691,8 +694,9 @@ export async function addPassengerToExcursion(
       if (idx !== -1) localExcursions[idx] = res.data.data;
       return res.data.data;
     }
-  } catch {
-    // fallback
+  } catch (err) {
+    if (isAxiosError(err) && err.response) throw err;
+    // network unavailable: fallback
   }
 
   const idx = localExcursions.findIndex((e) => e.id === excursionId);
@@ -739,8 +743,9 @@ export async function removePassengerFromExcursion(
       if (idx !== -1) localExcursions[idx] = res.data.data;
       return res.data.data;
     }
-  } catch {
-    // fallback
+  } catch (err) {
+    if (isAxiosError(err) && err.response) throw err;
+    // network unavailable: fallback
   }
 
   const idx = localExcursions.findIndex((e) => e.id === excursionId);

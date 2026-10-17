@@ -1,4 +1,4 @@
-import { useState, useId } from 'react';
+import { useState, useId, useRef, useEffect } from 'react';
 import {
   X,
   Bus,
@@ -19,6 +19,12 @@ import {
   type ExcursionPassenger,
   DEFAULT_EXCURSION_GROUPS,
   INITIAL_EXCURSION_PASSENGERS,
+  assignPassengerToGroup,
+  bulkAssignPassengersToGroup,
+  addPassengerToExcursion,
+  removePassengerFromExcursion,
+  autoAssignGroups,
+  updateExcursionPassengers,
 } from '../../services/excursionService';
 import { INITIAL_PASSENGERS } from '../../services/passengerService';
 
@@ -56,12 +62,25 @@ export function ExcursionManifestModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const notificationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const searchInputId = useId();
   const busFilterId = useId();
+
+  useEffect(() => {
+    return () => {
+      if (notificationTimeoutRef.current) {
+        clearTimeout(notificationTimeoutRef.current);
+      }
+    };
+  }, []);
 
   if (!isOpen) return null;
 
   const showNotification = (msg: string, isError = false) => {
+    if (notificationTimeoutRef.current) {
+      clearTimeout(notificationTimeoutRef.current);
+    }
     if (isError) {
       setErrorMessage(msg);
       setSuccessMessage(null);
@@ -69,7 +88,7 @@ export function ExcursionManifestModal({
       setSuccessMessage(msg);
       setErrorMessage(null);
     }
-    setTimeout(() => {
+    notificationTimeoutRef.current = setTimeout(() => {
       setSuccessMessage(null);
       setErrorMessage(null);
     }, 4500);
@@ -97,10 +116,18 @@ export function ExcursionManifestModal({
     ])
   );
 
-  // Group breakdown calculations
+  // Helper to resolve a passenger's group ID matching groupName first, then busNumber
+  const resolvePassengerGroupId = (p: ExcursionPassenger): string => {
+    const byGroupName = DEFAULT_EXCURSION_GROUPS.find((g) => g.groupName === p.groupName);
+    if (byGroupName) return byGroupName.id;
+    const byBus = DEFAULT_EXCURSION_GROUPS.find((g) => g.busNumber === p.busNumber);
+    return byBus?.id || DEFAULT_EXCURSION_GROUPS[0].id;
+  };
+
+  // Group breakdown calculations matching groupName first, then fallback to busNumber
   const groupCounts = DEFAULT_EXCURSION_GROUPS.map((g) => {
     const count = passengers.filter(
-      (p) => p.groupName === g.groupName || p.busNumber === g.busNumber
+      (p) => resolvePassengerGroupId(p) === g.id
     ).length;
     return {
       ...g,
@@ -108,7 +135,7 @@ export function ExcursionManifestModal({
     };
   });
 
-  const handleToggleStatus = (id: number) => {
+  const handleToggleStatus = async (id: number) => {
     const updated = passengers.map((p) => {
       if (p.id !== id) return p;
       let nextStatus: ExcursionPassenger['status'] = 'CHECKED_IN';
@@ -118,21 +145,37 @@ export function ExcursionManifestModal({
       else if (p.status === 'RETURNED_SAFE') nextStatus = 'REGISTERED';
       return { ...p, status: nextStatus };
     });
-    syncPassengers(updated);
+    try {
+      const res = await updateExcursionPassengers(excursion.id, updated);
+      syncPassengers(res.passengers || updated);
+    } catch {
+      syncPassengers(updated);
+    }
   };
 
   // Inline group/bus re-assignment for an individual passenger
-  const handleInlineGroupChange = (passengerId: number, targetGroupId: string) => {
+  const handleInlineGroupChange = async (passengerId: number, targetGroupId: string) => {
     const targetGroup = DEFAULT_EXCURSION_GROUPS.find((g) => g.id === targetGroupId);
     if (!targetGroup) return;
 
-    const updated = passengers.map((p) =>
-      p.id === passengerId
-        ? { ...p, groupName: targetGroup.groupName, busNumber: targetGroup.busNumber }
-        : p
-    );
-    syncPassengers(updated);
-    showNotification(`Đã chuyển hành khách sang ${targetGroup.groupName} (${targetGroup.busNumber})`);
+    try {
+      const res = await assignPassengerToGroup(
+        excursion.id,
+        passengerId,
+        targetGroup.groupName,
+        targetGroup.busNumber
+      );
+      syncPassengers(res.passengers || []);
+      showNotification(`Đã chuyển hành khách sang ${targetGroup.groupName} (${targetGroup.busNumber})`);
+    } catch (err) {
+      const fallbackList = passengers.map((p) =>
+        p.id === passengerId
+          ? { ...p, groupName: targetGroup.groupName, busNumber: targetGroup.busNumber }
+          : p
+      );
+      syncPassengers(fallbackList);
+      showNotification(`Đã chuyển hành khách sang ${targetGroup.groupName} (${targetGroup.busNumber})`);
+    }
   };
 
   // Selection toggle
@@ -159,47 +202,77 @@ export function ExcursionManifestModal({
   };
 
   // Bulk Assignment Handler
-  const handleBulkAssign = () => {
+  const handleBulkAssign = async () => {
     if (selectedPassengerIds.length === 0) return;
     const targetGroup = DEFAULT_EXCURSION_GROUPS.find((g) => g.id === bulkTargetGroupId);
     if (!targetGroup) return;
 
-    const selectedSet = new Set(selectedPassengerIds);
-    const updated = passengers.map((p) =>
-      selectedSet.has(p.id)
-        ? { ...p, groupName: targetGroup.groupName, busNumber: targetGroup.busNumber }
-        : p
-    );
-    syncPassengers(updated);
-    showNotification(
-      `Đã gán thành công ${selectedPassengerIds.length} hành khách vào ${targetGroup.groupName}!`
-    );
-    setSelectedPassengerIds([]);
+    const idsToAssign = [...selectedPassengerIds];
+    try {
+      const res = await bulkAssignPassengersToGroup(
+        excursion.id,
+        idsToAssign,
+        targetGroup.groupName,
+        targetGroup.busNumber
+      );
+      syncPassengers(res.passengers || []);
+      showNotification(
+        `Đã gán thành công ${idsToAssign.length} hành khách vào ${targetGroup.groupName}!`
+      );
+      setSelectedPassengerIds([]);
+    } catch (err) {
+      const selectedSet = new Set(idsToAssign);
+      const fallbackList = passengers.map((p) =>
+        selectedSet.has(p.id)
+          ? { ...p, groupName: targetGroup.groupName, busNumber: targetGroup.busNumber }
+          : p
+      );
+      syncPassengers(fallbackList);
+      showNotification(
+        `Đã gán thành công ${idsToAssign.length} hành khách vào ${targetGroup.groupName}!`
+      );
+      setSelectedPassengerIds([]);
+    }
   };
 
   // Auto-distribute passengers evenly across available groups/buses
-  const handleAutoAssign = () => {
+  const handleAutoAssign = async () => {
     if (passengers.length === 0) return;
-    const updated = passengers.map((p, index) => {
-      const targetGroup = DEFAULT_EXCURSION_GROUPS[index % DEFAULT_EXCURSION_GROUPS.length];
-      return {
-        ...p,
-        groupName: targetGroup.groupName,
-        busNumber: targetGroup.busNumber,
-      };
-    });
-    syncPassengers(updated);
-    showNotification(
-      `Đã tự động chia đều ${passengers.length} hành khách vào ${DEFAULT_EXCURSION_GROUPS.length} nhóm & xe!`
-    );
+    try {
+      const res = await autoAssignGroups(excursion.id, DEFAULT_EXCURSION_GROUPS);
+      syncPassengers(res.passengers || []);
+      showNotification(
+        `Đã tự động chia đều ${passengers.length} hành khách vào ${DEFAULT_EXCURSION_GROUPS.length} nhóm & xe!`
+      );
+    } catch {
+      const fallbackList = passengers.map((p, index) => {
+        const targetGroup = DEFAULT_EXCURSION_GROUPS[index % DEFAULT_EXCURSION_GROUPS.length];
+        return {
+          ...p,
+          groupName: targetGroup.groupName,
+          busNumber: targetGroup.busNumber,
+        };
+      });
+      syncPassengers(fallbackList);
+      showNotification(
+        `Đã tự động chia đều ${passengers.length} hành khách vào ${DEFAULT_EXCURSION_GROUPS.length} nhóm & xe!`
+      );
+    }
   };
 
   // Remove passenger from tour
-  const handleRemovePassenger = (id: number, name: string) => {
-    const updated = passengers.filter((p) => p.id !== id);
-    setSelectedPassengerIds((prev) => prev.filter((item) => item !== id));
-    syncPassengers(updated);
-    showNotification(`Đã xóa hành khách ${name} khỏi danh sách tour.`);
+  const handleRemovePassenger = async (id: number, name: string) => {
+    try {
+      const res = await removePassengerFromExcursion(excursion.id, id);
+      setSelectedPassengerIds((prev) => prev.filter((item) => item !== id));
+      syncPassengers(res.passengers || []);
+      showNotification(`Đã xóa hành khách ${name} khỏi danh sách tour.`);
+    } catch (err) {
+      const updated = passengers.filter((p) => p.id !== id);
+      setSelectedPassengerIds((prev) => prev.filter((item) => item !== id));
+      syncPassengers(updated);
+      showNotification(`Đã xóa hành khách ${name} khỏi danh sách tour.`);
+    }
   };
 
   // Handle ship passenger select in Add modal
@@ -216,7 +289,7 @@ export function ExcursionManifestModal({
   };
 
   // Add passenger submit
-  const handleAddPassengerSubmit = (e: React.FormEvent) => {
+  const handleAddPassengerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Check tour capacity
@@ -239,8 +312,7 @@ export function ExcursionManifestModal({
     const maxId = passengers.reduce((max, p) => (p.id > max ? p.id : max), 0);
     const newPassengerId = maxId + 1;
 
-    const newPassenger: ExcursionPassenger = {
-      id: newPassengerId,
+    const newPassengerData: Omit<ExcursionPassenger, 'id'> = {
       passengerName: newPassengerName.trim(),
       cabinNumber: newCabinNumber.trim(),
       ticketCode: `EXC-TKT-${String(newPassengerId).padStart(3, '0')}`,
@@ -251,9 +323,24 @@ export function ExcursionManifestModal({
       specialRequirements: newSpecialReq.trim() || undefined,
     };
 
-    const updated = [...passengers, newPassenger];
-    syncPassengers(updated);
-    showNotification(`Đã thêm hành khách ${newPassenger.passengerName} vào ${targetGroup.groupName}!`);
+    try {
+      const res = await addPassengerToExcursion(excursion.id, newPassengerData);
+      syncPassengers(res.passengers || []);
+      showNotification(`Đã thêm hành khách ${newPassengerData.passengerName} vào ${targetGroup.groupName}!`);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : '';
+      if (errMsg) {
+        showNotification(errMsg, true);
+        return;
+      }
+      const newPassenger: ExcursionPassenger = {
+        ...newPassengerData,
+        id: newPassengerId,
+      };
+      const updated = [...passengers, newPassenger];
+      syncPassengers(updated);
+      showNotification(`Đã thêm hành khách ${newPassenger.passengerName} vào ${targetGroup.groupName}!`);
+    }
 
     // Reset form
     setNewPassengerName('');
@@ -681,11 +768,8 @@ export function ExcursionManifestModal({
                     const Icon = badge.icon;
                     const isSelected = selectedPassengerIds.includes(p.id);
 
-                    // Find corresponding group for inline select matching
-                    const currentGroupId =
-                      DEFAULT_EXCURSION_GROUPS.find(
-                        (g) => g.groupName === p.groupName || g.busNumber === p.busNumber
-                      )?.id || DEFAULT_EXCURSION_GROUPS[0].id;
+                    // Find corresponding group for inline select matching (groupName first, then busNumber)
+                    const currentGroupId = resolvePassengerGroupId(p);
 
                     return (
                       <tr
