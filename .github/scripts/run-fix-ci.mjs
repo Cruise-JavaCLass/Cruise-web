@@ -11,7 +11,8 @@ import {
   createSession,
   redactSensitiveData,
   truncateLog,
-  writeStepSummary
+  writeStepSummary,
+  sanitizeLog
 } from './jules-client.mjs';
 
 async function fetchFailedJobsAndLogs(githubToken, owner, repo, runId) {

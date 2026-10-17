@@ -72,6 +72,7 @@ export function truncateLog(text, maxLines = 250, maxBytes = 25000) {
   let selectedLines = lines;
 
   if (lines.length > maxLines) {
+    // Keep header + tail of logs where errors typically occur
     const headCount = Math.min(30, Math.floor(maxLines * 0.15));
     const tailCount = maxLines - headCount - 1;
     selectedLines = [
@@ -83,8 +84,21 @@ export function truncateLog(text, maxLines = 250, maxBytes = 25000) {
 
   let result = selectedLines.join('\n');
   if (Buffer.byteLength(result, 'utf8') > maxBytes) {
-    result = result.slice(-maxBytes);
-    result = `[TRUNCATED BYTES]...\n` + result;
+    const prefix = '[TRUNCATED BYTES]...\n';
+    const prefixBytes = Buffer.byteLength(prefix, 'utf8');
+    if (maxBytes <= prefixBytes) {
+      result = prefix.slice(0, Math.max(0, maxBytes));
+    } else {
+      const suffix = [];
+      let suffixBytes = 0;
+      for (const character of [...result].reverse()) {
+        const characterBytes = Buffer.byteLength(character, 'utf8');
+        if (suffixBytes + characterBytes > maxBytes - prefixBytes) break;
+        suffix.push(character);
+        suffixBytes += characterBytes;
+      }
+      result = prefix + suffix.reverse().join('');
+    }
   }
 
   return result;

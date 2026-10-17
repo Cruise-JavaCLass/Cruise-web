@@ -5,11 +5,13 @@
  */
 
 import {
+  AUDIT_TITLE_PREFIX,
   discoverSource,
   checkDuplicateSession,
   generateAuditPrompt,
   createSession,
-  writeStepSummary
+  writeStepSummary,
+  sanitizeLog
 } from './jules-client.mjs';
 
 async function main() {
