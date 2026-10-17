@@ -606,17 +606,13 @@ export const DEFAULT_EXCURSION_GROUPS: ExcursionGroup[] = [
   { id: 'GRP-TENDER', groupName: 'Đoàn Thuyền Trung Chuyển', busNumber: 'Tàu trung chuyển TENDER-01', maxSeats: 60 },
 ];
 
-export async function assignPassengerToGroup(
+async function mutateExcursionWithFallback(
   excursionId: number,
-  passengerId: number,
-  groupName: string,
-  busNumber: string
+  apiCall: () => Promise<{ data?: { data?: ShoreExcursion } }>,
+  localMutation: (existing: ShoreExcursion) => ShoreExcursion
 ): Promise<ShoreExcursion> {
   try {
-    const res = await apiClient.patch<{ success: boolean; data: ShoreExcursion }>(
-      `/excursions/${excursionId}/passengers/${passengerId}/group`,
-      { groupName, busNumber }
-    );
+    const res = await apiCall();
     if (res.data?.data) {
       const idx = localExcursions.findIndex((e) => e.id === excursionId);
       if (idx !== -1) localExcursions[idx] = res.data.data;
@@ -629,20 +625,30 @@ export async function assignPassengerToGroup(
 
   const idx = localExcursions.findIndex((e) => e.id === excursionId);
   if (idx !== -1) {
-    const existing = localExcursions[idx];
-    const passengers = existing.passengers || [];
-    const updatedPassengers = passengers.map((p) =>
-      p.id === passengerId ? { ...p, groupName, busNumber } : p
-    );
-    const updated: ShoreExcursion = {
-      ...existing,
-      passengers: updatedPassengers,
-      updatedAt: new Date().toISOString(),
-    };
+    const updated = localMutation(localExcursions[idx]);
     localExcursions[idx] = updated;
     return updated;
   }
   throw new Error(`Excursion not found with id ${excursionId}`);
+}
+
+export async function assignPassengerToGroup(
+  excursionId: number,
+  passengerId: number,
+  groupName: string,
+  busNumber: string
+): Promise<ShoreExcursion> {
+  return mutateExcursionWithFallback(
+    excursionId,
+    () => apiClient.patch(`/excursions/${excursionId}/passengers/${passengerId}/group`, { groupName, busNumber }),
+    (existing) => ({
+      ...existing,
+      passengers: (existing.passengers || []).map((p) =>
+        p.id === passengerId ? { ...p, groupName, busNumber } : p
+      ),
+      updatedAt: new Date().toISOString(),
+    })
+  );
 }
 
 export async function bulkAssignPassengersToGroup(
@@ -651,122 +657,67 @@ export async function bulkAssignPassengersToGroup(
   groupName: string,
   busNumber: string
 ): Promise<ShoreExcursion> {
-  try {
-    const res = await apiClient.patch<{ success: boolean; data: ShoreExcursion }>(
-      `/excursions/${excursionId}/passengers/bulk-group`,
-      { passengerIds, groupName, busNumber }
-    );
-    if (res.data?.data) {
-      const idx = localExcursions.findIndex((e) => e.id === excursionId);
-      if (idx !== -1) localExcursions[idx] = res.data.data;
-      return res.data.data;
-    }
-  } catch (err) {
-    if (isAxiosError(err) && err.response) throw err;
-    // network unavailable: fallback
-  }
-
-  const idx = localExcursions.findIndex((e) => e.id === excursionId);
-  if (idx !== -1) {
-    const existing = localExcursions[idx];
-    const passengers = existing.passengers || [];
-    const idSet = new Set(passengerIds);
-    const updatedPassengers = passengers.map((p) =>
-      idSet.has(p.id) ? { ...p, groupName, busNumber } : p
-    );
-    const updated: ShoreExcursion = {
+  const idSet = new Set(passengerIds);
+  return mutateExcursionWithFallback(
+    excursionId,
+    () => apiClient.patch(`/excursions/${excursionId}/passengers/bulk-group`, { passengerIds, groupName, busNumber }),
+    (existing) => ({
       ...existing,
-      passengers: updatedPassengers,
+      passengers: (existing.passengers || []).map((p) =>
+        idSet.has(p.id) ? { ...p, groupName, busNumber } : p
+      ),
       updatedAt: new Date().toISOString(),
-    };
-    localExcursions[idx] = updated;
-    return updated;
-  }
-  throw new Error(`Excursion not found with id ${excursionId}`);
+    })
+  );
 }
 
 export async function addPassengerToExcursion(
   excursionId: number,
   passengerData: Omit<ExcursionPassenger, 'id'>
 ): Promise<ShoreExcursion> {
-  try {
-    const res = await apiClient.post<{ success: boolean; data: ShoreExcursion }>(
-      `/excursions/${excursionId}/passengers`,
-      passengerData
-    );
-    if (res.data?.data) {
-      const idx = localExcursions.findIndex((e) => e.id === excursionId);
-      if (idx !== -1) localExcursions[idx] = res.data.data;
-      return res.data.data;
+  return mutateExcursionWithFallback(
+    excursionId,
+    () => apiClient.post(`/excursions/${excursionId}/passengers`, passengerData),
+    (existing) => {
+      const passengers = existing.passengers ? [...existing.passengers] : [];
+      if (passengers.length >= existing.maxCapacity) {
+        throw new Error(`Tour đã đạt sức chứa tối đa (${existing.maxCapacity} khách)`);
+      }
+      const maxId = passengers.reduce((max, p) => (p.id > max ? p.id : max), 0);
+      const newPassengerId = maxId + 1;
+      const newPassenger: ExcursionPassenger = {
+        ...passengerData,
+        id: newPassengerId,
+        ticketCode: passengerData.ticketCode || `EXC-TKT-${String(newPassengerId).padStart(3, '0')}`,
+      };
+      passengers.push(newPassenger);
+      return {
+        ...existing,
+        passengers,
+        bookedCount: passengers.length,
+        updatedAt: new Date().toISOString(),
+      };
     }
-  } catch (err) {
-    if (isAxiosError(err) && err.response) throw err;
-    // network unavailable: fallback
-  }
-
-  const idx = localExcursions.findIndex((e) => e.id === excursionId);
-  if (idx !== -1) {
-    const existing = localExcursions[idx];
-    const passengers = existing.passengers ? [...existing.passengers] : [];
-    if (passengers.length >= existing.maxCapacity) {
-      throw new Error(`Tour đã đạt sức chứa tối đa (${existing.maxCapacity} khách)`);
-    }
-
-    const maxId = passengers.reduce((max, p) => (p.id > max ? p.id : max), 0);
-    const newPassengerId = maxId + 1;
-    const newPassenger: ExcursionPassenger = {
-      ...passengerData,
-      id: newPassengerId,
-      ticketCode:
-        passengerData.ticketCode ||
-        `EXC-TKT-${String(newPassengerId).padStart(3, '0')}`,
-    };
-    passengers.push(newPassenger);
-
-    const updated: ShoreExcursion = {
-      ...existing,
-      passengers,
-      bookedCount: passengers.length,
-      updatedAt: new Date().toISOString(),
-    };
-    localExcursions[idx] = updated;
-    return updated;
-  }
-  throw new Error(`Excursion not found with id ${excursionId}`);
+  );
 }
 
 export async function removePassengerFromExcursion(
   excursionId: number,
   passengerId: number
 ): Promise<ShoreExcursion> {
-  try {
-    const res = await apiClient.delete<{ success: boolean; data: ShoreExcursion }>(
-      `/excursions/${excursionId}/passengers/${passengerId}`
-    );
-    if (res.data?.data) {
-      const idx = localExcursions.findIndex((e) => e.id === excursionId);
-      if (idx !== -1) localExcursions[idx] = res.data.data;
-      return res.data.data;
+  return mutateExcursionWithFallback(
+    excursionId,
+    () => apiClient.delete(`/excursions/${excursionId}/passengers/${passengerId}`),
+    (existing) => {
+      const passengers = (existing.passengers || []).filter((p) => p.id !== passengerId);
+      return {
+        ...existing,
+        passengers,
+        bookedCount: passengers.length,
+        updatedAt: new Date().toISOString(),
+      };
     }
-  } catch (err) {
-    if (isAxiosError(err) && err.response) throw err;
-    // network unavailable: fallback
-  }
-
-  const idx = localExcursions.findIndex((e) => e.id === excursionId);
-  if (idx !== -1) {
-    const existing = localExcursions[idx];
-    const passengers = (existing.passengers || []).filter((p) => p.id !== passengerId);
-    const updated: ShoreExcursion = {
-      ...existing,
-      passengers,
-      bookedCount: passengers.length,
-      updatedAt: new Date().toISOString(),
-    };
-    localExcursions[idx] = updated;
-    return updated;
-  }
-  throw new Error(`Excursion not found with id ${excursionId}`);
+  );
 }
 
 export async function autoAssignGroups(
