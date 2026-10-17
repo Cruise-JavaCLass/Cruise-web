@@ -65,7 +65,7 @@ ${details}
 ### Resolution Instructions:
 1. **Analyze Failure Context:** Identify specific lint warnings (Oxlint), TypeScript compiler errors, Vitest test breakages, or CodeRabbit feedback.
 2. **Implement Targeted Fix:** Checkout \`${prBranch}\` and modify the code cleanly to resolve all cited issues without breaking existing functionality.
-3. **Run Verification:** Run \`npm run lint\` and \`npm test\` to ensure tests pass and build succeeds.
+3. **Run Verification:** Run \`npm run lint\`, \`npm test\`, and \`npm run build\` to ensure tests pass, no type errors exist, and the build succeeds.
 4. **Push to PR:** Commit and push directly to the branch \`${prBranch}\` so the PR checks re-trigger and pass.`;
 
   const sessionTitle = `Auto-Fix PR #${prNumber} (${failureType}): ${prBranch.slice(0, 40)}`;
