@@ -5,7 +5,7 @@ import { PassengerCatalogPage } from '../pages/PassengerCatalogPage';
 import { CatalogItemCard } from '../components/passenger/CatalogItemCard';
 import { CatalogFilterBar } from '../components/passenger/CatalogFilterBar';
 import { CatalogDetailModal } from '../components/passenger/CatalogDetailModal';
-import { passengerCatalogService, PassengerCatalogItem } from '../services/passengerCatalogService';
+import { passengerCatalogService, type PassengerCatalogItem } from '../services/passengerCatalogService';
 
 const mockItem: PassengerCatalogItem = {
   id: 101,
