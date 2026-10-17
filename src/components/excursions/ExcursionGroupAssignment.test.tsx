@@ -8,7 +8,7 @@ import {
   DEFAULT_EXCURSION_GROUPS,
 } from '../../services/excursionService';
 
-describe('ExcursionGroupAssignment Tests (KAN-176)', () => {
+describe('ExcursionGroupAssignment Tests (KAN-181)', () => {
   const handleClose = vi.fn();
   const handleUpdatePassengers = vi.fn();
 
