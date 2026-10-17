@@ -25,7 +25,7 @@ jobs:
       - name: Set up Node.js 22
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install Dependencies
@@ -40,7 +40,7 @@ jobs:
           CI: true
 
       - name: Upload Vitest Coverage Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: frontend-coverage-report
@@ -51,7 +51,7 @@ jobs:
         run: npm run build
 
       - name: Upload Production Build Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: frontend-dist
           path: ./dist/

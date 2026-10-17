@@ -729,6 +729,17 @@ export function ExcursionsPage() {
           isOpen={isManifestModalOpen}
           onClose={() => setIsManifestModalOpen(false)}
           excursion={excursionForManifest}
+          onUpdatePassengers={(updatedPassengers) => {
+            const updated = {
+              ...excursionForManifest,
+              passengers: updatedPassengers,
+              bookedCount: updatedPassengers.length,
+            };
+            setExcursionForManifest(updated);
+            setExcursions((prev) =>
+              prev.map((e) => (e.id === updated.id ? updated : e))
+            );
+          }}
         />
       )}
     </div>
