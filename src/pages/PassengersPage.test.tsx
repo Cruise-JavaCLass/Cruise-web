@@ -68,8 +68,10 @@ describe('PassengersPage (Component & User Interaction Tests)', () => {
     const searchInput = screen.getByRole('searchbox', { name: /Tìm kiếm hành khách/i });
 
     await user.type(searchInput, 'Bảo');
-    expect(screen.getByText('Đỗ Quốc Bảo')).toBeInTheDocument();
-    expect(screen.queryByText('Nguyễn Văn Minh')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Đỗ Quốc Bảo')).toBeInTheDocument();
+      expect(screen.queryByText('Nguyễn Văn Minh')).not.toBeInTheDocument();
+    });
 
     await user.clear(searchInput);
     expect(await screen.findByText('Nguyễn Văn Minh')).toBeInTheDocument();
