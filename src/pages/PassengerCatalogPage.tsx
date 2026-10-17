@@ -38,7 +38,7 @@ export const PassengerCatalogPage: React.FC = () => {
       }
     };
 
-    fetchCatalog();
+    void fetchCatalog();
 
     return () => {
       isMounted = false;
