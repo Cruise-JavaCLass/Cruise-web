@@ -130,6 +130,8 @@ describe('CatalogFilterBar Component', () => {
   });
 });
 
+import { MemoryRouter } from 'react-router-dom';
+
 describe('CatalogDetailModal Component', () => {
   it('displays operational timeline and closes when requested', () => {
     const handleClose = vi.fn();
@@ -141,7 +143,7 @@ describe('CatalogDetailModal Component', () => {
     expect(screen.getByText('08:00')).toBeInTheDocument();
     expect(screen.getByText('15:30')).toBeInTheDocument();
 
-    const closeButton = screen.getByRole('button', { name: /Đóng/i });
+    const closeButton = screen.getByRole('button', { name: /^Đóng$/i });
     fireEvent.click(closeButton);
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
@@ -157,7 +159,11 @@ describe('PassengerCatalogPage Integration', () => {
       number: 0
     });
 
-    render(<PassengerCatalogPage />);
+    render(
+      <MemoryRouter>
+        <PassengerCatalogPage />
+      </MemoryRouter>
+    );
 
     expect(screen.getByText('Duyệt Hoạt Động & Tour Bờ')).toBeInTheDocument();
 

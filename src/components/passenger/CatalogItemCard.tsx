@@ -46,7 +46,7 @@ export const CatalogItemCard: React.FC<CatalogItemCardProps> = ({ item, onSelect
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
-                <Tag className="h-3 w-3" /> {item.price > 0 ? `$${item.price.toFixed(2)}` : 'Tính phí'}
+                <Tag className="h-3 w-3" /> {item.price > 0 ? `${item.currency || '$'}${item.price.toFixed(2)}` : 'Tính phí'}
               </span>
             )}
           </div>

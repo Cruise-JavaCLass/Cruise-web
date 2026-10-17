@@ -23,14 +23,30 @@ export const CatalogDetailModal: React.FC<CatalogDetailModalProps> = ({
 }) => {
   const isExcursion = item.itemType === 'SHORE_EXCURSION';
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-catalog-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200"
+    >
       <div className="relative w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-800">
         {/* Header */}
         <div className="relative bg-gradient-to-r from-indigo-700 to-blue-600 p-6 text-white sm:p-8">
           <button
             type="button"
             onClick={onClose}
+            aria-label="Đóng cửa sổ chi tiết"
             className="absolute top-5 right-5 rounded-full bg-white/10 p-2 text-white/80 transition-colors hover:bg-white/20 hover:text-white"
           >
             <X className="h-5 w-5" />
@@ -52,7 +68,7 @@ export const CatalogDetailModal: React.FC<CatalogDetailModalProps> = ({
             </span>
           </div>
 
-          <h2 className="text-xl font-black sm:text-2xl">{item.title}</h2>
+          <h2 id="modal-catalog-title" className="text-xl font-black sm:text-2xl">{item.title}</h2>
           <p className="mt-1 text-xs text-indigo-100 flex items-center gap-1.5">
             <Calendar className="h-3.5 w-3.5" /> Ngày diễn ra: {item.activityDate}
           </p>
@@ -138,7 +154,7 @@ export const CatalogDetailModal: React.FC<CatalogDetailModalProps> = ({
                     </span>
                   ) : (
                     <span className="text-sm font-bold text-slate-800 dark:text-white">
-                      Người lớn: ${item.price.toFixed(2)} {item.childPrice ? `• Trẻ em: $${item.childPrice.toFixed(2)}` : ''}
+                      Người lớn: {item.currency || '$'}{item.price.toFixed(2)} {item.childPrice ? `• Trẻ em: ${item.currency || '$'}${item.childPrice.toFixed(2)}` : ''}
                     </span>
                   )}
                 </div>

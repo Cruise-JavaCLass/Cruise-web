@@ -47,6 +47,7 @@ export interface PagedResponse<T> {
   totalPages: number;
   size: number;
   number: number;
+  isFallback?: boolean;
 }
 
 export const passengerCatalogService = {
@@ -60,13 +61,13 @@ export const passengerCatalogService = {
         { params }
       );
       if (response.data && response.data.data) {
-        return response.data.data;
+        return { ...response.data.data, isFallback: false };
       }
     } catch (error) {
-      // Fallback for standalone frontend or local mock
-      console.warn('API /api/passenger-portal/catalog unavailable, using local mock/fallback data.', error);
+      console.warn('API /api/passenger-portal/catalog unavailable, using local demo fallback data.', error);
     }
-    return getFallbackCatalogItems(tourId, params);
+    const fallback = getFallbackCatalogItems(tourId, params);
+    return { ...fallback, isFallback: true };
   },
 
   async getCatalogItemDetail(

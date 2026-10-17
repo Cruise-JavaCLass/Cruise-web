@@ -5,11 +5,17 @@ import { Search, Ship, Compass, CheckCircle2, DollarSign, X } from 'lucide-react
 interface CatalogFilterBarProps {
   filters: CatalogFilterParams;
   onFilterChange: (filters: Partial<CatalogFilterParams>) => void;
+  ports?: Array<{ id: number; name: string }>;
 }
 
 export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
   filters,
-  onFilterChange
+  onFilterChange,
+  ports = [
+    { id: 101, name: 'Hạ Long (Quảng Ninh)' },
+    { id: 102, name: 'Tiên Sa (Đà Nẵng)' },
+    { id: 103, name: 'An Thới (Phú Quốc)' }
+  ]
 }) => {
   const handleKeywordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onFilterChange({ keyword: e.target.value });
@@ -27,18 +33,25 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
     onFilterChange({ dayNumber: day });
   };
 
+  const handlePortSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    onFilterChange({ portId: val ? Number(val) : undefined });
+  };
+
   const hasActiveFilters =
     Boolean(filters.keyword) ||
     filters.itemType !== undefined ||
     filters.isIncluded !== undefined ||
-    filters.dayNumber !== undefined;
+    filters.dayNumber !== undefined ||
+    filters.portId !== undefined;
 
   const handleResetFilters = () => {
     onFilterChange({
       keyword: '',
       itemType: undefined,
       isIncluded: undefined,
-      dayNumber: undefined
+      dayNumber: undefined,
+      portId: undefined
     });
   };
 
@@ -143,6 +156,26 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
           >
             <DollarSign className="h-3 w-3" /> Trả phí thêm
           </button>
+        </div>
+
+        {/* Port Filter */}
+        <div className="flex items-center gap-1.5">
+          <label htmlFor="port-filter-select" className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            Cảng ghé:
+          </label>
+          <select
+            id="port-filter-select"
+            value={filters.portId || ''}
+            onChange={handlePortSelect}
+            className="rounded-lg border border-slate-200 bg-slate-50 py-1.5 px-2 text-xs font-semibold text-slate-700 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+          >
+            <option value="">Tất cả cảng</option>
+            {ports.map(port => (
+              <option key={port.id} value={port.id}>
+                {port.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Day Number Pills */}

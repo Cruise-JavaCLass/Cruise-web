@@ -7,18 +7,22 @@ import {
 import { CatalogItemCard } from '../components/passenger/CatalogItemCard';
 import { CatalogDetailModal } from '../components/passenger/CatalogDetailModal';
 import { CatalogFilterBar } from '../components/passenger/CatalogFilterBar';
-import { Compass, Sparkles } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Compass, Sparkles, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
 
 export const PassengerCatalogPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [items, setItems] = useState<PassengerCatalogItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedItem, setSelectedItem] = useState<PassengerCatalogItem | null>(null);
+  const [isFallbackData, setIsFallbackData] = useState<boolean>(false);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const [filters, setFilters] = useState<CatalogFilterParams>({
     page: 0,
-    size: 20
+    size: 12
   });
 
-  const tourId = 1;
+  const tourId = Number(searchParams.get('tourId')) || 1;
 
   useEffect(() => {
     let isMounted = true;
@@ -28,6 +32,8 @@ export const PassengerCatalogPage: React.FC = () => {
         const response = await passengerCatalogService.getCatalogItems(tourId, filters);
         if (isMounted) {
           setItems(response.content);
+          setTotalPages(response.totalPages);
+          setIsFallbackData(Boolean(response.isFallback));
         }
       } catch (err) {
         console.error('Lỗi khi tải danh mục hoạt động:', err);
@@ -43,7 +49,16 @@ export const PassengerCatalogPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [filters]);
+  }, [tourId, filters]);
+
+  const handleSelectItem = async (item: PassengerCatalogItem) => {
+    try {
+      const freshDetail = await passengerCatalogService.getCatalogItemDetail(item.itemType, item.id);
+      setSelectedItem(freshDetail || item);
+    } catch {
+      setSelectedItem(item);
+    }
+  };
 
   const handleFilterChange = (newFilters: Partial<CatalogFilterParams>) => {
     setFilters(prev => ({
@@ -51,6 +66,15 @@ export const PassengerCatalogPage: React.FC = () => {
       ...newFilters,
       page: 0
     }));
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      setFilters(prev => ({
+        ...prev,
+        page: newPage
+      }));
+    }
   };
 
   return (
@@ -80,6 +104,16 @@ export const PassengerCatalogPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Fallback Demo Mode Notification */}
+        {isFallbackData && (
+          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-xs text-amber-800 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+            <span>
+              <strong>Chế độ xem trước (Demo Mode):</strong> Dữ liệu đang được hiển thị từ danh mục mô phỏng mẫu do chưa kết nối được máy chủ gateway trực tiếp.
+            </span>
+          </div>
+        )}
+
         {/* Filter Controls Component */}
         <CatalogFilterBar filters={filters} onFilterChange={handleFilterChange} />
 
@@ -104,15 +138,42 @@ export const PassengerCatalogPage: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {items.map(item => (
-              <CatalogItemCard
-                key={`${item.itemType}-${item.id}`}
-                item={item}
-                onSelect={setSelectedItem}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {items.map(item => (
+                <CatalogItemCard
+                  key={`${item.itemType}-${item.id}`}
+                  item={item}
+                  onSelect={handleSelectItem}
+                />
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="mt-8 flex items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handlePageChange((filters.page || 0) - 1)}
+                  disabled={(filters.page || 0) === 0}
+                  className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                >
+                  <ChevronLeft className="h-4 w-4" /> Trang trước
+                </button>
+                <span className="px-3 text-xs font-bold text-slate-600 dark:text-slate-400">
+                  Trang {(filters.page || 0) + 1} / {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handlePageChange((filters.page || 0) + 1)}
+                  disabled={(filters.page || 0) >= totalPages - 1}
+                  className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                >
+                  Trang sau <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {/* Detail Modal Component */}
