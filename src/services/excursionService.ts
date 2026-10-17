@@ -471,7 +471,12 @@ export async function fetchExcursions(params?: {
 export async function getExcursionById(id: number): Promise<ShoreExcursion | null> {
   try {
     const res = await apiClient.get<{ success: boolean; data: ShoreExcursion }>(`/excursions/${id}`);
-    if (res.data?.data) return res.data.data;
+    if (res.data?.data) {
+      const idx = localExcursions.findIndex((e) => e.id === id);
+      if (idx !== -1) localExcursions[idx] = res.data.data;
+      else localExcursions.push(res.data.data);
+      return res.data.data;
+    }
   } catch {
     // fallback
   }

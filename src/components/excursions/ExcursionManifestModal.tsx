@@ -59,6 +59,7 @@ export function ExcursionManifestModal({
   const [newPhone, setNewPhone] = useState('');
   const [newSpecialReq, setNewSpecialReq] = useState('');
   const [newGroupId, setNewGroupId] = useState<string>(DEFAULT_EXCURSION_GROUPS[0].id);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -165,16 +166,13 @@ export function ExcursionManifestModal({
         targetGroup.groupName,
         targetGroup.busNumber
       );
-      syncPassengers(res.passengers || []);
+      syncPassengers(res.passengers ?? passengers);
       showNotification(`Đã chuyển hành khách sang ${targetGroup.groupName} (${targetGroup.busNumber})`);
-    } catch (err) {
-      const fallbackList = passengers.map((p) =>
-        p.id === passengerId
-          ? { ...p, groupName: targetGroup.groupName, busNumber: targetGroup.busNumber }
-          : p
-      );
-      syncPassengers(fallbackList);
-      showNotification(`Đã chuyển hành khách sang ${targetGroup.groupName} (${targetGroup.busNumber})`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error && err.message
+        ? err.message
+        : 'Không thể đổi nhóm cho hành khách.';
+      showNotification(msg, true);
     }
   };
 
@@ -215,45 +213,38 @@ export function ExcursionManifestModal({
         targetGroup.groupName,
         targetGroup.busNumber
       );
-      syncPassengers(res.passengers || []);
+      syncPassengers(res.passengers ?? passengers);
       showNotification(
         `Đã gán thành công ${idsToAssign.length} hành khách vào ${targetGroup.groupName}!`
       );
       setSelectedPassengerIds([]);
-    } catch (err) {
-      const selectedSet = new Set(idsToAssign);
-      const fallbackList = passengers.map((p) =>
-        selectedSet.has(p.id)
-          ? { ...p, groupName: targetGroup.groupName, busNumber: targetGroup.busNumber }
-          : p
-      );
-      syncPassengers(fallbackList);
-      showNotification(
-        `Đã gán thành công ${idsToAssign.length} hành khách vào ${targetGroup.groupName}!`
-      );
-      setSelectedPassengerIds([]);
+    } catch (err: unknown) {
+      const msg = err instanceof Error && err.message
+        ? err.message
+        : 'Không thể gán nhóm hàng loạt cho hành khách.';
+      showNotification(msg, true);
     }
   };
 
   // Auto-distribute passengers evenly across available groups/buses
   const handleAutoAssign = async () => {
     if (passengers.length === 0) return;
+    const distributed = passengers.map((p, index) => {
+      const g = DEFAULT_EXCURSION_GROUPS[index % DEFAULT_EXCURSION_GROUPS.length];
+      return {
+        ...p,
+        groupName: g.groupName,
+        busNumber: g.busNumber,
+      };
+    });
     try {
-      const res = await autoAssignGroups(excursion.id, DEFAULT_EXCURSION_GROUPS);
-      syncPassengers(res.passengers || []);
+      const res = await updateExcursionPassengers(excursion.id, distributed);
+      syncPassengers(res.passengers ?? distributed);
       showNotification(
         `Đã tự động chia đều ${passengers.length} hành khách vào ${DEFAULT_EXCURSION_GROUPS.length} nhóm & xe!`
       );
     } catch {
-      const fallbackList = passengers.map((p, index) => {
-        const targetGroup = DEFAULT_EXCURSION_GROUPS[index % DEFAULT_EXCURSION_GROUPS.length];
-        return {
-          ...p,
-          groupName: targetGroup.groupName,
-          busNumber: targetGroup.busNumber,
-        };
-      });
-      syncPassengers(fallbackList);
+      syncPassengers(distributed);
       showNotification(
         `Đã tự động chia đều ${passengers.length} hành khách vào ${DEFAULT_EXCURSION_GROUPS.length} nhóm & xe!`
       );
@@ -265,13 +256,13 @@ export function ExcursionManifestModal({
     try {
       const res = await removePassengerFromExcursion(excursion.id, id);
       setSelectedPassengerIds((prev) => prev.filter((item) => item !== id));
-      syncPassengers(res.passengers || []);
+      syncPassengers(res.passengers ?? passengers.filter((p) => p.id !== id));
       showNotification(`Đã xóa hành khách ${name} khỏi danh sách tour.`);
-    } catch (err) {
-      const updated = passengers.filter((p) => p.id !== id);
-      setSelectedPassengerIds((prev) => prev.filter((item) => item !== id));
-      syncPassengers(updated);
-      showNotification(`Đã xóa hành khách ${name} khỏi danh sách tour.`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error && err.message
+        ? err.message
+        : `Không thể xóa hành khách ${name} khỏi tour.`;
+      showNotification(msg, true);
     }
   };
 
@@ -291,6 +282,8 @@ export function ExcursionManifestModal({
   // Add passenger submit
   const handleAddPassengerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
 
     // Check tour capacity
     if (passengers.length >= excursion.maxCapacity) {
@@ -323,32 +316,31 @@ export function ExcursionManifestModal({
       specialRequirements: newSpecialReq.trim() || undefined,
     };
 
+    setIsSubmitting(true);
     try {
       const res = await addPassengerToExcursion(excursion.id, newPassengerData);
-      syncPassengers(res.passengers || []);
+      const fallbackWithNew: ExcursionPassenger[] = [
+        ...passengers,
+        { ...newPassengerData, id: newPassengerId },
+      ];
+      syncPassengers(res.passengers ?? fallbackWithNew);
       showNotification(`Đã thêm hành khách ${newPassengerData.passengerName} vào ${targetGroup.groupName}!`);
-    } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : '';
-      if (errMsg) {
-        showNotification(errMsg, true);
-        return;
-      }
-      const newPassenger: ExcursionPassenger = {
-        ...newPassengerData,
-        id: newPassengerId,
-      };
-      const updated = [...passengers, newPassenger];
-      syncPassengers(updated);
-      showNotification(`Đã thêm hành khách ${newPassenger.passengerName} vào ${targetGroup.groupName}!`);
-    }
 
-    // Reset form
-    setNewPassengerName('');
-    setNewCabinNumber('');
-    setNewPhone('');
-    setNewSpecialReq('');
-    setSelectedShipPassengerId('');
-    setIsAddPassengerOpen(false);
+      // Reset form
+      setNewPassengerName('');
+      setNewCabinNumber('');
+      setNewPhone('');
+      setNewSpecialReq('');
+      setSelectedShipPassengerId('');
+      setIsAddPassengerOpen(false);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error && err.message
+        ? err.message
+        : 'Không thể thêm hành khách vào tour.';
+      showNotification(errMsg, true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getPassengerStatusBadge = (status: ExcursionPassenger['status']) => {
@@ -586,10 +578,10 @@ export function ExcursionManifestModal({
                 </button>
                 <button
                   type="submit"
-                  disabled={isCapacityFull}
+                  disabled={isCapacityFull || isSubmitting}
                   className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold transition-all shadow-md active:scale-95 disabled:opacity-50"
                 >
-                  Xác nhận thêm khách
+                  {isSubmitting ? 'Đang thêm...' : 'Xác nhận thêm khách'}
                 </button>
               </div>
             </form>
