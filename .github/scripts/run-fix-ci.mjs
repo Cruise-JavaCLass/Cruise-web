@@ -93,9 +93,46 @@ async function main() {
   }
 
   const runUrl = process.env.RUN_URL || `https://github.com/${repository}/actions/runs/${runId}`;
-  const commitSha = process.env.HEAD_SHA || 'HEAD';
-  const branch = process.env.HEAD_BRANCH || 'main';
+  let commitSha = process.env.HEAD_SHA;
+  let branch = process.env.HEAD_BRANCH;
   const defaultBranch = process.env.DEFAULT_BRANCH || 'main';
+  const isWorkflowDispatch = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
+
+  // If commitSha or branch is missing, or event was workflow_dispatch, query GitHub API to get accurate failed run metadata
+  if (!commitSha || !branch || isWorkflowDispatch || commitSha === 'HEAD') {
+    try {
+      console.log(`Fetching workflow run details for run ${runId} from GitHub API...`);
+      const runRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/actions/runs/${runId}`, {
+        headers: {
+          'Authorization': `Bearer ${githubToken}`,
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+          'User-Agent': 'jules-autonomous-maintainer-web'
+        }
+      });
+      if (runRes.ok) {
+        const runInfo = await runRes.json();
+        commitSha = runInfo.head_sha || commitSha || 'HEAD';
+        branch = runInfo.head_branch || branch || defaultBranch;
+        console.log(sanitizeLog(`Resolved from Actions API -> commitSha: ${commitSha}, branch: ${branch}`));
+      } else {
+        const errMsg = `Could not fetch run metadata for run ${runId} (HTTP ${runRes.status}).`;
+        if (isWorkflowDispatch) {
+          throw new Error(`${errMsg} Failed to resolve target commit and branch for manual dispatch.`);
+        }
+        console.warn(sanitizeLog(`${errMsg} Using fallback values.`));
+        commitSha = commitSha || 'HEAD';
+        branch = branch || defaultBranch;
+      }
+    } catch (err) {
+      if (isWorkflowDispatch) {
+        throw err;
+      }
+      console.warn(sanitizeLog(`Error resolving run metadata: ${err.message}. Using fallbacks.`));
+      commitSha = commitSha || 'HEAD';
+      branch = branch || defaultBranch;
+    }
+  }
 
   console.log(sanitizeLog(`Failed Run ID: ${runId}`));
   console.log(sanitizeLog(`Run URL: ${runUrl}`));

@@ -17,6 +17,7 @@ export function sanitizeLog(msg) {
 import { appendFileSync } from 'node:fs';
 
 export const JULES_API_BASE = 'https://jules.googleapis.com/v1alpha';
+export const AUDIT_TITLE_PREFIX = 'Weekly Frontend Audit';
 
 /**
  * Redacts sensitive tokens, credentials, and secrets from text.
@@ -214,7 +215,7 @@ export async function checkDuplicateSession(apiKey, criteria, options = {}) {
       return { isDuplicate: true, existingSession: s };
     }
 
-    if (auditType && title.includes('weekly repository audit') && ['QUEUED', 'IN_PROGRESS', 'COMPLETED'].includes(s.state)) {
+    if (auditType && (title.startsWith(AUDIT_TITLE_PREFIX.toLowerCase()) || title.includes('weekly frontend audit') || title.includes('weekly repository audit')) && ['QUEUED', 'IN_PROGRESS', 'COMPLETED'].includes(s.state)) {
       return { isDuplicate: true, existingSession: s };
     }
   }

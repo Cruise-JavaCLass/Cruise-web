@@ -61,7 +61,7 @@ async function main() {
   // Step 3: Construct prompt
   console.log('Generating audit prompt...');
   const prompt = generateAuditPrompt({ scope, defaultBranch: startingBranch, repoName });
-  const title = `Weekly Frontend Audit: ${scope.toUpperCase()} (${new Date().toISOString().split('T')[0]})`;
+  const title = `${AUDIT_TITLE_PREFIX}: ${scope.toUpperCase()} (${new Date().toISOString().split('T')[0]})`;
 
   // Step 4: Create Jules session
   console.log(`Creating Jules session with automationMode: AUTO_CREATE_PR...`);
