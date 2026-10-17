@@ -23,7 +23,6 @@ import {
   bulkAssignPassengersToGroup,
   addPassengerToExcursion,
   removePassengerFromExcursion,
-  autoAssignGroups,
   updateExcursionPassengers,
 } from '../../services/excursionService';
 import { INITIAL_PASSENGERS } from '../../services/passengerService';
