@@ -18,12 +18,15 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     testTimeout: 10000,
+    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     css: false,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json'],
       reportsDirectory: './coverage',
       exclude: [
+        '.github/**',
+        '**/node_modules/**',
         'node_modules/',
         'src/test/',
         '**/*.d.ts',
