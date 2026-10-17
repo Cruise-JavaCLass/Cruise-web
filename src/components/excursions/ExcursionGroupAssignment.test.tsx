@@ -280,4 +280,80 @@ describe('ExcursionGroupAssignment Tests (KAN-181)', () => {
       expect(screen.getByText(/Không tìm thấy hành khách nào phù hợp/i)).toBeInTheDocument();
     });
   });
+
+  describe('Test Group Capacity and Assignment Errors (KAN-184)', () => {
+    it('rejects inline group assignment and displays error notification when target group is at max capacity', async () => {
+      const user = userEvent.setup();
+      // Configure group VIP with maxSeats = 1 and already having 1 passenger
+      const tinyGroupExcursion = {
+        ...testExcursion,
+        passengers: [
+          {
+            ...INITIAL_EXCURSION_PASSENGERS[0], // Nguyễn Văn An
+            groupName: 'Đoàn VIP - Cao cấp',
+            busNumber: 'BUS-VIP-01 (16 Chỗ)',
+          },
+          {
+            ...INITIAL_EXCURSION_PASSENGERS[1], // Trần Thị Thu Mai in Group A
+          },
+        ],
+      };
+
+      // Mock DEFAULT_EXCURSION_GROUPS VIP capacity to 1 seat
+      const originalVipSeats = DEFAULT_EXCURSION_GROUPS[3].maxSeats;
+      DEFAULT_EXCURSION_GROUPS[3].maxSeats = 1;
+
+      try {
+        setupModal({ excursion: tinyGroupExcursion });
+
+        // Try to assign Tran Thi Thu Mai to GRP-VIP which already has 1/1 seat filled
+        const groupDropdownMai = screen.getByLabelText(/Đổi đoàn cho Trần Thị Thu Mai/i);
+        await user.selectOptions(groupDropdownMai, 'GRP-VIP');
+
+        await waitFor(() => {
+          expect(
+            screen.getByText(/Không thể chuyển: Đoàn VIP - Cao cấp đã đầy \(1\/1 chỗ\)/i)
+          ).toBeInTheDocument();
+        });
+
+        // Ensure update handler was not called
+        expect(handleUpdatePassengers).not.toHaveBeenCalled();
+      } finally {
+        DEFAULT_EXCURSION_GROUPS[3].maxSeats = originalVipSeats;
+      }
+    });
+
+    it('rejects bulk assignment when selected passengers exceed available seats in target group', async () => {
+      const user = userEvent.setup();
+      const originalVipSeats = DEFAULT_EXCURSION_GROUPS[3].maxSeats;
+      DEFAULT_EXCURSION_GROUPS[3].maxSeats = 1;
+
+      try {
+        setupModal();
+
+        // Select 2 passengers
+        const checkboxAn = screen.getByLabelText(/Chọn Nguyễn Văn An/i);
+        const checkboxMai = screen.getByLabelText(/Chọn Trần Thị Thu Mai/i);
+        await user.click(checkboxAn);
+        await user.click(checkboxMai);
+
+        // Select GRP-VIP which has max 1 seat
+        const bulkSelect = screen.getByLabelText(/Chọn đoàn gán hàng loạt/i);
+        await user.selectOptions(bulkSelect, 'GRP-VIP');
+
+        const bulkAssignBtn = screen.getByRole('button', { name: /Gán nhóm hàng loạt/i });
+        await user.click(bulkAssignBtn);
+
+        await waitFor(() => {
+          expect(
+            screen.getByText(/Không thể gán hàng loạt: Đoàn VIP - Cao cấp chỉ còn 1 chỗ trống, nhưng bạn đã chọn 2 khách!/i)
+          ).toBeInTheDocument();
+        });
+
+        expect(handleUpdatePassengers).not.toHaveBeenCalled();
+      } finally {
+        DEFAULT_EXCURSION_GROUPS[3].maxSeats = originalVipSeats;
+      }
+    });
+  });
 });
