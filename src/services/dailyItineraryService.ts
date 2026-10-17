@@ -21,6 +21,12 @@ export interface DailyItineraryDay {
   portName?: string;
   portStatus: 'DEPARTURE' | 'AT_SEA' | 'DOCKING' | 'ARRIVAL';
   seaDay: boolean;
+  arrivalTime?: string; // HH:mm
+  departureTime?: string; // HH:mm
+  allAboardTime?: string; // HH:mm
+  weatherForecast?: string;
+  isAffected?: boolean;
+  changeReason?: string;
   activities: DailyActivityItem[];
 }
 

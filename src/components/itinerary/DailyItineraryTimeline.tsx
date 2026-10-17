@@ -298,36 +298,77 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
 
       {/* Selected Day Header & Category Filter */}
       {currentDay && (
-        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-white">
-                Ngày {currentDay.dayNumber}: {currentDay.title}
-              </h3>
-              <span className="text-xs text-slate-400">• {currentDay.date}</span>
+        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-white">
+                  Ngày {currentDay.dayNumber}: {currentDay.title}
+                </h3>
+                <span className="text-xs text-slate-400">• {currentDay.date}</span>
+                {currentDay.isAffected && (
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
+                    Đã điều chỉnh lịch trình
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-cyan-400 mt-1 flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5" />
+                Địa điểm trọng tâm: {currentDay.portName || 'Hải trình mở trên biển'}
+              </p>
             </div>
-            <p className="text-xs text-cyan-400 mt-1 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5" />
-              Địa điểm trọng tâm: {currentDay.portName || 'Hải trình mở trên biển'}
-            </p>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400">Lọc mục:</span>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                aria-label="Lọc hoạt động theo loại"
+                className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-cyan-500"
+              >
+                <option value="ALL">Tất cả danh mục</option>
+                {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
+                  <option key={k} value={k}>
+                    {v.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400">Lọc mục:</span>
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              aria-label="Lọc hoạt động theo loại"
-              className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-cyan-500"
-            >
-              <option value="ALL">Tất cả danh mục</option>
-              {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v.label}
-                </option>
-              ))}
-            </select>
+          {/* Port Times & Weather Bar (KAN-206, KAN-207) */}
+          <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-800/80 text-xs">
+            {currentDay.arrivalTime && (
+              <span className="flex items-center gap-1.5 text-emerald-400 font-mono bg-emerald-950/40 px-2.5 py-1 rounded-lg border border-emerald-800/30">
+                <Clock className="w-3.5 h-3.5" /> Giờ cập bến: <strong>{currentDay.arrivalTime}</strong>
+              </span>
+            )}
+            {currentDay.allAboardTime && (
+              <span className="flex items-center gap-1.5 text-rose-300 font-mono bg-rose-950/40 px-2.5 py-1 rounded-lg border border-rose-800/40 font-semibold">
+                <AlertCircle className="w-3.5 h-3.5 text-rose-400" /> Tất cả lên tàu (All-Aboard): <strong>{currentDay.allAboardTime}</strong>
+              </span>
+            )}
+            {currentDay.departureTime && (
+              <span className="flex items-center gap-1.5 text-cyan-400 font-mono bg-cyan-950/40 px-2.5 py-1 rounded-lg border border-cyan-800/30">
+                <Ship className="w-3.5 h-3.5" /> Giờ rời bến: <strong>{currentDay.departureTime}</strong>
+              </span>
+            )}
+            {currentDay.weatherForecast && (
+              <span className="flex items-center gap-1.5 text-slate-300 ml-auto bg-slate-800/60 px-2.5 py-1 rounded-lg border border-slate-700/50">
+                🌤️ {currentDay.weatherForecast}
+              </span>
+            )}
           </div>
+
+          {/* Specific Day Change Alert Notice (KAN-207) */}
+          {currentDay.isAffected && currentDay.changeReason && (
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-amber-200">Cảnh báo thay đổi ngày {currentDay.dayNumber}:</strong> {currentDay.changeReason}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

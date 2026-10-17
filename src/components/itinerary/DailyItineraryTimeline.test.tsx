@@ -314,4 +314,66 @@ describe('DailyItineraryTimeline (KAN-119)', () => {
     fireEvent.click(screen.getByRole('button', { name: /Đóng lịch sử thay đổi/i }));
     expect(screen.queryByText('Lịch Sử Thay Đổi Lịch Trình')).not.toBeInTheDocument();
   });
+
+  it('renders port timings including arrival, departure, all-aboard and weather (KAN-206, KAN-209)', async () => {
+    vi.spyOn(dailyItineraryService, 'getDailyItinerary').mockResolvedValue({
+      ...mockItineraryData,
+      days: [
+        {
+          dayNumber: 1,
+          date: '2026-10-15',
+          title: 'Khởi hành tại Cảng Quốc Tế Tuần Châu',
+          portName: 'Cảng Tuần Châu (Hạ Long)',
+          portStatus: 'DEPARTURE',
+          seaDay: false,
+          arrivalTime: '08:00',
+          allAboardTime: '11:30',
+          departureTime: '12:00',
+          weatherForecast: 'Nắng nhẹ, gió cấp 2, nhiệt độ 26°C',
+          activities: [],
+        },
+      ],
+    });
+
+    render(<DailyItineraryTimeline tour={mockTour} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Giờ cập bến:/i)).toBeInTheDocument();
+      expect(screen.getByText('08:00')).toBeInTheDocument();
+      expect(screen.getByText(/Tất cả lên tàu \(All-Aboard\):/i)).toBeInTheDocument();
+      expect(screen.getByText('11:30')).toBeInTheDocument();
+      expect(screen.getByText(/Giờ rời bến:/i)).toBeInTheDocument();
+      expect(screen.getByText('12:00')).toBeInTheDocument();
+      expect(screen.getByText(/Nắng nhẹ, gió cấp 2, nhiệt độ 26°C/i)).toBeInTheDocument();
+    });
+  });
+
+  it('renders specific schedule change alerts and affected badges (KAN-207, KAN-210)', async () => {
+    vi.spyOn(dailyItineraryService, 'getDailyItinerary').mockResolvedValue({
+      ...mockItineraryData,
+      days: [
+        {
+          dayNumber: 1,
+          date: '2026-10-15',
+          title: 'Khởi hành tại Cảng Quốc Tế Tuần Châu',
+          portName: 'Cảng Tuần Châu (Hạ Long)',
+          portStatus: 'DEPARTURE',
+          seaDay: false,
+          isAffected: true,
+          changeReason: 'Tàu lùi giờ xuất bến 30 phút do thời tiết có sương mù dày',
+          activities: [],
+        },
+      ],
+    });
+
+    render(<DailyItineraryTimeline tour={mockTour} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Đã điều chỉnh lịch trình')).toBeInTheDocument();
+      expect(screen.getByText(/Cảnh báo thay đổi ngày 1:/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Tàu lùi giờ xuất bến 30 phút do thời tiết có sương mù dày/i)
+      ).toBeInTheDocument();
+    });
+  });
 });
