@@ -185,7 +185,7 @@ test('7. Workflow YAML Structure & Safety Policy Verification', () => {
   const auditContent = readFileSync(auditPath, 'utf8');
   const fixCiContent = readFileSync(fixCiPath, 'utf8');
 
-  assert.match(auditContent, /cron:\s*['"]0 3 \* \* 1['"]/);
+  assert.match(auditContent, /cron:\s*['"]0 3 \* \* \*['"]/);
   assert.match(fixCiContent, /Frontend CI Pipeline/);
   assert.match(fixCiContent, /github\.event\.workflow_run\.conclusion == 'failure'/);
   assert.match(auditContent, /contents:\s*read/);
