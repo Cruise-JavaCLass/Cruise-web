@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios';
 import { apiClient } from './api';
 
 export type ExcursionStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'DELAYED';
@@ -470,7 +471,12 @@ export async function fetchExcursions(params?: {
 export async function getExcursionById(id: number): Promise<ShoreExcursion | null> {
   try {
     const res = await apiClient.get<{ success: boolean; data: ShoreExcursion }>(`/excursions/${id}`);
-    if (res.data?.data) return res.data.data;
+    if (res.data?.data) {
+      const idx = localExcursions.findIndex((e) => e.id === id);
+      if (idx !== -1) localExcursions[idx] = res.data.data;
+      else localExcursions.push(res.data.data);
+      return res.data.data;
+    }
   } catch {
     // fallback
   }
@@ -583,6 +589,184 @@ export async function deleteExcursion(id: number): Promise<void> {
     // fallback
   }
   localExcursions = localExcursions.filter((e) => e.id !== id);
+}
+
+export interface ExcursionGroup {
+  id: string;
+  groupName: string;
+  busNumber: string;
+  maxSeats: number;
+}
+
+export const DEFAULT_EXCURSION_GROUPS: ExcursionGroup[] = [
+  { id: 'GRP-A', groupName: 'Đoàn A - Khám phá', busNumber: 'XE-01 (45 Chỗ)', maxSeats: 45 },
+  { id: 'GRP-B', groupName: 'Đoàn B - Ẩm thực', busNumber: 'XE-02 (29 Chỗ)', maxSeats: 29 },
+  { id: 'GRP-C', groupName: 'Đoàn C - Thưởng ngoạn', busNumber: 'XE-03 (45 Chỗ)', maxSeats: 45 },
+  { id: 'GRP-VIP', groupName: 'Đoàn VIP - Cao cấp', busNumber: 'BUS-VIP-01 (16 Chỗ)', maxSeats: 16 },
+  { id: 'GRP-TENDER', groupName: 'Đoàn Thuyền Trung Chuyển', busNumber: 'Tàu trung chuyển TENDER-01', maxSeats: 60 },
+];
+
+async function mutateExcursionWithFallback(
+  excursionId: number,
+  apiCall: () => Promise<{ data?: { data?: ShoreExcursion } }>,
+  localMutation: (existing: ShoreExcursion) => ShoreExcursion
+): Promise<ShoreExcursion> {
+  try {
+    const res = await apiCall();
+    if (res.data?.data) {
+      const idx = localExcursions.findIndex((e) => e.id === excursionId);
+      if (idx !== -1) localExcursions[idx] = res.data.data;
+      return res.data.data;
+    }
+  } catch (err) {
+    if (isAxiosError(err) && err.response) throw err;
+    // network unavailable: fallback
+  }
+
+  const idx = localExcursions.findIndex((e) => e.id === excursionId);
+  if (idx !== -1) {
+    const updated = localMutation(localExcursions[idx]);
+    localExcursions[idx] = updated;
+    return updated;
+  }
+  throw new Error(`Excursion not found with id ${excursionId}`);
+}
+
+export async function assignPassengerToGroup(
+  excursionId: number,
+  passengerId: number,
+  groupName: string,
+  busNumber: string
+): Promise<ShoreExcursion> {
+  return mutateExcursionWithFallback(
+    excursionId,
+    () => apiClient.patch(`/excursions/${excursionId}/passengers/${passengerId}/group`, { groupName, busNumber }),
+    (existing) => ({
+      ...existing,
+      passengers: (existing.passengers || []).map((p) =>
+        p.id === passengerId ? { ...p, groupName, busNumber } : p
+      ),
+      updatedAt: new Date().toISOString(),
+    })
+  );
+}
+
+export async function bulkAssignPassengersToGroup(
+  excursionId: number,
+  passengerIds: number[],
+  groupName: string,
+  busNumber: string
+): Promise<ShoreExcursion> {
+  const idSet = new Set(passengerIds);
+  return mutateExcursionWithFallback(
+    excursionId,
+    () => apiClient.patch(`/excursions/${excursionId}/passengers/bulk-group`, { passengerIds, groupName, busNumber }),
+    (existing) => ({
+      ...existing,
+      passengers: (existing.passengers || []).map((p) =>
+        idSet.has(p.id) ? { ...p, groupName, busNumber } : p
+      ),
+      updatedAt: new Date().toISOString(),
+    })
+  );
+}
+
+export async function addPassengerToExcursion(
+  excursionId: number,
+  passengerData: Omit<ExcursionPassenger, 'id'>
+): Promise<ShoreExcursion> {
+  return mutateExcursionWithFallback(
+    excursionId,
+    () => apiClient.post(`/excursions/${excursionId}/passengers`, passengerData),
+    (existing) => {
+      const passengers = existing.passengers ? [...existing.passengers] : [];
+      if (passengers.length >= existing.maxCapacity) {
+        throw new Error(`Tour đã đạt sức chứa tối đa (${existing.maxCapacity} khách)`);
+      }
+      const maxId = passengers.reduce((max, p) => (p.id > max ? p.id : max), 0);
+      const newPassengerId = maxId + 1;
+      const newPassenger: ExcursionPassenger = {
+        ...passengerData,
+        id: newPassengerId,
+        ticketCode: passengerData.ticketCode || `EXC-TKT-${String(newPassengerId).padStart(3, '0')}`,
+      };
+      passengers.push(newPassenger);
+      return {
+        ...existing,
+        passengers,
+        bookedCount: passengers.length,
+        updatedAt: new Date().toISOString(),
+      };
+    }
+  );
+}
+
+export async function removePassengerFromExcursion(
+  excursionId: number,
+  passengerId: number
+): Promise<ShoreExcursion> {
+  return mutateExcursionWithFallback(
+    excursionId,
+    () => apiClient.delete(`/excursions/${excursionId}/passengers/${passengerId}`),
+    (existing) => {
+      const passengers = (existing.passengers || []).filter((p) => p.id !== passengerId);
+      return {
+        ...existing,
+        passengers,
+        bookedCount: passengers.length,
+        updatedAt: new Date().toISOString(),
+      };
+    }
+  );
+}
+
+export async function autoAssignGroups(
+  excursionId: number,
+  groups: ExcursionGroup[] = DEFAULT_EXCURSION_GROUPS
+): Promise<ShoreExcursion> {
+  const idx = localExcursions.findIndex((e) => e.id === excursionId);
+  if (idx !== -1) {
+    const existing = localExcursions[idx];
+    const passengers = existing.passengers ? [...existing.passengers] : [];
+    if (groups.length === 0 || passengers.length === 0) return existing;
+
+    const updatedPassengers = passengers.map((p, i) => {
+      const assignedGroup = groups[i % groups.length];
+      return {
+        ...p,
+        groupName: assignedGroup.groupName,
+        busNumber: assignedGroup.busNumber,
+      };
+    });
+
+    const updated: ShoreExcursion = {
+      ...existing,
+      passengers: updatedPassengers,
+      updatedAt: new Date().toISOString(),
+    };
+    localExcursions[idx] = updated;
+    return updated;
+  }
+  throw new Error(`Excursion not found with id ${excursionId}`);
+}
+
+export async function updateExcursionPassengers(
+  excursionId: number,
+  passengers: ExcursionPassenger[]
+): Promise<ShoreExcursion> {
+  const idx = localExcursions.findIndex((e) => e.id === excursionId);
+  if (idx !== -1) {
+    const existing = localExcursions[idx];
+    const updated: ShoreExcursion = {
+      ...existing,
+      passengers,
+      bookedCount: passengers.length,
+      updatedAt: new Date().toISOString(),
+    };
+    localExcursions[idx] = updated;
+    return updated;
+  }
+  throw new Error(`Excursion not found with id ${excursionId}`);
 }
 
 export function resetExcursionServiceState(): void {
