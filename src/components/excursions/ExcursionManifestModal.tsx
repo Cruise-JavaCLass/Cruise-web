@@ -104,7 +104,10 @@ export function ExcursionManifestModal({
       p.passengerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.cabinNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.ticketCode.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchGroup = selectedGroup === 'ALL' || p.busNumber === selectedGroup;
+    const matchGroup =
+      selectedGroup === 'ALL' ||
+      p.busNumber === selectedGroup ||
+      p.groupName === selectedGroup;
     return matchSearch && matchGroup;
   });
 
@@ -153,10 +156,23 @@ export function ExcursionManifestModal({
     }
   };
 
-  // Inline group/bus re-assignment for an individual passenger
+  // Inline group/bus re-assignment for an individual passenger with group capacity guard
   const handleInlineGroupChange = async (passengerId: number, targetGroupId: string) => {
     const targetGroup = DEFAULT_EXCURSION_GROUPS.find((g) => g.id === targetGroupId);
     if (!targetGroup) return;
+
+    // Capacity validation: count current passengers in target group (excluding this passenger)
+    const currentCountInTarget = passengers.filter(
+      (p) => p.id !== passengerId && resolvePassengerGroupId(p) === targetGroup.id
+    ).length;
+
+    if (currentCountInTarget >= targetGroup.maxSeats) {
+      showNotification(
+        `Không thể chuyển: ${targetGroup.groupName} đã đầy (${currentCountInTarget}/${targetGroup.maxSeats} chỗ). Vui lòng chọn đoàn khác!`,
+        true
+      );
+      return;
+    }
 
     try {
       const res = await assignPassengerToGroup(
@@ -198,11 +214,26 @@ export function ExcursionManifestModal({
     }
   };
 
-  // Bulk Assignment Handler
+  // Bulk Assignment Handler with capacity guard
   const handleBulkAssign = async () => {
     if (selectedPassengerIds.length === 0) return;
     const targetGroup = DEFAULT_EXCURSION_GROUPS.find((g) => g.id === bulkTargetGroupId);
     if (!targetGroup) return;
+
+    // Check capacity before assigning
+    const selectedSet = new Set(selectedPassengerIds);
+    const nonSelectedCountInTarget = passengers.filter(
+      (p) => !selectedSet.has(p.id) && resolvePassengerGroupId(p) === targetGroup.id
+    ).length;
+
+    const availableSeats = targetGroup.maxSeats - nonSelectedCountInTarget;
+    if (selectedPassengerIds.length > availableSeats) {
+      showNotification(
+        `Không thể gán hàng loạt: ${targetGroup.groupName} chỉ còn ${Math.max(0, availableSeats)} chỗ trống, nhưng bạn đã chọn ${selectedPassengerIds.length} khách!`,
+        true
+      );
+      return;
+    }
 
     const idsToAssign = [...selectedPassengerIds];
     try {
@@ -618,28 +649,62 @@ export function ExcursionManifestModal({
             </div>
           </div>
 
-          {/* Group Capacity Distribution Chips */}
+          {/* Group Capacity Distribution Chips / Filter by Group */}
           <div className="space-y-1.5">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5 text-cyan-400" /> Phân Bổ Sức Chứa Theo Nhóm & Xe:
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {groupCounts.map((group) => (
-                <div
-                  key={group.id}
-                  className={`px-2.5 py-1 rounded-lg border text-[11px] flex items-center gap-2 transition-all ${
-                    group.currentCount > 0
-                      ? 'bg-slate-800/80 border-cyan-500/30 text-white'
-                      : 'bg-slate-900/40 border-slate-800 text-slate-500'
-                  }`}
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-cyan-400" /> Phân Bổ Sức Chứa Theo Nhóm & Xe:
+              </span>
+              {selectedGroup !== 'ALL' && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedGroup('ALL')}
+                  className="text-[11px] text-cyan-400 hover:text-cyan-300 underline cursor-pointer"
                 >
-                  <span className="font-semibold text-cyan-300">{group.groupName}:</span>
-                  <span className="text-slate-300">
-                    {group.currentCount}/{group.maxSeats} chỗ
-                  </span>
-                  <span className="text-[10px] text-slate-400 hidden sm:inline">({group.busNumber})</span>
-                </div>
-              ))}
+                  Xem tất cả đoàn
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2" role="tablist" aria-label="Lọc hành khách theo đoàn">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={selectedGroup === 'ALL'}
+                onClick={() => setSelectedGroup('ALL')}
+                className={`px-2.5 py-1 rounded-lg border text-[11px] flex items-center gap-1.5 transition-all cursor-pointer ${
+                  selectedGroup === 'ALL'
+                    ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 font-semibold shadow-sm ring-1 ring-cyan-500/30'
+                    : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                }`}
+              >
+                Tất cả các đoàn ({passengers.length})
+              </button>
+              {groupCounts.map((group) => {
+                const isSelected = selectedGroup === group.busNumber || selectedGroup === group.groupName;
+                const isFull = group.currentCount >= group.maxSeats;
+                return (
+                  <button
+                    key={group.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isSelected}
+                    onClick={() => setSelectedGroup(isSelected ? 'ALL' : group.busNumber)}
+                    className={`px-2.5 py-1 rounded-lg border text-[11px] flex items-center gap-2 transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 font-semibold shadow-sm ring-1 ring-cyan-500/30'
+                        : group.currentCount > 0
+                        ? 'bg-slate-800/80 border-slate-700 text-slate-200 hover:border-cyan-500/50'
+                        : 'bg-slate-900/40 border-slate-800 text-slate-500 hover:border-slate-700'
+                    }`}
+                  >
+                    <span className="font-semibold text-cyan-300">{group.groupName}:</span>
+                    <span className={isFull ? 'text-amber-400 font-bold' : 'text-slate-300'}>
+                      {group.currentCount}/{group.maxSeats} chỗ
+                    </span>
+                    <span className="text-[10px] text-slate-400 hidden sm:inline">({group.busNumber})</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
