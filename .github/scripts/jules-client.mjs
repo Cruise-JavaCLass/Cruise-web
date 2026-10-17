@@ -1,3 +1,8 @@
+export function sanitizeLog(msg) {
+  if (typeof msg !== 'string') return '';
+  return msg.replace(/[\r\n]+/g, ' ');
+}
+
 /**
  * Jules Autonomous Maintainer Client for Cruise-web
  * 
@@ -179,12 +184,12 @@ export async function checkDuplicateSession(apiKey, criteria, options = {}) {
       }
     });
   } catch (err) {
-    console.warn(`Warning: Could not fetch existing sessions for deduplication: ${err.message}`);
+    console.warn(sanitizeLog(`Warning: Could not fetch existing sessions for deduplication: ${err.message}`));
     return { isDuplicate: false, existingSession: null };
   }
 
   if (!response.ok) {
-    console.warn(`Warning: Sessions API returned HTTP ${response.status} during deduplication check.`);
+    console.warn(sanitizeLog(`Warning: Sessions API returned HTTP ${response.status} during deduplication check.`));
     return { isDuplicate: false, existingSession: null };
   }
 
@@ -397,7 +402,7 @@ export function writeStepSummary(markdown) {
     try {
       appendFileSync(summaryFile, markdown + '\n', 'utf8');
     } catch (err) {
-      console.warn('Could not write to GITHUB_STEP_SUMMARY:', err.message);
+      console.warn('Could not write to GITHUB_STEP_SUMMARY:', sanitizeLog(err.message));
     }
   }
 }

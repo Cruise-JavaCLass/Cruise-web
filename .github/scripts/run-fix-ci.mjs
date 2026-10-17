@@ -27,7 +27,7 @@ async function fetchFailedJobsAndLogs(githubToken, owner, repo, runId) {
 
   if (!jobsRes.ok) {
     const txt = await jobsRes.text();
-    console.warn(`Could not retrieve jobs for run ${runId} (HTTP ${jobsRes.status}): ${txt}`);
+    console.warn(sanitizeLog(`Could not retrieve jobs for run ${runId} (HTTP ${jobsRes.status}): ${txt}`));
     return { failedJobs: [], combinedLogs: 'No log output could be retrieved from GitHub Actions API.' };
   }
 
@@ -97,10 +97,10 @@ async function main() {
   const branch = process.env.HEAD_BRANCH || 'main';
   const defaultBranch = process.env.DEFAULT_BRANCH || 'main';
 
-  console.log(`Failed Run ID: ${runId}`);
-  console.log(`Run URL: ${runUrl}`);
-  console.log(`Commit SHA: ${commitSha}`);
-  console.log(`Branch: ${branch} (Default: ${defaultBranch})`);
+  console.log(sanitizeLog(`Failed Run ID: ${runId}`));
+  console.log(sanitizeLog(`Run URL: ${runUrl}`));
+  console.log(sanitizeLog(`Commit SHA: ${commitSha}`));
+  console.log(sanitizeLog(`Branch: ${branch} (Default: ${defaultBranch})`));
 
   // Step 1: Safety & Deduplication check
   console.log('Checking for existing Jules repair sessions for this run...');
@@ -112,7 +112,7 @@ async function main() {
 
   if (isDuplicate && existingSession) {
     const msg = `Skipping repair. An existing Jules session "${existingSession.title || existingSession.name}" already exists (${existingSession.state}) for run ID ${runId}.`;
-    console.log(msg);
+    console.log(sanitizeLog(msg));
     writeStepSummary(`### ⏭️ Jules Frontend CI Repair Skipped
 - **Reason:** Duplicate session already exists for this CI failure.
 - **Existing Session:** [${existingSession.title || existingSession.id}](${existingSession.url || '#'})
@@ -125,7 +125,7 @@ async function main() {
   // Step 2: Retrieve failure logs from GitHub
   console.log(`Retrieving failed job details and logs for run ${runId}...`);
   const { failedJobs, combinedLogs } = await fetchFailedJobsAndLogs(githubToken, repoOwner, repoName, runId);
-  console.log(`Identified ${failedJobs.length} failed job(s).`);
+  console.log(sanitizeLog(`Identified ${failedJobs.length} failed job(s).`));
 
   // Step 3: Redact sensitive information & truncate
   const extraSecrets = [apiKey, githubToken].filter(Boolean);
@@ -135,7 +135,7 @@ async function main() {
   // Step 4: Discover connected Jules source
   console.log('Discovering connected Jules source via Sources API...');
   const { sourceName } = await discoverSource(apiKey, repoOwner, repoName);
-  console.log(`Discovered source: "${sourceName}"`);
+  console.log(sanitizeLog(`Discovered source: "${sourceName}"`));
 
   // Step 5: Construct CI repair prompt
   console.log('Generating CI repair prompt...');
@@ -161,9 +161,9 @@ async function main() {
     automationMode: 'AUTO_CREATE_PR'
   });
 
-  console.log(`Successfully created Jules repair session! ID: ${session.id || session.name}`);
+  console.log(sanitizeLog(`Successfully created Jules repair session! ID: ${session.id || session.name}`));
   const sessionUrl = session.url || `https://jules.google.com/session/${session.id || ''}`;
-  console.log(`Session URL: ${sessionUrl}`);
+  console.log(sanitizeLog(`Session URL: ${sessionUrl}`));
 
   // Step 7: Output Step Summary
   const failedJobsSummary = failedJobs.map(j => `- **${j.name}** (Failed step: \`${j.failedStep}\`)`).join('\n') || 'None recorded';
@@ -188,7 +188,7 @@ ${failedJobsSummary}
 }
 
 main().catch(err => {
-  console.error(`Error during Jules frontend CI repair: ${err.message}`);
+  console.error(sanitizeLog(`Error during Jules frontend CI repair: ${err.message}`));
   writeStepSummary(`### ❌ Jules Frontend CI Repair Launch Failed
 \`\`\`
 ${err.message}
