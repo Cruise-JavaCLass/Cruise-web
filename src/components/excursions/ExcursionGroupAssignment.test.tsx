@@ -225,4 +225,59 @@ describe('ExcursionGroupAssignment Tests (KAN-181)', () => {
       screen.getByText(/Đã xóa hành khách Nguyễn Văn An khỏi danh sách tour/i)
     ).toBeInTheDocument();
   });
+
+  describe('Component Tests for Group Assignment and Filtering (KAN-183)', () => {
+    it('filters passenger list to only display members of the selected group when clicking group tab', async () => {
+      const user = userEvent.setup();
+      setupModal();
+
+      // Initially all passengers are visible
+      expect(screen.getByText('Nguyễn Văn An')).toBeInTheDocument();
+      expect(screen.getByText('Trần Thị Thu Mai')).toBeInTheDocument();
+      expect(screen.getByText('Lê Hoàng Long')).toBeInTheDocument();
+      expect(screen.getByText('Phạm Hồng Hạnh')).toBeInTheDocument();
+
+      // Click group tab for Đoàn A - Khám phá
+      const groupAButton = screen.getByRole('tab', { name: /Đoàn A - Khám phá:/i });
+      await user.click(groupAButton);
+
+      // Only Group A passengers should remain visible
+      expect(screen.getByText('Nguyễn Văn An')).toBeInTheDocument();
+      expect(screen.getByText('Trần Thị Thu Mai')).toBeInTheDocument();
+      expect(screen.queryByText('Lê Hoàng Long')).not.toBeInTheDocument();
+      expect(screen.queryByText('Phạm Hồng Hạnh')).not.toBeInTheDocument();
+
+      // Reset filter by clicking "Tất cả các đoàn" tab
+      const allTab = screen.getByRole('tab', { name: /Tất cả các đoàn/i });
+      await user.click(allTab);
+
+      expect(screen.getByText('Lê Hoàng Long')).toBeInTheDocument();
+      expect(screen.getByText('Phạm Hồng Hạnh')).toBeInTheDocument();
+    });
+
+    it('filters passengers using the vehicle dropdown selector', async () => {
+      const user = userEvent.setup();
+      setupModal();
+
+      const busSelect = screen.getByLabelText(/Lọc theo xe:/i);
+      await user.selectOptions(busSelect, 'XE-02 (29 Chỗ)');
+
+      // XE-02 passengers: Lê Hoàng Long, Phạm Hồng Hạnh
+      expect(screen.getByText('Lê Hoàng Long')).toBeInTheDocument();
+      expect(screen.getByText('Phạm Hồng Hạnh')).toBeInTheDocument();
+      expect(screen.queryByText('Nguyễn Văn An')).not.toBeInTheDocument();
+      expect(screen.queryByText('Trần Thị Thu Mai')).not.toBeInTheDocument();
+    });
+
+    it('displays empty state message when a group has no assigned passengers', async () => {
+      const user = userEvent.setup();
+      setupModal();
+
+      // Click group with 0 passengers: Đoàn VIP
+      const vipTab = screen.getByRole('tab', { name: /Đoàn VIP - Cao cấp:/i });
+      await user.click(vipTab);
+
+      expect(screen.getByText(/Không tìm thấy hành khách nào phù hợp/i)).toBeInTheDocument();
+    });
+  });
 });
