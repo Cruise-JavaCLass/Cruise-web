@@ -15,6 +15,7 @@ import {
   XCircle,
   ArrowRight,
   Trash2,
+  QrCode,
 } from 'lucide-react';
 import {
   type OnboardActivity,
@@ -373,6 +374,13 @@ export function ActivitiesPage() {
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
+                    <Link
+                      to={`/activities/${act.id}/attendance`}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-lg text-xs font-semibold border border-blue-500/30 transition-all"
+                      title="Điểm danh & Quét vé"
+                    >
+                      <QrCode className="w-3 h-3" /> Điểm danh
+                    </Link>
                     <Link
                       to={`/activities/${act.id}`}
                       className="inline-flex items-center gap-1 px-3 py-1 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 rounded-lg text-xs font-semibold border border-cyan-500/30 transition-all hover:gap-1.5"
