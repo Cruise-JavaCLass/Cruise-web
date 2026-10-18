@@ -13,6 +13,7 @@ import { ShipsPage } from './pages/ShipsPage';
 import { ShipDetailPage } from './pages/ShipDetailPage';
 import { PassengerHomePage } from './pages/PassengerHomePage';
 import { ExcursionAttendancePage } from './pages/ExcursionAttendancePage';
+import { ActivityAttendancePage } from './pages/ActivityAttendancePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export function App() {
@@ -29,6 +30,8 @@ export function App() {
         <Route path="excursion-attendance" element={<ExcursionAttendancePage />} />
         <Route path="activities" element={<ActivitiesPage />} />
         <Route path="activities/:id" element={<ActivityDetailPage />} />
+        <Route path="activities/:id/attendance" element={<ActivityAttendancePage />} />
+        <Route path="activity-attendance" element={<ActivityAttendancePage />} />
         <Route path="catalog" element={<PassengerCatalogPage />} />
         <Route path="pos" element={<PosPage />} />
         <Route path="passengers" element={<PassengersPage />} />
