@@ -39,20 +39,64 @@ export const PassengerHomePage: React.FC = () => {
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  const resolvePassengerId = (): number | null => {
+    // 1. Check URL search param (e.g. ?passengerId=5)
+    const params = new URLSearchParams(window.location.search);
+    const queryId = params.get('passengerId') || params.get('id');
+    if (queryId && !isNaN(Number(queryId))) {
+      return Number(queryId);
+    }
+
+    // 2. Check session / local storage for authenticated passenger or user
+    try {
+      const storedPassenger = localStorage.getItem('currentPassenger') || sessionStorage.getItem('currentPassenger');
+      if (storedPassenger) {
+        const parsed = JSON.parse(storedPassenger);
+        if (parsed?.id || parsed?.passengerId) {
+          return Number(parsed.id || parsed.passengerId);
+        }
+      }
+
+      const storedUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser?.passengerId) {
+          return Number(parsedUser.passengerId);
+        }
+      }
+
+      const directId = localStorage.getItem('passengerId') || sessionStorage.getItem('passengerId');
+      if (directId && !isNaN(Number(directId))) {
+        return Number(directId);
+      }
+    } catch {
+      // Storage parsing failed, continue to fallback
+    }
+
+    // Default to active test passenger 1 if no explicit session exists
+    return 1;
+  };
+
   const loadData = async () => {
     setIsLoading(true);
     setIsError(false);
     setErrorMessage('');
     try {
-      const [summary, catalogRes, notifs] = await Promise.all([
-        getPassengerBookingSummary(1),
-        passengerCatalogService.getCatalogItems(1, { size: 6 }),
-        getTourNotifications(1),
-      ]);
+      const activePassengerId = resolvePassengerId();
+      if (!activePassengerId) {
+        throw new Error('Không tìm thấy danh tính hành khách hợp lệ. Vui lòng đăng nhập lại.');
+      }
 
+      const summary = await getPassengerBookingSummary(activePassengerId);
       if (!summary) {
         throw new Error('Không tìm thấy thông tin đặt chỗ của hành khách.');
       }
+
+      const tourId = summary.tourId || 1;
+      const [catalogRes, notifs] = await Promise.all([
+        passengerCatalogService.getCatalogItems(tourId, { size: 6 }),
+        getTourNotifications(tourId),
+      ]);
 
       setBookingSummary(summary);
       setActivities(catalogRes.content || []);
