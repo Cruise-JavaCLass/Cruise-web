@@ -66,6 +66,7 @@ export function MainLayout() {
     { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship },
     { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin },
     { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation },
+    { to: '/excursion-attendance', label: 'Điểm Danh Tour Bờ', icon: Users },
     { to: '/activities', label: 'Hoạt động & Excursion', icon: Activity },
     { to: '/catalog', label: 'Duyệt Hoạt Động (Guest)', icon: Compass },
     { to: '/pos', label: 'POS & Chi tiêu Onboard', icon: CreditCard },

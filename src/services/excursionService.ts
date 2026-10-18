@@ -769,6 +769,229 @@ export async function updateExcursionPassengers(
   throw new Error(`Excursion not found with id ${excursionId}`);
 }
 
+// ==========================================
+// ATTENDANCE & CHECK-IN SERVICES (KAN-225, KAN-318)
+// ==========================================
+
+export interface ExcursionCheckInPayload {
+  excursionPassengerId?: number;
+  ticketCode?: string;
+  rfidTag?: string;
+  cabinNumber?: string;
+  targetStatus: 'CHECKED_IN' | 'ON_TOUR' | 'RETURNED_SAFE';
+  note?: string;
+}
+
+export interface ExcursionCheckInResult {
+  excursionPassengerId: number;
+  excursionId: number;
+  passengerName: string;
+  cabinNumber: string;
+  ticketCode: string;
+  previousStatus: string;
+  currentStatus: 'REGISTERED' | 'CHECKED_IN' | 'ON_TOUR' | 'RETURNED_SAFE';
+  checkedInAt?: string;
+  returnedSafeAt?: string;
+  message: string;
+}
+
+export interface BulkAttendancePayload {
+  passengerIds?: number[];
+  groupName?: string;
+  busNumber?: string;
+  targetStatus: 'CHECKED_IN' | 'ON_TOUR' | 'RETURNED_SAFE';
+  note?: string;
+}
+
+export interface BulkAttendanceResult {
+  excursionId: number;
+  totalRequested: number;
+  totalUpdated: number;
+  targetStatus: string;
+  updatedPassengerIds: number[];
+  message: string;
+}
+
+export interface AttendanceSummary {
+  excursionId: number;
+  excursionTitle: string;
+  returnToShipTime?: string;
+  totalRegistered: number;
+  totalCheckedIn: number;
+  totalOnTour: number;
+  totalReturnedSafe: number;
+  totalPendingDeparture: number;
+  totalMissingReturn: number;
+  busStats: {
+    busNumber: string;
+    total: number;
+    checkedIn: number;
+    returnedSafe: number;
+    missing: number;
+  }[];
+  groupStats: {
+    groupName: string;
+    total: number;
+    checkedIn: number;
+    returnedSafe: number;
+    missing: number;
+  }[];
+  missingPassengers: {
+    excursionPassengerId: number;
+    passengerName: string;
+    cabinNumber: string;
+    ticketCode: string;
+    busNumber: string;
+    groupName: string;
+    emergencyPhone?: string;
+    currentStatus: 'REGISTERED' | 'CHECKED_IN' | 'ON_TOUR';
+  }[];
+}
+
+export async function checkInPassenger(
+  excursionId: number,
+  payload: ExcursionCheckInPayload
+): Promise<ExcursionCheckInResult> {
+  try {
+    const res = await apiClient.post<{ success: boolean; data: ExcursionCheckInResult }>(
+      `/excursions/${excursionId}/check-in`,
+      payload
+    );
+    if (res.data?.data) {
+      return res.data.data;
+    }
+  } catch (err) {
+    console.warn('API /check-in unavailable, fallback to mock state', err);
+  }
+
+  // Local fallback
+  const exc = localExcursions.find((e) => e.id === excursionId);
+  if (!exc) throw new Error(`Excursion not found with ID ${excursionId}`);
+
+  const p = (exc.passengers || []).find(
+    (item) =>
+      (payload.excursionPassengerId && item.id === payload.excursionPassengerId) ||
+      (payload.ticketCode && item.ticketCode.toLowerCase() === payload.ticketCode.toLowerCase()) ||
+      (payload.cabinNumber && item.cabinNumber.toLowerCase() === payload.cabinNumber.toLowerCase())
+  );
+
+  if (!p) {
+    throw new Error('Không tìm thấy hành khách khớp với thông tin vé hoặc số cabin');
+  }
+
+  const prev = p.status;
+  p.status = payload.targetStatus;
+  return {
+    excursionPassengerId: p.id,
+    excursionId,
+    passengerName: p.passengerName,
+    cabinNumber: p.cabinNumber,
+    ticketCode: p.ticketCode,
+    previousStatus: prev,
+    currentStatus: payload.targetStatus,
+    message: `Điểm danh thành công hành khách ${p.passengerName}`,
+  };
+}
+
+export async function bulkCheckInPassengers(
+  excursionId: number,
+  payload: BulkAttendancePayload
+): Promise<BulkAttendanceResult> {
+  try {
+    const res = await apiClient.post<{ success: boolean; data: BulkAttendanceResult }>(
+      `/excursions/${excursionId}/attendance/bulk`,
+      payload
+    );
+    if (res.data?.data) {
+      return res.data.data;
+    }
+  } catch (err) {
+    console.warn('API /attendance/bulk unavailable, fallback to mock state', err);
+  }
+
+  // Local fallback
+  const exc = localExcursions.find((e) => e.id === excursionId);
+  if (!exc) throw new Error(`Excursion not found with ID ${excursionId}`);
+
+  const updatedIds: number[] = [];
+  (exc.passengers || []).forEach((p) => {
+    const matchId = payload.passengerIds && payload.passengerIds.includes(p.id);
+    const matchBus = payload.busNumber && p.busNumber === payload.busNumber;
+    const matchGroup = payload.groupName && p.groupName === payload.groupName;
+
+    if (matchId || matchBus || matchGroup) {
+      if (p.status !== payload.targetStatus) {
+        p.status = payload.targetStatus;
+        updatedIds.push(p.id);
+      }
+    }
+  });
+
+  return {
+    excursionId,
+    totalRequested: updatedIds.length,
+    totalUpdated: updatedIds.length,
+    targetStatus: payload.targetStatus,
+    updatedPassengerIds: updatedIds,
+    message: `Đã cập nhật ${updatedIds.length} hành khách sang trạng thái ${payload.targetStatus}`,
+  };
+}
+
+export async function getAttendanceSummary(excursionId: number): Promise<AttendanceSummary> {
+  try {
+    const res = await apiClient.get<{ success: boolean; data: AttendanceSummary }>(
+      `/excursions/${excursionId}/attendance/summary`
+    );
+    if (res.data?.data) {
+      return res.data.data;
+    }
+  } catch (err) {
+    console.warn('API /attendance/summary unavailable, fallback to mock state', err);
+  }
+
+  // Local fallback
+  const exc = localExcursions.find((e) => e.id === excursionId) || localExcursions[0];
+  const passengers = exc?.passengers || [];
+
+  const checkedIn = passengers.filter((p) => p.status === 'CHECKED_IN').length;
+  const onTour = passengers.filter((p) => p.status === 'ON_TOUR').length;
+  const returnedSafe = passengers.filter((p) => p.status === 'RETURNED_SAFE').length;
+  const total = passengers.length;
+
+  const missing = passengers
+    .filter((p) => p.status !== 'RETURNED_SAFE')
+    .map((p) => ({
+      excursionPassengerId: p.id,
+      passengerName: p.passengerName,
+      cabinNumber: p.cabinNumber,
+      ticketCode: p.ticketCode,
+      busNumber: p.busNumber || 'Chưa phân xe',
+      groupName: p.groupName || 'Chưa xếp đoàn',
+      emergencyPhone: p.emergencyPhone,
+      currentStatus: p.status as 'REGISTERED' | 'CHECKED_IN' | 'ON_TOUR',
+    }));
+
+  return {
+    excursionId: exc.id,
+    excursionTitle: exc.title,
+    returnToShipTime: exc.returnToShipTime,
+    totalRegistered: total,
+    totalCheckedIn: checkedIn,
+    totalOnTour: onTour,
+    totalReturnedSafe: returnedSafe,
+    totalPendingDeparture: Math.max(0, total - (checkedIn + onTour + returnedSafe)),
+    totalMissingReturn: Math.max(0, total - returnedSafe),
+    busStats: [
+      { busNumber: 'XE-01', total: Math.ceil(total / 2), checkedIn: Math.ceil(checkedIn / 2), returnedSafe: Math.ceil(returnedSafe / 2), missing: Math.max(0, Math.ceil(total / 2) - Math.ceil(returnedSafe / 2)) },
+      { busNumber: 'XE-02', total: Math.floor(total / 2), checkedIn: Math.floor(checkedIn / 2), returnedSafe: Math.floor(returnedSafe / 2), missing: Math.max(0, Math.floor(total / 2) - Math.floor(returnedSafe / 2)) }
+    ],
+    groupStats: [
+      { groupName: 'Đoàn Hải Âu', total, checkedIn, returnedSafe, missing: total - returnedSafe }
+    ],
+    missingPassengers: missing,
+  };
+}
+
 export function resetExcursionServiceState(): void {
   localExcursions = [...INITIAL_EXCURSIONS];
 }
