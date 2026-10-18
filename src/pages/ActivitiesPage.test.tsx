@@ -109,6 +109,10 @@ describe('ActivitiesPage Component Tests (KAN-139)', () => {
       </BrowserRouter>
     );
 
+    await waitFor(() => {
+      expect(screen.getByText('Yoga Bình Minh Trên Boong Tàu')).toBeInTheDocument();
+    });
+
     const createBtn = screen.getByRole('button', { name: /Tạo Hoạt Động Mới/i });
     fireEvent.click(createBtn);
 
@@ -171,9 +175,11 @@ describe('ActivitiesPage Component Tests (KAN-139)', () => {
     expect(deleteBtns.length).toBeGreaterThan(0);
     fireEvent.click(deleteBtns[0]);
 
-    expect(spyConfirm).toHaveBeenCalledWith(
-      expect.stringContaining('Yoga Bình Minh Trên Boong Tàu')
-    );
-    expect(spyDelete).toHaveBeenCalledWith(mockActivities[0].id);
+    await waitFor(() => {
+      expect(spyConfirm).toHaveBeenCalledWith(
+        expect.stringContaining('Yoga Bình Minh Trên Boong Tàu')
+      );
+      expect(spyDelete).toHaveBeenCalledWith(mockActivities[0].id);
+    });
   });
 });
