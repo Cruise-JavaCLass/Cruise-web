@@ -161,4 +161,66 @@ describe('PassengerHomePage Component (KAN-201)', () => {
     expect(screen.getByText('Thông Báo & Lịch Trình Phát Sóng')).toBeInTheDocument();
     expect(screen.getByText('Thông báo: Điều chỉnh giờ cập bến')).toBeInTheDocument();
   });
+
+  describe('Empty and Error States (KAN-202)', () => {
+    it('renders empty state when passenger has no registered excursions', async () => {
+      const emptyExcursionSummary: passengerService.PassengerBookingSummary = {
+        ...mockBookingSummary,
+        totalRegisteredExcursions: 0,
+        totalExcursionSpent: 0,
+        registeredExcursions: [],
+      };
+
+      vi.spyOn(passengerService, 'getPassengerBookingSummary').mockResolvedValue(emptyExcursionSummary);
+      vi.spyOn(passengerCatalogService, 'getCatalogItems').mockResolvedValue({
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        size: 6,
+        number: 0,
+      });
+      vi.spyOn(dailyItineraryService, 'getTourNotifications').mockResolvedValue([]);
+
+      render(
+        <MemoryRouter>
+          <PassengerHomePage />
+        </MemoryRouter>
+      );
+
+      // Empty excursion banner
+      expect(await screen.findByText('Quý khách chưa đăng ký tour tham quan trên bờ nào.')).toBeInTheDocument();
+      expect(screen.getByText(/Khám phá các tour trên bờ ngay/i)).toBeInTheDocument();
+
+      // Empty upcoming activities banner
+      expect(screen.getByText('Chưa có hoạt động nào được lên lịch trong hôm nay.')).toBeInTheDocument();
+
+      // Empty notifications banner
+      expect(screen.getByText('Hiện không có thông báo hay cảnh báo mới từ trung tâm điều hành.')).toBeInTheDocument();
+    });
+
+    it('renders error banner and retry button when booking summary API fails', async () => {
+      vi.spyOn(passengerService, 'getPassengerBookingSummary').mockRejectedValue(
+        new Error('Network connection timeout')
+      );
+      vi.spyOn(passengerCatalogService, 'getCatalogItems').mockResolvedValue({
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        size: 6,
+        number: 0,
+      });
+      vi.spyOn(dailyItineraryService, 'getTourNotifications').mockResolvedValue([]);
+
+      render(
+        <MemoryRouter>
+          <PassengerHomePage />
+        </MemoryRouter>
+      );
+
+      expect(await screen.findByTestId('passenger-error-banner')).toBeInTheDocument();
+      expect(screen.getByText('Đã xảy ra sự cố tải dữ liệu!')).toBeInTheDocument();
+      expect(screen.getByText('Network connection timeout')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Thử lại/i })).toBeInTheDocument();
+    });
+  });
 });
