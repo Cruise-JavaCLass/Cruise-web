@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Users,
   Bus,
@@ -39,19 +39,25 @@ export const ExcursionAttendancePage: React.FC = () => {
   const [isMissingModalOpen, setIsMissingModalOpen] = useState(false);
   const [scannerTargetStatus, setScannerTargetStatus] = useState<'CHECKED_IN' | 'ON_TOUR' | 'RETURNED_SAFE'>('CHECKED_IN');
   const [notificationMsg, setNotificationMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const loadRequestRef = useRef(0);
 
   const loadData = async (excId?: number) => {
+    const requestId = ++loadRequestRef.current;
     try {
       const allExc = await fetchExcursions();
+      if (requestId !== loadRequestRef.current) return;
       setExcursions(allExc);
 
       const targetId = excId || selectedExcursionId || allExc[0]?.id || 1;
       setSelectedExcursionId(targetId);
 
       const sum = await getAttendanceSummary(targetId);
+      if (requestId !== loadRequestRef.current) return;
       setSummary(sum);
     } catch (err) {
-      console.error('Error loading attendance summary:', err);
+      if (requestId === loadRequestRef.current) {
+        console.error('Error loading attendance summary:', err);
+      }
     }
   };
 
