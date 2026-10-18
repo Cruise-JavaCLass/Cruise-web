@@ -88,23 +88,73 @@ export const ActivityPassModal: React.FC<ActivityPassModalProps> = ({
     };
   }, [isOpen, activityId, passengerId]);
 
-  // Countdown timer & auto-refresh
+  // 1. Đồng hồ đếm ngược độc lập (không gọi fetchPass bên trong updater)
   useEffect(() => {
-    if (!isOpen || !pass || countdown <= 0) return;
+    if (!isOpen || !pass) return;
 
     const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          void fetchPass();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isOpen, pass, countdown, fetchPass]);
+  }, [isOpen, pass]);
+
+  // 2. Kích hoạt tải lại pass từ effect riêng khi countdown về 0 (bất đồng bộ không gọi setState trực tiếp)
+  useEffect(() => {
+    if (!isOpen || !pass || countdown > 0 || !activityId || !passengerId) return;
+
+    let isMounted = true;
+    activityAttendanceService
+      .getActivityPass(activityId, passengerId)
+      .then((data) => {
+        if (isMounted) {
+          setPass(data);
+          const expiresAtMs = new Date(data.expiresAt).getTime();
+          const nowMs = Date.now();
+          const diffSec = Math.max(1, Math.round((expiresAtMs - nowMs) / 1000));
+          setCountdown(Math.min(60, diffSec));
+        }
+      })
+      .catch((err: unknown) => {
+        if (isMounted) {
+          const msg = err instanceof Error ? err.message : 'Không thể tải mã thẻ hoạt động';
+          setErrorMessage(msg);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [countdown, isOpen, pass, activityId, passengerId]);
+
+  const currentToken = pass?.token;
+
+  // Sinh ma trận điểm QR động theo chuỗi token thực tế của pass
+  const qrModules = React.useMemo(() => {
+    if (!currentToken) return [];
+    const modules: { x: number; y: number; w: number; h: number }[] = [];
+    for (let r = 0; r < 12; r++) {
+      for (let c = 0; c < 12; c++) {
+        // Tránh các góc định vị và tâm huy hiệu
+        const inTopLeft = r < 4 && c < 4;
+        const inTopRight = r < 4 && c > 7;
+        const inBottomLeft = r > 7 && c < 4;
+        const inCenter = r >= 4 && r <= 7 && c >= 4 && c <= 7;
+        if (inTopLeft || inTopRight || inBottomLeft || inCenter) continue;
+
+        const charCode = currentToken.charCodeAt((r * 12 + c) % currentToken.length);
+        if ((charCode + r * 3 + c * 5) % 3 !== 0) {
+          modules.push({
+            x: 24 + c * 13,
+            y: 24 + r * 13,
+            w: 9,
+            h: 9,
+          });
+        }
+      }
+    }
+    return modules;
+  }, [currentToken]);
 
   if (!isOpen) return null;
 
@@ -226,42 +276,18 @@ export const ActivityPassModal: React.FC<ActivityPassModalProps> = ({
                     <rect x="20" y="150" width="30" height="30" rx="3" fill="#ffffff" />
                     <rect x="27" y="157" width="16" height="16" rx="2" fill="#0284c7" />
 
-                    {/* Dynamic Data Modules simulated from token hash */}
+                    {/* Dynamic Data Modules generated from pass.token */}
                     <g fill="#1e293b">
-                      <rect x="70" y="20" width="10" height="10" rx="2" />
-                      <rect x="90" y="20" width="20" height="10" rx="2" />
-                      <rect x="120" y="20" width="10" height="10" rx="2" />
-                      <rect x="70" y="40" width="20" height="10" rx="2" />
-                      <rect x="100" y="40" width="10" height="10" rx="2" />
-                      <rect x="120" y="40" width="10" height="10" rx="2" />
-
-                      <rect x="20" y="70" width="10" height="20" rx="2" />
-                      <rect x="40" y="80" width="20" height="10" rx="2" />
-                      <rect x="70" y="70" width="10" height="10" rx="2" />
-                      <rect x="90" y="80" width="20" height="10" rx="2" />
-                      <rect x="120" y="70" width="10" height="20" rx="2" />
-                      <rect x="140" y="70" width="20" height="10" rx="2" />
-                      <rect x="170" y="80" width="10" height="10" rx="2" />
-
-                      <rect x="20" y="100" width="20" height="10" rx="2" />
-                      <rect x="50" y="110" width="10" height="10" rx="2" />
-                      <rect x="70" y="100" width="20" height="10" rx="2" />
-                      <rect x="100" y="100" width="10" height="20" rx="2" />
-                      <rect x="120" y="110" width="20" height="10" rx="2" />
-                      <rect x="150" y="100" width="20" height="10" rx="2" />
-                      <rect x="180" y="110" width="10" height="10" rx="2" />
-
-                      <rect x="70" y="130" width="10" height="20" rx="2" />
-                      <rect x="90" y="140" width="10" height="10" rx="2" />
-                      <rect x="110" y="130" width="20" height="10" rx="2" />
-                      <rect x="140" y="140" width="10" height="10" rx="2" />
-                      <rect x="160" y="130" width="20" height="10" rx="2" />
-
-                      <rect x="70" y="160" width="20" height="10" rx="2" />
-                      <rect x="100" y="160" width="10" height="20" rx="2" />
-                      <rect x="120" y="170" width="20" height="10" rx="2" />
-                      <rect x="150" y="160" width="10" height="20" rx="2" />
-                      <rect x="170" y="170" width="10" height="10" rx="2" />
+                      {qrModules.map((m, idx) => (
+                        <rect
+                          key={`qr-mod-${idx}-${m.x}-${m.y}`}
+                          x={m.x}
+                          y={m.y}
+                          width={m.w}
+                          height={m.h}
+                          rx="2"
+                        />
+                      ))}
                     </g>
 
                     {/* Center Cruise Shield Emblem */}

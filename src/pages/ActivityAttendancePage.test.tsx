@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { ActivityAttendancePage } from './ActivityAttendancePage';
 import {
   activityAttendanceService,
@@ -10,6 +10,16 @@ import {
   type WalkInCheckInResponse,
 } from '../services/activityAttendanceService';
 import * as activityService from '../services/activityService';
+
+const renderWithRoute = (initialPath = '/activities/10/attendance') => {
+  return render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <Routes>
+        <Route path="/activities/:id/attendance" element={<ActivityAttendancePage />} />
+      </Routes>
+    </MemoryRouter>
+  );
+};
 
 describe('ActivityAttendancePage Component Tests (KAN-323)', () => {
   const mockActivity: activityService.OnboardActivity = {
@@ -95,11 +105,7 @@ describe('ActivityAttendancePage Component Tests (KAN-323)', () => {
   });
 
   it('hiển thị tiêu đề, các thẻ KPI và danh sách hành khách điểm danh', async () => {
-    render(
-      <MemoryRouter initialEntries={['/activities/10/attendance']}>
-        <ActivityAttendancePage />
-      </MemoryRouter>
-    );
+    renderWithRoute();
 
     await waitFor(() => {
       expect(screen.getByText('Điểm Danh & Quét Vé Hoạt Động')).toBeInTheDocument();
@@ -115,11 +121,7 @@ describe('ActivityAttendancePage Component Tests (KAN-323)', () => {
   });
 
   it('lọc danh sách hành khách theo từ khóa tìm kiếm (search)', async () => {
-    render(
-      <MemoryRouter initialEntries={['/activities/10/attendance']}>
-        <ActivityAttendancePage />
-      </MemoryRouter>
-    );
+    renderWithRoute();
 
     await waitFor(() => {
       expect(screen.getByText('Nguyễn Văn Minh')).toBeInTheDocument();
@@ -133,11 +135,7 @@ describe('ActivityAttendancePage Component Tests (KAN-323)', () => {
   });
 
   it('lọc danh sách theo trạng thái Chưa quét / Đã vào cửa', async () => {
-    render(
-      <MemoryRouter initialEntries={['/activities/10/attendance']}>
-        <ActivityAttendancePage />
-      </MemoryRouter>
-    );
+    renderWithRoute();
 
     await waitFor(() => {
       expect(screen.getByText('Nguyễn Văn Minh')).toBeInTheDocument();
@@ -169,11 +167,7 @@ describe('ActivityAttendancePage Component Tests (KAN-323)', () => {
       .spyOn(activityAttendanceService, 'checkIn')
       .mockResolvedValueOnce(mockCheckInRes);
 
-    render(
-      <MemoryRouter initialEntries={['/activities/10/attendance']}>
-        <ActivityAttendancePage />
-      </MemoryRouter>
-    );
+    renderWithRoute();
 
     await waitFor(() => {
       expect(screen.getByText('Điểm Danh & Quét Vé Hoạt Động')).toBeInTheDocument();
@@ -219,11 +213,7 @@ describe('ActivityAttendancePage Component Tests (KAN-323)', () => {
       .spyOn(activityAttendanceService, 'walkInCheckIn')
       .mockResolvedValueOnce(mockWalkInRes);
 
-    render(
-      <MemoryRouter initialEntries={['/activities/10/attendance']}>
-        <ActivityAttendancePage />
-      </MemoryRouter>
-    );
+    renderWithRoute();
 
     await waitFor(() => {
       expect(screen.getByText('Điểm Danh & Quét Vé Hoạt Động')).toBeInTheDocument();

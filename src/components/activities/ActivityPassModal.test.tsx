@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ActivityPassModal } from './ActivityPassModal';
 import {
   activityAttendanceService,
@@ -62,12 +63,12 @@ describe('ActivityPassModal Component Tests (KAN-323)', () => {
       expect(screen.getByText(/20:00 - 22:30/)).toBeInTheDocument();
     });
 
-    // Check SVG QR code presence
     const qrElement = screen.getByRole('img', { name: /Mã QR cho Nguyễn Văn Minh/i });
     expect(qrElement).toBeInTheDocument();
   });
 
-  it('cho phép bấm nút Làm mới mã ngay để fetch lại vé mới', async () => {
+  it('cho phép bấm nút Làm mới mã ngay bằng userEvent để fetch lại vé mới', async () => {
+    const user = userEvent.setup();
     const spy = vi
       .spyOn(activityAttendanceService, 'getActivityPass')
       .mockResolvedValue(mockPass);
@@ -86,14 +87,15 @@ describe('ActivityPassModal Component Tests (KAN-323)', () => {
     });
 
     const refreshBtn = screen.getByRole('button', { name: /Làm mới mã ngay/i });
-    fireEvent.click(refreshBtn);
+    await user.click(refreshBtn);
 
     await waitFor(() => {
       expect(spy).toHaveBeenCalledTimes(2);
     });
   });
 
-  it('gọi hàm onClose khi bấm nút đóng hoặc nút Đóng', async () => {
+  it('gọi hàm onClose khi bấm nút đóng hoặc nút Đóng qua userEvent', async () => {
+    const user = userEvent.setup();
     vi.spyOn(activityAttendanceService, 'getActivityPass').mockResolvedValueOnce(mockPass);
     const onCloseMock = vi.fn();
 
@@ -111,11 +113,11 @@ describe('ActivityPassModal Component Tests (KAN-323)', () => {
     });
 
     const closeHeaderBtn = screen.getByRole('button', { name: /Đóng thẻ/i });
-    fireEvent.click(closeHeaderBtn);
+    await user.click(closeHeaderBtn);
     expect(onCloseMock).toHaveBeenCalledTimes(1);
 
     const closeFooterBtn = screen.getByRole('button', { name: /^Đóng$/i });
-    fireEvent.click(closeFooterBtn);
+    await user.click(closeFooterBtn);
     expect(onCloseMock).toHaveBeenCalledTimes(2);
   });
 
@@ -137,5 +139,45 @@ describe('ActivityPassModal Component Tests (KAN-323)', () => {
       expect(screen.getByText('Lỗi tải thẻ tham gia')).toBeInTheDocument();
       expect(screen.getByText('Mạng vệ tinh gián đoạn')).toBeInTheDocument();
     });
+  });
+
+  it('tự động làm mới vé khi đồng hồ đếm ngược hết hạn (countdown về 0)', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      // Thiết lập pass có thời hạn chỉ còn 2 giây
+      const shortLivedPass: ActivityPassResponse = {
+        ...mockPass,
+        expiresAt: new Date(Date.now() + 2000).toISOString(),
+      };
+
+      const spy = vi
+        .spyOn(activityAttendanceService, 'getActivityPass')
+        .mockResolvedValue(shortLivedPass);
+
+      render(
+        <ActivityPassModal
+          isOpen={true}
+          onClose={vi.fn()}
+          activityId={10}
+          passengerId={101}
+        />
+      );
+
+      // Chờ pass ban đầu tải xong
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      // Tiến đồng hồ 3 giây để kích hoạt countdown về 0
+      await act(async () => {
+        vi.advanceTimersByTime(3000);
+      });
+
+      expect(spy).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

@@ -26,6 +26,16 @@ import {
   type WalkInCheckInRequest,
 } from '../services/activityAttendanceService';
 import { fetchActivities, type OnboardActivity } from '../services/activityService';
+import axios from 'axios';
+
+const extractErrorMessage = (err: unknown, fallback: string): string => {
+  if (axios.isAxiosError(err)) {
+    const serverMsg = err.response?.data?.message || err.response?.data?.error;
+    if (serverMsg) return String(serverMsg);
+  }
+  if (err instanceof Error && err.message) return err.message;
+  return fallback;
+};
 
 export const ActivityAttendancePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -62,7 +72,7 @@ export const ActivityAttendancePage: React.FC = () => {
     try {
       const [sumData, rosterData] = await Promise.all([
         activityAttendanceService.getAttendanceSummary(targetId),
-        activityAttendanceService.getActivityRoster(targetId, { size: 50 }),
+        activityAttendanceService.getActivityRoster(targetId, { size: 1000 }),
       ]);
 
       if (reqId === loadRequestIdRef.current) {
@@ -136,7 +146,7 @@ export const ActivityAttendancePage: React.FC = () => {
       setQuickInput('');
       void loadData(selectedActivityId);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Điểm danh thất bại';
+      const msg = extractErrorMessage(err, 'Điểm danh thất bại');
       setNotification({
         type: 'error',
         message: msg,
@@ -174,7 +184,7 @@ export const ActivityAttendancePage: React.FC = () => {
       setWalkInNote('');
       void loadData(selectedActivityId);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Đăng ký khách vãng lai thất bại';
+      const msg = extractErrorMessage(err, 'Đăng ký khách vãng lai thất bại');
       alert(msg);
     } finally {
       setIsSubmittingWalkIn(false);
@@ -646,59 +656,61 @@ export const ActivityAttendancePage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Simulation Quick Trigger Buttons */}
-              <div className="w-full mt-6 space-y-2">
-                <p className="text-xs font-semibold text-slate-400 text-center uppercase tracking-wider">
-                  Giả Lập Tín Hiệu Quét Nhanh
-                </p>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        const res = await activityAttendanceService.checkIn(selectedActivityId, {
-                          passengerId: roster[0]?.passengerId || 1,
-                          staffId: 'CAMERA-GATE-01',
-                        });
-                        setNotification({
-                          type: 'success',
-                          message: `Quét camera thành công: ${res.passengerName} (Cabin ${res.cabinNumber})`,
-                        });
-                        setIsScannerModalOpen(false);
-                        void loadData(selectedActivityId);
-                      } catch (err: unknown) {
-                        alert(err instanceof Error ? err.message : 'Lỗi quét QR');
-                      }
-                    }}
-                    className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors"
-                  >
-                    ✓ Quét Vé Hợp Lệ
-                  </button>
+              {/* Simulation Quick Trigger Buttons (Dev Only) */}
+              {Boolean(import.meta.env.DEV) && (
+                <div className="w-full mt-6 space-y-2">
+                  <p className="text-xs font-semibold text-slate-400 text-center uppercase tracking-wider">
+                    Giả Lập Tín Hiệu Quét Nhanh (DEV)
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          const res = await activityAttendanceService.checkIn(selectedActivityId, {
+                            passengerId: roster[0]?.passengerId || 1,
+                            staffId: 'CAMERA-GATE-01',
+                          });
+                          setNotification({
+                            type: 'success',
+                            message: `Quét camera thành công: ${res.passengerName} (Cabin ${res.cabinNumber})`,
+                          });
+                          setIsScannerModalOpen(false);
+                          void loadData(selectedActivityId);
+                        } catch (err: unknown) {
+                          alert(err instanceof Error ? err.message : 'Lỗi quét QR');
+                        }
+                      }}
+                      className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors"
+                    >
+                      ✓ Quét Vé Hợp Lệ
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        // Thử check-in người đã check-in để kích hoạt 409 Conflict
-                        const checkedPassenger = roster.find((p) => p.status === 'CHECKED_IN');
-                        await activityAttendanceService.checkIn(selectedActivityId, {
-                          passengerId: checkedPassenger ? checkedPassenger.passengerId : 1,
-                          staffId: 'CAMERA-GATE-01',
-                        });
-                      } catch (err: unknown) {
-                        setNotification({
-                          type: 'error',
-                          message: err instanceof Error ? err.message : 'Trùng lặp vé!',
-                        });
-                        setIsScannerModalOpen(false);
-                      }
-                    }}
-                    className="p-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-medium transition-colors"
-                  >
-                    ⚠ Thử Quét Trùng Lặp
-                  </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          // Thử check-in người đã check-in để kích hoạt 409 Conflict
+                          const checkedPassenger = roster.find((p) => p.status === 'CHECKED_IN');
+                          await activityAttendanceService.checkIn(selectedActivityId, {
+                            passengerId: checkedPassenger ? checkedPassenger.passengerId : 1,
+                            staffId: 'CAMERA-GATE-01',
+                          });
+                        } catch (err: unknown) {
+                          setNotification({
+                            type: 'error',
+                            message: err instanceof Error ? err.message : 'Trùng lặp vé!',
+                          });
+                          setIsScannerModalOpen(false);
+                        }
+                      }}
+                      className="p-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-medium transition-colors"
+                    >
+                      ⚠ Thử Quét Trùng Lặp
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

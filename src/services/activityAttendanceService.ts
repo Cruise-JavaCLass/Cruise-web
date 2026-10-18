@@ -135,6 +135,16 @@ export interface PagedRosterResponse {
   number: number;
 }
 
+/**
+ * Helper giải nén phong bì phản hồi chuẩn ApiResponse<T>, ném lỗi kiểu rõ ràng nếu dữ liệu rỗng
+ */
+function unwrapResponse<T>(response: { data?: { data?: T } }): T {
+  if (response?.data?.data === undefined || response?.data?.data === null) {
+    throw new Error('Dữ liệu phản hồi từ máy chủ không hợp lệ hoặc bị rỗng');
+  }
+  return response.data.data;
+}
+
 export const activityAttendanceService = {
   /**
    * Sinh mã QR Pass động bảo mật có TTL 60s cho hành khách (KAN-222)
@@ -143,7 +153,7 @@ export const activityAttendanceService = {
     const response = await apiClient.get<{ data: ActivityPassResponse }>(
       `/activities/${activityId}/passengers/${passengerId}/qr-pass`
     );
-    return response.data.data;
+    return unwrapResponse(response);
   },
 
   /**
@@ -154,7 +164,7 @@ export const activityAttendanceService = {
       `/activities/${activityId}/check-in`,
       payload
     );
-    return response.data.data;
+    return unwrapResponse(response);
   },
 
   /**
@@ -165,7 +175,7 @@ export const activityAttendanceService = {
       `/activities/${activityId}/check-in/walk-in`,
       payload
     );
-    return response.data.data;
+    return unwrapResponse(response);
   },
 
   /**
@@ -175,7 +185,7 @@ export const activityAttendanceService = {
     const response = await apiClient.get<{ data: ActivityAttendanceSummaryResponse }>(
       `/activities/${activityId}/attendance/summary`
     );
-    return response.data.data;
+    return unwrapResponse(response);
   },
 
   /**
@@ -196,7 +206,7 @@ export const activityAttendanceService = {
       `/activities/${activityId}/attendance/roster`,
       { params }
     );
-    return response.data.data;
+    return unwrapResponse(response);
   },
 
   /**
@@ -210,6 +220,6 @@ export const activityAttendanceService = {
       `/activities/${activityId}/check-in/offline-sync`,
       payload
     );
-    return response.data.data;
+    return unwrapResponse(response);
   },
 };
