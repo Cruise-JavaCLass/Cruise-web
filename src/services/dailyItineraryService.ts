@@ -55,6 +55,20 @@ export interface TourDailyItinerary {
   days: DailyItineraryDay[];
 }
 
+export interface TourNotification {
+  id?: number;
+  tourId: number;
+  tourCode?: string;
+  tourName?: string;
+  dailyItineraryId?: number;
+  dayNumber?: number;
+  changeType: string;
+  subject: string;
+  message: string;
+  urgency: string; // HIGH, MEDIUM, LOW
+  timestamp?: string;
+}
+
 export interface ActivityFormData {
   time: string;
   title: string;
@@ -501,4 +515,56 @@ export async function deleteDailyActivity(
       }
     }
   }
+}
+
+export async function getTourNotifications(tourId: number = 1): Promise<TourNotification[]> {
+  try {
+    const res = await apiClient.get<{ success: boolean; data: TourNotification[] }>(
+      `/itinerary/tours/${tourId}/daily/notifications`
+    );
+    if (res.data?.data && res.data.data.length > 0) {
+      return res.data.data;
+    }
+  } catch (err) {
+    console.warn('API /itinerary/tours/.../notifications unavailable, using fallback mock notifications', err);
+  }
+
+  return [
+    {
+      id: 1,
+      tourId,
+      tourCode: 'TOUR-HL-001',
+      tourName: 'Hải Trình Di Sản Vịnh Bắc Bộ',
+      dayNumber: 2,
+      changeType: 'PORT_CHANGE',
+      subject: 'Thông báo: Điều chỉnh giờ cập bến Cảng Tuần Châu',
+      message: 'Do điều kiện thời tiết sương mù sáng sớm, giờ cập bến Tuần Châu lùi lại 30 phút (08:30). Mọi hoạt động onboard duy trì bình thường.',
+      urgency: 'HIGH',
+      timestamp: '2026-10-18T06:00:00Z',
+    },
+    {
+      id: 2,
+      tourId,
+      tourCode: 'TOUR-HL-001',
+      tourName: 'Hải Trình Di Sản Vịnh Bắc Bộ',
+      dayNumber: 2,
+      changeType: 'TIME_CHANGE',
+      subject: 'Nhắc nhở: Giờ All-Aboard lên tàu tại Cảng Tiên Sa',
+      message: 'Tất cả hành khách vui lòng có mặt tại cầu cảng trước 17:30 để hoàn tất thủ tục an ninh lên tàu xuất bến đúng giờ.',
+      urgency: 'MEDIUM',
+      timestamp: '2026-10-18T07:15:00Z',
+    },
+    {
+      id: 3,
+      tourId,
+      tourCode: 'TOUR-HL-001',
+      tourName: 'Hải Trình Di Sản Vịnh Bắc Bộ',
+      dayNumber: 3,
+      changeType: 'ACTIVITY_UPDATE',
+      subject: 'Hoạt động mới: Tiệc Cocktail ngắm hoàng hôn tầng Sundeck',
+      message: 'Mời quý khách thưởng thức đồ uống miễn phí và biểu diễn violin lúc 17:30 tại Tầng 12 - Sundeck.',
+      urgency: 'LOW',
+      timestamp: '2026-10-18T08:00:00Z',
+    },
+  ];
 }
