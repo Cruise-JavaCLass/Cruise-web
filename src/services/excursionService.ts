@@ -227,7 +227,7 @@ export const INITIAL_EXCURSIONS: ShoreExcursion[] = [
     status: 'COMPLETED',
     imageUrl: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80',
     active: true,
-    passengers: INITIAL_EXCURSION_PASSENGERS,
+    passengers: INITIAL_EXCURSION_PASSENGERS.map((p) => ({ ...p })),
   },
   {
     id: 2,
@@ -259,7 +259,7 @@ export const INITIAL_EXCURSIONS: ShoreExcursion[] = [
     status: 'IN_PROGRESS',
     imageUrl: 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80',
     active: true,
-    passengers: INITIAL_EXCURSION_PASSENGERS,
+    passengers: INITIAL_EXCURSION_PASSENGERS.map((p) => ({ ...p })),
   },
   {
     id: 3,
@@ -291,7 +291,7 @@ export const INITIAL_EXCURSIONS: ShoreExcursion[] = [
     status: 'SCHEDULED',
     imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80',
     active: true,
-    passengers: INITIAL_EXCURSION_PASSENGERS,
+    passengers: INITIAL_EXCURSION_PASSENGERS.map((p) => ({ ...p })),
   },
   {
     id: 4,
@@ -324,7 +324,7 @@ export const INITIAL_EXCURSIONS: ShoreExcursion[] = [
     delayReason: 'Xe trung chuyển bị kẹt do thời tiết mưa lớn cục bộ, hướng dẫn viên đang liên tục báo cáo',
     imageUrl: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80',
     active: true,
-    passengers: INITIAL_EXCURSION_PASSENGERS,
+    passengers: INITIAL_EXCURSION_PASSENGERS.map((p) => ({ ...p })),
   },
 ];
 
@@ -769,6 +769,262 @@ export async function updateExcursionPassengers(
   throw new Error(`Excursion not found with id ${excursionId}`);
 }
 
+// ==========================================
+// ATTENDANCE & CHECK-IN SERVICES (KAN-225, KAN-318)
+// ==========================================
+
+export interface ExcursionCheckInPayload {
+  excursionPassengerId?: number;
+  ticketCode?: string;
+  rfidTag?: string;
+  cabinNumber?: string;
+  targetStatus: 'CHECKED_IN' | 'ON_TOUR' | 'RETURNED_SAFE';
+  note?: string;
+}
+
+export interface ExcursionCheckInResult {
+  excursionPassengerId: number;
+  excursionId: number;
+  passengerName: string;
+  cabinNumber: string;
+  ticketCode: string;
+  previousStatus: string;
+  currentStatus: 'REGISTERED' | 'CHECKED_IN' | 'ON_TOUR' | 'RETURNED_SAFE';
+  checkedInAt?: string;
+  returnedSafeAt?: string;
+  message: string;
+}
+
+export interface BulkAttendancePayload {
+  passengerIds?: number[];
+  groupName?: string;
+  busNumber?: string;
+  targetStatus: 'CHECKED_IN' | 'ON_TOUR' | 'RETURNED_SAFE';
+  note?: string;
+}
+
+export interface BulkAttendanceResult {
+  excursionId: number;
+  totalRequested: number;
+  totalUpdated: number;
+  targetStatus: string;
+  updatedPassengerIds: number[];
+  message: string;
+}
+
+export interface AttendanceSummary {
+  excursionId: number;
+  excursionTitle: string;
+  returnToShipTime?: string;
+  totalRegistered: number;
+  totalCheckedIn: number;
+  totalOnTour: number;
+  totalReturnedSafe: number;
+  totalPendingDeparture: number;
+  totalMissingReturn: number;
+  busStats: {
+    busNumber: string;
+    total: number;
+    checkedIn: number;
+    returnedSafe: number;
+    missing: number;
+  }[];
+  groupStats: {
+    groupName: string;
+    total: number;
+    checkedIn: number;
+    returnedSafe: number;
+    missing: number;
+  }[];
+  missingPassengers: {
+    excursionPassengerId: number;
+    passengerName: string;
+    cabinNumber: string;
+    ticketCode: string;
+    busNumber: string;
+    groupName: string;
+    emergencyPhone?: string;
+    currentStatus: 'REGISTERED' | 'CHECKED_IN' | 'ON_TOUR';
+  }[];
+}
+
+const USE_MOCK_FALLBACK = false;
+
+export async function checkInPassenger(
+  excursionId: number,
+  payload: ExcursionCheckInPayload
+): Promise<ExcursionCheckInResult> {
+  try {
+    const res = await apiClient.post<{ success: boolean; data: ExcursionCheckInResult }>(
+      `/excursions/${excursionId}/check-in`,
+      payload
+    );
+    if (res.data?.data) {
+      return res.data.data;
+    }
+    if (!USE_MOCK_FALLBACK) {
+      throw new Error('Phản hồi điểm danh không hợp lệ từ máy chủ');
+    }
+  } catch (err) {
+    if (!USE_MOCK_FALLBACK) throw err;
+    console.warn('API /check-in unavailable, fallback to mock state', err);
+  }
+
+  // Local fallback (dev / mock only)
+  const exc = localExcursions.find((e) => e.id === excursionId);
+  if (!exc) throw new Error(`Excursion not found with ID ${excursionId}`);
+
+  const p = (exc.passengers || []).find(
+    (item) =>
+      (payload.excursionPassengerId && item.id === payload.excursionPassengerId) ||
+      (payload.ticketCode && item.ticketCode.toLowerCase() === payload.ticketCode.toLowerCase()) ||
+      (payload.cabinNumber && item.cabinNumber.toLowerCase() === payload.cabinNumber.toLowerCase()) ||
+      (payload.rfidTag && item.ticketCode.toLowerCase() === payload.rfidTag.toLowerCase())
+  );
+
+  if (!p) {
+    throw new Error('Không tìm thấy hành khách khớp với thông tin vé, RFID hoặc số cabin');
+  }
+
+  const prev = p.status;
+  p.status = payload.targetStatus;
+  return {
+    excursionPassengerId: p.id,
+    excursionId,
+    passengerName: p.passengerName,
+    cabinNumber: p.cabinNumber,
+    ticketCode: p.ticketCode,
+    previousStatus: prev,
+    currentStatus: payload.targetStatus,
+    message: `Điểm danh thành công hành khách ${p.passengerName}`,
+  };
+}
+
+export async function bulkCheckInPassengers(
+  excursionId: number,
+  payload: BulkAttendancePayload
+): Promise<BulkAttendanceResult> {
+  try {
+    const res = await apiClient.post<{ success: boolean; data: BulkAttendanceResult }>(
+      `/excursions/${excursionId}/attendance/bulk`,
+      payload
+    );
+    if (res.data?.data) {
+      return res.data.data;
+    }
+    if (!USE_MOCK_FALLBACK) {
+      throw new Error('Phản hồi điểm danh hàng loạt không hợp lệ từ máy chủ');
+    }
+  } catch (err) {
+    if (!USE_MOCK_FALLBACK) throw err;
+    console.warn('API /attendance/bulk unavailable, fallback to mock state', err);
+  }
+
+  // Local fallback (dev / mock only)
+  const exc = localExcursions.find((e) => e.id === excursionId);
+  if (!exc) throw new Error(`Excursion not found with ID ${excursionId}`);
+
+  const updatedIds: number[] = [];
+  (exc.passengers || []).forEach((p) => {
+    const matchId = payload.passengerIds && payload.passengerIds.includes(p.id);
+    const matchBus = payload.busNumber && p.busNumber === payload.busNumber;
+    const matchGroup = payload.groupName && p.groupName === payload.groupName;
+
+    if (matchId || matchBus || matchGroup) {
+      if (p.status !== payload.targetStatus) {
+        p.status = payload.targetStatus;
+        updatedIds.push(p.id);
+      }
+    }
+  });
+
+  return {
+    excursionId,
+    totalRequested: updatedIds.length,
+    totalUpdated: updatedIds.length,
+    targetStatus: payload.targetStatus,
+    updatedPassengerIds: updatedIds,
+    message: `Đã cập nhật ${updatedIds.length} hành khách sang trạng thái ${payload.targetStatus}`,
+  };
+}
+
+export async function getAttendanceSummary(excursionId: number): Promise<AttendanceSummary> {
+  try {
+    const res = await apiClient.get<{ success: boolean; data: AttendanceSummary }>(
+      `/excursions/${excursionId}/attendance/summary`
+    );
+    if (res.data?.data) {
+      return res.data.data;
+    }
+    if (!USE_MOCK_FALLBACK) {
+      throw new Error('Phản hồi thống kê điểm danh không hợp lệ từ máy chủ');
+    }
+  } catch (err) {
+    if (!USE_MOCK_FALLBACK) throw err;
+    console.warn('API /attendance/summary unavailable, fallback to mock state', err);
+  }
+
+  // Local fallback
+  const exc = localExcursions.find((e) => e.id === excursionId);
+  if (!exc) throw new Error(`Excursion not found with ID ${excursionId}`);
+  const passengers = exc.passengers || [];
+
+  const checkedIn = passengers.filter((p) => p.status === 'CHECKED_IN').length;
+  const onTour = passengers.filter((p) => p.status === 'ON_TOUR').length;
+  const returnedSafe = passengers.filter((p) => p.status === 'RETURNED_SAFE').length;
+  const total = passengers.length;
+
+  const missing = passengers
+    .filter((p) => p.status === 'CHECKED_IN' || p.status === 'ON_TOUR')
+    .map((p) => ({
+      excursionPassengerId: p.id,
+      passengerName: p.passengerName,
+      cabinNumber: p.cabinNumber,
+      ticketCode: p.ticketCode,
+      busNumber: p.busNumber || 'Chưa phân xe',
+      groupName: p.groupName || 'Chưa xếp đoàn',
+      emergencyPhone: p.emergencyPhone,
+      currentStatus: p.status as 'CHECKED_IN' | 'ON_TOUR',
+    }));
+
+  const groupBy = (key: 'busNumber' | 'groupName') => {
+    const map = new Map<string, ExcursionPassenger[]>();
+    passengers.forEach((p) => {
+      const k = p[key] || (key === 'busNumber' ? 'Chưa phân xe' : 'Chưa xếp đoàn');
+      map.set(k, [...(map.get(k) || []), p]);
+    });
+    return Array.from(map.entries()).map(([name, list]) => {
+      const returned = list.filter((p) => p.status === 'RETURNED_SAFE').length;
+      const departedMissing = list.filter((p) => p.status === 'CHECKED_IN' || p.status === 'ON_TOUR').length;
+      return {
+        name,
+        total: list.length,
+        checkedIn: list.filter((p) => p.status === 'CHECKED_IN').length,
+        returnedSafe: returned,
+        missing: departedMissing,
+      };
+    });
+  };
+
+  return {
+    excursionId: exc.id,
+    excursionTitle: exc.title,
+    returnToShipTime: exc.returnToShipTime,
+    totalRegistered: total,
+    totalCheckedIn: checkedIn,
+    totalOnTour: onTour,
+    totalReturnedSafe: returnedSafe,
+    totalPendingDeparture: Math.max(0, total - (checkedIn + onTour + returnedSafe)),
+    totalMissingReturn: checkedIn + onTour,
+    busStats: groupBy('busNumber').map(({ name, ...s }) => ({ busNumber: name, ...s })),
+    groupStats: groupBy('groupName').map(({ name, ...s }) => ({ groupName: name, ...s })),
+    missingPassengers: missing,
+  };
+}
+
 export function resetExcursionServiceState(): void {
-  localExcursions = [...INITIAL_EXCURSIONS];
+  localExcursions = INITIAL_EXCURSIONS.map((e) => ({
+    ...e,
+    passengers: e.passengers?.map((p) => ({ ...p })),
+  }));
 }
