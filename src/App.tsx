@@ -11,6 +11,7 @@ import { PassengersPage } from './pages/PassengersPage';
 import { PassengerCatalogPage } from './pages/PassengerCatalogPage';
 import { ShipsPage } from './pages/ShipsPage';
 import { ShipDetailPage } from './pages/ShipDetailPage';
+import { PassengerHomePage } from './pages/PassengerHomePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export function App() {
@@ -18,6 +19,7 @@ export function App() {
     <Routes>
       <Route path="/" element={<MainLayout />}>
         <Route index element={<DashboardPage />} />
+        <Route path="passenger-home" element={<PassengerHomePage />} />
         <Route path="ships" element={<ShipsPage />} />
         <Route path="ships/:id" element={<ShipDetailPage />} />
         <Route path="itinerary" element={<ItineraryPage />} />
