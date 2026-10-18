@@ -409,11 +409,18 @@ export const ExcursionAttendancePage: React.FC = () => {
         onClose={() => setIsMissingModalOpen(false)}
         summary={summary}
         onQuickCheckIn={async (pId) => {
-          await checkInPassenger(selectedExcursionId, {
-            excursionPassengerId: pId,
-            targetStatus: 'RETURNED_SAFE',
-          });
-          await loadData(selectedExcursionId);
+          try {
+            await checkInPassenger(selectedExcursionId, {
+              excursionPassengerId: pId,
+              targetStatus: 'RETURNED_SAFE',
+            });
+            await loadData(selectedExcursionId);
+          } catch (err: unknown) {
+            setNotificationMsg({
+              type: 'error',
+              text: err instanceof Error ? err.message : 'Lỗi xác nhận về tàu',
+            });
+          }
         }}
       />
 
