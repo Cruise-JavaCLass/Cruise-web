@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   RefreshCw,
@@ -32,8 +32,8 @@ export const ActivityPassModal: React.FC<ActivityPassModalProps> = ({
   activityTitle,
 }) => {
   const [pass, setPass] = useState<ActivityPassResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const isLoading = !pass && !errorMessage;
   const [countdown, setCountdown] = useState(60);
   const [refreshToken, setRefreshToken] = useState(0);
 
@@ -42,8 +42,6 @@ export const ActivityPassModal: React.FC<ActivityPassModalProps> = ({
     if (!isOpen || !activityId || !passengerId) return;
 
     let isMounted = true;
-    setIsLoading(true);
-    setErrorMessage('');
 
     activityAttendanceService
       .getActivityPass(activityId, passengerId)
@@ -61,11 +59,6 @@ export const ActivityPassModal: React.FC<ActivityPassModalProps> = ({
           const msg = err instanceof Error ? err.message : 'Không thể tải mã thẻ hoạt động';
           setErrorMessage(msg);
         }
-      })
-      .finally(() => {
-        if (isMounted) {
-          setIsLoading(false);
-        }
       });
 
     return () => {
@@ -73,22 +66,22 @@ export const ActivityPassModal: React.FC<ActivityPassModalProps> = ({
     };
   }, [isOpen, activityId, passengerId, refreshToken]);
 
-  // 1. Đồng hồ đếm ngược độc lập
+  // Đồng hồ đếm ngược và tự động làm mới khi hết hạn bên trong callback hẹn giờ
   useEffect(() => {
     if (!isOpen || !pass) return;
 
     const timer = setInterval(() => {
-      setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          setRefreshToken((r) => r + 1);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(timer);
   }, [isOpen, pass]);
-
-  // 2. Kích hoạt làm mới khi countdown về 0
-  useEffect(() => {
-    if (!isOpen || !pass || countdown > 0) return;
-    setRefreshToken((prev) => prev + 1);
-  }, [countdown, isOpen, pass]);
 
   const currentToken = pass?.token;
 
