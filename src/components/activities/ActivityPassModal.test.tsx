@@ -7,6 +7,17 @@ import {
   type ActivityPassResponse,
 } from '../../services/activityAttendanceService';
 
+const renderModal = (onClose = vi.fn(), isOpen = true) => {
+  return render(
+    <ActivityPassModal
+      isOpen={isOpen}
+      onClose={onClose}
+      activityId={10}
+      passengerId={101}
+    />
+  );
+};
+
 describe('ActivityPassModal Component Tests (KAN-323)', () => {
   const mockPass: ActivityPassResponse = {
     token: 'eyJhbGciOiJIUzI1NiJ9.test-token.signature',
@@ -30,28 +41,14 @@ describe('ActivityPassModal Component Tests (KAN-323)', () => {
   });
 
   it('không render nội dung gì khi isOpen = false', () => {
-    const { container } = render(
-      <ActivityPassModal
-        isOpen={false}
-        onClose={vi.fn()}
-        activityId={10}
-        passengerId={101}
-      />
-    );
+    const { container } = renderModal(vi.fn(), false);
     expect(container.firstChild).toBeNull();
   });
 
   it('tải và hiển thị thông tin thẻ tham gia hoạt động khi isOpen = true', async () => {
     vi.spyOn(activityAttendanceService, 'getActivityPass').mockResolvedValueOnce(mockPass);
 
-    render(
-      <ActivityPassModal
-        isOpen={true}
-        onClose={vi.fn()}
-        activityId={10}
-        passengerId={101}
-      />
-    );
+    renderModal();
 
     await waitFor(() => {
       expect(screen.getByText('Thẻ Tham Gia Hoạt Động')).toBeInTheDocument();
@@ -73,14 +70,7 @@ describe('ActivityPassModal Component Tests (KAN-323)', () => {
       .spyOn(activityAttendanceService, 'getActivityPass')
       .mockResolvedValue(mockPass);
 
-    render(
-      <ActivityPassModal
-        isOpen={true}
-        onClose={vi.fn()}
-        activityId={10}
-        passengerId={101}
-      />
-    );
+    renderModal();
 
     await waitFor(() => {
       expect(screen.getByText('Dạ tiệc Khiêu vũ & Gala Âm nhạc')).toBeInTheDocument();
@@ -99,14 +89,7 @@ describe('ActivityPassModal Component Tests (KAN-323)', () => {
     vi.spyOn(activityAttendanceService, 'getActivityPass').mockResolvedValueOnce(mockPass);
     const onCloseMock = vi.fn();
 
-    render(
-      <ActivityPassModal
-        isOpen={true}
-        onClose={onCloseMock}
-        activityId={10}
-        passengerId={101}
-      />
-    );
+    renderModal(onCloseMock);
 
     await waitFor(() => {
       expect(screen.getByText('Thẻ Tham Gia Hoạt Động')).toBeInTheDocument();
@@ -126,14 +109,7 @@ describe('ActivityPassModal Component Tests (KAN-323)', () => {
       new Error('Mạng vệ tinh gián đoạn')
     );
 
-    render(
-      <ActivityPassModal
-        isOpen={true}
-        onClose={vi.fn()}
-        activityId={10}
-        passengerId={101}
-      />
-    );
+    renderModal();
 
     await waitFor(() => {
       expect(screen.getByText('Lỗi tải thẻ tham gia')).toBeInTheDocument();
@@ -144,7 +120,6 @@ describe('ActivityPassModal Component Tests (KAN-323)', () => {
   it('tự động làm mới vé khi đồng hồ đếm ngược hết hạn (countdown về 0)', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     try {
-      // Thiết lập pass có thời hạn chỉ còn 2 giây
       const shortLivedPass: ActivityPassResponse = {
         ...mockPass,
         expiresAt: new Date(Date.now() + 2000).toISOString(),
@@ -154,23 +129,14 @@ describe('ActivityPassModal Component Tests (KAN-323)', () => {
         .spyOn(activityAttendanceService, 'getActivityPass')
         .mockResolvedValue(shortLivedPass);
 
-      render(
-        <ActivityPassModal
-          isOpen={true}
-          onClose={vi.fn()}
-          activityId={10}
-          passengerId={101}
-        />
-      );
+      renderModal();
 
-      // Chờ pass ban đầu tải xong
       await act(async () => {
         await Promise.resolve();
       });
 
       expect(spy).toHaveBeenCalledTimes(1);
 
-      // Tiến đồng hồ 3 giây để kích hoạt countdown về 0
       await act(async () => {
         vi.advanceTimersByTime(3000);
       });

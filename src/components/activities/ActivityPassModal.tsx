@@ -35,36 +35,16 @@ export const ActivityPassModal: React.FC<ActivityPassModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [countdown, setCountdown] = useState(60);
-  const isFetchingRef = useRef(false);
+  const [refreshToken, setRefreshToken] = useState(0);
 
-  const fetchPass = useCallback(async () => {
-    if (!activityId || !passengerId) return;
-    if (isFetchingRef.current) return;
-    isFetchingRef.current = true;
-    setIsLoading(true);
-    setErrorMessage('');
-
-    try {
-      const data = await activityAttendanceService.getActivityPass(activityId, passengerId);
-      setPass(data);
-      const expiresAtMs = new Date(data.expiresAt).getTime();
-      const nowMs = Date.now();
-      const diffSec = Math.max(1, Math.round((expiresAtMs - nowMs) / 1000));
-      setCountdown(Math.min(60, diffSec));
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Không thể tải mã thẻ hoạt động';
-      setErrorMessage(msg);
-    } finally {
-      setIsLoading(false);
-      isFetchingRef.current = false;
-    }
-  }, [activityId, passengerId]);
-
-  // Initial load when modal opens
+  // Tải mã thẻ tham gia (thực hiện khi modal mở, khi đổi hành khách/hoạt động hoặc khi trigger làm mới)
   useEffect(() => {
     if (!isOpen || !activityId || !passengerId) return;
 
     let isMounted = true;
+    setIsLoading(true);
+    setErrorMessage('');
+
     activityAttendanceService
       .getActivityPass(activityId, passengerId)
       .then((data) => {
@@ -81,14 +61,19 @@ export const ActivityPassModal: React.FC<ActivityPassModalProps> = ({
           const msg = err instanceof Error ? err.message : 'Không thể tải mã thẻ hoạt động';
           setErrorMessage(msg);
         }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       });
 
     return () => {
       isMounted = false;
     };
-  }, [isOpen, activityId, passengerId]);
+  }, [isOpen, activityId, passengerId, refreshToken]);
 
-  // 1. Đồng hồ đếm ngược độc lập (không gọi fetchPass bên trong updater)
+  // 1. Đồng hồ đếm ngược độc lập
   useEffect(() => {
     if (!isOpen || !pass) return;
 
@@ -99,33 +84,11 @@ export const ActivityPassModal: React.FC<ActivityPassModalProps> = ({
     return () => clearInterval(timer);
   }, [isOpen, pass]);
 
-  // 2. Kích hoạt tải lại pass từ effect riêng khi countdown về 0 (bất đồng bộ không gọi setState trực tiếp)
+  // 2. Kích hoạt làm mới khi countdown về 0
   useEffect(() => {
-    if (!isOpen || !pass || countdown > 0 || !activityId || !passengerId) return;
-
-    let isMounted = true;
-    activityAttendanceService
-      .getActivityPass(activityId, passengerId)
-      .then((data) => {
-        if (isMounted) {
-          setPass(data);
-          const expiresAtMs = new Date(data.expiresAt).getTime();
-          const nowMs = Date.now();
-          const diffSec = Math.max(1, Math.round((expiresAtMs - nowMs) / 1000));
-          setCountdown(Math.min(60, diffSec));
-        }
-      })
-      .catch((err: unknown) => {
-        if (isMounted) {
-          const msg = err instanceof Error ? err.message : 'Không thể tải mã thẻ hoạt động';
-          setErrorMessage(msg);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [countdown, isOpen, pass, activityId, passengerId]);
+    if (!isOpen || !pass || countdown > 0) return;
+    setRefreshToken((prev) => prev + 1);
+  }, [countdown, isOpen, pass]);
 
   const currentToken = pass?.token;
 
@@ -199,7 +162,7 @@ export const ActivityPassModal: React.FC<ActivityPassModalProps> = ({
                 <p className="font-semibold">Lỗi tải thẻ tham gia</p>
                 <p>{errorMessage}</p>
                 <button
-                  onClick={() => void fetchPass()}
+                  onClick={() => setRefreshToken((prev) => prev + 1)}
                   className="mt-3 inline-flex items-center space-x-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-medium transition-colors"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
@@ -372,7 +335,7 @@ export const ActivityPassModal: React.FC<ActivityPassModalProps> = ({
               <div className="flex items-center justify-between pt-1">
                 <button
                   type="button"
-                  onClick={() => void fetchPass()}
+                  onClick={() => setRefreshToken((prev) => prev + 1)}
                   disabled={isLoading}
                   className="inline-flex items-center space-x-1.5 px-3 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors disabled:opacity-50"
                 >
