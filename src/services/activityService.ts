@@ -238,6 +238,23 @@ export const fetchActivitiesByTour = async (tourId: number): Promise<OnboardActi
   return inMemoryActivities.filter((a) => a.tourId === tourId && a.active);
 };
 
+export const fetchActivities = async (): Promise<OnboardActivity[]> => {
+  try {
+    const res = await apiClient.get<{ success: boolean; data: OnboardActivity[] | PageResponse<OnboardActivity> }>('/activities');
+    if (res.data?.data) {
+      if (Array.isArray(res.data.data)) {
+        return res.data.data;
+      }
+      if ('content' in res.data.data && Array.isArray(res.data.data.content)) {
+        return res.data.data.content;
+      }
+    }
+  } catch {
+    // fallback to local mock
+  }
+  return inMemoryActivities.filter((a) => a.active);
+};
+
 export const fetchActivitiesPaged = async (
   tourId: number,
   params: {
