@@ -21,6 +21,41 @@ export interface Passenger {
   updatedAt?: string;
 }
 
+export interface ExcursionSummaryItem {
+  excursionId: number;
+  excursionTitle: string;
+  ticketCode: string;
+  groupName: string;
+  busNumber: string;
+  status: string;
+  gatheringTime?: string;
+  returnToShipTime?: string;
+  portName?: string;
+  price: number;
+}
+
+export interface PassengerBookingSummary {
+  passengerId: number;
+  tourId: number;
+  tourName: string;
+  tourCode: string;
+  fullName: string;
+  email?: string;
+  phoneNumber?: string;
+  cabinNumber: string;
+  cabinCategory: string;
+  rfidTag: string;
+  qrCode?: string;
+  tourPackage: string;
+  bleZone?: string;
+  registrationStatus: RegistrationStatus;
+  checkInStatus: CheckInStatus;
+  boardedAt?: string;
+  totalRegisteredExcursions: number;
+  totalExcursionSpent: number;
+  registeredExcursions: ExcursionSummaryItem[];
+}
+
 export interface RegisterPassengerPayload {
   tourId: number;
   fullName: string;
@@ -333,4 +368,69 @@ export async function exportPassengersCsv(
 
     return new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
   }
+}
+
+export async function getPassengerBookingSummary(passengerId: number = 1): Promise<PassengerBookingSummary> {
+  try {
+    const res = await apiClient.get<{ success: boolean; data: PassengerBookingSummary }>(
+      `/activities/passengers/${passengerId}/summary`
+    );
+    if (res.data?.data) {
+      return res.data.data;
+    }
+  } catch (err) {
+    console.warn('API /activities/passengers/summary unavailable, using fallback mock data', err);
+  }
+
+  const p = localPassengers.find((item) => item.id === passengerId) || localPassengers[0];
+  return {
+    passengerId: p.id,
+    tourId: p.tourId,
+    tourName: 'Hải trình Di sản Vịnh Hạ Long - Đà Nẵng',
+    tourCode: 'CRUISE-' + p.tourId,
+    fullName: p.fullName,
+    email: p.email,
+    phoneNumber: p.phoneNumber,
+    cabinNumber: p.cabinNumber,
+    cabinCategory: p.cabinNumber.includes('Suite')
+      ? 'Royal Suite'
+      : p.cabinNumber.includes('Ban công')
+      ? 'Balcony Stateroom'
+      : 'Deluxe Stateroom',
+    rfidTag: p.rfidTag,
+    qrCode: p.qrCode,
+    tourPackage: p.tourPackage,
+    bleZone: p.bleZone,
+    registrationStatus: p.registrationStatus,
+    checkInStatus: p.checkInStatus,
+    boardedAt: p.boardedAt,
+    totalRegisteredExcursions: 2,
+    totalExcursionSpent: 165,
+    registeredExcursions: [
+      {
+        excursionId: 2,
+        excursionTitle: 'Khám phá Hang Sửng Sốt & Đảo Ti Tốp',
+        ticketCode: 'TCK-HL-9921',
+        groupName: 'Đoàn Hải Âu (Xe 01)',
+        busNumber: 'BUS-16-A',
+        status: 'CONFIRMED',
+        gatheringTime: '08:00',
+        returnToShipTime: '15:30',
+        portName: 'Cảng Tuần Châu (Hạ Long)',
+        price: 110,
+      },
+      {
+        excursionId: 4,
+        excursionTitle: 'Phố Cổ Hội An & Thuyền Đèn Lồng',
+        ticketCode: 'TCK-HA-8834',
+        groupName: 'Đoàn Sao Biển (Xe 02)',
+        busNumber: 'BUS-29-B',
+        status: 'CONFIRMED',
+        gatheringTime: '09:00',
+        returnToShipTime: '17:00',
+        portName: 'Cảng Tiên Sa (Đà Nẵng)',
+        price: 55,
+      },
+    ],
+  };
 }
