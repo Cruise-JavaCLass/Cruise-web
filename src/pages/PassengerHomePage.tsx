@@ -405,12 +405,20 @@ export const PassengerHomePage: React.FC = () => {
                 </h3>
                 <p className="text-[11px] text-slate-400">Theo dõi trạng thái xác nhận, thứ tự hàng đợi Waitlist và thẻ tham gia QR Pass</p>
               </div>
-              <Link
-                to="/catalog?itemType=ONBOARD_ACTIVITY"
-                className="text-xs font-medium text-cyan-400 hover:text-cyan-300 flex items-center gap-1 hover:underline"
-              >
-                Khám phá thêm hoạt động <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/my-schedule"
+                  className="px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                >
+                  <Clock className="w-3.5 h-3.5" /> Lịch Trình My Day
+                </Link>
+                <Link
+                  to="/catalog?itemType=ONBOARD_ACTIVITY"
+                  className="text-xs font-medium text-cyan-400 hover:text-cyan-300 flex items-center gap-1 hover:underline"
+                >
+                  Khám phá thêm hoạt động <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
 
             {registeredActivities.length === 0 ? (

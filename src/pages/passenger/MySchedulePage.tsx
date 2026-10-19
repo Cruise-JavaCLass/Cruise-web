@@ -1,0 +1,315 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  Calendar,
+  Clock,
+  User,
+  Users,
+  AlertTriangle,
+  RefreshCw,
+  WifiOff,
+  CheckCircle2,
+  Compass,
+  ArrowLeft,
+} from 'lucide-react';
+import {
+  passengerScheduleService,
+  type PersonalScheduleResponse,
+  type PersonalScheduleItem,
+  type ScheduleScope,
+} from '../../services/passengerScheduleService';
+import { ConflictAlertBanner } from '../../components/passenger/ConflictAlertBanner';
+import { MyScheduleTimeline } from '../../components/passenger/MyScheduleTimeline';
+import { ActivityPassModal } from '../../components/activities/ActivityPassModal';
+
+export const MySchedulePage: React.FC = () => {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const passengerIdParam = searchParams.get('passengerId');
+  const passengerId = passengerIdParam ? parseInt(passengerIdParam, 10) : 1;
+
+  const initialDay = searchParams.get('day') ? parseInt(searchParams.get('day')!, 10) : 1;
+  const initialScope = (searchParams.get('scope') === 'cabin' ? 'cabin' : 'my') as ScheduleScope;
+
+  const [selectedDay, setSelectedDay] = useState<number | undefined>(initialDay);
+  const [scope, setScope] = useState<ScheduleScope>(initialScope);
+  const [scheduleData, setScheduleData] = useState<PersonalScheduleResponse | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [isOffline, setIsOffline] = useState<boolean>(!navigator.onLine);
+  const [lastUpdated, setLastUpdated] = useState<string>('');
+
+  // Pass Modal State
+  const [selectedPassItem, setSelectedPassItem] = useState<PersonalScheduleItem | null>(null);
+
+  // Sync online / offline status
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const loadSchedule = useCallback(async () => {
+    setIsLoading(true);
+    setErrorMessage('');
+
+    try {
+      const data = await passengerScheduleService.getPersonalSchedule(passengerId, selectedDay, scope);
+      setScheduleData(data);
+      setLastUpdated(new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }));
+    } catch (err) {
+      console.warn('Lỗi khi tải lịch trình:', err);
+      // Kiểm tra cache ngoại tuyến
+      const cached = passengerScheduleService.loadFromCache(passengerId, selectedDay, scope);
+      if (cached) {
+        setScheduleData(cached.data);
+        setIsOffline(true);
+        setLastUpdated(cached.cachedAt);
+      } else {
+        setErrorMessage(err instanceof Error ? err.message : 'Không thể tải lịch trình cá nhân');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [passengerId, selectedDay, scope]);
+
+  useEffect(() => {
+    loadSchedule();
+  }, [loadSchedule]);
+
+  const handleDayChange = (day: number | undefined) => {
+    setSelectedDay(day);
+    const newParams = new URLSearchParams(searchParams);
+    if (day !== undefined) {
+      newParams.set('day', day.toString());
+    } else {
+      newParams.delete('day');
+    }
+    setSearchParams(newParams);
+  };
+
+  const handleScopeChange = (newScope: ScheduleScope) => {
+    setScope(newScope);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('scope', newScope);
+    setSearchParams(newParams);
+  };
+
+  // Tính toán số liệu thống kê tổng quan
+  const items = scheduleData?.items || [];
+  const totalEvents = items.length;
+  const checkedInCount = items.filter((i) => i.status === 'CHECKED_IN' || i.status === 'COMPLETED').length;
+  const pendingCount = items.filter((i) => i.status === 'REGISTERED').length;
+  const totalConflicts = scheduleData?.totalConflicts || 0;
+
+  return (
+    <div className="min-h-screen bg-[#000000] text-slate-100 p-4 sm:p-6 lg:p-8 font-sans selection:bg-cyan-500/30">
+      {/* Top Banner Navigation & Breadcrumb */}
+      <div className="max-w-6xl mx-auto mb-8">
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => navigate('/passenger-home')}
+              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all"
+              aria-label="Quay lại trang chủ hành khách"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-display font-bold text-xl sm:text-2xl text-white tracking-wide uppercase">
+                  Lịch Trình Cá Nhân (My Day)
+                </span>
+                {isOffline && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
+                    <WifiOff className="w-3 h-3" />
+                    <span>Ngoại tuyến {lastUpdated && `• Cập nhật ${lastUpdated}`}</span>
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {scheduleData?.passengerName ? `${scheduleData.passengerName} • Cabin ${scheduleData.cabinNumber}` : 'Hành khách'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={loadSchedule}
+              disabled={isLoading}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs font-semibold transition-all disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>Làm mới</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/catalog')}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 transition-all hover:scale-105"
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>Duyệt Hoạt Động</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Filter Toolbar: Cabin Scope Toggle & Day Tabs */}
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+          {/* Day Tabs */}
+          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-xl overflow-x-auto max-w-full">
+            <button
+              type="button"
+              onClick={() => handleDayChange(undefined)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                selectedDay === undefined
+                  ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              Toàn bộ hải trình
+            </button>
+            {[1, 2, 3, 4, 5].map((day) => (
+              <button
+                key={`day-tab-${day}`}
+                type="button"
+                onClick={() => handleDayChange(day)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                  selectedDay === day
+                    ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/30'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                Ngày {day}
+              </button>
+            ))}
+          </div>
+
+          {/* Scope Toggle: My Schedule vs Cabin Schedule */}
+          <div className="flex items-center gap-1 p-1 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-xl">
+            <button
+              type="button"
+              onClick={() => handleScopeChange('my')}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                scope === 'my'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <User className="w-3.5 h-3.5" />
+              <span>Chỉ lịch của tôi</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleScopeChange('cabin')}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                scope === 'cabin'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Cả cabin ({scheduleData?.cabinNumber || 'Phòng'})</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Stats Metrics Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
+            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+              <span>Tổng sự kiện</span>
+              <Calendar className="w-4 h-4 text-cyan-400" />
+            </div>
+            <div className="font-mono text-2xl font-bold text-white">{totalEvents}</div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
+            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+              <span>Đã check-in</span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            </div>
+            <div className="font-mono text-2xl font-bold text-emerald-400">{checkedInCount}</div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
+            <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+              <span>Chờ tham gia</span>
+              <Clock className="w-4 h-4 text-blue-400" />
+            </div>
+            <div className="font-mono text-2xl font-bold text-blue-400">{pendingCount}</div>
+          </div>
+
+          <div
+            className={`p-4 rounded-2xl border backdrop-blur-xl transition-colors ${
+              totalConflicts > 0
+                ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                : 'bg-white/[0.03] border-white/10 text-slate-400'
+            }`}
+          >
+            <div className="flex items-center justify-between text-xs mb-1">
+              <span>Trùng lịch</span>
+              <AlertTriangle className={`w-4 h-4 ${totalConflicts > 0 ? 'text-amber-400' : 'text-slate-500'}`} />
+            </div>
+            <div className="font-mono text-2xl font-bold">{totalConflicts}</div>
+          </div>
+        </div>
+
+        {/* Conflict Alert Banner (KAN-350 / KAN-353) */}
+        <div className="mt-6">
+          <ConflictAlertBanner conflicts={scheduleData?.conflicts || []} />
+        </div>
+
+        {/* Main Timeline View */}
+        <div className="mt-8">
+          {isLoading && !scheduleData ? (
+            <div className="py-20 flex flex-col items-center justify-center space-y-3">
+              <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin" />
+              <p className="text-sm text-slate-400">Đang tải lịch trình cá nhân...</p>
+            </div>
+          ) : errorMessage && !scheduleData ? (
+            <div className="p-6 rounded-2xl bg-red-500/10 border border-red-500/30 text-center">
+              <AlertTriangle className="w-8 h-8 text-red-400 mx-auto mb-2" />
+              <p className="text-sm font-semibold text-red-300">{errorMessage}</p>
+              <button
+                type="button"
+                onClick={loadSchedule}
+                className="mt-4 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
+              >
+                Thử lại
+              </button>
+            </div>
+          ) : (
+            <MyScheduleTimeline
+              items={items}
+              onOpenPass={(item) => setSelectedPassItem(item)}
+              onBrowseCatalog={() => navigate('/catalog')}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Dynamic QR Pass Modal (KAN-353) */}
+      {selectedPassItem && (
+        <ActivityPassModal
+          isOpen={true}
+          onClose={() => setSelectedPassItem(null)}
+          activityId={selectedPassItem.eventId}
+          passengerId={selectedPassItem.passengerId}
+          activityTitle={selectedPassItem.title}
+        />
+      )}
+    </div>
+  );
+};
+
+export default MySchedulePage;
