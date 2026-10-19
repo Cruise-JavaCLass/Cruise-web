@@ -195,6 +195,22 @@ describe('DiscrepancyInspectorModal & DisputeManagementWorkspace Tests (KAN-401)
 
 describe('PosPage Dashboard Integration Tests (KAN-401)', () => {
   it('switches tabs between Register, Reconciliation, and Disputes', async () => {
+    vi.spyOn(reconciliationService, 'getSummaryMetrics').mockResolvedValueOnce({
+      totalReconciledAmount: 184350.0,
+      totalDisputedAmount: 63.5,
+      totalVarianceAmount: 258.5,
+      totalTransactionsCount: 1420,
+      openDisputesCount: 2,
+      resolvedDisputesCount: 14,
+      pendingDiscrepanciesCount: 3,
+      discrepancyRatePercent: 0.21,
+      criticalAlertActive: false,
+      alertMessage: 'Hệ thống vận hành an toàn.',
+      generatedAt: new Date().toISOString(),
+    });
+    vi.spyOn(reconciliationService, 'getDiscrepancies').mockResolvedValueOnce([]);
+    vi.spyOn(reconciliationService, 'getDisputes').mockResolvedValueOnce([]);
+
     render(<PosPage />);
 
     expect(screen.getByText(/Hệ Thống POS & Tài Khoản Phi Tiền Mặt/i)).toBeDefined();

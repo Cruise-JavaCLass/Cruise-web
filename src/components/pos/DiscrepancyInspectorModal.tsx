@@ -30,7 +30,7 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
     if (record) {
       setResolutionNotes('');
     }
-  }, [record?.id]);
+  }, [record]);
 
   if (!isOpen || !record) return null;
 
@@ -48,6 +48,9 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
         resolvedBy: 'PURSER_OFFICER',
       });
       onClose();
+    } catch (err) {
+      console.error('Failed to resolve discrepancy:', err);
+      alert('Đã xảy ra lỗi khi xử lý sai lệch. Vui lòng thử lại.');
     } finally {
       setIsSubmitting(false);
     }

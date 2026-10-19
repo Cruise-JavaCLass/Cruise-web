@@ -46,8 +46,8 @@ export function PosPage() {
         reconciliationService.getDisputes(),
       ]);
       setMetrics(m);
-      setDiscrepancies(disc);
-      setDisputes(disp);
+      setDiscrepancies(disc || []);
+      setDisputes(disp || []);
     } catch (err) {
       console.error('Failed to load reconciliation data:', err);
     } finally {
@@ -72,19 +72,32 @@ export function PosPage() {
     try {
       await reconciliationService.runReconciliation();
       await loadReconciliationData();
+    } catch (err) {
+      console.error('Failed to run reconciliation:', err);
+      alert('Đã xảy ra lỗi khi chạy đối soát. Vui lòng thử lại.');
     } finally {
       setIsRunningRecon(false);
     }
   };
 
   const handleResolveDiscrepancy = async (id: number, payload: ResolveDiscrepancyPayload) => {
-    await reconciliationService.resolveDiscrepancy(id, payload);
-    await loadReconciliationData();
+    try {
+      await reconciliationService.resolveDiscrepancy(id, payload);
+      await loadReconciliationData();
+    } catch (err) {
+      console.error('Failed to resolve discrepancy:', err);
+      alert('Đã xảy ra lỗi khi xử lý sai lệch. Vui lòng thử lại.');
+    }
   };
 
   const handleResolveDispute = async (id: number, payload: ResolveDisputePayload) => {
-    await reconciliationService.resolveDispute(id, payload);
-    await loadReconciliationData();
+    try {
+      await reconciliationService.resolveDispute(id, payload);
+      await loadReconciliationData();
+    } catch (err) {
+      console.error('Failed to resolve dispute:', err);
+      alert('Đã xảy ra lỗi khi xử lý khiếu nại. Vui lòng thử lại.');
+    }
   };
 
   const transactions = [

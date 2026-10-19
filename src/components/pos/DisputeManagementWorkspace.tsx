@@ -71,6 +71,9 @@ export const DisputeManagementWorkspace: React.FC<DisputeManagementWorkspaceProp
         reviewerId: 'PURSER_LEAD',
       });
       setSelectedDispute(null);
+    } catch (err) {
+      console.error('Failed to resolve dispute:', err);
+      alert('Đã xảy ra lỗi khi xử lý khiếu nại. Vui lòng thử lại.');
     } finally {
       setIsProcessing(false);
     }
