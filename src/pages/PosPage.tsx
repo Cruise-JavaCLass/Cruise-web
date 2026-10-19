@@ -37,10 +37,6 @@ export function PosPage() {
   const [isRunningRecon, setIsRunningRecon] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
 
-  useEffect(() => {
-    loadReconciliationData();
-  }, []);
-
   const loadReconciliationData = async () => {
     setIsLoadingData(true);
     try {
@@ -56,6 +52,10 @@ export function PosPage() {
       setIsLoadingData(false);
     }
   };
+
+  useEffect(() => {
+    loadReconciliationData();
+  }, []);
 
   const handleSync = () => {
     setIsSyncing(true);
