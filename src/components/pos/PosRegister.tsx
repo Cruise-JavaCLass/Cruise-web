@@ -12,9 +12,6 @@ import {
   Flame,
   Ship,
   Sparkles,
-  Wifi,
-  WifiOff,
-  Clock,
   PauseCircle,
   Ban
 } from 'lucide-react';
@@ -117,7 +114,7 @@ export const PosRegister: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [completedTx, setCompletedTx] = useState<PosTransaction | null>(null);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
-  const [heldOrders, setHeldOrders] = useState<{ id: string; time: string; count: number; total: number }[]>([]);
+  const [_heldOrders, setHeldOrders] = useState<{ id: string; time: string; count: number; total: number }[]>([]);
   const idempotencyKeyRef = useRef<string | null>(null);
 
   // Barcode keyboard wedge buffer
@@ -329,7 +326,7 @@ export const PosRegister: React.FC = () => {
         }
         setBarcodeInput('');
       }
-    } catch (err) {
+    } catch (_err) {
       // Local fallback search
       const localMatch = products.find(
         (p) => p.barcode === trimmed || p.sku.toLowerCase() === trimmed.toLowerCase()

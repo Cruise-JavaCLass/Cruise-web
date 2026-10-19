@@ -20,9 +20,11 @@ import { PosRegister } from '../components/pos/PosRegister';
 import { ManagerVoidRefundModal } from '../components/pos/ManagerVoidRefundModal';
 import { ShiftSummaryModal } from '../components/pos/ShiftSummaryModal';
 import { PosReceiptModal } from '../components/pos/PosReceiptModal';
+import { PosCatalogManagement } from '../components/pos/PosCatalogManagement';
+import { Layers } from 'lucide-react';
 
 export function PosPage() {
-  const [activeTab, setActiveTab] = useState<'REGISTER' | 'LEDGER'>('REGISTER');
+  const [activeTab, setActiveTab] = useState<'REGISTER' | 'LEDGER' | 'CATALOG'>('REGISTER');
   
   // Ledger state
   const [transactions, setTransactions] = useState<PosTransaction[]>([]);
@@ -257,6 +259,17 @@ export function PosPage() {
         >
           <ListFilter className="w-4 h-4" /> Sổ Cái Giao Dịch & Quản Lý (Ledger)
         </button>
+
+        <button
+          onClick={() => setActiveTab('CATALOG')}
+          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+            activeTab === 'CATALOG'
+              ? 'border-amber-500 text-amber-400'
+              : 'border-transparent text-slate-400 hover:text-white'
+          }`}
+        >
+          <Layers className="w-4 h-4" /> Quản Lý Danh Mục & Giá (Catalog)
+        </button>
       </div>
 
       {/* Tab 1: POS Register */}
@@ -427,6 +440,9 @@ export function PosPage() {
           </div>
         </div>
       )}
+
+      {/* Tab 3: Multi-Outlet Catalog & Menu Management */}
+      {activeTab === 'CATALOG' && <PosCatalogManagement />}
 
       {/* Void / Refund Modal */}
       <ManagerVoidRefundModal
