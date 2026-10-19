@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { PosTransaction, posService } from '../../services/posService';
+import React, { useState, useEffect } from 'react';
+import { posService, type PosTransaction } from '../../services/posService';
 import { AlertTriangle, ShieldCheck, X, RotateCcw, DollarSign } from 'lucide-react';
 
 interface ManagerVoidRefundModalProps {
@@ -26,6 +26,17 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen && transaction) {
+      setReason('');
+      setPerformedBy('SUPERVISOR-LE');
+      setManagerPin('8888');
+      setRefundAmount(transaction.remainingRefundableAmount ?? transaction.totalAmount ?? 0);
+      setErrorMsg(null);
+      setIsSubmitting(false);
+    }
+  }, [isOpen, transaction, mode]);
 
   if (!isOpen || !transaction) return null;
 

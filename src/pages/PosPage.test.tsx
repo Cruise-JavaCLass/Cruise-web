@@ -11,12 +11,18 @@ vi.mock('../services/posService', () => ({
     createTransaction: vi.fn(),
     getShiftSummary: vi.fn(),
     syncOfflineBatch: vi.fn(),
+    getActiveShift: vi.fn(),
   },
 }));
 
 describe('PosPage Component Tests (KAN-234, KAN-391, KAN-392)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(posService.getActiveShift).mockResolvedValue({
+      id: 1,
+      stationId: 'BAR-DECK-9',
+      status: 'OPEN',
+    } as any);
   });
 
   it('renders POS Header and both Navigation Tabs', () => {

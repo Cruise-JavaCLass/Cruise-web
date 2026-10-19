@@ -98,6 +98,20 @@ export interface ShiftSummaryResponse {
   revenueByCategory: Record<string, number>;
 }
 
+export interface PosShift {
+  id: number;
+  stationId: string;
+  cashierId: string;
+  status: ShiftStatus;
+  openedAt: string;
+  closedAt?: string;
+  startingCash: number;
+  endingCash?: number;
+  totalSales: number;
+  totalRefunds: number;
+  netRevenue: number;
+}
+
 export interface FolioAccountResponse {
   id: number;
   cabinNumber: string;
@@ -174,6 +188,13 @@ export const posService = {
 
   closeShift: async (shiftId: number, managerId: string, endingCash?: number) => {
     const res = await apiClient.post<{ success: boolean; data: unknown }>(`/pos/shifts/${shiftId}/close`, { managerId, endingCash });
+    return res.data.data;
+  },
+
+  getActiveShift: async (stationId: string): Promise<PosShift | null> => {
+    const res = await apiClient.get<{ success: boolean; data: PosShift | null }>('/pos/shifts/active', {
+      params: { stationId }
+    });
     return res.data.data;
   },
 

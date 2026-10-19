@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { posService, CreateTransactionRequest, VoidTransactionRequest, RefundTransactionRequest } from './posService';
+import {
+  posService,
+  type CreateTransactionRequest,
+  type VoidTransactionRequest,
+  type RefundTransactionRequest,
+} from './posService';
 import { apiClient } from './api';
 
 vi.mock('./api', () => ({

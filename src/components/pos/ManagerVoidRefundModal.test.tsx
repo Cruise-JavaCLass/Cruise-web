@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ManagerVoidRefundModal } from './ManagerVoidRefundModal';
-import { posService, PosTransaction } from '../../services/posService';
+import { posService, type PosTransaction } from '../../services/posService';
 
 vi.mock('../../services/posService', () => ({
   posService: {

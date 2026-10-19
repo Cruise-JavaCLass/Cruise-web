@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   ShoppingCart,
   Plus,
@@ -9,7 +9,12 @@ import {
   AlertCircle,
   Search
 } from 'lucide-react';
-import { posService, PaymentMethod, FolioAccountResponse, PosTransaction } from '../../services/posService';
+import {
+  posService,
+  type PaymentMethod,
+  type FolioAccountResponse,
+  type PosTransaction,
+} from '../../services/posService';
 import { PosReceiptModal } from './PosReceiptModal';
 
 interface CatalogItem {
@@ -59,9 +64,11 @@ export const PosRegister: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [completedTx, setCompletedTx] = useState<PosTransaction | null>(null);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+  const idempotencyKeyRef = useRef<string | null>(null);
 
   // Cart operations
   const addToCart = (item: CatalogItem) => {
+    idempotencyKeyRef.current = null;
     setCart((prev) => {
       const existing = prev.find((i) => i.item.code === item.code);
       if (existing) {
@@ -74,6 +81,7 @@ export const PosRegister: React.FC = () => {
   };
 
   const updateQuantity = (code: string, delta: number) => {
+    idempotencyKeyRef.current = null;
     setCart((prev) =>
       prev
         .map((i) => (i.item.code === code ? { ...i, quantity: i.quantity + delta } : i))
@@ -82,10 +90,14 @@ export const PosRegister: React.FC = () => {
   };
 
   const removeFromCart = (code: string) => {
+    idempotencyKeyRef.current = null;
     setCart((prev) => prev.filter((i) => i.item.code !== code));
   };
 
-  const clearCart = () => setCart([]);
+  const clearCart = () => {
+    idempotencyKeyRef.current = null;
+    setCart([]);
+  };
 
   // Calculations
   const subtotal = cart.reduce((sum, i) => sum + i.item.price * i.quantity, 0);
@@ -125,7 +137,10 @@ export const PosRegister: React.FC = () => {
     setIsSubmitting(true);
     setSubmitError(null);
 
-    const idempotencyKey = 'IDEM-' + window.crypto.randomUUID();
+    if (!idempotencyKeyRef.current) {
+      idempotencyKeyRef.current = 'IDEM-' + window.crypto.randomUUID();
+    }
+    const idempotencyKey = idempotencyKeyRef.current;
 
     try {
       const response = await posService.createTransaction(
@@ -152,6 +167,7 @@ export const PosRegister: React.FC = () => {
       setCompletedTx(response);
       setIsReceiptOpen(true);
       clearCart();
+      idempotencyKeyRef.current = null;
       if (folioAccount && paymentMethod === 'CABIN_FOLIO') {
         // Refresh folio balance
         handleLookupFolio();
@@ -263,7 +279,11 @@ export const PosRegister: React.FC = () => {
               type="text"
               placeholder="Nhập số phòng (VD: CABIN-7012)"
               value={cabinInput}
-              onChange={(e) => setCabinInput(e.target.value.toUpperCase())}
+              onChange={(e) => {
+                setCabinInput(e.target.value.toUpperCase());
+                setFolioAccount(null);
+                setFolioError(null);
+              }}
               className="flex-1 px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 uppercase font-mono"
             />
             <button

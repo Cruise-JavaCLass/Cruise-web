@@ -1,6 +1,6 @@
 import React from 'react';
-import { PosTransaction } from '../../services/posService';
-import { CheckCircle2, Printer, X, Receipt } from 'lucide-react';
+import type { PosTransaction } from '../../services/posService';
+import { CheckCircle2, Printer, X } from 'lucide-react';
 
 interface PosReceiptModalProps {
   isOpen: boolean;
