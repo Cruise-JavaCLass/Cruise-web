@@ -98,4 +98,30 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
       expect(screen.getByText('Mã GD: TX-TEST-001')).toBeInTheDocument();
     });
   });
+
+  it('exposes payment methods as a labeled group with aria-pressed states', async () => {
+    const user = userEvent.setup();
+    render(<PosRegister />);
+
+    const paymentGroup = screen.getByRole('group', { name: /Phương thức thanh toán/i });
+    expect(paymentGroup).toBeInTheDocument();
+
+    const cabinFolioBtn = screen.getByRole('button', { name: 'Tài Khoản Phòng' });
+    const creditCardBtn = screen.getByRole('button', { name: 'Thẻ Tín Dụng' });
+    const cashBtn = screen.getByRole('button', { name: 'Tiền Mặt' });
+
+    expect(cabinFolioBtn).toHaveAttribute('aria-pressed', 'true');
+    expect(creditCardBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(cashBtn).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(creditCardBtn);
+    expect(cabinFolioBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(creditCardBtn).toHaveAttribute('aria-pressed', 'true');
+    expect(cashBtn).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(cashBtn);
+    expect(cabinFolioBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(creditCardBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(cashBtn).toHaveAttribute('aria-pressed', 'true');
+  });
 });

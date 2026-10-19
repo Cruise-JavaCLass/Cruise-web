@@ -448,8 +448,14 @@ export const PosRegister: React.FC = () => {
 
             {/* Payment Method Selector */}
             <div className="space-y-1.5">
-              <span className="text-slate-400 text-[11px] font-semibold block">Phương thức thanh toán:</span>
-              <div className="grid grid-cols-3 gap-1.5">
+              <span id="payment-method-label" className="text-slate-400 text-[11px] font-semibold block">
+                Phương thức thanh toán:
+              </span>
+              <div
+                role="group"
+                aria-labelledby="payment-method-label"
+                className="grid grid-cols-3 gap-1.5"
+              >
                 {[
                   { id: 'CABIN_FOLIO', label: 'Tài Khoản Phòng' },
                   { id: 'CREDIT_CARD', label: 'Thẻ Tín Dụng' },
@@ -457,6 +463,8 @@ export const PosRegister: React.FC = () => {
                 ].map((pm) => (
                   <button
                     key={pm.id}
+                    type="button"
+                    aria-pressed={paymentMethod === pm.id}
                     onClick={() => setPaymentMethod(pm.id as PaymentMethod)}
                     className={`py-2 px-1 text-center rounded-xl text-[11px] font-bold transition-all cursor-pointer border ${
                       paymentMethod === pm.id
