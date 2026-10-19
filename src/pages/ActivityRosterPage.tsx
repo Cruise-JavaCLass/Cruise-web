@@ -113,7 +113,7 @@ export const ActivityRosterPage: React.FC = () => {
   };
 
   // KPI calculations
-  const totalConfirmed = rosterData.content.filter(r => r.status === 'CONFIRMED').length || activity?.currentParticipants || 0;
+  const totalConfirmed = activity?.currentParticipants ?? rosterData.content.filter(r => r.status === 'CONFIRMED').length;
   const maxCap = activity?.maxCapacity || 50;
   const remaining = Math.max(0, maxCap - totalConfirmed);
   const occupancyPct = Math.min(100, Math.round((totalConfirmed / maxCap) * 100));

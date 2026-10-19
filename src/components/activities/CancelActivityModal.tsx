@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, AlertTriangle, CheckCircle2, ShieldAlert, ArrowRight } from 'lucide-react';
+import { X, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import {
   activityRegistrationService,
   type ActivityCancellationResponse
