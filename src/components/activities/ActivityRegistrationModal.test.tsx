@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ActivityRegistrationModal } from './ActivityRegistrationModal';
 import {
@@ -183,17 +183,23 @@ describe('ActivityRegistrationModal Component Tests (KAN-372)', () => {
 
     expect(submitBtn).toBeDisabled();
 
-    // Cleanup promise
-    resolvePromise!({
-      registrationId: 503,
-      activityId: 10,
-      activityTitle: 'Lớp Học Nấu Ăn 5 Sao',
-      passengerId: 101,
-      passengerName: 'Trần Minh Hoàng',
-      cabinNumber: '812',
-      status: 'CONFIRMED',
-      chargedAmount: 350000,
-      registeredAt: new Date().toISOString()
+    // Cleanup promise and wait for success state
+    act(() => {
+      resolvePromise!({
+        registrationId: 503,
+        activityId: 10,
+        activityTitle: 'Lớp Học Nấu Ăn 5 Sao',
+        passengerId: 101,
+        passengerName: 'Trần Minh Hoàng',
+        cabinNumber: '812',
+        status: 'CONFIRMED',
+        chargedAmount: 350000,
+        registeredAt: new Date().toISOString()
+      });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Đăng Ký Thành Công!')).toBeInTheDocument();
     });
   });
 
