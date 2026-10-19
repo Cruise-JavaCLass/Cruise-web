@@ -232,4 +232,58 @@ describe('PosPage Dashboard Integration Tests (KAN-401)', () => {
       expect(screen.getByText(/Danh Sách Hồ Sơ Khiếu Nại Chi Phí/i)).toBeDefined();
     });
   });
+
+  it('renders error and retry action in Reconciliation tab when load fails, then clears on retry', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(reconciliationService, 'getSummaryMetrics').mockResolvedValue({
+      totalReconciledAmount: 184350.0,
+      totalDisputedAmount: 63.5,
+      totalVarianceAmount: 258.5,
+      totalTransactionsCount: 1420,
+      openDisputesCount: 2,
+      resolvedDisputesCount: 14,
+      pendingDiscrepanciesCount: 3,
+      discrepancyRatePercent: 0.21,
+      criticalAlertActive: false,
+      alertMessage: 'Hệ thống vận hành an toàn.',
+      generatedAt: new Date().toISOString(),
+    });
+    vi.spyOn(reconciliationService, 'getDisputes').mockResolvedValue([]);
+    const getDiscrepanciesSpy = vi
+      .spyOn(reconciliationService, 'getDiscrepancies')
+      .mockRejectedValueOnce(new Error('Lỗi tải dữ liệu sai lệch'));
+
+    render(<PosPage />);
+
+    const reconTab = screen.getByRole('button', { name: /Trung Tâm Đối Soát/i });
+    fireEvent.click(reconTab);
+
+    // Verify error is rendered instead of clean empty state
+    await waitFor(() => {
+      expect(screen.getByText('Lỗi tải dữ liệu sai lệch')).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Không phát hiện sai lệch nào. Toàn bộ giao dịch POS và Folio đã khớp hoàn hảo!/i)
+      ).not.toBeInTheDocument();
+    });
+
+    const retryBtn = screen.getByRole('button', { name: /Thử lại/i });
+    expect(retryBtn).toBeInTheDocument();
+
+    // Next call succeeds with empty discrepancies to test clean state transition
+    getDiscrepanciesSpy.mockResolvedValueOnce([]);
+
+    fireEvent.click(retryBtn);
+
+    // After successful retry, error is cleared and empty state is rendered
+    await waitFor(() => {
+      expect(screen.queryByText('Lỗi tải dữ liệu sai lệch')).not.toBeInTheDocument();
+      expect(
+        screen.getByText(/Không phát hiện sai lệch nào. Toàn bộ giao dịch POS và Folio đã khớp hoàn hảo!/i)
+      ).toBeInTheDocument();
+    });
+
+    getDiscrepanciesSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
 });
+
