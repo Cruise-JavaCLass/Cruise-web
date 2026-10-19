@@ -170,7 +170,7 @@ export const PosRegister: React.FC = () => {
       idempotencyKeyRef.current = null;
       if (folioAccount && paymentMethod === 'CABIN_FOLIO') {
         // Refresh folio balance
-        handleLookupFolio();
+        await handleLookupFolio();
       }
     } catch (err: unknown) {
       const errorMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Lỗi khi xử lý thanh toán!';
@@ -393,8 +393,9 @@ export const PosRegister: React.FC = () => {
             {/* Gratuity & Discount Options */}
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
-                <label className="text-slate-400 text-[11px] block mb-1">Tip / Phục vụ:</label>
+                <label htmlFor="gratuity-select" className="text-slate-400 text-[11px] block mb-1">Tip / Phục vụ:</label>
                 <select
+                  id="gratuity-select"
                   value={gratuityPercent}
                   onChange={(e) => setGratuityPercent(Number(e.target.value))}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500"
@@ -407,8 +408,9 @@ export const PosRegister: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-slate-400 text-[11px] block mb-1">Chiết khấu ($):</label>
+                <label htmlFor="discount-input" className="text-slate-400 text-[11px] block mb-1">Chiết khấu ($):</label>
                 <input
+                  id="discount-input"
                   type="number"
                   min="0"
                   value={discountAmount}
@@ -446,7 +448,7 @@ export const PosRegister: React.FC = () => {
 
             {/* Payment Method Selector */}
             <div className="space-y-1.5">
-              <label className="text-slate-400 text-[11px] font-semibold block">Phương thức thanh toán:</label>
+              <span className="text-slate-400 text-[11px] font-semibold block">Phương thức thanh toán:</span>
               <div className="grid grid-cols-3 gap-1.5">
                 {[
                   { id: 'CABIN_FOLIO', label: 'Tài Khoản Phòng' },

@@ -146,12 +146,13 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
           {/* Refund Amount input */}
           {!isVoid && (
             <div>
-              <label className="font-semibold text-white block mb-1">
+              <label htmlFor="modal-refund-amount" className="font-semibold text-white block mb-1">
                 Số Tiền Hoàn ($):
               </label>
               <div className="relative">
                 <DollarSign className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
+                  id="modal-refund-amount"
                   type="number"
                   step="0.01"
                   min="0.01"
@@ -167,10 +168,11 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
 
           {/* Reason */}
           <div>
-            <label className="font-semibold text-white block mb-1">
+            <label htmlFor="modal-reason" className="font-semibold text-white block mb-1">
               Lý Do {isVoid ? 'Hủy' : 'Hoàn Tiền'} <span className="text-rose-400">*</span>:
             </label>
             <textarea
+              id="modal-reason"
               rows={2}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
@@ -183,10 +185,11 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
           {/* Manager Authorization PIN */}
           <div className="grid grid-cols-2 gap-3 pt-1">
             <div>
-              <label className="font-semibold text-white block mb-1 flex items-center gap-1">
+              <label htmlFor="modal-manager-pin" className="font-semibold text-white block mb-1 flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-amber-400" /> Mã PIN Quản Lý:
               </label>
               <input
+                id="modal-manager-pin"
                 type="password"
                 maxLength={6}
                 value={managerPin}
@@ -197,8 +200,9 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
               />
             </div>
             <div>
-              <label className="font-semibold text-white block mb-1">Người Duyệt / Quản Lý:</label>
+              <label htmlFor="modal-performed-by" className="font-semibold text-white block mb-1">Người Duyệt / Quản Lý:</label>
               <input
+                id="modal-performed-by"
                 type="text"
                 value={performedBy}
                 onChange={(e) => setPerformedBy(e.target.value)}

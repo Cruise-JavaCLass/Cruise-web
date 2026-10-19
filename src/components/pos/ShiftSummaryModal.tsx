@@ -21,7 +21,7 @@ export const ShiftSummaryModal: React.FC<ShiftSummaryModalProps> = ({ isOpen, on
 
   useEffect(() => {
     if (isOpen && shiftId) {
-      loadSummary();
+      void loadSummary();
     }
   }, [isOpen, shiftId, reportType]);
 
@@ -199,8 +199,9 @@ export const ShiftSummaryModal: React.FC<ShiftSummaryModalProps> = ({ isOpen, on
                   </p>
                   <div className="flex gap-2 pt-1 flex-wrap items-center">
                     <div>
-                      <label className="text-[10px] text-slate-400 block mb-0.5">Mã Quản lý:</label>
+                      <label htmlFor="shift-manager-id" className="text-[10px] text-slate-400 block mb-0.5">Mã Quản lý:</label>
                       <input
+                        id="shift-manager-id"
                         type="text"
                         placeholder="Mã Quản lý"
                         value={managerId}
@@ -209,8 +210,9 @@ export const ShiftSummaryModal: React.FC<ShiftSummaryModalProps> = ({ isOpen, on
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] text-slate-400 block mb-0.5">Tiền mặt kết ca ($):</label>
+                      <label htmlFor="shift-ending-cash" className="text-[10px] text-slate-400 block mb-0.5">Tiền mặt kết ca ($):</label>
                       <input
+                        id="shift-ending-cash"
                         type="number"
                         placeholder="Tiền mặt kết ca"
                         value={endingCash}

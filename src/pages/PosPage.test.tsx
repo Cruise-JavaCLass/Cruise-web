@@ -80,8 +80,9 @@ describe('PosPage Component Tests (KAN-234, KAN-391, KAN-392)', () => {
     render(<PosPage />);
 
     const reportBtn = screen.getByRole('button', { name: /Báo Cáo Ca \(X\/Z Report\)/i });
+    await waitFor(() => expect(reportBtn).toBeEnabled());
     await user.click(reportBtn);
 
-    expect(screen.getByText(/Báo Cáo Ca POS/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Báo Cáo Ca POS/i)).toBeInTheDocument();
   });
 });
