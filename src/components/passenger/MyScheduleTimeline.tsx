@@ -3,7 +3,6 @@ import {
   Clock,
   MapPin,
   QrCode,
-  AlertTriangle,
   Compass,
   Sparkles,
   User,
