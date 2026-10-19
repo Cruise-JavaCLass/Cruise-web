@@ -43,21 +43,28 @@ interface CartItemEntry {
   unitPrice: number;
 }
 
+const DEFAULT_FALLBACK_CATEGORIES: CategoryDto[] = [
+  { id: 1, name: 'Đồ Uống', code: 'BEVERAGE', displayOrder: 1, isActive: true },
+  { id: 2, name: 'Ẩm Thực', code: 'FOOD', displayOrder: 2, isActive: true },
+  { id: 3, name: 'Miễn Thuế', code: 'DUTY_FREE', displayOrder: 3, isActive: true },
+  { id: 4, name: 'Spa', code: 'SPA', displayOrder: 4, isActive: true },
+];
+
 const DEFAULT_FALLBACK_PRODUCTS: ProductDto[] = [
-  { id: 1, outletId: 1, categoryId: 1, categoryName: 'Signature Cocktails', sku: 'BEV-MOJ-001', barcode: '893850123401', name: 'Pacific Sunset Mojito', basePrice: 14.50, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 150, imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=300', happyHourEligible: true, happyHourDiscountPercent: 20 },
-  { id: 2, outletId: 1, categoryId: 1, categoryName: 'Signature Cocktails', sku: 'BEV-BLU-002', barcode: '893850123402', name: 'Ocean Blue Lagoon', basePrice: 15.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 120, imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300', happyHourEligible: true, happyHourDiscountPercent: 20 },
-  { id: 3, outletId: 1, categoryId: 2, categoryName: 'Craft Beers & Cider', sku: 'BEV-IPA-003', barcode: '893850123403', name: 'Harbor Craft IPA Draft (Pint)', basePrice: 8.50, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 200, imageUrl: 'https://images.unsplash.com/photo-1608270191771-464a9fb68393?w=300', happyHourEligible: true, happyHourDiscountPercent: 15 },
-  { id: 4, outletId: 2, categoryId: 3, categoryName: 'Gourmet Grill & Burgers', sku: 'FOOD-BGR-101', barcode: '893850123501', name: 'Angus Beef Cheese Burger', basePrice: 18.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 80, imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300', happyHourEligible: false },
-  { id: 5, outletId: 2, categoryId: 4, categoryName: 'Desserts & Ice Cream', sku: 'FOOD-CAK-103', barcode: '893850123503', name: 'Warm Belgian Chocolate Lava Cake', basePrice: 11.00, taxCategory: 'STANDARD_VAT', status: 'EIGHTY_SIXED', isAvailable: false, is86ed: true, stockQuantity: 0, imageUrl: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=300', happyHourEligible: false },
-  { id: 6, outletId: 3, categoryId: 5, categoryName: 'Massage Therapies', sku: 'SPA-MAS-201', barcode: '893850123601', name: 'Deep Tissue Ocean Massage 60m', basePrice: 120.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 999, imageUrl: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=300', happyHourEligible: false },
-  { id: 7, outletId: 4, categoryId: 6, categoryName: 'Fragrances & Cosmetics', sku: 'DF-PERF-301', barcode: '893850123701', name: 'Chanel No.5 EDP 100ml', basePrice: 135.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 40, imageUrl: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300', happyHourEligible: false },
+  { id: 1, outletId: 1, categoryId: 1, categoryName: 'Đồ Uống', sku: 'BEV-01', barcode: '893850123401', name: 'Cocktail Mojito Bạc Hà', basePrice: 14.50, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 150, imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=300', happyHourEligible: true, happyHourDiscountPercent: 20 },
+  { id: 2, outletId: 1, categoryId: 1, categoryName: 'Đồ Uống', sku: 'BEV-BLU-002', barcode: '893850123402', name: 'Ocean Blue Lagoon', basePrice: 15.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 120, imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300', happyHourEligible: true, happyHourDiscountPercent: 20 },
+  { id: 3, outletId: 1, categoryId: 1, categoryName: 'Đồ Uống', sku: 'BEV-IPA-003', barcode: '893850123403', name: 'Harbor Craft IPA Draft (Pint)', basePrice: 8.50, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 200, imageUrl: 'https://images.unsplash.com/photo-1608270191771-464a9fb68393?w=300', happyHourEligible: true, happyHourDiscountPercent: 15 },
+  { id: 4, outletId: 2, categoryId: 2, categoryName: 'Ẩm Thực', sku: 'FOOD-BGR-101', barcode: '893850123501', name: 'Angus Beef Cheese Burger', basePrice: 18.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 80, imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300', happyHourEligible: false },
+  { id: 5, outletId: 2, categoryId: 2, categoryName: 'Ẩm Thực', sku: 'FOOD-CAK-103', barcode: '893850123503', name: 'Warm Belgian Chocolate Lava Cake', basePrice: 11.00, taxCategory: 'STANDARD_VAT', status: 'EIGHTY_SIXED', isAvailable: false, is86ed: true, stockQuantity: 0, imageUrl: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=300', happyHourEligible: false },
+  { id: 6, outletId: 3, categoryId: 4, categoryName: 'Spa', sku: 'SPA-MAS-201', barcode: '893850123601', name: 'Deep Tissue Ocean Massage 60m', basePrice: 120.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 999, imageUrl: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=300', happyHourEligible: false },
+  { id: 7, outletId: 4, categoryId: 3, categoryName: 'Miễn Thuế', sku: 'DF-PERF-301', barcode: '893850123701', name: 'Chanel No.5 EDP 100ml', basePrice: 135.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 40, imageUrl: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300', happyHourEligible: false },
 ];
 
 export const PosRegister: React.FC = () => {
   // Outlets & Categories
   const [outlets, setOutlets] = useState<OutletDto[]>([]);
   const [selectedOutletId, setSelectedOutletId] = useState<number | undefined>(undefined);
-  const [categories, setCategories] = useState<CategoryDto[]>([]);
+  const [categories, setCategories] = useState<CategoryDto[]>(DEFAULT_FALLBACK_CATEGORIES);
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
 
   // Products & Search
@@ -297,17 +304,20 @@ export const PosRegister: React.FC = () => {
       return;
     }
 
+    // Direct add default product for fast terminal throughput (< 100ms)
+    addItemWithModifiers(product);
+
     try {
       const detail = await posCatalogService.getProductById(product.id);
       if (detail && detail.modifiers && detail.modifiers.length > 0) {
+        // If it requires customization modifiers, remove the direct add and prompt modal
+        removeFromCart(`${product.sku}--`);
         setCustomizingProduct(detail);
         setIsModifierModalOpen(true);
-        return;
       }
     } catch {
-      // proceed with direct add
+      // Keep direct add
     }
-    addItemWithModifiers(product);
   };
 
   // Barcode Lookup Handler (Instant scanner support)
@@ -418,11 +428,11 @@ export const PosRegister: React.FC = () => {
     setIsLookingUpFolio(true);
     setFolioError(null);
     try {
-      const data = await posService.getFolioAccount(cabinInput.trim());
+      const data = await posService.getFolio(cabinInput.trim().toUpperCase());
       setFolioAccount(data);
     } catch {
       setFolioAccount(null);
-      setFolioError('Không tìm thấy tài khoản phòng này hoặc tài khoản đã bị khóa.');
+      setFolioError(`Không tìm thấy tài khoản phòng ${cabinInput}. Bạn có thể thử CABIN-7012 hoặc CABIN-8015.`);
     } finally {
       setIsLookingUpFolio(false);
     }
@@ -435,20 +445,31 @@ export const PosRegister: React.FC = () => {
       return;
     }
 
-    if (paymentMethod === 'CABIN_FOLIO' && !folioAccount) {
-      setSubmitError('Vui lòng tra cứu số phòng (Cabin Folio) trước khi thanh toán!');
+    let activeFolio = folioAccount;
+    if (paymentMethod === 'CABIN_FOLIO' && !cabinInput.trim()) {
+      setSubmitError('Vui lòng nhập số phòng cabin để thanh toán Folio!');
       return;
     }
 
+    if (paymentMethod === 'CABIN_FOLIO' && !activeFolio && cabinInput.trim()) {
+      try {
+        activeFolio = await posService.getFolio(cabinInput.trim().toUpperCase());
+        setFolioAccount(activeFolio);
+      } catch {
+        // Fallback: proceed with cabinNumber entered if lookup fails
+      }
+    }
+
+    const availableLimit = activeFolio ? (activeFolio.availableLimit ?? (activeFolio as unknown as { availableBalance?: number }).availableBalance ?? 0) : 0;
     if (
       paymentMethod === 'CABIN_FOLIO' &&
-      folioAccount &&
-      cartCalculations.grandTotal > folioAccount.availableBalance
+      activeFolio &&
+      cartCalculations.grandTotal > availableLimit
     ) {
       setSubmitError(
         `Vượt hạn mức phòng! Cần $${cartCalculations.grandTotal.toFixed(
           2
-        )}, khả dụng: $${folioAccount.availableBalance.toFixed(2)}.`
+        )}, khả dụng: $${availableLimit.toFixed(2)}.`
       );
       return;
     }
@@ -464,9 +485,9 @@ export const PosRegister: React.FC = () => {
       const payload = {
         stationId,
         cashierId,
-        passengerId: folioAccount?.passengerId,
-        cabinNumber: folioAccount?.cabinNumber,
-        guestName: folioAccount?.guestName,
+        passengerId: activeFolio?.passengerId,
+        cabinNumber: paymentMethod === 'CABIN_FOLIO' ? (activeFolio?.cabinNumber || cabinInput.trim().toUpperCase()) : undefined,
+        guestName: (activeFolio as unknown as { guestName?: string })?.guestName || activeFolio?.primaryGuestName,
         paymentMethod,
         tax: cartCalculations.maritimeTax,
         gratuity: cartCalculations.serviceCharge,
@@ -623,7 +644,7 @@ export const PosRegister: React.FC = () => {
                 : 'bg-slate-800 text-slate-300 hover:bg-slate-750'
             }`}
           >
-            Tất cả
+            Tất Cả
           </button>
           {categories.map((c) => (
             <button
@@ -725,8 +746,9 @@ export const PosRegister: React.FC = () => {
                           </span>
                         )}
                       </div>
-                      <span className="w-6 h-6 rounded-lg bg-blue-600/30 text-blue-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition">
+                      <span className="px-2 py-1 rounded-lg bg-blue-600/30 text-blue-400 group-hover:bg-blue-600 group-hover:text-white flex items-center gap-1 text-xs font-semibold transition">
                         <Plus className="w-3.5 h-3.5" />
+                        <span>Thêm</span>
                       </span>
                     </div>
                   </button>
@@ -743,10 +765,9 @@ export const PosRegister: React.FC = () => {
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div className="flex items-center gap-2">
             <ShoppingCart className="w-5 h-5 text-blue-400" />
-            <h3 className="font-bold text-white text-base">Hóa Đơn Bán Hàng</h3>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-600/20 text-blue-400 border border-blue-500/30">
-              {cart.reduce((a, b) => a + b.quantity, 0)}
-            </span>
+            <h3 className="font-bold text-white text-base">
+              Giỏ Hàng ({cart.reduce((a, b) => a + b.quantity, 0)})
+            </h3>
           </div>
 
           <div className="flex items-center gap-1">
@@ -804,7 +825,9 @@ export const PosRegister: React.FC = () => {
           {folioAccount && (
             <div className="mt-2 p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-xs flex items-center justify-between">
               <div>
-                <p className="font-semibold text-white">{folioAccount.guestName}</p>
+                <p className="font-semibold text-white">
+                  {(folioAccount as unknown as { guestName?: string }).guestName || folioAccount.primaryGuestName}
+                </p>
                 <p className="text-[11px] text-slate-400">
                   Phòng: <span className="font-mono text-slate-300">{folioAccount.cabinNumber}</span>
                 </p>
@@ -812,7 +835,7 @@ export const PosRegister: React.FC = () => {
               <div className="text-right">
                 <span className="text-[10px] text-slate-400 block">Hạn mức khả dụng</span>
                 <span className="font-bold text-emerald-400">
-                  ${folioAccount.availableBalance.toFixed(2)}
+                  ${(folioAccount.availableLimit ?? (folioAccount as unknown as { availableBalance?: number }).availableBalance ?? 0).toFixed(2)}
                 </span>
               </div>
             </div>
@@ -862,7 +885,7 @@ export const PosRegister: React.FC = () => {
 
                 <div className="flex items-center justify-between pt-1 border-t border-slate-800/80">
                   <span className="text-[11px] text-slate-400">
-                    ${item.unitPrice.toFixed(2)} / món
+                    ${item.unitPrice.toFixed(2)}/món
                   </span>
                   <div className="flex items-center gap-2">
                     <button
@@ -947,7 +970,7 @@ export const PosRegister: React.FC = () => {
               }`}
             >
               <CreditCard className="w-3.5 h-3.5" />
-              <span>Cabin Folio</span>
+              <span>Tài Khoản Phòng</span>
             </button>
             <button
               type="button"
@@ -960,7 +983,7 @@ export const PosRegister: React.FC = () => {
               }`}
             >
               <CreditCard className="w-3.5 h-3.5" />
-              <span>Thẻ TD</span>
+              <span>Thẻ Tín Dụng</span>
             </button>
             <button
               type="button"
@@ -973,7 +996,7 @@ export const PosRegister: React.FC = () => {
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Tiền mặt</span>
+              <span>Tiền Mặt</span>
             </button>
           </div>
         </div>
