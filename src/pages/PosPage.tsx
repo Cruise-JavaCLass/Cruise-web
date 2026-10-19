@@ -48,13 +48,15 @@ export function PosPage() {
       setMetrics(m);
       setDiscrepancies(disc);
       setDisputes(disp);
+    } catch (err) {
+      console.error('Failed to load reconciliation data:', err);
     } finally {
       setIsLoadingData(false);
     }
   };
 
   useEffect(() => {
-    loadReconciliationData();
+    void loadReconciliationData();
   }, []);
 
   const handleSync = () => {

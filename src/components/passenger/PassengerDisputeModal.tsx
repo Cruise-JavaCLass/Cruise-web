@@ -50,8 +50,8 @@ export const PassengerDisputeModal: React.FC<PassengerDisputeModalProps> = ({
     e.preventDefault();
     setError(null);
 
-    const amountNum = parseFloat(disputeAmount);
-    if (isNaN(amountNum) || amountNum <= 0) {
+    const amountNum = Number.parseFloat(disputeAmount);
+    if (Number.isNaN(amountNum) || amountNum <= 0) {
       setError('Số tiền khiếu nại phải lớn hơn 0');
       return;
     }
@@ -137,10 +137,11 @@ export const PassengerDisputeModal: React.FC<PassengerDisputeModalProps> = ({
         {/* Form */}
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
+            <label htmlFor="passenger-dispute-reason" className="block text-xs font-medium text-slate-300 mb-1.5">
               Lý Do Khiếu Nại <span className="text-rose-400">*</span>
             </label>
             <select
+              id="passenger-dispute-reason"
               value={reason}
               onChange={(e) => setReason(e.target.value as DisputeReason)}
               className="w-full bg-[#030712] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500 transition-colors"
@@ -153,13 +154,14 @@ export const PassengerDisputeModal: React.FC<PassengerDisputeModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center justify-between">
+            <label htmlFor="passenger-dispute-amount" className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center justify-between">
               <span>Số Tiền Yêu Cầu Hoàn Lại (USD)</span>
               <span className="text-[10px] text-slate-400">Tối đa ${item.amount.toFixed(2)}</span>
             </label>
             <div className="relative">
               <DollarSign className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
+                id="passenger-dispute-amount"
                 type="number"
                 step="0.01"
                 min="0.01"
@@ -173,10 +175,11 @@ export const PassengerDisputeModal: React.FC<PassengerDisputeModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
+            <label htmlFor="passenger-dispute-note" className="block text-xs font-medium text-slate-300 mb-1.5">
               Mô Tả Chi Tiết Hoàn Cảnh <span className="text-rose-400">*</span>
             </label>
             <textarea
+              id="passenger-dispute-note"
               rows={3}
               value={passengerNote}
               onChange={(e) => setPassengerNote(e.target.value)}

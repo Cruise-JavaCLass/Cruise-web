@@ -50,9 +50,9 @@ export const DisputeManagementWorkspace: React.FC<DisputeManagementWorkspaceProp
       return;
     }
 
-    const refund = parseFloat(approvedAmount);
+    const refund = Number.parseFloat(approvedAmount);
     if (decisionStatus === 'APPROVED_ADJUSTED') {
-      if (isNaN(refund) || refund <= 0) {
+      if (Number.isNaN(refund) || refund <= 0) {
         alert('Số tiền hoàn trả phải lớn hơn 0');
         return;
       }
@@ -237,10 +237,11 @@ export const DisputeManagementWorkspace: React.FC<DisputeManagementWorkspaceProp
             {selectedDispute.status === 'SUBMITTED' || selectedDispute.status === 'UNDER_INVESTIGATION' ? (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label htmlFor="approved-amount-input" className="block text-xs font-medium text-slate-300 mb-1">
                     Số Tiền Chấp Thuận Hoàn Trả (USD)
                   </label>
                   <input
+                    id="approved-amount-input"
                     type="number"
                     step="0.01"
                     min="0.01"
@@ -252,10 +253,11 @@ export const DisputeManagementWorkspace: React.FC<DisputeManagementWorkspaceProp
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label htmlFor="review-note-input" className="block text-xs font-medium text-slate-300 mb-1">
                     Ghi Chú Thẩm Định Của Kế Toán / Purser <span className="text-rose-400">*</span>
                   </label>
                   <textarea
+                    id="review-note-input"
                     rows={3}
                     value={reviewNote}
                     onChange={(e) => setReviewNote(e.target.value)}

@@ -149,10 +149,11 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
 
         {/* Resolution Notes Input */}
         <div className="space-y-2">
-          <label className="block text-xs font-medium text-slate-300">
+          <label htmlFor="discrepancy-resolution-notes" className="block text-xs font-medium text-slate-300">
             Ghi Chú Giải Trình & Hướng Xử Lý <span className="text-rose-400">*</span>
           </label>
           <textarea
+            id="discrepancy-resolution-notes"
             rows={3}
             value={resolutionNotes}
             onChange={(e) => setResolutionNotes(e.target.value)}
