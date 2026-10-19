@@ -59,7 +59,7 @@ export const ActivityRegistrationModal: React.FC<ActivityRegistrationModalProps>
 
   const remaining = activity.remainingCapacity !== undefined
     ? activity.remainingCapacity
-    : (activity.maxCapacity ? Math.max(0, activity.maxCapacity - (activity.currentParticipants || 0)) : 10);
+    : (activity.maxCapacity !== undefined ? Math.max(0, activity.maxCapacity - (activity.currentParticipants || 0)) : 0);
 
   const isWaitlist = remaining <= 0;
   const isPaid = !activity.isIncluded && activity.price > 0;

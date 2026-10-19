@@ -534,12 +534,12 @@ export const PassengerHomePage: React.FC = () => {
       )}
 
       {/* Activity QR Pass Modal */}
-      {passModalActivity && (
+      {passModalActivity && bookingSummary && (
         <ActivityPassModal
           isOpen={Boolean(passModalActivity)}
           onClose={() => setPassModalActivity(null)}
           activityId={passModalActivity.activityId}
-          passengerId={bookingSummary?.passengerId || 1}
+          passengerId={bookingSummary.passengerId}
           activityTitle={passModalActivity.activityTitle}
         />
       )}

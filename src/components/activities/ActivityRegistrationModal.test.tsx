@@ -120,6 +120,83 @@ describe('ActivityRegistrationModal Component Tests (KAN-372)', () => {
     expect(onSuccess).toHaveBeenCalledWith(mockResponse);
   });
 
+  it('đăng ký thành công vào hàng đợi Waitlist khi hết chỗ', async () => {
+    const user = userEvent.setup();
+    const onSuccess = vi.fn();
+    const waitlistResponse: ActivityRegistrationResponse = {
+      registrationId: 502,
+      activityId: 10,
+      activityTitle: 'Lớp Học Nấu Ăn 5 Sao',
+      passengerId: 101,
+      passengerName: 'Trần Minh Hoàng',
+      cabinNumber: '812',
+      status: 'WAITLISTED',
+      chargedAmount: 0,
+      transactionId: undefined,
+      registeredAt: new Date().toISOString(),
+      waitlistPosition: 3
+    };
+
+    vi.spyOn(activityRegistrationService, 'registerActivity').mockResolvedValueOnce(waitlistResponse);
+
+    render(
+      <ActivityRegistrationModal
+        isOpen={true}
+        onClose={vi.fn()}
+        activity={{ ...sampleActivity, remainingCapacity: 0 }}
+        currentPassenger={samplePassenger}
+        onSuccess={onSuccess}
+      />
+    );
+
+    const submitBtn = screen.getByRole('button', { name: /Gia Nhập Danh Sách Chờ/i });
+    await user.click(submitBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText('Đã Gia Nhập Danh Sách Chờ!')).toBeInTheDocument();
+      expect(screen.getByText(/Quý khách đang ở vị trí thứ 3 trong danh sách chờ/)).toBeInTheDocument();
+    });
+
+    expect(onSuccess).toHaveBeenCalledWith(waitlistResponse);
+  });
+
+  it('vô hiệu hóa nút submit khi đang gửi yêu cầu đăng ký', async () => {
+    const user = userEvent.setup();
+    let resolvePromise: (value: ActivityRegistrationResponse) => void;
+    const pendingPromise = new Promise<ActivityRegistrationResponse>((resolve) => {
+      resolvePromise = resolve;
+    });
+
+    vi.spyOn(activityRegistrationService, 'registerActivity').mockReturnValueOnce(pendingPromise);
+
+    render(
+      <ActivityRegistrationModal
+        isOpen={true}
+        onClose={vi.fn()}
+        activity={sampleActivity}
+        currentPassenger={samplePassenger}
+      />
+    );
+
+    const submitBtn = screen.getByRole('button', { name: /Xác Nhận Đăng Ký/i });
+    await user.click(submitBtn);
+
+    expect(submitBtn).toBeDisabled();
+
+    // Cleanup promise
+    resolvePromise!({
+      registrationId: 503,
+      activityId: 10,
+      activityTitle: 'Lớp Học Nấu Ăn 5 Sao',
+      passengerId: 101,
+      passengerName: 'Trần Minh Hoàng',
+      cabinNumber: '812',
+      status: 'CONFIRMED',
+      chargedAmount: 350000,
+      registeredAt: new Date().toISOString()
+    });
+  });
+
   it('bắt lỗi 409 khi hành khách đã đăng ký trước đó', async () => {
     const user = userEvent.setup();
     vi.spyOn(activityRegistrationService, 'registerActivity').mockRejectedValueOnce({

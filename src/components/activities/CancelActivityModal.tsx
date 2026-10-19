@@ -38,6 +38,7 @@ export const CancelActivityModal: React.FC<CancelActivityModalProps> = ({
   const cutOffMinutes = registration.cancellationCutOffMinutes || 120;
 
   const handleConfirmCancel = async () => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
     setErrorMessage(null);
 
