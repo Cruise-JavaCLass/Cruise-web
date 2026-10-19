@@ -51,9 +51,15 @@ export const DisputeManagementWorkspace: React.FC<DisputeManagementWorkspaceProp
     }
 
     const refund = parseFloat(approvedAmount);
-    if (decisionStatus === 'APPROVED_ADJUSTED' && (isNaN(refund) || refund <= 0)) {
-      alert('Số tiền hoàn trả phải lớn hơn 0');
-      return;
+    if (decisionStatus === 'APPROVED_ADJUSTED') {
+      if (isNaN(refund) || refund <= 0) {
+        alert('Số tiền hoàn trả phải lớn hơn 0');
+        return;
+      }
+      if (refund > selectedDispute.disputeAmount) {
+        alert(`Số tiền hoàn trả không được vượt quá số tiền khiếu nại ($${selectedDispute.disputeAmount.toFixed(2)})`);
+        return;
+      }
     }
 
     setIsProcessing(true);
@@ -158,10 +164,18 @@ export const DisputeManagementWorkspace: React.FC<DisputeManagementWorkspaceProp
                           ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                           : d.status === 'REJECTED'
                           ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                          : d.status === 'UNDER_INVESTIGATION'
+                          ? 'bg-sky-500/10 text-sky-400 border border-sky-500/20'
                           : 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
                       }`}
                     >
-                      {d.status === 'SUBMITTED' ? 'Chờ duyệt' : d.status === 'APPROVED_ADJUSTED' ? 'Đã duyệt hoàn' : 'Từ chối'}
+                      {d.status === 'SUBMITTED'
+                        ? 'Chờ duyệt'
+                        : d.status === 'UNDER_INVESTIGATION'
+                        ? 'Đang điều tra'
+                        : d.status === 'APPROVED_ADJUSTED'
+                        ? 'Đã duyệt hoàn'
+                        : 'Từ chối'}
                     </span>
                   </div>
 
@@ -220,7 +234,7 @@ export const DisputeManagementWorkspace: React.FC<DisputeManagementWorkspaceProp
               </div>
             </div>
 
-            {selectedDispute.status === 'SUBMITTED' ? (
+            {selectedDispute.status === 'SUBMITTED' || selectedDispute.status === 'UNDER_INVESTIGATION' ? (
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-300 mb-1">

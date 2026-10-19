@@ -11,6 +11,7 @@ import {
   type DisputeReason,
   type GuestFolioItem,
   type CreateDisputePayload,
+  type DisputeCase,
   reconciliationService,
 } from '../../services/reconciliationService';
 
@@ -18,7 +19,7 @@ interface PassengerDisputeModalProps {
   isOpen: boolean;
   onClose: () => void;
   item: GuestFolioItem | null;
-  onSuccess: () => void;
+  onSuccess: (createdDispute: DisputeCase) => void;
 }
 
 export const PassengerDisputeModal: React.FC<PassengerDisputeModalProps> = ({
@@ -34,6 +35,14 @@ export const PassengerDisputeModal: React.FC<PassengerDisputeModalProps> = ({
   const [passengerNote, setPassengerNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (item) {
+      setDisputeAmount(String(item.amount));
+      setPassengerNote('');
+      setError(null);
+    }
+  }, [item]);
 
   if (!isOpen || !item) return null;
 
@@ -67,8 +76,8 @@ export const PassengerDisputeModal: React.FC<PassengerDisputeModalProps> = ({
         passengerNote: passengerNote.trim(),
       };
 
-      await reconciliationService.createDispute(payload);
-      onSuccess();
+      const created = await reconciliationService.createDispute(payload);
+      onSuccess(created);
       onClose();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Không thể gửi khiếu nại. Vui lòng thử lại sau.';
@@ -126,7 +135,7 @@ export const PassengerDisputeModal: React.FC<PassengerDisputeModalProps> = ({
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-slate-300 mb-1.5">
               Lý Do Khiếu Nại <span className="text-rose-400">*</span>

@@ -104,9 +104,15 @@ export function PosPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2.5">
-            <CreditCard className="w-6 h-6 text-amber-400" /> Hệ Thống POS & Đối Soát Tài Chính Tàu
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2.5">
+              <CreditCard className="w-6 h-6 text-amber-400" /> Hệ Thống POS & Tài Khoản Phi Tiền Mặt
+            </h2>
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              Đã kết nối máy chủ
+            </span>
+          </div>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Ghi nhận giao dịch chi tiêu • Đối soát POS & Folio tự động • Giải quyết khiếu nại chi phí
           </p>

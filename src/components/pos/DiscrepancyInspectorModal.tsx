@@ -26,6 +26,12 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
   const [resolutionNotes, setResolutionNotes] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
+  React.useEffect(() => {
+    if (record) {
+      setResolutionNotes('');
+    }
+  }, [record?.id]);
+
   if (!isOpen || !record) return null;
 
   const handleResolveAction = async (status: 'RESOLVED' | 'WRITTEN_OFF') => {

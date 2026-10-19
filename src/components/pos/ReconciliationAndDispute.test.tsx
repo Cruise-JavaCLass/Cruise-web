@@ -57,8 +57,9 @@ describe('PassengerFolioViewer & PassengerDisputeModal Tests (KAN-401)', () => {
     const submitBtn = screen.getByRole('button', { name: /Gửi Yêu Cầu Khiếu Nại/i });
     fireEvent.click(submitBtn);
 
-    // Form prevents submission if passengerNote is empty
+    // Form prevents submission if passengerNote is empty and displays error
     expect(onSuccess).not.toHaveBeenCalled();
+    expect(screen.getByText('Vui lòng nhập lý do giải thích chi tiết cho khiếu nại này')).toBeInTheDocument();
   });
 
   it('submits dispute successfully when note is entered', async () => {
@@ -196,7 +197,7 @@ describe('PosPage Dashboard Integration Tests (KAN-401)', () => {
   it('switches tabs between Register, Reconciliation, and Disputes', async () => {
     render(<PosPage />);
 
-    expect(screen.getByText('Hệ Thống POS & Đối Soát Tài Chính Tàu')).toBeDefined();
+    expect(screen.getByText(/Hệ Thống POS & Tài Khoản Phi Tiền Mặt/i)).toBeDefined();
     expect(screen.getByText(/Quầy Thu Ngân & Giao Dịch/i)).toBeDefined();
 
     // Click Reconciliation tab

@@ -152,25 +152,8 @@ export interface GuestFolioItem {
 export const reconciliationService = {
   // Disputes
   async createDispute(payload: CreateDisputePayload): Promise<DisputeCase> {
-    try {
-      const res = await apiClient.post<{ success: boolean; data: DisputeCase }>('/pos/disputes', payload);
-      return res.data.data;
-    } catch {
-      // Fallback local mock for offline/standalone demo
-      return {
-        id: Date.now(),
-        disputeNumber: `DISP-${Date.now()}`,
-        transactionId: payload.transactionId,
-        folioId: payload.folioId,
-        cabinNumber: payload.cabinNumber,
-        passengerName: payload.passengerName,
-        reason: payload.reason,
-        disputeAmount: payload.disputeAmount,
-        passengerNote: payload.passengerNote,
-        status: 'SUBMITTED',
-        createdAt: new Date().toISOString(),
-      };
-    }
+    const res = await apiClient.post<{ success: boolean; data: DisputeCase }>('/pos/disputes', payload);
+    return res.data.data;
   },
 
   async getDisputes(status?: DisputeStatus, cabinNumber?: string): Promise<DisputeCase[]> {
@@ -218,52 +201,14 @@ export const reconciliationService = {
   },
 
   async resolveDispute(id: number, payload: ResolveDisputePayload): Promise<DisputeCase> {
-    try {
-      const res = await apiClient.post<{ success: boolean; data: DisputeCase }>(`/pos/disputes/${id}/resolve`, payload);
-      return res.data.data;
-    } catch {
-      return {
-        id,
-        disputeNumber: `DISP-${id}`,
-        transactionId: 'TX-MOCK',
-        folioId: 'FOLIO-MOCK',
-        cabinNumber: 'Cabin 101',
-        reason: 'DUPLICATE_BILLING',
-        disputeAmount: payload.approvedRefundAmount || 45.0,
-        refundAmount: payload.approvedRefundAmount || 45.0,
-        passengerNote: 'Mock resolution',
-        status: payload.decisionStatus,
-        reviewerId: payload.reviewerId || 'PURSER_LOCAL',
-        reviewerNote: payload.reviewerNote,
-        adjustmentTransactionId: payload.decisionStatus === 'APPROVED_ADJUSTED' ? `ADJ-${Date.now()}` : undefined,
-        createdAt: new Date().toISOString(),
-        resolvedAt: new Date().toISOString(),
-      };
-    }
+    const res = await apiClient.post<{ success: boolean; data: DisputeCase }>(`/pos/disputes/${id}/resolve`, payload);
+    return res.data.data;
   },
 
   // Reconciliation Batches & Discrepancies
   async runReconciliation(): Promise<ReconciliationBatch> {
-    try {
-      const res = await apiClient.post<{ success: boolean; data: ReconciliationBatch }>('/pos/reconciliation/run', {});
-      return res.data.data;
-    } catch {
-      return {
-        id: Date.now(),
-        batchNumber: `RECON-${Date.now()}`,
-        terminalId: 'ALL_TERMINALS',
-        serviceArea: 'SHIP_WIDE',
-        startedAt: new Date().toISOString(),
-        completedAt: new Date().toISOString(),
-        totalTransactions: 124,
-        matchedCount: 121,
-        discrepancyCount: 3,
-        totalReconciledAmount: 184350.0,
-        totalVarianceAmount: 145.5,
-        status: 'COMPLETED',
-        triggeredBy: 'PURSER_OFFICER',
-      };
-    }
+    const res = await apiClient.post<{ success: boolean; data: ReconciliationBatch }>('/pos/reconciliation/run', {});
+    return res.data.data;
   },
 
   async getDiscrepancies(): Promise<DiscrepancyRecord[]> {
@@ -322,22 +267,8 @@ export const reconciliationService = {
   },
 
   async resolveDiscrepancy(id: number, payload: ResolveDiscrepancyPayload): Promise<DiscrepancyRecord> {
-    try {
-      const res = await apiClient.patch<{ success: boolean; data: DiscrepancyRecord }>(`/pos/reconciliation/discrepancies/${id}/resolve`, payload);
-      return res.data.data;
-    } catch {
-      return {
-        id,
-        batchId: 101,
-        transactionId: `TX-${id}`,
-        discrepancyType: 'AMOUNT_MISMATCH',
-        variance: 0,
-        status: payload.status,
-        resolutionNotes: payload.resolutionNotes,
-        resolvedBy: payload.resolvedBy || 'PURSER',
-        resolvedAt: new Date().toISOString(),
-      };
-    }
+    const res = await apiClient.patch<{ success: boolean; data: DiscrepancyRecord }>(`/pos/reconciliation/discrepancies/${id}/resolve`, payload);
+    return res.data.data;
   },
 
   async getSummaryMetrics(): Promise<ReconciliationSummaryMetrics> {

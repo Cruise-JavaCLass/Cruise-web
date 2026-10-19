@@ -99,25 +99,11 @@ export const PassengerFolioViewer: React.FC<PassengerFolioViewerProps> = ({
     setIsModalOpen(true);
   };
 
-  const handleDisputeSuccess = () => {
-    if (selectedItemForDispute) {
-      setDisputedTransactions((prev) => ({
-        ...prev,
-        [selectedItemForDispute.transactionId]: {
-          id: Date.now(),
-          disputeNumber: `DISP-${Math.floor(1000 + Math.random() * 9000)}`,
-          transactionId: selectedItemForDispute.transactionId,
-          folioId: selectedItemForDispute.folioId,
-          cabinNumber,
-          passengerName,
-          reason: 'DUPLICATE_BILLING',
-          disputeAmount: selectedItemForDispute.amount,
-          passengerNote: 'Đã gửi yêu cầu đối soát',
-          status: 'SUBMITTED',
-          createdAt: new Date().toISOString(),
-        },
-      }));
-    }
+  const handleDisputeSuccess = (createdDispute: DisputeCase) => {
+    setDisputedTransactions((prev) => ({
+      ...prev,
+      [createdDispute.transactionId]: createdDispute,
+    }));
   };
 
   return (
@@ -212,6 +198,7 @@ export const PassengerFolioViewer: React.FC<PassengerFolioViewerProps> = ({
       </div>
 
       <PassengerDisputeModal
+        key={selectedItemForDispute?.transactionId ?? 'no-item'}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         item={selectedItemForDispute}
