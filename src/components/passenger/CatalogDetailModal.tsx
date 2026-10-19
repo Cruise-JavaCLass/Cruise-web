@@ -12,6 +12,8 @@ import {
   Calendar
 } from 'lucide-react';
 
+import { ActivityRegistrationModal } from '../activities/ActivityRegistrationModal';
+
 interface CatalogDetailModalProps {
   item: PassengerCatalogItem;
   onClose: () => void;
@@ -21,6 +23,7 @@ export const CatalogDetailModal: React.FC<CatalogDetailModalProps> = ({
   item,
   onClose
 }) => {
+  const [isRegisterOpen, setIsRegisterOpen] = React.useState<boolean>(false);
   const isExcursion = item.itemType === 'SHORE_EXCURSION';
 
   React.useEffect(() => {
@@ -167,16 +170,53 @@ export const CatalogDetailModal: React.FC<CatalogDetailModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-100 bg-slate-50/50 p-4 text-right dark:border-slate-700/60 dark:bg-slate-800/80">
+        <div className="border-t border-slate-100 bg-slate-50/50 p-4 flex items-center justify-between dark:border-slate-700/60 dark:bg-slate-800/80">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl bg-slate-800 px-6 py-2.5 text-xs font-bold text-white transition-all hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600"
+            className="rounded-xl px-5 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             Đóng
           </button>
+
+          {!isExcursion && (
+            <button
+              type="button"
+              onClick={() => setIsRegisterOpen(true)}
+              className={`rounded-xl px-6 py-2.5 text-xs font-bold text-white shadow-md transition-all ${
+                item.isSoldOut
+                  ? 'bg-amber-600 hover:bg-amber-700'
+                  : 'bg-indigo-600 hover:bg-indigo-700'
+              }`}
+            >
+              {item.isSoldOut ? 'Gia nhập danh sách chờ (Waitlist)' : 'Đăng ký tham gia'}
+            </button>
+          )}
         </div>
       </div>
+
+      {!isExcursion && isRegisterOpen && (
+        <ActivityRegistrationModal
+          isOpen={isRegisterOpen}
+          onClose={() => setIsRegisterOpen(false)}
+          activity={{
+            id: item.id,
+            title: item.title,
+            location: item.locationOrPort,
+            activityDate: item.activityDate,
+            startTime: item.startTime,
+            endTime: item.endTime,
+            price: item.price,
+            remainingCapacity: item.remainingCapacity,
+            maxCapacity: item.maxCapacity,
+            currentParticipants: item.currentParticipants,
+            isIncluded: item.isIncluded
+          }}
+          onSuccess={() => {
+            setIsRegisterOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 };

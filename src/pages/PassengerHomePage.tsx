@@ -15,6 +15,7 @@ import {
   Ticket,
   UserCheck,
   Tag,
+  XCircle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
@@ -29,11 +30,20 @@ import {
   getTourNotifications,
   type TourNotification,
 } from '../services/dailyItineraryService';
+import {
+  activityRegistrationService,
+  type PassengerRegistrationItem,
+} from '../services/activityRegistrationService';
 import { UpcomingActivitiesAndNotifications } from '../components/passenger/UpcomingActivitiesAndNotifications';
+import { CancelActivityModal } from '../components/activities/CancelActivityModal';
+import { ActivityPassModal } from '../components/activities/ActivityPassModal';
 
 export const PassengerHomePage: React.FC = () => {
   const [bookingSummary, setBookingSummary] = useState<PassengerBookingSummary | null>(null);
   const [activities, setActivities] = useState<PassengerCatalogItem[]>([]);
+  const [registeredActivities, setRegisteredActivities] = useState<PassengerRegistrationItem[]>([]);
+  const [cancellingReg, setCancellingReg] = useState<PassengerRegistrationItem | null>(null);
+  const [passModalActivity, setPassModalActivity] = useState<PassengerRegistrationItem | null>(null);
   const [notifications, setNotifications] = useState<TourNotification[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
@@ -93,14 +103,16 @@ export const PassengerHomePage: React.FC = () => {
       }
 
       const tourId = summary.tourId || 1;
-      const [catalogRes, notifs] = await Promise.all([
+      const [catalogRes, notifs, myRegs] = await Promise.all([
         passengerCatalogService.getCatalogItems(tourId, { size: 6 }),
         getTourNotifications(tourId),
+        activityRegistrationService.getMyRegistrations(tourId, activePassengerId).catch(() => []),
       ]);
 
       setBookingSummary(summary);
       setActivities(catalogRes.content || []);
       setNotifications(notifs || []);
+      setRegisteredActivities(myRegs || []);
     } catch (err: unknown) {
       console.error('Lỗi khi tải trang chủ hành khách:', err);
       setIsError(true);
@@ -383,6 +395,114 @@ export const PassengerHomePage: React.FC = () => {
             )}
           </div>
 
+          {/* Registered Onboard Activities (KAN-217) */}
+          <div className="bg-[#030303]/70 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-cyan-400" />
+                  Hoạt Động Trên Du Thuyền Đã Đăng Ký (Onboard Activities)
+                </h3>
+                <p className="text-[11px] text-slate-400">Theo dõi trạng thái xác nhận, thứ tự hàng đợi Waitlist và thẻ tham gia QR Pass</p>
+              </div>
+              <Link
+                to="/catalog?itemType=ONBOARD_ACTIVITY"
+                className="text-xs font-medium text-cyan-400 hover:text-cyan-300 flex items-center gap-1 hover:underline"
+              >
+                Khám phá thêm hoạt động <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {registeredActivities.length === 0 ? (
+              <div className="py-8 text-center text-slate-500 text-xs flex flex-col items-center justify-center gap-2">
+                <Ticket className="w-8 h-8 opacity-40" />
+                <span>Quý khách chưa đăng ký hoạt động giải trí nào trên du thuyền.</span>
+                <Link
+                  to="/catalog?itemType=ONBOARD_ACTIVITY"
+                  className="mt-2 text-cyan-400 hover:underline font-semibold"
+                >
+                  Xem danh mục hoạt động &rarr;
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {registeredActivities.map((reg) => (
+                  <div
+                    key={reg.registrationId}
+                    className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-cyan-500/30 transition-all space-y-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">
+                          {reg.category} • Mã: #{reg.registrationId}
+                        </span>
+                        <h4 className="text-xs font-bold text-white mt-0.5">{reg.activityTitle}</h4>
+                      </div>
+                      {reg.status === 'CONFIRMED' && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" /> Đã xác nhận
+                        </span>
+                      )}
+                      {reg.status === 'WAITLISTED' && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" /> Hàng đợi #{reg.waitlistPosition || 1}
+                        </span>
+                      )}
+                      {reg.status === 'CANCELLED' && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30 flex items-center gap-1">
+                          <XCircle className="w-3 h-3" /> Đã hủy
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300 bg-black/40 p-2.5 rounded-xl border border-white/5">
+                      <div>
+                        <span className="text-slate-500 text-[10px] block">Địa điểm:</span>
+                        <span className="font-semibold text-white">{reg.location}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 text-[10px] block">Thời gian:</span>
+                        <span className="font-mono text-cyan-300 font-semibold">{reg.startTime} - {reg.endTime}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 text-[10px] block">Chi phí:</span>
+                        <span className="font-semibold text-emerald-400">
+                          {reg.chargedAmount > 0 ? `${reg.chargedAmount.toLocaleString('vi-VN')} VND` : 'Miễn phí'}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 text-[10px] block">Mã giao dịch:</span>
+                        <span className="font-mono text-[10px] text-slate-400">{reg.transactionId || 'N/A'}</span>
+                      </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex items-center justify-end gap-2 pt-1 border-t border-white/5">
+                      {reg.status === 'CONFIRMED' && (
+                        <button
+                          type="button"
+                          onClick={() => setPassModalActivity(reg)}
+                          className="px-3 py-1.5 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-cyan-500/30"
+                        >
+                          <QrCode className="w-3.5 h-3.5" /> Thẻ QR Pass
+                        </button>
+                      )}
+                      {reg.status !== 'CANCELLED' && (
+                        <button
+                          type="button"
+                          onClick={() => setCancellingReg(reg)}
+                          className="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold flex items-center gap-1 transition-colors border border-rose-500/20"
+                        >
+                          Hủy Chỗ
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Upcoming Activities & Notifications (KAN-199) */}
           <UpcomingActivitiesAndNotifications
             activities={activities}
@@ -390,6 +510,38 @@ export const PassengerHomePage: React.FC = () => {
             isLoading={isLoading}
           />
         </div>
+      )}
+
+      {/* Cancel Activity Modal */}
+      {cancellingReg && (
+        <CancelActivityModal
+          isOpen={Boolean(cancellingReg)}
+          onClose={() => setCancellingReg(null)}
+          registration={{
+            registrationId: cancellingReg.registrationId,
+            activityId: cancellingReg.activityId,
+            activityTitle: cancellingReg.activityTitle,
+            activityDate: cancellingReg.activityDate,
+            startTime: cancellingReg.startTime,
+            chargedAmount: cancellingReg.chargedAmount,
+            cancellationCutOffMinutes: cancellingReg.cancellationCutOffMinutes,
+            passengerId: bookingSummary?.passengerId
+          }}
+          onSuccess={() => {
+            void loadData();
+          }}
+        />
+      )}
+
+      {/* Activity QR Pass Modal */}
+      {passModalActivity && (
+        <ActivityPassModal
+          isOpen={Boolean(passModalActivity)}
+          onClose={() => setPassModalActivity(null)}
+          activityId={passModalActivity.activityId}
+          passengerId={bookingSummary?.passengerId || 1}
+          activityTitle={passModalActivity.activityTitle}
+        />
       )}
     </div>
   );
