@@ -154,6 +154,12 @@ export function ActivityDetailPage() {
           >
             <QrCode className="w-3.5 h-3.5" /> Điểm danh & Quét vé
           </Link>
+          <Link
+            to={`/activities/${activity.id}/roster`}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-md transition-colors"
+          >
+            <Users className="w-3.5 h-3.5" /> Danh sách & Waitlist
+          </Link>
           <button
             onClick={() => setIsStatusModalOpen(true)}
             className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-xl text-xs font-semibold border border-cyan-500/30 transition-colors"

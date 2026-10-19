@@ -14,6 +14,7 @@ import { ShipDetailPage } from './pages/ShipDetailPage';
 import { PassengerHomePage } from './pages/PassengerHomePage';
 import { ExcursionAttendancePage } from './pages/ExcursionAttendancePage';
 import { ActivityAttendancePage } from './pages/ActivityAttendancePage';
+import { ActivityRosterPage } from './pages/ActivityRosterPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export function App() {
@@ -32,6 +33,8 @@ export function App() {
         <Route path="activities/:id" element={<ActivityDetailPage />} />
         <Route path="activities/:id/attendance" element={<ActivityAttendancePage />} />
         <Route path="activity-attendance" element={<ActivityAttendancePage />} />
+        <Route path="activities/:id/roster" element={<ActivityRosterPage />} />
+        <Route path="activity-roster" element={<ActivityRosterPage />} />
         <Route path="catalog" element={<PassengerCatalogPage />} />
         <Route path="pos" element={<PosPage />} />
         <Route path="passengers" element={<PassengersPage />} />
