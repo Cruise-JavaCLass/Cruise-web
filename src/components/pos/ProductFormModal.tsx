@@ -14,6 +14,7 @@ interface ProductFormModalProps {
   product?: ProductDetailDto | null;
   outlets: OutletDto[];
   categories: CategoryDto[];
+  defaultOutletId?: number;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -23,6 +24,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   product,
   outlets,
   categories,
+  defaultOutletId,
   onClose,
   onSuccess,
 }) => {
@@ -65,7 +67,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setName('');
       setSku(`SKU-${Date.now().toString().slice(-6)}`);
       setBarcode('');
-      setOutletId(outlets.length > 0 ? outlets[0].id : undefined);
+      setOutletId(defaultOutletId ?? (outlets.length > 0 ? outlets[0].id : undefined));
       setCategoryId(categories.length > 0 ? categories[0].id : 1);
       setBasePrice(12.0);
       setCostPrice(3.5);
@@ -78,7 +80,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setModifiers([]);
     }
     setError(null);
-  }, [product, outlets, categories, isOpen]);
+  }, [product, outlets, categories, defaultOutletId, isOpen]);
 
   if (!isOpen) return null;
 

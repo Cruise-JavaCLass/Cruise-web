@@ -462,6 +462,7 @@ export const PosCatalogManagement: React.FC = () => {
         product={editingProduct}
         outlets={outlets}
         categories={categories}
+        defaultOutletId={selectedOutletId}
         onClose={() => {
           setIsFormOpen(false);
           setEditingProduct(null);

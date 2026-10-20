@@ -121,32 +121,15 @@ export interface HeldOrder {
   items: CartItemEntry[];
 }
 
-const DEFAULT_FALLBACK_CATEGORIES: CategoryDto[] = [
-  { id: 1, name: 'Đồ Uống', code: 'BEVERAGE', displayOrder: 1, isActive: true },
-  { id: 2, name: 'Ẩm Thực', code: 'FOOD', displayOrder: 2, isActive: true },
-  { id: 3, name: 'Miễn Thuế', code: 'DUTY_FREE', displayOrder: 3, isActive: true },
-  { id: 4, name: 'Spa', code: 'SPA', displayOrder: 4, isActive: true },
-];
-
-const DEFAULT_FALLBACK_PRODUCTS: ProductDto[] = [
-  { id: 1, outletId: 1, categoryId: 1, categoryName: 'Đồ Uống', sku: 'BEV-01', barcode: '893850123401', name: 'Cocktail Mojito Bạc Hà', basePrice: 14.50, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 150, imageUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=300', happyHourEligible: true, happyHourDiscountPercent: 20 },
-  { id: 2, outletId: 1, categoryId: 1, categoryName: 'Đồ Uống', sku: 'BEV-BLU-002', barcode: '893850123402', name: 'Ocean Blue Lagoon', basePrice: 15.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 120, imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300', happyHourEligible: true, happyHourDiscountPercent: 20 },
-  { id: 3, outletId: 1, categoryId: 1, categoryName: 'Đồ Uống', sku: 'BEV-IPA-003', barcode: '893850123403', name: 'Harbor Craft IPA Draft (Pint)', basePrice: 8.50, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 200, imageUrl: 'https://images.unsplash.com/photo-1608270191771-464a9fb68393?w=300', happyHourEligible: true, happyHourDiscountPercent: 15 },
-  { id: 4, outletId: 2, categoryId: 2, categoryName: 'Ẩm Thực', sku: 'FOOD-BGR-101', barcode: '893850123501', name: 'Angus Beef Cheese Burger', basePrice: 18.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 80, imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300', happyHourEligible: false },
-  { id: 5, outletId: 2, categoryId: 2, categoryName: 'Ẩm Thực', sku: 'FOOD-CAK-103', barcode: '893850123503', name: 'Warm Belgian Chocolate Lava Cake', basePrice: 11.00, taxCategory: 'STANDARD_VAT', status: 'EIGHTY_SIXED', isAvailable: false, is86ed: true, stockQuantity: 0, imageUrl: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=300', happyHourEligible: false },
-  { id: 6, outletId: 3, categoryId: 4, categoryName: 'Spa', sku: 'SPA-MAS-201', barcode: '893850123601', name: 'Deep Tissue Ocean Massage 60m', basePrice: 120.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 999, imageUrl: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=300', happyHourEligible: false },
-  { id: 7, outletId: 4, categoryId: 3, categoryName: 'Miễn Thuế', sku: 'DF-PERF-301', barcode: '893850123701', name: 'Chanel No.5 EDP 100ml', basePrice: 135.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 40, imageUrl: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=300', happyHourEligible: false },
-];
-
 export const PosRegister: React.FC = () => {
   // Outlets & Categories
   const [outlets, setOutlets] = useState<OutletDto[]>([]);
   const [selectedOutletId, setSelectedOutletId] = useState<number | undefined>(undefined);
-  const [categories, setCategories] = useState<CategoryDto[]>(DEFAULT_FALLBACK_CATEGORIES);
+  const [categories, setCategories] = useState<CategoryDto[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
 
   // Products & Search
-  const [products, setProducts] = useState<ProductDto[]>(DEFAULT_FALLBACK_PRODUCTS);
+  const [products, setProducts] = useState<ProductDto[]>([]);
   const [searchItem, setSearchItem] = useState('');
   const [barcodeInput, setBarcodeInput] = useState('');
   const [isScanning, setIsScanning] = useState(false);
@@ -187,7 +170,7 @@ export const PosRegister: React.FC = () => {
   });
 
   // Guest Folio Lookup state
-  const [cabinInput, setCabinInput] = useState('CABIN-7012');
+  const [cabinInput, setCabinInput] = useState('');
   const [folioAccount, setFolioAccount] = useState<FolioAccountResponse | null>(null);
   const [isLookingUpFolio, setIsLookingUpFolio] = useState(false);
   const [folioError, setFolioError] = useState<string | null>(null);
@@ -232,27 +215,34 @@ export const PosRegister: React.FC = () => {
     }
   }, [cart]);
 
-  // Load Outlets & Categories on mount
+  // Load Outlets on mount
   useEffect(() => {
+    let isCancelled = false;
     const initCatalog = async () => {
       try {
         const outletData = await posCatalogService.getOutlets();
+        if (isCancelled) return;
         if (outletData && outletData.length > 0) {
           setOutlets(outletData);
           setSelectedOutletId(outletData[0].id);
+        } else {
+          setOutlets([]);
         }
       } catch {
-        // Fallback outlets
-        setOutlets([
-          { id: 1, code: 'SKY-BAR', name: 'Sky Bar & Lounge', outletType: 'BAR', isActive: true },
-          { id: 2, code: 'LIDO-BUFFET', name: 'Lido Buffet & Grill', outletType: 'RESTAURANT', isActive: true },
-          { id: 3, code: 'LOTUS-SPA', name: 'Lotus Spa & Wellness', outletType: 'SPA', isActive: true },
-          { id: 4, code: 'ROYAL-DUTYFREE', name: 'Royal Duty-Free Boutique', outletType: 'GIFT_SHOP', isActive: true },
-        ]);
-        setSelectedOutletId(1);
+        if (isCancelled) return;
+        const cachedPkg = posCatalogService.getOfflineCatalog();
+        if (cachedPkg && cachedPkg.outlets && cachedPkg.outlets.length > 0) {
+          setOutlets(cachedPkg.outlets);
+          setSelectedOutletId(cachedPkg.outlets[0].id);
+        } else {
+          setOutlets([]);
+        }
       }
     };
     void initCatalog();
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   // Load Categories & Products when outlet changes
@@ -270,13 +260,27 @@ export const PosRegister: React.FC = () => {
         setProducts(prods?.content || []);
       } catch {
         if (isCancelled) return;
-        // Keep fallback data filtered by outlet if available
-        if (selectedOutletId) {
-          const filtered = DEFAULT_FALLBACK_PRODUCTS.filter(
-            (p) => !p.outletId || p.outletId === selectedOutletId
-          );
-          setProducts(filtered.length > 0 ? filtered : DEFAULT_FALLBACK_PRODUCTS);
+        // Use offline catalog cache if network fails
+        try {
+          const offlineResult = await posCatalogService.getOfflinePackage(selectedOutletId);
+          if (isCancelled) return;
+          if (offlineResult.data) {
+            posCatalogService.saveOfflineCatalog(selectedOutletId, offlineResult.data);
+            setCategories(offlineResult.data.categories || []);
+            setProducts(offlineResult.data.products || []);
+            return;
+          }
+        } catch {
+          // If getOfflinePackage also fails, check local cached package directly
+        }
+
+        const cached = posCatalogService.getOfflineCatalog(selectedOutletId);
+        if (isCancelled) return;
+        if (cached) {
+          setCategories(cached.categories || []);
+          setProducts(cached.products || []);
         } else {
+          setCategories([]);
           setProducts([]);
         }
       }
@@ -568,18 +572,33 @@ export const PosRegister: React.FC = () => {
       return;
     }
 
+    const normalizedCabin = cabinInput.trim().toUpperCase();
     let activeFolio = folioAccount;
-    if (paymentMethod === 'CABIN_FOLIO' && !cabinInput.trim()) {
-      setSubmitError('Vui lòng nhập số phòng cabin để thanh toán Folio!');
-      return;
-    }
 
-    if (paymentMethod === 'CABIN_FOLIO' && !activeFolio && cabinInput.trim()) {
-      try {
-        activeFolio = await posService.getFolio(cabinInput.trim().toUpperCase());
-        setFolioAccount(activeFolio);
-      } catch {
-        // Fallback: proceed with cabinNumber entered if lookup fails
+    if (paymentMethod === 'CABIN_FOLIO') {
+      if (!normalizedCabin) {
+        setSubmitError('Vui lòng nhập số phòng cabin để thanh toán Folio!');
+        return;
+      }
+
+      if (activeFolio && activeFolio.cabinNumber.toUpperCase() !== normalizedCabin) {
+        activeFolio = null;
+        setFolioAccount(null);
+      }
+
+      if (!activeFolio) {
+        try {
+          activeFolio = await posService.getFolio(normalizedCabin);
+          setFolioAccount(activeFolio);
+        } catch {
+          setSubmitError(`Không thể xác thực tài khoản phòng ${normalizedCabin}.`);
+          return;
+        }
+      }
+
+      if (!activeFolio) {
+        setSubmitError(`Không tìm thấy tài khoản phòng ${normalizedCabin}.`);
+        return;
       }
     }
 
@@ -609,7 +628,7 @@ export const PosRegister: React.FC = () => {
         stationId,
         cashierId,
         passengerId: activeFolio?.passengerId,
-        cabinNumber: paymentMethod === 'CABIN_FOLIO' ? (activeFolio?.cabinNumber || cabinInput.trim().toUpperCase()) : undefined,
+        cabinNumber: paymentMethod === 'CABIN_FOLIO' ? activeFolio?.cabinNumber : undefined,
         guestName: (activeFolio as unknown as { guestName?: string })?.guestName || activeFolio?.primaryGuestName,
         paymentMethod,
         tax: cartCalculations.maritimeTax,
@@ -967,7 +986,11 @@ export const PosRegister: React.FC = () => {
             <input
               type="text"
               value={cabinInput}
-              onChange={(e) => setCabinInput(e.target.value.toUpperCase())}
+              onChange={(e) => {
+                setCabinInput(e.target.value.toUpperCase());
+                setFolioAccount(null);
+                setFolioError(null);
+              }}
               placeholder="Nhập số Cabin (vd: CABIN-7012)"
               className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
             />

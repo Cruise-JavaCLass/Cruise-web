@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PosRegister } from './PosRegister';
 import { posService } from '../../services/posService';
-import { posCatalogService } from '../../services/posCatalogService';
+import { posCatalogService, type CartPriceCalculationResponse } from '../../services/posCatalogService';
 
 vi.mock('../../services/posService', () => ({
   posService: {
@@ -17,8 +17,12 @@ vi.mock('../../services/posCatalogService', () => ({
     getOutlets: vi.fn(),
     getCategories: vi.fn(),
     getProducts: vi.fn(),
+    getProductById: vi.fn(),
+    lookupProduct: vi.fn(),
     calculatePricing: vi.fn(),
-    lookupByBarcode: vi.fn(),
+    getOfflineCatalog: vi.fn(),
+    getOfflinePackage: vi.fn(),
+    saveOfflineCatalog: vi.fn(),
   },
 }));
 
@@ -34,6 +38,23 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
     vi.mocked(posCatalogService.getCategories).mockResolvedValue([
       { id: 1, code: 'CAT-BEV', name: 'Đồ Uống', displayOrder: 1, isActive: true },
     ]);
+    vi.mocked(posCatalogService.getProductById).mockImplementation(async (id: number) => ({
+      id,
+      sku: 'BEV-MOJ-001',
+      name: 'Cocktail Mojito Bạc Hà',
+      basePrice: 14.5,
+      categoryId: 1,
+      categoryName: 'Đồ Uống',
+      outletId: 1,
+      taxCategory: 'STANDARD_VAT',
+      status: 'ACTIVE',
+      isAvailable: true,
+      is86ed: false,
+      stockQuantity: 100,
+      happyHourEligible: true,
+      happyHourDiscountPercent: 20,
+      modifiers: [],
+    }));
     vi.mocked(posCatalogService.getProducts).mockResolvedValue({
       content: [
         {
@@ -76,19 +97,21 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
     });
   });
 
-  it('renders item catalog and category filter buttons', () => {
+  it('renders item catalog and category filter buttons', async () => {
     render(<PosRegister />);
+    await waitFor(() => {
+      expect(screen.getByText('Cocktail Mojito Bạc Hà')).toBeInTheDocument();
+    });
     expect(screen.getByText('Tất Cả')).toBeInTheDocument();
     expect(screen.getByText('Đồ Uống')).toBeInTheDocument();
-    expect(screen.getByText('Cocktail Mojito Bạc Hà')).toBeInTheDocument();
   });
 
   it('adds items to cart and calculates subtotal and total correctly', async () => {
     const user = userEvent.setup();
     render(<PosRegister />);
 
-    const addButtons = screen.getAllByRole('button', { name: /Thêm/i });
-    await user.click(addButtons[0]); // Adds Mojito ($14.50)
+    const addButton = await screen.findByRole('button', { name: /Thêm/i });
+    await user.click(addButton); // Adds Mojito ($14.50)
 
     await waitFor(() => {
       expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
@@ -109,6 +132,9 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
     });
 
     render(<PosRegister />);
+
+    const cabinInput = screen.getByPlaceholderText(/Nhập số Cabin/i);
+    await user.type(cabinInput, 'CABIN-7012');
 
     const checkBtn = screen.getByRole('button', { name: /Kiểm Tra/i });
     await user.click(checkBtn);
@@ -142,13 +168,25 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
       items: [{ itemCode: 'BEV-01', itemName: 'Cocktail Mojito Bạc Hà', category: 'BEVERAGE', quantity: 1, unitPrice: 14.5, totalPrice: 14.5 }],
     };
 
+    vi.mocked(posService.getFolio).mockResolvedValue({
+      id: 1,
+      cabinNumber: 'CABIN-7012',
+      primaryGuestName: 'Nguyễn Văn An',
+      creditLimit: 1500.0,
+      currentBalance: 200.0,
+      availableLimit: 1300.0,
+      status: 'ACTIVE',
+    });
     vi.mocked(posService.createTransaction).mockResolvedValueOnce(mockTx);
 
     render(<PosRegister />);
 
+    const cabinInput = screen.getByPlaceholderText(/Nhập số Cabin/i);
+    await user.type(cabinInput, 'CABIN-7012');
+
     // Add item
-    const addButtons = screen.getAllByRole('button', { name: /Thêm/i });
-    await user.click(addButtons[0]);
+    const addButton = await screen.findByRole('button', { name: /Thêm/i });
+    await user.click(addButton);
 
     // Click checkout
     const checkoutBtn = screen.getByRole('button', { name: /Thanh Toán/i });
@@ -191,8 +229,8 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
     const user = userEvent.setup();
     render(<PosRegister />);
 
-    const addButtons = screen.getAllByRole('button', { name: /Thêm/i });
-    await user.click(addButtons[0]);
+    const addButton = await screen.findByRole('button', { name: /Thêm/i });
+    await user.click(addButton);
 
     await waitFor(() => {
       expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
@@ -218,13 +256,67 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
 
   it('preserves existing cart when restoring a held order and disables checkout when pricing is in progress', async () => {
     const user = userEvent.setup();
+    let resolvePricing: ((value: CartPriceCalculationResponse) => void) | undefined;
+    vi.mocked(posCatalogService.calculatePricing).mockImplementation(
+      () =>
+        new Promise<CartPriceCalculationResponse>((resolve) => {
+          resolvePricing = resolve;
+        })
+    );
+
     render(<PosRegister />);
 
-    const addButtons = screen.getAllByRole('button', { name: /Thêm/i });
-    await user.click(addButtons[0]);
+    const addButton = await screen.findByRole('button', { name: /Thêm/i });
+    await user.click(addButton);
 
+    // Wait for item to appear in cart
     await waitFor(() => {
       expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
+    });
+
+    // Checkout should be disabled while pricing promise is pending
+    const checkoutBtn = screen.getByRole('button', { name: /Đang tính toán giá\.\.\./i });
+    expect(checkoutBtn).toBeDisabled();
+
+    // Resolve pricing
+    if (resolvePricing) {
+      resolvePricing({
+        subtotal: 14.5,
+        happyHourDiscount: 0,
+        taxableSubtotal: 14.5,
+        maritimeTax: 1.45,
+        taxRatePercent: 10,
+        serviceCharge: 2.61,
+        serviceChargePercent: 18,
+        grandTotal: 18.56,
+        isDutyFree: false,
+        isHappyHourActive: false,
+        items: [],
+      });
+    }
+
+    // Switch mock back to instant resolve for subsequent actions
+    vi.mocked(posCatalogService.calculatePricing).mockImplementation(async (req) => {
+      const subtotal = req.items.reduce((sum, item) => sum + 14.5 * item.quantity, 0);
+      const tax = Math.round(subtotal * 0.1 * 100) / 100;
+      const svc = Math.round(subtotal * 0.18 * 100) / 100;
+      return {
+        subtotal,
+        happyHourDiscount: 0,
+        taxableSubtotal: subtotal,
+        maritimeTax: tax,
+        taxRatePercent: 10,
+        serviceCharge: svc,
+        serviceChargePercent: 18,
+        grandTotal: Math.round((subtotal + tax + svc) * 100) / 100,
+        isDutyFree: false,
+        isHappyHourActive: false,
+        items: [],
+      };
+    });
+
+    await waitFor(() => {
+      expect(checkoutBtn).not.toBeDisabled();
     });
 
     // Hold order
@@ -233,7 +325,7 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
     expect(screen.getByText(/Đơn tạm giữ \(1\)/i)).toBeInTheDocument();
 
     // Add another item to active cart
-    await user.click(addButtons[0]);
+    await user.click(addButton);
     await waitFor(() => {
       expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
     });

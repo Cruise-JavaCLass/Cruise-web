@@ -96,6 +96,15 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
               }
               stockQuantity = numStock;
             }
+            const happyHourDiscount =
+              item.happyHourDiscountPercent !== undefined &&
+              item.happyHourDiscountPercent !== null &&
+              Number.isFinite(Number(item.happyHourDiscountPercent))
+                ? Number(item.happyHourDiscountPercent)
+                : undefined;
+
+            const modifiers = Array.isArray(item.modifiers) ? item.modifiers : undefined;
+
             validatedList.push({
               sku,
               name,
@@ -105,6 +114,12 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
               categoryCode: typeof item.categoryCode === 'string' ? item.categoryCode : undefined,
               stockQuantity,
               barcode: typeof item.barcode === 'string' ? item.barcode : undefined,
+              taxCategory: typeof item.taxCategory === 'string' ? item.taxCategory : undefined,
+              description: typeof item.description === 'string' ? item.description : undefined,
+              imageUrl: typeof item.imageUrl === 'string' ? item.imageUrl : undefined,
+              happyHourEligible: typeof item.happyHourEligible === 'boolean' ? item.happyHourEligible : undefined,
+              happyHourDiscountPercent: happyHourDiscount,
+              modifiers,
             });
           }
           setItems(validatedList);
@@ -171,6 +186,8 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
         products: items,
       });
       setImportResult(resp);
+      setItems([]);
+      setFileName(null);
       onSuccess();
     } catch (err: unknown) {
       const msg =
