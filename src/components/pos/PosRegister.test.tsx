@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PosRegister } from './PosRegister';
 import { posService } from '../../services/posService';
+import { posCatalogService } from '../../services/posCatalogService';
 
 vi.mock('../../services/posService', () => ({
   posService: {
@@ -11,9 +12,69 @@ vi.mock('../../services/posService', () => ({
   },
 }));
 
+vi.mock('../../services/posCatalogService', () => ({
+  posCatalogService: {
+    getOutlets: vi.fn(),
+    getCategories: vi.fn(),
+    getProducts: vi.fn(),
+    calculatePricing: vi.fn(),
+    lookupByBarcode: vi.fn(),
+  },
+}));
+
 describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
+
+    vi.mocked(posCatalogService.getOutlets).mockResolvedValue([
+      { id: 1, code: 'SKY-BAR', name: 'Sky Bar & Lounge', outletType: 'BAR', isActive: true },
+      { id: 2, code: 'LIDO-BUFFET', name: 'Lido Buffet & Grill', outletType: 'RESTAURANT', isActive: true },
+    ]);
+    vi.mocked(posCatalogService.getCategories).mockResolvedValue([
+      { id: 1, code: 'CAT-BEV', name: 'Đồ Uống', displayOrder: 1, isActive: true },
+    ]);
+    vi.mocked(posCatalogService.getProducts).mockResolvedValue({
+      content: [
+        {
+          id: 1,
+          sku: 'BEV-MOJ-001',
+          name: 'Cocktail Mojito Bạc Hà',
+          basePrice: 14.5,
+          categoryId: 1,
+          categoryName: 'Đồ Uống',
+          outletId: 1,
+          status: 'ACTIVE',
+          isAvailable: true,
+          is86ed: false,
+          stockQuantity: 100,
+          happyHourEligible: true,
+          happyHourDiscountPercent: 20,
+        },
+      ],
+      totalElements: 1,
+      totalPages: 1,
+      size: 100,
+      number: 0,
+    });
+    vi.mocked(posCatalogService.calculatePricing).mockImplementation(async (req) => {
+      const subtotal = req.items.reduce((sum, item) => sum + 14.5 * item.quantity, 0);
+      const tax = Math.round(subtotal * 0.1 * 100) / 100;
+      const svc = Math.round(subtotal * 0.18 * 100) / 100;
+      return {
+        subtotal,
+        happyHourDiscount: 0,
+        taxableSubtotal: subtotal,
+        maritimeTax: tax,
+        taxRatePercent: 10,
+        serviceCharge: svc,
+        serviceChargePercent: 18,
+        grandTotal: Math.round((subtotal + tax + svc) * 100) / 100,
+        isDutyFree: false,
+        isHappyHourActive: false,
+        items: [],
+      };
+    });
   });
 
   it('renders item catalog and category filter buttons', () => {
@@ -153,6 +214,38 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
     // Cart is restored
     await waitFor(() => {
       expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
+    });
+  });
+
+  it('preserves existing cart when restoring a held order and disables checkout when pricing is in progress', async () => {
+    const user = userEvent.setup();
+    render(<PosRegister />);
+
+    const addButtons = screen.getAllByRole('button', { name: /Thêm/i });
+    await user.click(addButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
+    });
+
+    // Hold order
+    const holdBtn = screen.getByTitle('Lưu tạm đơn (Hold Order)');
+    await user.click(holdBtn);
+    expect(screen.getByText(/Đơn tạm giữ \(1\)/i)).toBeInTheDocument();
+
+    // Add another item to active cart
+    await user.click(addButtons[0]);
+    await waitFor(() => {
+      expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
+    });
+
+    // Restoring held order should auto-hold active cart so heldOrders count is still 1
+    const restoreBtn = screen.getByRole('button', { name: /Phục hồi/i });
+    await user.click(restoreBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
+      expect(screen.getByText(/Đơn tạm giữ \(1\)/i)).toBeInTheDocument();
     });
   });
 });

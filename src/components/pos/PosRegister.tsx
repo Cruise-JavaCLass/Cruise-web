@@ -156,6 +156,7 @@ export const PosRegister: React.FC = () => {
   });
 
   // Financial calculations
+  const [isPricing, setIsPricing] = useState(false);
   const [cartCalculations, setCartCalculations] = useState<CartPriceCalculationResponse>({
     subtotal: 0,
     happyHourDiscount: 0,
@@ -275,6 +276,7 @@ export const PosRegister: React.FC = () => {
   useEffect(() => {
     let isStale = false;
     const recalculateCart = async () => {
+      setIsPricing(true);
       if (cart.length === 0) {
         if (!isStale) {
           setCartCalculations({
@@ -290,6 +292,7 @@ export const PosRegister: React.FC = () => {
             isHappyHourActive,
             items: [],
           });
+          setIsPricing(false);
         }
         return;
       }
@@ -319,6 +322,10 @@ export const PosRegister: React.FC = () => {
         if (isStale) return;
         const fallback = calculateCartFallback(cart, voyageLocation, isHappyHourActive);
         setCartCalculations(fallback);
+      } finally {
+        if (!isStale) {
+          setIsPricing(false);
+        }
       }
     };
 
@@ -479,8 +486,11 @@ export const PosRegister: React.FC = () => {
 
   const holdOrder = () => {
     if (cart.length === 0) return;
+    const uuid = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `hold-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     const newHold: HeldOrder = {
-      id: `HOLD-${Date.now().toString().slice(-4)}`,
+      id: `HOLD-${uuid}`,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       count: cart.reduce((acc, i) => acc + i.quantity, 0),
       total: cartCalculations.grandTotal,
@@ -488,16 +498,33 @@ export const PosRegister: React.FC = () => {
     };
     saveHeldOrders([newHold, ...heldOrders]);
     clearCart();
-    setScanNotification(`Đã lưu tạm đơn #${newHold.id}`);
+    setScanNotification(`Đã lưu tạm đơn #${newHold.id.slice(-6)}`);
     setTimeout(() => setScanNotification(null), 3000);
   };
 
   const restoreHeldOrder = (orderId: string) => {
     const order = heldOrders.find((o) => o.id === orderId);
     if (!order) return;
+    idempotencyKeyRef.current = null;
+
+    let updatedHeld = heldOrders.filter((o) => o.id !== orderId);
+    if (cart.length > 0) {
+      const autoUuid = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `hold-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      const autoHeld: HeldOrder = {
+        id: `HOLD-${autoUuid}`,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        count: cart.reduce((acc, i) => acc + i.quantity, 0),
+        total: cartCalculations.grandTotal,
+        items: [...cart],
+      };
+      updatedHeld = [autoHeld, ...updatedHeld];
+    }
+
     setCart(order.items);
-    saveHeldOrders(heldOrders.filter((o) => o.id !== orderId));
-    setScanNotification(`Đã phục hồi đơn #${order.id}`);
+    saveHeldOrders(updatedHeld);
+    setScanNotification(`Đã phục hồi đơn #${order.id.slice(-6)}`);
     setTimeout(() => setScanNotification(null), 3000);
   };
 
@@ -525,6 +552,9 @@ export const PosRegister: React.FC = () => {
   const handleCheckout = async () => {
     if (cart.length === 0) {
       setSubmitError('Giỏ hàng đang trống!');
+      return;
+    }
+    if (isPricing) {
       return;
     }
 
@@ -1139,12 +1169,14 @@ export const PosRegister: React.FC = () => {
         {/* Checkout Button */}
         <button
           type="button"
-          disabled={isSubmitting || cart.length === 0}
+          disabled={isSubmitting || isPricing || cart.length === 0}
           onClick={() => void handleCheckout()}
           className="mt-3 w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white font-bold text-sm shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2"
         >
           {isSubmitting ? (
             <span className="animate-pulse">Đang xử lý thanh toán...</span>
+          ) : isPricing ? (
+            <span className="animate-pulse">Đang tính toán giá...</span>
           ) : (
             <>
               <ShoppingCart className="w-4 h-4" />

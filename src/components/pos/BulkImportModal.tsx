@@ -85,8 +85,16 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
             }
             const rawPrice = item.basePrice;
             const numPrice = typeof rawPrice === 'number' ? rawPrice : typeof rawPrice === 'string' && rawPrice.trim() !== '' ? Number(rawPrice) : NaN;
-            if (!Number.isFinite(numPrice) || numPrice < 0) {
+            if (!Number.isFinite(numPrice) || numPrice <= 0) {
               throw new Error(`Dòng JSON #${i + 1}: basePrice không hợp lệ.`);
+            }
+            let stockQuantity = 100;
+            if (item.stockQuantity !== undefined && item.stockQuantity !== null && String(item.stockQuantity).trim() !== '') {
+              const numStock = Number(item.stockQuantity);
+              if (!Number.isInteger(numStock) || numStock < 0) {
+                throw new Error(`Dòng JSON #${i + 1}: Số lượng tồn kho không hợp lệ (${String(item.stockQuantity)}).`);
+              }
+              stockQuantity = numStock;
             }
             validatedList.push({
               sku,
@@ -95,7 +103,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
               costPrice: item.costPrice !== undefined && item.costPrice !== null && Number.isFinite(Number(item.costPrice)) ? Number(item.costPrice) : undefined,
               outletCode: typeof item.outletCode === 'string' ? item.outletCode : undefined,
               categoryCode: typeof item.categoryCode === 'string' ? item.categoryCode : undefined,
-              stockQuantity: item.stockQuantity !== undefined && Number.isFinite(Number(item.stockQuantity)) ? Number(item.stockQuantity) : 100,
+              stockQuantity,
               barcode: typeof item.barcode === 'string' ? item.barcode : undefined,
             });
           }
@@ -120,7 +128,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
             }
             const rawPrice = cols[2].trim();
             const numPrice = Number(rawPrice);
-            if (!Number.isFinite(numPrice) || numPrice < 0 || rawPrice === '') {
+            if (!Number.isFinite(numPrice) || numPrice <= 0 || rawPrice === '') {
               throw new Error(`Dòng CSV #${i + 1}: Giá basePrice không hợp lệ (${rawPrice}).`);
             }
             let stock = 100;
