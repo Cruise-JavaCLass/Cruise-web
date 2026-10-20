@@ -29,18 +29,81 @@ import {
   type OutletDto,
   type CategoryDto,
   type VoyageLocationStatus,
-  type CartPriceCalculationResponse
+  type CartPriceCalculationResponse,
+  type CartPriceCalculationRequest,
 } from '../../services/posCatalogService';
 import { PosReceiptModal } from './PosReceiptModal';
 import { ModifierSelectorModal } from './ModifierSelectorModal';
 
-interface CartItemEntry {
+export interface CartItemEntry {
   cartId: string;
   product: ProductDto | ProductDetailDto;
   quantity: number;
   selectedModifiers: ProductModifierDto[];
   notes?: string;
   unitPrice: number;
+}
+
+export interface FallbackCartItem {
+  product:
+    | ProductDto
+    | ProductDetailDto
+    | {
+        id?: number;
+        sku?: string;
+        name?: string;
+        happyHourEligible?: boolean;
+        happyHourDiscountPercent?: number;
+        [key: string]: unknown;
+      };
+  unitPrice: number;
+  quantity: number;
+}
+
+export function calculateCartFallback(
+  items: FallbackCartItem[],
+  voyageLocation: VoyageLocationStatus,
+  isHappyHourActive: boolean
+): CartPriceCalculationResponse {
+  const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+  let discount = 0;
+  if (isHappyHourActive) {
+    discount = items.reduce((sum, item) => {
+      if (item.product.happyHourEligible) {
+        const pct = item.product.happyHourDiscountPercent ?? 20;
+        return sum + (item.unitPrice * item.quantity * pct) / 100;
+      }
+      return sum;
+    }, 0);
+  }
+  const taxable = Math.max(0, subtotal - discount);
+  const isDutyFree = voyageLocation === 'INTERNATIONAL_WATERS';
+  const taxRate = isDutyFree ? 0 : 0.10;
+  const maritimeTax = Math.round(taxable * taxRate * 100) / 100;
+  const serviceCharge = Math.round(taxable * 0.18 * 100) / 100;
+  const grandTotal = Math.round((taxable + maritimeTax + serviceCharge) * 100) / 100;
+
+  return {
+    subtotal: Math.round(subtotal * 100) / 100,
+    happyHourDiscount: Math.round(discount * 100) / 100,
+    taxableSubtotal: Math.round(taxable * 100) / 100,
+    maritimeTax,
+    taxRatePercent: isDutyFree ? 0 : 10,
+    serviceCharge,
+    serviceChargePercent: 18,
+    grandTotal,
+    isDutyFree,
+    isHappyHourActive,
+    items: [],
+  };
+}
+
+export interface HeldOrder {
+  id: string;
+  time: string;
+  count: number;
+  total: number;
+  items: CartItemEntry[];
 }
 
 const DEFAULT_FALLBACK_CATEGORIES: CategoryDto[] = [
@@ -121,8 +184,24 @@ export const PosRegister: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [completedTx, setCompletedTx] = useState<PosTransaction | null>(null);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
-  const [_heldOrders, setHeldOrders] = useState<{ id: string; time: string; count: number; total: number }[]>([]);
+  const [heldOrders, setHeldOrders] = useState<HeldOrder[]>(() => {
+    try {
+      const stored = localStorage.getItem('CRUISE_POS_HELD_ORDERS');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
   const idempotencyKeyRef = useRef<string | null>(null);
+
+  const saveHeldOrders = (orders: HeldOrder[]) => {
+    setHeldOrders(orders);
+    try {
+      localStorage.setItem('CRUISE_POS_HELD_ORDERS', JSON.stringify(orders));
+    } catch {
+      // ignore
+    }
+  };
 
   // Barcode keyboard wedge buffer
   const barcodeBufferRef = useRef<string>('');
@@ -162,101 +241,92 @@ export const PosRegister: React.FC = () => {
 
   // Load Categories & Products when outlet changes
   useEffect(() => {
+    let isCancelled = false;
+    setSelectedCategory('ALL');
     const loadProductsAndCategories = async () => {
       try {
         const [cats, prods] = await Promise.all([
           posCatalogService.getCategories(selectedOutletId),
           posCatalogService.getProducts({ outletId: selectedOutletId, size: 100 }),
         ]);
-        if (cats && cats.length > 0) setCategories(cats);
-        if (prods && prods.content && prods.content.length > 0) setProducts(prods.content);
+        if (isCancelled) return;
+        setCategories(cats || []);
+        setProducts(prods?.content || []);
       } catch {
+        if (isCancelled) return;
         // Keep fallback data filtered by outlet if available
         if (selectedOutletId) {
           const filtered = DEFAULT_FALLBACK_PRODUCTS.filter(
             (p) => !p.outletId || p.outletId === selectedOutletId
           );
           setProducts(filtered.length > 0 ? filtered : DEFAULT_FALLBACK_PRODUCTS);
+        } else {
+          setProducts([]);
         }
       }
     };
     void loadProductsAndCategories();
+    return () => {
+      isCancelled = true;
+    };
   }, [selectedOutletId]);
 
   // Recalculate Cart Pricing
-  const recalculateCart = useCallback(async () => {
-    if (cart.length === 0) {
-      setCartCalculations({
-        subtotal: 0,
-        happyHourDiscount: 0,
-        taxableSubtotal: 0,
-        maritimeTax: 0,
-        taxRatePercent: voyageLocation === 'INTERNATIONAL_WATERS' ? 0 : 10,
-        serviceCharge: 0,
-        serviceChargePercent: 18,
-        grandTotal: 0,
-        isDutyFree: voyageLocation === 'INTERNATIONAL_WATERS',
-        isHappyHourActive,
-        items: [],
-      });
-      return;
-    }
-
-    try {
-      const calcReq = {
-        outletId: selectedOutletId,
-        voyageLocation,
-        items: cart.map((c) => ({
-          productId: c.product.id,
-          sku: c.product.sku,
-          quantity: c.quantity,
-          selectedModifierIds: c.selectedModifiers.map((m) => m.id).filter(Boolean) as number[],
-          specialNotes: c.notes,
-        })),
-      };
-
-      const res = await posCatalogService.calculatePricing(calcReq);
-      setCartCalculations(res);
-      setIsHappyHourActive(res.isHappyHourActive);
-    } catch {
-      // Local fallback calculation engine
-      const subtotal = cart.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
-      let discount = 0;
-      if (isHappyHourActive) {
-        discount = cart.reduce((sum, item) => {
-          if (item.product.happyHourEligible) {
-            const pct = item.product.happyHourDiscountPercent || 20;
-            return sum + (item.unitPrice * item.quantity * pct) / 100;
-          }
-          return sum;
-        }, 0);
-      }
-      const taxable = Math.max(0, subtotal - discount);
-      const isDutyFree = voyageLocation === 'INTERNATIONAL_WATERS';
-      const taxRate = isDutyFree ? 0 : 0.10;
-      const maritimeTax = Math.round(taxable * taxRate * 100) / 100;
-      const serviceCharge = Math.round(taxable * 0.18 * 100) / 100;
-      const grandTotal = Math.round((taxable + maritimeTax + serviceCharge) * 100) / 100;
-
-      setCartCalculations({
-        subtotal: Math.round(subtotal * 100) / 100,
-        happyHourDiscount: Math.round(discount * 100) / 100,
-        taxableSubtotal: Math.round(taxable * 100) / 100,
-        maritimeTax,
-        taxRatePercent: isDutyFree ? 0 : 10,
-        serviceCharge,
-        serviceChargePercent: 18,
-        grandTotal,
-        isDutyFree,
-        isHappyHourActive,
-        items: [],
-      });
-    }
-  }, [cart, selectedOutletId, voyageLocation, isHappyHourActive]);
-
   useEffect(() => {
+    let isStale = false;
+    const recalculateCart = async () => {
+      if (cart.length === 0) {
+        if (!isStale) {
+          setCartCalculations({
+            subtotal: 0,
+            happyHourDiscount: 0,
+            taxableSubtotal: 0,
+            maritimeTax: 0,
+            taxRatePercent: voyageLocation === 'INTERNATIONAL_WATERS' ? 0 : 10,
+            serviceCharge: 0,
+            serviceChargePercent: 18,
+            grandTotal: 0,
+            isDutyFree: voyageLocation === 'INTERNATIONAL_WATERS',
+            isHappyHourActive,
+            items: [],
+          });
+        }
+        return;
+      }
+
+      try {
+        const calcReq: CartPriceCalculationRequest = {
+          outletId: selectedOutletId,
+          voyageLocation,
+          isHappyHourActive,
+          items: cart.map((c) => ({
+            productId: c.product.id,
+            sku: c.product.sku,
+            quantity: c.quantity,
+            selectedModifierIds: c.selectedModifiers.map((m) => m.id).filter(Boolean) as number[],
+            specialNotes: c.notes,
+          })),
+        };
+
+        const res = await posCatalogService.calculatePricing(calcReq);
+        if (isStale) return;
+        // Keep the manual Happy Hour toggle authoritative and reflect its state in calculations
+        setCartCalculations({
+          ...res,
+          isHappyHourActive,
+        });
+      } catch {
+        if (isStale) return;
+        const fallback = calculateCartFallback(cart, voyageLocation, isHappyHourActive);
+        setCartCalculations(fallback);
+      }
+    };
+
     void recalculateCart();
-  }, [recalculateCart]);
+    return () => {
+      isStale = true;
+    };
+  }, [cart, selectedOutletId, voyageLocation, isHappyHourActive]);
 
   // Add Item to Cart helper
   const addItemWithModifiers = (
@@ -304,24 +374,22 @@ export const PosRegister: React.FC = () => {
       return;
     }
 
-    // Direct add default product for fast terminal throughput (< 100ms)
-    addItemWithModifiers(product);
-
     try {
       const detail = await posCatalogService.getProductById(product.id);
       if (detail && detail.modifiers && detail.modifiers.length > 0) {
-        // If it requires customization modifiers, remove the direct add and prompt modal
-        removeFromCart(`${product.sku}--`);
         setCustomizingProduct(detail);
         setIsModifierModalOpen(true);
+        return;
       }
     } catch {
-      // Keep direct add
+      // If fetching details fails, proceed to add directly
     }
+
+    addItemWithModifiers(product);
   };
 
   // Barcode Lookup Handler (Instant scanner support)
-  const handleBarcodeLookup = async (code: string) => {
+  const handleBarcodeLookup = useCallback(async (code: string) => {
     if (!code || !code.trim()) return;
     setIsScanning(true);
     const trimmed = code.trim();
@@ -336,7 +404,7 @@ export const PosRegister: React.FC = () => {
         }
         setBarcodeInput('');
       }
-    } catch (_err) {
+    } catch {
       // Local fallback search
       const localMatch = products.find(
         (p) => p.barcode === trimmed || p.sku.toLowerCase() === trimmed.toLowerCase()
@@ -351,7 +419,7 @@ export const PosRegister: React.FC = () => {
     } finally {
       setIsScanning(false);
     }
-  };
+  }, [products, selectedOutletId]);
 
   // Barcode Scanner Wedge keyboard listener (detects ultra-fast scanner input ending with Enter)
   useEffect(() => {
@@ -368,6 +436,7 @@ export const PosRegister: React.FC = () => {
 
       if (e.key === 'Enter') {
         if (barcodeBufferRef.current.length >= 3) {
+          e.preventDefault();
           const scannedCode = barcodeBufferRef.current;
           barcodeBufferRef.current = '';
           void handleBarcodeLookup(scannedCode);
@@ -386,7 +455,7 @@ export const PosRegister: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [products, selectedOutletId]);
+  }, [handleBarcodeLookup]);
 
   // Cart operations
   const updateQuantity = (cartId: string, delta: number) => {
@@ -410,16 +479,30 @@ export const PosRegister: React.FC = () => {
 
   const holdOrder = () => {
     if (cart.length === 0) return;
-    const newHold = {
+    const newHold: HeldOrder = {
       id: `HOLD-${Date.now().toString().slice(-4)}`,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       count: cart.reduce((acc, i) => acc + i.quantity, 0),
       total: cartCalculations.grandTotal,
+      items: [...cart],
     };
-    setHeldOrders((prev) => [newHold, ...prev]);
+    saveHeldOrders([newHold, ...heldOrders]);
     clearCart();
     setScanNotification(`Đã lưu tạm đơn #${newHold.id}`);
     setTimeout(() => setScanNotification(null), 3000);
+  };
+
+  const restoreHeldOrder = (orderId: string) => {
+    const order = heldOrders.find((o) => o.id === orderId);
+    if (!order) return;
+    setCart(order.items);
+    saveHeldOrders(heldOrders.filter((o) => o.id !== orderId));
+    setScanNotification(`Đã phục hồi đơn #${order.id}`);
+    setTimeout(() => setScanNotification(null), 3000);
+  };
+
+  const removeHeldOrder = (orderId: string) => {
+    saveHeldOrders(heldOrders.filter((o) => o.id !== orderId));
   };
 
   // Folio lookup
@@ -506,7 +589,7 @@ export const PosRegister: React.FC = () => {
       setCompletedTx(result);
       setIsReceiptOpen(true);
       clearCart();
-      if (paymentMethod === 'CABIN_FOLIO' && folioAccount) {
+      if (paymentMethod === 'CABIN_FOLIO' && activeFolio) {
         void handleLookupFolio();
       }
     } catch (err: unknown) {
@@ -713,7 +796,7 @@ export const PosRegister: React.FC = () => {
                       {!is86ed && p.happyHourEligible && isHappyHourActive && (
                         <div className="absolute top-1.5 right-1.5 bg-amber-500 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-0.5">
                           <Flame className="w-3 h-3" />
-                          -20%
+                          -{p.happyHourDiscountPercent ?? 20}%
                         </div>
                       )}
                     </div>
@@ -734,7 +817,7 @@ export const PosRegister: React.FC = () => {
                         {isHappyHourActive && p.happyHourEligible ? (
                           <div className="flex items-baseline gap-1.5">
                             <span className="text-sm font-bold text-amber-400">
-                              ${(p.basePrice * 0.8).toFixed(2)}
+                              ${(p.basePrice * (1 - (p.happyHourDiscountPercent ?? 20) / 100)).toFixed(2)}
                             </span>
                             <span className="text-xs text-slate-500 line-through">
                               ${p.basePrice.toFixed(2)}
@@ -793,6 +876,50 @@ export const PosRegister: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Held Orders Quick Drawer */}
+        {heldOrders.length > 0 && (
+          <div className="py-2.5 px-3 my-2 bg-amber-950/30 border border-amber-800/50 rounded-xl">
+            <div className="flex items-center justify-between text-xs text-amber-300 font-semibold mb-1.5">
+              <span className="flex items-center gap-1.5">
+                <PauseCircle className="w-3.5 h-3.5 text-amber-400" />
+                Đơn tạm giữ ({heldOrders.length})
+              </span>
+            </div>
+            <div className="space-y-1.5 max-h-32 overflow-y-auto">
+              {heldOrders.map((h) => (
+                <div
+                  key={h.id}
+                  className="flex items-center justify-between bg-slate-900/80 px-2.5 py-1.5 rounded-lg border border-slate-800 text-xs"
+                >
+                  <div>
+                    <span className="font-mono text-white text-[11px] font-semibold">{h.id}</span>
+                    <span className="text-[10px] text-slate-400 ml-1.5">
+                      {h.count} món • ${h.total.toFixed(2)} ({h.time})
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => restoreHeldOrder(h.id)}
+                      className="px-2 py-0.5 bg-blue-600/80 hover:bg-blue-600 text-white rounded text-[11px] font-medium transition cursor-pointer"
+                    >
+                      Phục hồi
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeHeldOrder(h.id)}
+                      className="p-1 text-slate-400 hover:text-rose-400 rounded transition cursor-pointer"
+                      title="Xóa đơn tạm"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Guest Folio Lookup Bar */}
         <div className="py-3 border-b border-slate-800">

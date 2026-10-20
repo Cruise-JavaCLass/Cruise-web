@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Flame, Clock, Save, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { X, Plus, Trash2, Flame, Clock, AlertCircle } from 'lucide-react';
 import {
   posCatalogService,
   type HappyHourRuleDto,
@@ -33,13 +33,7 @@ export const HappyHourConfigModal: React.FC<HappyHourConfigModalProps> = ({
   const [targetOutletId, setTargetOutletId] = useState<number | undefined>(outletId);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      void loadRules();
-    }
-  }, [isOpen, outletId]);
-
-  const loadRules = async () => {
+  const loadRules = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -50,7 +44,14 @@ export const HappyHourConfigModal: React.FC<HappyHourConfigModalProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [outletId]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTargetOutletId(outletId);
+      void loadRules();
+    }
+  }, [isOpen, outletId, loadRules]);
 
   if (!isOpen) return null;
 

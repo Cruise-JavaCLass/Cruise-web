@@ -1,5 +1,5 @@
 import React from 'react';
-import { Store, MapPin, Clock } from 'lucide-react';
+import { Store } from 'lucide-react';
 import { type OutletDto } from '../../services/posCatalogService';
 
 interface OutletSelectorProps {

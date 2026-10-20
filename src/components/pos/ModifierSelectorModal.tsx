@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Check, Plus, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Check, Plus } from 'lucide-react';
 import { type ProductDetailDto, type ProductModifierDto } from '../../services/posCatalogService';
 
 interface ModifierSelectorModalProps {
@@ -17,6 +17,62 @@ export const ModifierSelectorModal: React.FC<ModifierSelectorModalProps> = ({
 }) => {
   const [selectedModifiers, setSelectedModifiers] = useState<ProductModifierDto[]>([]);
   const [notes, setNotes] = useState('');
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedModifiers([]);
+      setNotes('');
+      triggerRef.current = document.activeElement as HTMLElement | null;
+
+      const timer = setTimeout(() => {
+        if (dialogRef.current) {
+          const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          );
+          if (focusables.length > 0) {
+            focusables[0].focus();
+          }
+        }
+      }, 0);
+      return () => clearTimeout(timer);
+    } else if (triggerRef.current) {
+      triggerRef.current.focus();
+    }
+  }, [isOpen, product?.sku]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && dialogRef.current) {
+        const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen || !product) return null;
 
@@ -44,6 +100,7 @@ export const ModifierSelectorModal: React.FC<ModifierSelectorModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="modifier-modal-title"
+      ref={dialogRef}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in"
     >
       <div className="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
@@ -69,10 +126,10 @@ export const ModifierSelectorModal: React.FC<ModifierSelectorModalProps> = ({
         {/* Body */}
         <div className="p-5 overflow-y-auto space-y-5 flex-1">
           {product.modifiers && product.modifiers.length > 0 ? (
-            <div>
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-2">
+            <div role="group" aria-labelledby="modifier-group-label">
+              <p id="modifier-group-label" className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-2">
                 Tùy chọn & Topping (Modifiers)
-              </label>
+              </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {product.modifiers.map((mod, idx) => {
                   const isSelected = selectedModifiers.some((m) => m.name === mod.name);
@@ -113,10 +170,11 @@ export const ModifierSelectorModal: React.FC<ModifierSelectorModalProps> = ({
 
           {/* Kitchen / Bar notes */}
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-2">
+            <label htmlFor="modifier-notes-input" className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-2">
               Ghi chú nhà bếp / Quầy bar (Special Request)
             </label>
             <input
+              id="modifier-notes-input"
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

@@ -12,6 +12,30 @@ interface BulkImportModalProps {
   onSuccess: () => void;
 }
 
+function parseCsvLine(line: string): string[] {
+  const result: string[] = [];
+  let cur = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (ch === ',' && !inQuotes) {
+      result.push(cur.trim());
+      cur = '';
+    } else {
+      cur += ch;
+    }
+  }
+  result.push(cur.trim());
+  return result;
+}
+
 export const BulkImportModal: React.FC<BulkImportModalProps> = ({
   isOpen,
   onClose,
@@ -39,11 +63,43 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
       const content = event.target?.result as string;
       try {
         if (file.name.endsWith('.json')) {
-          const parsed = JSON.parse(content);
-          const list: BulkProductImportItem[] = Array.isArray(parsed)
+          const parsed: unknown = JSON.parse(content);
+          const rawList: unknown[] | null = Array.isArray(parsed)
             ? parsed
-            : parsed.products || [];
-          setItems(list);
+            : parsed && typeof parsed === 'object' && Array.isArray((parsed as Record<string, unknown>).products)
+              ? ((parsed as Record<string, unknown>).products as unknown[])
+              : null;
+          if (!rawList) {
+            throw new Error('Dữ liệu JSON không hợp lệ: phải là mảng hoặc đối tượng chứa mảng "products".');
+          }
+          const validatedList: BulkProductImportItem[] = [];
+          for (let i = 0; i < rawList.length; i++) {
+            const item = rawList[i] as Record<string, unknown> | null | undefined;
+            if (!item || typeof item !== 'object') {
+              throw new Error(`Dòng JSON #${i + 1}: Mục sản phẩm không hợp lệ.`);
+            }
+            const sku = typeof item.sku === 'string' ? item.sku.trim() : '';
+            const name = typeof item.name === 'string' ? item.name.trim() : '';
+            if (!sku || !name) {
+              throw new Error(`Dòng JSON #${i + 1}: SKU và tên sản phẩm phải là chuỗi không rỗng.`);
+            }
+            const rawPrice = item.basePrice;
+            const numPrice = typeof rawPrice === 'number' ? rawPrice : typeof rawPrice === 'string' && rawPrice.trim() !== '' ? Number(rawPrice) : NaN;
+            if (!Number.isFinite(numPrice) || numPrice < 0) {
+              throw new Error(`Dòng JSON #${i + 1}: basePrice không hợp lệ.`);
+            }
+            validatedList.push({
+              sku,
+              name,
+              basePrice: numPrice,
+              costPrice: item.costPrice !== undefined && item.costPrice !== null && Number.isFinite(Number(item.costPrice)) ? Number(item.costPrice) : undefined,
+              outletCode: typeof item.outletCode === 'string' ? item.outletCode : undefined,
+              categoryCode: typeof item.categoryCode === 'string' ? item.categoryCode : undefined,
+              stockQuantity: item.stockQuantity !== undefined && Number.isFinite(Number(item.stockQuantity)) ? Number(item.stockQuantity) : 100,
+              barcode: typeof item.barcode === 'string' ? item.barcode : undefined,
+            });
+          }
+          setItems(validatedList);
         } else {
           // Parse CSV (Header: sku,name,basePrice,costPrice,outletCode,categoryCode,stockQuantity,barcode)
           const lines = content.split('\n').map((l) => l.trim()).filter(Boolean);
@@ -53,19 +109,38 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
 
           const parsedList: BulkProductImportItem[] = [];
           for (let i = 1; i < lines.length; i++) {
-            const cols = lines[i].split(',').map((c) => c.trim().replace(/^"|"$/g, ''));
-            if (cols.length >= 3) {
-              parsedList.push({
-                sku: cols[0],
-                name: cols[1],
-                basePrice: parseFloat(cols[2]) || 0,
-                costPrice: cols[3] ? parseFloat(cols[3]) : undefined,
-                outletCode: cols[4] || undefined,
-                categoryCode: cols[5] || undefined,
-                stockQuantity: cols[6] ? parseInt(cols[6], 10) : 100,
-                barcode: cols[7] || undefined,
-              });
+            const cols = parseCsvLine(lines[i]);
+            if (cols.length < 3) {
+              throw new Error(`Dòng CSV #${i + 1}: Không đủ các cột bắt buộc (sku, name, basePrice).`);
             }
+            const sku = cols[0].trim();
+            const name = cols[1].trim();
+            if (!sku || !name) {
+              throw new Error(`Dòng CSV #${i + 1}: Thiếu SKU hoặc tên sản phẩm.`);
+            }
+            const rawPrice = cols[2].trim();
+            const numPrice = Number(rawPrice);
+            if (!Number.isFinite(numPrice) || numPrice < 0 || rawPrice === '') {
+              throw new Error(`Dòng CSV #${i + 1}: Giá basePrice không hợp lệ (${rawPrice}).`);
+            }
+            let stock = 100;
+            if (cols[6] !== undefined && cols[6].trim() !== '') {
+              const parsedStock = parseInt(cols[6].trim(), 10);
+              if (isNaN(parsedStock) || parsedStock < 0) {
+                throw new Error(`Dòng CSV #${i + 1}: Số lượng tồn kho không hợp lệ (${cols[6]}).`);
+              }
+              stock = parsedStock;
+            }
+            parsedList.push({
+              sku,
+              name,
+              basePrice: numPrice,
+              costPrice: cols[3] && Number.isFinite(Number(cols[3])) ? parseFloat(cols[3]) : undefined,
+              outletCode: cols[4] || undefined,
+              categoryCode: cols[5] || undefined,
+              stockQuantity: stock,
+              barcode: cols[7] || undefined,
+            });
           }
           setItems(parsedList);
         }

@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PosCatalogManagement } from './PosCatalogManagement';
@@ -15,7 +15,7 @@ vi.mock('../../services/posCatalogService', () => ({
     getHappyHourRules: vi.fn(),
     getOfflinePackage: vi.fn(),
     saveOfflineCatalog: vi.fn(),
-    bulkImportCatalog: vi.fn(),
+    bulkImportProducts: vi.fn(),
     getProductById: vi.fn(),
   },
 }));
@@ -75,8 +75,6 @@ describe('PosCatalogManagement Component Tests (KAN-396)', () => {
       content: mockProducts,
       totalElements: mockProducts.length,
       totalPages: 1,
-      pageNumber: 0,
-      pageSize: 20,
     });
     vi.mocked(posCatalogService.getHappyHourRules).mockResolvedValue([]);
   });
@@ -99,22 +97,30 @@ describe('PosCatalogManagement Component Tests (KAN-396)', () => {
   });
 
   it('filters product table by keyword search', async () => {
+    const user = userEvent.setup();
     render(<PosCatalogManagement />);
 
     await waitFor(() => {
       expect(screen.getByText('Mojito Cruise Special')).toBeInTheDocument();
     });
 
-    vi.mocked(posCatalogService.getProducts).mockResolvedValueOnce({
-      content: [mockProducts[0]],
-      totalElements: 1,
-      totalPages: 1,
-      pageNumber: 0,
-      pageSize: 20,
+    vi.mocked(posCatalogService.getProducts).mockImplementation(async (params) => {
+      if (params?.keyword) {
+        return {
+          content: [mockProducts[0]],
+          totalElements: 1,
+          totalPages: 1,
+        };
+      }
+      return {
+        content: mockProducts,
+        totalElements: mockProducts.length,
+        totalPages: 1,
+      };
     });
 
     const searchInput = screen.getByPlaceholderText('Tìm món theo tên, SKU, mã vạch...');
-    fireEvent.change(searchInput, { target: { value: 'Mojito' } });
+    await user.type(searchInput, 'Mojito');
 
     await waitFor(() => {
       expect(screen.getByText('Mojito Cruise Special')).toBeInTheDocument();
@@ -123,6 +129,7 @@ describe('PosCatalogManagement Component Tests (KAN-396)', () => {
   });
 
   it('toggles product 86 status on switch click', async () => {
+    const user = userEvent.setup();
     vi.mocked(posCatalogService.updateProductStatus).mockResolvedValueOnce({
       ...mockProducts[0],
       is86ed: true,
@@ -137,7 +144,7 @@ describe('PosCatalogManagement Component Tests (KAN-396)', () => {
     });
 
     const switches = screen.getAllByRole('switch');
-    fireEvent.click(switches[0]);
+    await user.click(switches[0]);
 
     await waitFor(() => {
       expect(posCatalogService.updateProductStatus).toHaveBeenCalledWith(101, {
@@ -187,5 +194,80 @@ describe('PosCatalogManagement Component Tests (KAN-396)', () => {
     const importBtn = screen.getByRole('button', { name: /Nhập File Hàng Loạt/i });
     await user.click(importBtn);
     expect(screen.getByText(/Nhập Danh Mục Hàng Loạt/i)).toBeInTheDocument();
+  });
+
+  it('restores an 86ed product on switch toggle', async () => {
+    const user = userEvent.setup();
+    vi.mocked(posCatalogService.updateProductStatus).mockResolvedValueOnce({
+      ...mockProducts[1],
+      is86ed: false,
+      status: 'ACTIVE',
+      modifiers: [],
+    });
+
+    render(<PosCatalogManagement />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Blue Ocean Curacao')).toBeInTheDocument();
+    });
+
+    const switches = screen.getAllByRole('switch');
+    // switches[1] is the 86'd product Blue Ocean Curacao
+    await user.click(switches[1]);
+
+    await waitFor(() => {
+      expect(posCatalogService.updateProductStatus).toHaveBeenCalledWith(102, {
+        is86ed: false,
+        reason: 'Khôi phục hàng khả dụng',
+        staffId: 'FNB_MANAGER',
+      });
+    });
+  });
+
+  it('renders error state and retry button when products fail to load', async () => {
+    const user = userEvent.setup();
+    vi.mocked(posCatalogService.getProducts).mockRejectedValueOnce(new Error('Network error'));
+
+    render(<PosCatalogManagement />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Không thể tải danh mục sản phẩm từ máy chủ.')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Thử lại/i })).toBeInTheDocument();
+    });
+
+    vi.mocked(posCatalogService.getProducts).mockResolvedValueOnce({
+      content: mockProducts,
+      totalElements: mockProducts.length,
+      totalPages: 1,
+    });
+
+    await user.click(screen.getByRole('button', { name: /Thử lại/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Mojito Cruise Special')).toBeInTheDocument();
+    });
+  });
+
+  it('warns when offline package is served from cached fallback', async () => {
+    const user = userEvent.setup();
+    vi.mocked(posCatalogService.getOfflinePackage).mockResolvedValueOnce({
+      data: null,
+      notModified: false,
+      isCachedFallback: true,
+    });
+
+    render(<PosCatalogManagement />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Sky Bar & Lounge')).toBeInTheDocument();
+    });
+
+    const exportBtn = screen.getByRole('button', { name: /Xuất Cache Ngoại Tuyến/i });
+    await user.click(exportBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Đang sử dụng gói offline đã lưu trữ cục bộ/i)).toBeInTheDocument();
+    });
+    expect(posCatalogService.saveOfflineCatalog).not.toHaveBeenCalled();
   });
 });

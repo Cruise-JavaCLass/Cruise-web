@@ -30,8 +30,10 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
     const addButtons = screen.getAllByRole('button', { name: /Thêm/i });
     await user.click(addButtons[0]); // Adds Mojito ($14.50)
 
-    expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
-    expect(screen.getByText('$14.50/món')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
+      expect(screen.getByText('$14.50/món')).toBeInTheDocument();
+    });
   });
 
   it('looks up cabin folio and renders available limit', async () => {
@@ -123,5 +125,34 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
     expect(cabinFolioBtn).toHaveAttribute('aria-pressed', 'false');
     expect(creditCardBtn).toHaveAttribute('aria-pressed', 'false');
     expect(cashBtn).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('holds an active order and restores it back to cart', async () => {
+    const user = userEvent.setup();
+    render(<PosRegister />);
+
+    const addButtons = screen.getAllByRole('button', { name: /Thêm/i });
+    await user.click(addButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
+    });
+
+    // Click hold order button
+    const holdBtn = screen.getByTitle('Lưu tạm đơn (Hold Order)');
+    await user.click(holdBtn);
+
+    // Cart is now empty
+    expect(screen.getByText('Giỏ Hàng (0)')).toBeInTheDocument();
+    expect(screen.getByText(/Đơn tạm giữ \(1\)/i)).toBeInTheDocument();
+
+    // Click restore
+    const restoreBtn = screen.getByRole('button', { name: /Phục hồi/i });
+    await user.click(restoreBtn);
+
+    // Cart is restored
+    await waitFor(() => {
+      expect(screen.getByText('Giỏ Hàng (1)')).toBeInTheDocument();
+    });
   });
 });

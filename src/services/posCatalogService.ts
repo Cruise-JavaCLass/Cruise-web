@@ -133,6 +133,7 @@ export interface CartPriceCalculationRequest {
   voyageLocation?: VoyageLocationStatus;
   portName?: string;
   simulatedTime?: string;
+  isHappyHourActive?: boolean;
   items: CartItemCalculationRequest[];
 }
 
@@ -338,7 +339,7 @@ export const posCatalogService = {
   async getOfflinePackage(
     outletId?: number,
     ifNoneMatch?: string
-  ): Promise<{ data: PosOfflineCatalogPackageDto | null; notModified: boolean; etag?: string }> {
+  ): Promise<{ data: PosOfflineCatalogPackageDto | null; notModified: boolean; etag?: string; isCachedFallback: boolean }> {
     const headers: Record<string, string> = {};
     if (ifNoneMatch) headers['If-None-Match'] = ifNoneMatch;
 
@@ -353,18 +354,18 @@ export const posCatalogService = {
       );
 
       if (res.status === 304) {
-        return { data: null, notModified: true, etag: ifNoneMatch };
+        return { data: null, notModified: true, etag: ifNoneMatch, isCachedFallback: false };
       }
 
       const etag = (res.headers?.etag as string) || res.data.data.etag;
-      return { data: res.data.data, notModified: false, etag };
+      return { data: res.data.data, notModified: false, etag, isCachedFallback: false };
     } catch {
       // Offline fallback from local storage
       const local = localStorage.getItem(`CRUISE_OFFLINE_CATALOG_${outletId || 'ALL'}`);
       if (local) {
         try {
           const parsed = JSON.parse(local) as PosOfflineCatalogPackageDto;
-          return { data: parsed, notModified: false, etag: parsed.etag };
+          return { data: parsed, notModified: false, etag: parsed.etag, isCachedFallback: true };
         } catch {
           // parse error
         }

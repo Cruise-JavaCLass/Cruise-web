@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Plus,
   Search,
@@ -53,23 +53,25 @@ export const PosCatalogManagement: React.FC = () => {
     setTimeout(() => setToast(null), 3000);
   };
 
+  const [outletError, setOutletError] = useState<string | null>(null);
+  const [productError, setProductError] = useState<string | null>(null);
+  const latestRequestIdRef = useRef(0);
+
   // Load Outlets on mount
-  useEffect(() => {
-    const loadOutlets = async () => {
-      try {
-        const data = await posCatalogService.getOutlets();
-        setOutlets(data);
-      } catch {
-        setOutlets([
-          { id: 1, code: 'SKY-BAR', name: 'Sky Bar & Lounge', outletType: 'BAR', isActive: true },
-          { id: 2, code: 'LIDO-BUFFET', name: 'Lido Buffet & Grill', outletType: 'RESTAURANT', isActive: true },
-          { id: 3, code: 'LOTUS-SPA', name: 'Lotus Spa & Wellness', outletType: 'SPA', isActive: true },
-          { id: 4, code: 'ROYAL-DUTYFREE', name: 'Royal Duty-Free Boutique', outletType: 'GIFT_SHOP', isActive: true },
-        ]);
-      }
-    };
-    void loadOutlets();
+  const loadOutlets = useCallback(async () => {
+    try {
+      const data = await posCatalogService.getOutlets();
+      setOutlets(data);
+      setOutletError(null);
+    } catch {
+      setOutlets([]);
+      setOutletError('Không thể tải danh sách điểm bán từ máy chủ.');
+    }
   }, []);
+
+  useEffect(() => {
+    void loadOutlets();
+  }, [loadOutlets]);
 
   // Load Categories when outlet changes
   useEffect(() => {
@@ -86,7 +88,9 @@ export const PosCatalogManagement: React.FC = () => {
 
   // Load Products
   const loadProducts = useCallback(async () => {
+    const requestId = ++latestRequestIdRef.current;
     setIsLoading(true);
+    setProductError(null);
     try {
       const resp = await posCatalogService.getProducts({
         outletId: selectedOutletId,
@@ -95,18 +99,18 @@ export const PosCatalogManagement: React.FC = () => {
         keyword: searchTerm.trim() || undefined,
         size: 100,
       });
-      setProducts(resp.content || []);
+      if (requestId === latestRequestIdRef.current) {
+        setProducts(resp.content || []);
+      }
     } catch {
-      // Fallback local list
-      setProducts([
-        { id: 1, outletId: 1, categoryId: 1, categoryName: 'Cocktails', sku: 'BEV-MOJ-001', barcode: '893850123401', name: 'Pacific Sunset Mojito', basePrice: 14.50, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 150, happyHourEligible: true },
-        { id: 2, outletId: 1, categoryId: 1, categoryName: 'Cocktails', sku: 'BEV-BLU-002', barcode: '893850123402', name: 'Ocean Blue Lagoon', basePrice: 15.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 120, happyHourEligible: true },
-        { id: 3, outletId: 1, categoryId: 2, categoryName: 'Beers', sku: 'BEV-IPA-003', barcode: '893850123403', name: 'Harbor Craft IPA Pint', basePrice: 8.50, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 200, happyHourEligible: true },
-        { id: 4, outletId: 2, categoryId: 3, categoryName: 'Grill', sku: 'FOOD-BGR-101', barcode: '893850123501', name: 'Angus Beef Cheese Burger', basePrice: 18.00, taxCategory: 'STANDARD_VAT', status: 'ACTIVE', isAvailable: true, is86ed: false, stockQuantity: 80, happyHourEligible: false },
-        { id: 5, outletId: 2, categoryId: 4, categoryName: 'Desserts', sku: 'FOOD-CAK-103', barcode: '893850123503', name: 'Warm Chocolate Lava Cake', basePrice: 11.00, taxCategory: 'STANDARD_VAT', status: 'EIGHTY_SIXED', isAvailable: false, is86ed: true, stockQuantity: 0, happyHourEligible: false },
-      ]);
+      if (requestId === latestRequestIdRef.current) {
+        setProducts([]);
+        setProductError('Không thể tải danh mục sản phẩm từ máy chủ.');
+      }
     } finally {
-      setIsLoading(false);
+      if (requestId === latestRequestIdRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [selectedOutletId, selectedCategoryId, statusFilter, searchTerm]);
 
@@ -116,7 +120,8 @@ export const PosCatalogManagement: React.FC = () => {
 
   // Toggle 86'd status
   const handleToggle86ed = async (product: ProductDto) => {
-    const willBe86ed = !product.is86ed;
+    const isCurrently86ed = Boolean(product.is86ed || product.status === 'EIGHTY_SIXED');
+    const willBe86ed = !isCurrently86ed;
     try {
       await posCatalogService.updateProductStatus(product.id, {
         is86ed: willBe86ed,
@@ -141,11 +146,7 @@ export const PosCatalogManagement: React.FC = () => {
       setEditingProduct(detail);
       setIsFormOpen(true);
     } catch {
-      setEditingProduct({
-        ...product,
-        modifiers: [],
-      });
-      setIsFormOpen(true);
+      showToast('Không thể tải thông tin chi tiết món để chỉnh sửa.', true);
     }
   };
 
@@ -153,10 +154,14 @@ export const PosCatalogManagement: React.FC = () => {
   const handleExportOfflinePackage = async () => {
     try {
       const result = await posCatalogService.getOfflinePackage(selectedOutletId);
+      if (result.isCachedFallback) {
+        showToast('Máy chủ không khả dụng. Đang sử dụng gói offline đã lưu trữ cục bộ.', true);
+        return;
+      }
       if (result.data) {
         posCatalogService.saveOfflineCatalog(selectedOutletId, result.data);
       }
-      showToast(`Xuất gói offline thành công! (ETag: ${result.etag || 'cached'})`);
+      showToast(`Xuất gói offline thành công! (ETag: ${result.etag || 'mới nhất'})`);
     } catch {
       showToast('Không thể xuất gói catalog offline.', true);
     }
@@ -173,6 +178,24 @@ export const PosCatalogManagement: React.FC = () => {
         >
           {toast.isError ? <AlertCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
           <span className="text-sm font-medium">{toast.text}</span>
+        </div>
+      )}
+
+      {/* Outlet Error Banner */}
+      {outletError && (
+        <div className="bg-rose-950/40 border border-rose-800/60 rounded-xl p-3 flex items-center justify-between text-rose-300 text-xs">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-400" />
+            <span>{outletError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => void loadOutlets()}
+            className="px-2.5 py-1 bg-rose-900/60 hover:bg-rose-800 rounded-lg text-white font-medium flex items-center gap-1 transition cursor-pointer"
+          >
+            <RefreshCw className="w-3 h-3" />
+            Thử lại
+          </button>
         </div>
       )}
 
@@ -294,7 +317,22 @@ export const PosCatalogManagement: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                {products.length === 0 ? (
+                {productError ? (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center text-rose-400">
+                      <AlertCircle className="w-8 h-8 mx-auto mb-2 text-rose-500" />
+                      <p className="font-medium text-sm">{productError}</p>
+                      <button
+                        type="button"
+                        onClick={() => void loadProducts()}
+                        className="mt-3 px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 border border-slate-700 transition"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        <span>Thử lại</span>
+                      </button>
+                    </td>
+                  </tr>
+                ) : products.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="p-8 text-center text-slate-500">
                       <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-30" />

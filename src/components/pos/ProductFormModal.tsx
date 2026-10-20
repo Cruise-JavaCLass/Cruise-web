@@ -52,14 +52,14 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setBarcode(product.barcode || '');
       setOutletId(product.outletId);
       setCategoryId(product.categoryId || 1);
-      setBasePrice(product.basePrice || 0);
-      setCostPrice(product.costPrice || 0);
+      setBasePrice(product.basePrice ?? 0);
+      setCostPrice(product.costPrice ?? 0);
       setTaxCategory(product.taxCategory || 'STANDARD_VAT');
       setStockQuantity(product.stockQuantity ?? 100);
       setImageUrl(product.imageUrl || '');
       setDescription(product.description || '');
       setHappyHourEligible(product.happyHourEligible ?? true);
-      setHappyHourDiscountPercent(product.happyHourDiscountPercent || 20);
+      setHappyHourDiscountPercent(product.happyHourDiscountPercent ?? 20);
       setModifiers(product.modifiers || []);
     } else {
       setName('');
