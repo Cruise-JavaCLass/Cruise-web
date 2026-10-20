@@ -8,22 +8,37 @@ import {
   FileText,
   Eye,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  AlertTriangle,
+  Scale,
+  ShieldAlert,
+  FileQuestion,
+  DollarSign,
 } from 'lucide-react';
 import {
   posService,
   type PosTransaction,
   type TransactionStatus,
-  type PaymentMethod
+  type PaymentMethod,
 } from '../services/posService';
 import { PosRegister } from '../components/pos/PosRegister';
 import { ManagerVoidRefundModal } from '../components/pos/ManagerVoidRefundModal';
 import { ShiftSummaryModal } from '../components/pos/ShiftSummaryModal';
 import { PosReceiptModal } from '../components/pos/PosReceiptModal';
+import {
+  reconciliationService,
+  type ReconciliationSummaryMetrics,
+  type DiscrepancyRecord,
+  type DisputeCase,
+  type ResolveDiscrepancyPayload,
+  type ResolveDisputePayload,
+} from '../services/reconciliationService';
+import { DiscrepancyInspectorModal } from '../components/pos/DiscrepancyInspectorModal';
+import { DisputeManagementWorkspace } from '../components/pos/DisputeManagementWorkspace';
 
 export function PosPage() {
-  const [activeTab, setActiveTab] = useState<'REGISTER' | 'LEDGER'>('REGISTER');
-  
+  const [activeTab, setActiveTab] = useState<'REGISTER' | 'LEDGER' | 'RECONCILIATION' | 'DISPUTES'>('REGISTER');
+
   // Ledger state
   const [transactions, setTransactions] = useState<PosTransaction[]>([]);
   const [isLoadingLedger, setIsLoadingLedger] = useState(false);
@@ -45,6 +60,16 @@ export function PosPage() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<{ text: string; isError: boolean } | null>(null);
 
+  // Reconciliation State
+  const [metrics, setMetrics] = useState<ReconciliationSummaryMetrics | null>(null);
+  const [discrepancies, setDiscrepancies] = useState<DiscrepancyRecord[]>([]);
+  const [disputes, setDisputes] = useState<DisputeCase[]>([]);
+  const [selectedDiscrepancy, setSelectedDiscrepancy] = useState<DiscrepancyRecord | null>(null);
+  const [isInspectorOpen, setIsInspectorOpen] = useState(false);
+  const [isRunningRecon, setIsRunningRecon] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   // Load active shift for current station on mount
   useEffect(() => {
     const loadShift = async () => {
@@ -63,6 +88,30 @@ export function PosPage() {
       }
     };
     void loadShift();
+  }, []);
+
+  const loadReconciliationData = async () => {
+    setIsLoadingData(true);
+    try {
+      const [m, disc, disp] = await Promise.all([
+        reconciliationService.getSummaryMetrics(),
+        reconciliationService.getDiscrepancies(),
+        reconciliationService.getDisputes(),
+      ]);
+      setMetrics(m);
+      setDiscrepancies(disc || []);
+      setDisputes(disp || []);
+      setLoadError(null);
+    } catch (err) {
+      console.error('Failed to load reconciliation data:', err);
+      setLoadError(err instanceof Error ? err.message : 'Không thể tải dữ liệu đối soát');
+    } finally {
+      setIsLoadingData(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadReconciliationData();
   }, []);
 
   const loadTransactions = useCallback(async () => {
@@ -134,6 +183,39 @@ export function PosPage() {
     }
   };
 
+  const handleRunReconciliation = async () => {
+    setIsRunningRecon(true);
+    try {
+      await reconciliationService.runReconciliation();
+      await loadReconciliationData();
+    } catch (err) {
+      console.error('Failed to run reconciliation:', err);
+      alert('Đã xảy ra lỗi khi chạy đối soát. Vui lòng thử lại.');
+    } finally {
+      setIsRunningRecon(false);
+    }
+  };
+
+  const handleResolveDiscrepancy = async (id: number, payload: ResolveDiscrepancyPayload) => {
+    try {
+      await reconciliationService.resolveDiscrepancy(id, payload);
+      await loadReconciliationData();
+    } catch (err) {
+      console.error('Failed to resolve discrepancy:', err);
+      alert('Đã xảy ra lỗi khi xử lý sai lệch. Vui lòng thử lại.');
+    }
+  };
+
+  const handleResolveDispute = async (id: number, payload: ResolveDisputePayload) => {
+    try {
+      await reconciliationService.resolveDispute(id, payload);
+      await loadReconciliationData();
+    } catch (err) {
+      console.error('Failed to resolve dispute:', err);
+      alert('Đã xảy ra lỗi khi xử lý khiếu nại. Vui lòng thử lại.');
+    }
+  };
+
   const filteredTransactions = transactions.filter((tx) => {
     const q = searchTerm.toLowerCase();
     return (
@@ -192,11 +274,20 @@ export function PosPage() {
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Giao dịch không tiền mặt (Cashless Folio) • Chống trùng lặp Idempotency • Hủy trong ca & Hoàn tiền quản lý
+            Giao dịch không tiền mặt (Cashless Folio) • Đối soát POS & Folio tự động • Hủy trong ca & Giải quyết khiếu nại
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleRunReconciliation}
+            disabled={isRunningRecon}
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 transition-all cursor-pointer"
+          >
+            <Scale className={`w-4 h-4 ${isRunningRecon ? 'animate-spin' : ''}`} />
+            {isRunningRecon ? 'Đang đối soát...' : 'Chạy Đối Soát Ngay'}
+          </button>
+
           <button
             onClick={() => setIsShiftModalOpen(true)}
             disabled={!activeShiftId || isLoadingShift}
@@ -234,8 +325,8 @@ export function PosPage() {
         </div>
       )}
 
-      {/* Tabs Navigation */}
-      <div className="flex border-b border-slate-800">
+      {/* Navigation Tabs */}
+      <div className="flex flex-wrap border-b border-slate-800">
         <button
           onClick={() => setActiveTab('REGISTER')}
           className={`flex items-center gap-2 px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
@@ -244,7 +335,9 @@ export function PosPage() {
               : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
-          <ShoppingCart className="w-4 h-4" /> Quầy Bán Hàng (POS Register)
+          <ShoppingCart className="w-4 h-4" />
+          <span>Quầy Bán Hàng (POS Register)</span>
+          <span className="sr-only">Quầy Thu Ngân & Giao Dịch</span>
         </button>
 
         <button
@@ -257,7 +350,114 @@ export function PosPage() {
         >
           <ListFilter className="w-4 h-4" /> Sổ Cái Giao Dịch & Quản Lý (Ledger)
         </button>
+
+        <button
+          onClick={() => setActiveTab('RECONCILIATION')}
+          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+            activeTab === 'RECONCILIATION'
+              ? 'border-cyan-500 text-cyan-400'
+              : 'border-transparent text-slate-400 hover:text-white'
+          }`}
+        >
+          <Scale className="w-4 h-4" />
+          Trung Tâm Đối Soát (Reconciliation)
+          {discrepancies.length > 0 && (
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-500 text-white">
+              {discrepancies.length}
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('DISPUTES')}
+          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+            activeTab === 'DISPUTES'
+              ? 'border-amber-600 text-amber-400'
+              : 'border-transparent text-slate-400 hover:text-white'
+          }`}
+        >
+          <FileQuestion className="w-4 h-4" />
+          Hồ Sơ Khiếu Nại Chi Phí (Disputes)
+          {disputes.filter((d) => d.status === 'SUBMITTED').length > 0 && (
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-400 text-slate-950 font-black">
+              {disputes.filter((d) => d.status === 'SUBMITTED').length}
+            </span>
+          )}
+        </button>
       </div>
+
+      {/* KPI Stats Bar */}
+      {metrics && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl">
+            <div className="flex items-center justify-between text-slate-400 mb-2">
+              <span className="text-xs font-medium uppercase tracking-wider">Doanh thu đã đối soát</span>
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <DollarSign className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-xl font-bold text-white">
+              ${metrics.totalReconciledAmount.toLocaleString()} USD
+            </p>
+            <span className="text-[11px] text-emerald-400 mt-1 block">Khớp 100% giữa POS & Folio</span>
+          </div>
+
+          <div className="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl">
+            <div className="flex items-center justify-between text-slate-400 mb-2">
+              <span className="text-xs font-medium uppercase tracking-wider">Tỷ lệ sai lệch</span>
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                <Scale className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-xl font-bold text-cyan-400">
+              {metrics.discrepancyRatePercent}%
+            </p>
+            <span className="text-[11px] text-slate-400 mt-1 block">Ngưỡng cảnh báo: 0.5%</span>
+          </div>
+
+          <div className="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl">
+            <div className="flex items-center justify-between text-slate-400 mb-2">
+              <span className="text-xs font-medium uppercase tracking-wider">Sai lệch cần xử lý</span>
+              <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                <AlertTriangle className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-xl font-bold text-rose-400">
+              {metrics.pendingDiscrepanciesCount} Bản ghi
+            </p>
+            <span className="text-[11px] text-slate-400 mt-1 block">Chênh lệch ${metrics.totalVarianceAmount} USD</span>
+          </div>
+
+          <div className="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl">
+            <div className="flex items-center justify-between text-slate-400 mb-2">
+              <span className="text-xs font-medium uppercase tracking-wider">Khiếu nại đang chờ</span>
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                <FileQuestion className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-xl font-bold text-amber-400">
+              {metrics.openDisputesCount} Hồ sơ
+            </p>
+            <span className="text-[11px] text-amber-300 mt-1 block font-medium">Đang tranh chấp: ${metrics.totalDisputedAmount} USD</span>
+          </div>
+        </div>
+      )}
+
+      {/* Emergency Alert Banner if Active */}
+      {metrics?.criticalAlertActive && (
+        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <ShieldAlert className="w-5 h-5 shrink-0" />
+            <span className="font-semibold">{metrics.alertMessage}</span>
+          </div>
+          <button
+            onClick={() => setActiveTab('RECONCILIATION')}
+            className="px-3 py-1.5 rounded-xl bg-rose-500 text-white font-bold text-[11px] hover:bg-rose-600 transition-colors cursor-pointer"
+          >
+            Xử lý ngay
+          </button>
+        </div>
+      )}
 
       {/* Tab 1: POS Register */}
       {activeTab === 'REGISTER' && <PosRegister />}
@@ -426,6 +626,114 @@ export function PosPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* TAB 3: RECONCILIATION DASHBOARD & DISCREPANCY LIST */}
+      {activeTab === 'RECONCILIATION' && (
+        <div className="space-y-6">
+          <div className="bg-[#030303]/60 border border-white/10 rounded-3xl overflow-hidden shadow-sm">
+            <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <Scale className="w-5 h-5 text-cyan-400" /> Bảng Sai Lệch Đối Soát Giao Dịch (Discrepancy Inspector)
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Phát hiện sai lệch giữa bản ghi POS và Sổ cái Cabin Folio
+                </p>
+              </div>
+
+              <span className="text-xs text-slate-400">
+                {discrepancies.length} Bản ghi cần tra soát
+              </span>
+            </div>
+
+            {loadError ? (
+              <div className="p-12 text-center space-y-3">
+                <div className="text-rose-400 text-xs flex items-center justify-center gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span>{loadError}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void loadReconciliationData()}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 transition-all cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Thử lại
+                </button>
+              </div>
+            ) : discrepancies.length === 0 ? (
+              <div className="p-12 text-center text-slate-400 text-xs">
+                Không phát hiện sai lệch nào. Toàn bộ giao dịch POS và Folio đã khớp hoàn hảo!
+              </div>
+            ) : (
+              <div className="divide-y divide-white/5">
+                {discrepancies.map((d) => (
+                  <div
+                    key={d.id}
+                    className="p-4 sm:p-5 hover:bg-white/[0.02] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-xs font-mono font-bold text-cyan-400">
+                          {d.transactionId || 'N/A'}
+                        </span>
+                        <span className="text-xs font-semibold text-white">{d.cabinNumber}</span>
+                        <span className="text-xs text-slate-400">({d.passengerName || 'Khách'})</span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            d.discrepancyType === 'AMOUNT_MISMATCH'
+                              ? 'bg-amber-500/10 text-amber-300 border border-amber-500/30'
+                              : d.discrepancyType === 'DUPLICATE_SUSPECT'
+                              ? 'bg-rose-500/10 text-rose-300 border border-rose-500/30'
+                              : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/30'
+                          }`}
+                        >
+                          {d.discrepancyType}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-4 text-xs text-slate-300 pt-0.5">
+                        <span>POS: <strong className="font-mono text-amber-400">${d.posAmount || 0}</strong></span>
+                        <span>Folio: <strong className="font-mono text-emerald-400">${d.folioAmount || 0}</strong></span>
+                        <span>Chênh lệch: <strong className="font-mono text-rose-400">${d.variance}</strong></span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => {
+                          setSelectedDiscrepancy(d);
+                          setIsInspectorOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-500/40 transition-all cursor-pointer"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                        Soi Đối Soát
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <DiscrepancyInspectorModal
+            isOpen={isInspectorOpen}
+            onClose={() => setIsInspectorOpen(false)}
+            record={selectedDiscrepancy}
+            onResolve={handleResolveDiscrepancy}
+          />
+        </div>
+      )}
+
+      {/* TAB 4: DISPUTE MANAGEMENT WORKSPACE */}
+      {activeTab === 'DISPUTES' && (
+        <DisputeManagementWorkspace
+          disputes={disputes}
+          onResolveDispute={handleResolveDispute}
+          isLoading={isLoadingData}
+        />
       )}
 
       {/* Void / Refund Modal */}
