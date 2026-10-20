@@ -98,6 +98,21 @@ export function calculateCartFallback(
   };
 }
 
+const generateSecureRandomId = (prefix: string): string => {
+  if (typeof crypto !== 'undefined') {
+    if (typeof crypto.randomUUID === 'function') {
+      return `${prefix}-${crypto.randomUUID()}`;
+    }
+    if (typeof crypto.getRandomValues === 'function') {
+      const bytes = new Uint8Array(8);
+      crypto.getRandomValues(bytes);
+      const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+      return `${prefix}-${Date.now()}-${hex}`;
+    }
+  }
+  return `${prefix}-${Date.now()}`;
+};
+
 export interface HeldOrder {
   id: string;
   time: string;
@@ -350,7 +365,7 @@ export const PosRegister: React.FC = () => {
     idempotencyKeyRef.current = null;
     const extraPrice = selectedModifiers.reduce((acc, m) => acc + (m.priceDelta || 0), 0);
     const unitPrice = product.basePrice + extraPrice;
-    const cartId = `${product.sku}-${selectedModifiers.map((m) => m.name).sort().join('_')}-${notes}`;
+    const cartId = `${product.sku}-${selectedModifiers.map((m) => m.name).sort((a, b) => a.localeCompare(b)).join('_')}-${notes}`;
 
     setCart((prev) => {
       const existing = prev.find((i) => i.cartId === cartId);
@@ -486,11 +501,9 @@ export const PosRegister: React.FC = () => {
 
   const holdOrder = () => {
     if (cart.length === 0) return;
-    const uuid = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-      ? crypto.randomUUID()
-      : `hold-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const holdId = generateSecureRandomId('HOLD');
     const newHold: HeldOrder = {
-      id: `HOLD-${uuid}`,
+      id: holdId,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       count: cart.reduce((acc, i) => acc + i.quantity, 0),
       total: cartCalculations.grandTotal,
@@ -509,11 +522,8 @@ export const PosRegister: React.FC = () => {
 
     let updatedHeld = heldOrders.filter((o) => o.id !== orderId);
     if (cart.length > 0) {
-      const autoUuid = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-        ? crypto.randomUUID()
-        : `hold-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
       const autoHeld: HeldOrder = {
-        id: `HOLD-${autoUuid}`,
+        id: generateSecureRandomId('HOLD'),
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         count: cart.reduce((acc, i) => acc + i.quantity, 0),
         total: cartCalculations.grandTotal,
@@ -591,7 +601,7 @@ export const PosRegister: React.FC = () => {
     setSubmitError(null);
 
     if (!idempotencyKeyRef.current) {
-      idempotencyKeyRef.current = `TX-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      idempotencyKeyRef.current = generateSecureRandomId('TX');
     }
 
     try {

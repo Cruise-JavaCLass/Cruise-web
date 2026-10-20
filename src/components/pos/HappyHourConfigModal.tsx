@@ -132,8 +132,9 @@ export const HappyHourConfigModal: React.FC<HappyHourConfigModalProps> = ({
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2">
-                <label className="text-[11px] font-semibold text-slate-400 block mb-1">Tên chương trình</label>
+                <label htmlFor="hh-rule-name" className="text-[11px] font-semibold text-slate-400 block mb-1">Tên chương trình</label>
                 <input
+                  id="hh-rule-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -144,8 +145,9 @@ export const HappyHourConfigModal: React.FC<HappyHourConfigModalProps> = ({
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-slate-400 block mb-1">Giờ bắt đầu (HH:mm)</label>
+                <label htmlFor="hh-rule-start-time" className="text-[11px] font-semibold text-slate-400 block mb-1">Giờ bắt đầu (HH:mm)</label>
                 <input
+                  id="hh-rule-start-time"
                   type="text"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
@@ -156,8 +158,9 @@ export const HappyHourConfigModal: React.FC<HappyHourConfigModalProps> = ({
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-slate-400 block mb-1">Giờ kết thúc (HH:mm)</label>
+                <label htmlFor="hh-rule-end-time" className="text-[11px] font-semibold text-slate-400 block mb-1">Giờ kết thúc (HH:mm)</label>
                 <input
+                  id="hh-rule-end-time"
                   type="text"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
@@ -168,21 +171,23 @@ export const HappyHourConfigModal: React.FC<HappyHourConfigModalProps> = ({
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-slate-400 block mb-1">Tỷ lệ giảm giá (%)</label>
+                <label htmlFor="hh-rule-discount-percent" className="text-[11px] font-semibold text-slate-400 block mb-1">Tỷ lệ giảm giá (%)</label>
                 <input
+                  id="hh-rule-discount-percent"
                   type="number"
                   min="1"
                   max="100"
                   value={discountPercent}
-                  onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
+                  onChange={(e) => setDiscountPercent(Number.parseFloat(e.target.value) || 0)}
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-slate-400 block mb-1">Áp dụng cho điểm bán</label>
+                <label htmlFor="hh-rule-target-outlet" className="text-[11px] font-semibold text-slate-400 block mb-1">Áp dụng cho điểm bán</label>
                 <select
+                  id="hh-rule-target-outlet"
                   value={targetOutletId || ''}
                   onChange={(e) => setTargetOutletId(e.target.value ? Number(e.target.value) : undefined)}
                   className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"

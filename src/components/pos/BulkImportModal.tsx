@@ -133,8 +133,8 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
             }
             let stock = 100;
             if (cols[6] !== undefined && cols[6].trim() !== '') {
-              const parsedStock = parseInt(cols[6].trim(), 10);
-              if (isNaN(parsedStock) || parsedStock < 0) {
+              const parsedStock = Number.parseInt(cols[6].trim(), 10);
+              if (Number.isNaN(parsedStock) || parsedStock < 0) {
                 throw new Error(`Dòng CSV #${i + 1}: Số lượng tồn kho không hợp lệ (${cols[6]}).`);
               }
               stock = parsedStock;
@@ -143,7 +143,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
               sku,
               name,
               basePrice: numPrice,
-              costPrice: cols[3] && Number.isFinite(Number(cols[3])) ? parseFloat(cols[3]) : undefined,
+              costPrice: cols[3] && Number.isFinite(Number(cols[3])) ? Number.parseFloat(cols[3]) : undefined,
               outletCode: cols[4] || undefined,
               categoryCode: cols[5] || undefined,
               stockQuantity: stock,
@@ -242,10 +242,11 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
 
           {/* Manifest Info */}
           <div>
-            <label className="text-xs font-semibold text-slate-400 block mb-1">
+            <label htmlFor="bulk-manifest-number" className="text-xs font-semibold text-slate-400 block mb-1">
               Số Vận Đơn Nhà Cung Cấp (Manifest Number)
             </label>
             <input
+              id="bulk-manifest-number"
               type="text"
               value={manifestNumber}
               onChange={(e) => setManifestNumber(e.target.value)}

@@ -44,6 +44,7 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
           categoryId: 1,
           categoryName: 'Đồ Uống',
           outletId: 1,
+          taxCategory: 'STANDARD_VAT',
           status: 'ACTIVE',
           isAvailable: true,
           is86ed: false,
@@ -54,8 +55,6 @@ describe('PosRegister Component Tests (KAN-234 & KAN-392)', () => {
       ],
       totalElements: 1,
       totalPages: 1,
-      size: 100,
-      number: 0,
     });
     vi.mocked(posCatalogService.calculatePricing).mockImplementation(async (req) => {
       const subtotal = req.items.reduce((sum, item) => sum + 14.5 * item.quantity, 0);
