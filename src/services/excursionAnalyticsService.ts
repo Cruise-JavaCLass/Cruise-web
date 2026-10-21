@@ -76,7 +76,7 @@ export interface FleetOccupancyAnalyticsResponse {
 }
 
 export interface ProviderScorecard {
-  providerId?: string;
+  providerId: string;
   providerName: string;
   totalExcursions: number;
   totalReviews: number;

@@ -80,21 +80,32 @@ describe('Shore Excursion Analytics UI Suite (KAN-347)', () => {
     excursions: [],
   };
 
-  const mockReviews: analyticsService.ExcursionReview[] = [
-    {
-      id: 101,
-      excursionId: 1,
-      passengerId: 501,
-      ratingOverall: 1,
-      ratingGuide: 2,
-      ratingBus: 1,
-      ratingValue: 1,
-      comments: 'Xe phóng nhanh vượt ẩu, rất nguy hiểm!',
-      isFlagged: true,
-      flagReason: 'Đánh giá tiêu cực mức độ cao (1 sao)',
-      createdAt: '2026-10-21T10:00:00Z',
-    },
-  ];
+  const mockFlaggedReview: analyticsService.ExcursionReview = {
+    id: 101,
+    excursionId: 1,
+    passengerId: 501,
+    ratingOverall: 1,
+    ratingGuide: 2,
+    ratingBus: 1,
+    ratingValue: 1,
+    comments: 'Xe phóng nhanh vượt ẩu, rất nguy hiểm!',
+    isFlagged: true,
+    flagReason: 'Đánh giá tiêu cực mức độ cao (1 sao)',
+    createdAt: '2026-10-21T10:00:00Z',
+  };
+
+  const mockGeneralReview: analyticsService.ExcursionReview = {
+    id: 102,
+    excursionId: 2,
+    passengerId: 502,
+    ratingOverall: 5,
+    ratingGuide: 5,
+    ratingBus: 5,
+    ratingValue: 5,
+    comments: 'Trải nghiệm ngắm hoàng hôn tuyệt đẹp trên vịnh!',
+    isFlagged: false,
+    createdAt: '2026-10-21T11:00:00Z',
+  };
 
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -111,7 +122,7 @@ describe('Shore Excursion Analytics UI Suite (KAN-347)', () => {
   });
 
   it('renders GuestReviewFeed with flagged negative reviews', async () => {
-    vi.spyOn(analyticsService, 'getFlaggedReviews').mockResolvedValue(mockReviews);
+    vi.spyOn(analyticsService, 'getFlaggedReviews').mockResolvedValue([mockFlaggedReview]);
 
     render(<GuestReviewFeed />);
 
@@ -121,7 +132,7 @@ describe('Shore Excursion Analytics UI Suite (KAN-347)', () => {
     });
   });
 
-  it('renders GuideRatingMatrix and classifies provider performance tiers', () => {
+  it('renders GuideRatingMatrix with stable providerId and classifies performance tiers', () => {
     render(<GuideRatingMatrix kpi={mockKpi} />);
 
     expect(screen.getByText('Halong Heritage Tours')).toBeInTheDocument();
@@ -135,9 +146,10 @@ describe('Shore Excursion Analytics UI Suite (KAN-347)', () => {
   it('switches tabs smoothly on ExcursionAnalyticsDashboard and fetches all reviews', async () => {
     vi.spyOn(analyticsService, 'getExcursionOpsKpi').mockResolvedValue(mockKpi);
     vi.spyOn(analyticsService, 'getFleetOccupancyAnalytics').mockResolvedValue(mockFleet);
-    vi.spyOn(analyticsService, 'getFlaggedReviews').mockResolvedValue(mockReviews);
-    vi.spyOn(analyticsService, 'getAllExcursionReviews').mockResolvedValue({
-      content: mockReviews,
+    vi.spyOn(analyticsService, 'getFlaggedReviews').mockResolvedValue([mockFlaggedReview]);
+
+    const getAllSpy = vi.spyOn(analyticsService, 'getAllExcursionReviews').mockResolvedValue({
+      content: [mockGeneralReview],
       totalElements: 1,
       totalPages: 1,
     });
@@ -154,13 +166,15 @@ describe('Shore Excursion Analytics UI Suite (KAN-347)', () => {
 
     await waitFor(() => {
       expect(screen.getByText('CẢNH BÁO KHẨN')).toBeInTheDocument();
+      expect(screen.getByText(/Xe phóng nhanh vượt ẩu/)).toBeInTheDocument();
     });
 
     const allFilterBtn = screen.getByRole('button', { name: /Tất Cả Đánh Giá/i });
     fireEvent.click(allFilterBtn);
 
     await waitFor(() => {
-      expect(screen.getByText(/Hiển thị/)).toBeInTheDocument();
+      expect(getAllSpy).toHaveBeenCalledWith(0, 10, expect.any(AbortSignal));
+      expect(screen.getByText(/Trải nghiệm ngắm hoàng hôn tuyệt đẹp trên vịnh!/)).toBeInTheDocument();
     });
 
     const scorecardsTab = screen.getByRole('button', { name: /Đối Tác & Hướng Dẫn Viên/i });

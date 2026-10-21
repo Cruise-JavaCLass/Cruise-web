@@ -67,9 +67,8 @@ export const GuideRatingMatrix: React.FC<Props> = ({ kpi }) => {
             <tbody className="divide-y divide-slate-700/60">
               {kpi?.providerScorecards && kpi.providerScorecards.length > 0 ? (
                 kpi.providerScorecards.map((p) => {
-                  const uniqueKey = p.providerId || p.providerName.toLowerCase().replace(/\s+/g, '-');
                   return (
-                    <tr key={uniqueKey} className="hover:bg-slate-700/30 transition">
+                    <tr key={p.providerId} className="hover:bg-slate-700/30 transition">
                       <td className="py-3.5 px-4 font-medium text-white">{p.providerName}</td>
                       <td className="py-3.5 px-4">{p.totalExcursions}</td>
                       <td className="py-3.5 px-4">{p.totalReviews}</td>
