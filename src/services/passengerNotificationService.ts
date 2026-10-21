@@ -74,7 +74,10 @@ export const passengerNotificationService = {
     const response = await apiClient.post<{ data: PassengerNotificationDto }>(
       `/api/passengers/${passengerId}/notifications/${notificationId}/read`
     );
-    return response.data?.data;
+    if (!response.data?.data) {
+      throw new Error('Không nhận được dữ liệu phản hồi khi đánh dấu đã đọc');
+    }
+    return response.data.data;
   },
 
   markAllAsRead: async (passengerId: number): Promise<void> => {
@@ -89,7 +92,10 @@ export const passengerNotificationService = {
       `/api/activities/${activityId}/feedback`,
       feedback
     );
-    return response.data?.data;
+    if (!response.data?.data) {
+      throw new Error('Không nhận được dữ liệu phản hồi khi gửi đánh giá');
+    }
+    return response.data.data;
   },
 
   getActivityFeedbacks: async (activityId: number): Promise<ActivityFeedbackResponse[]> => {
@@ -103,6 +109,9 @@ export const passengerNotificationService = {
     const response = await apiClient.get<{ data: ActivityCsatSummaryDto }>(
       `/api/activities/${activityId}/feedback/summary`
     );
-    return response.data?.data;
+    if (!response.data?.data) {
+      throw new Error('Không nhận được dữ liệu thống kê CSAT của hoạt động');
+    }
+    return response.data.data;
   },
 };

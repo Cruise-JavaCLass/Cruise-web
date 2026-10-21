@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Star,
   X,
@@ -41,14 +41,18 @@ export const ActivityFeedbackModal: React.FC<ActivityFeedbackModalProps> = ({
   const [submittedResponse, setSubmittedResponse] = useState<ActivityFeedbackResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const isSubmittingRef = useRef<boolean>(false);
+  const idempotencyKeyRef = useRef<string>(`FEEDBACK-${activityId}-${passengerId}-${Date.now()}`);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
     setError(null);
 
-    const idempotencyKey = `FEEDBACK-${activityId}-${passengerId}-${Date.now()}`;
     const payload: ActivityFeedbackRequest = {
       passengerId,
       rating,
@@ -56,7 +60,7 @@ export const ActivityFeedbackModal: React.FC<ActivityFeedbackModalProps> = ({
       guideRating,
       valueRating,
       comments: comments.trim() ? comments.trim() : undefined,
-      idempotencyKey,
+      idempotencyKey: idempotencyKeyRef.current,
     };
 
     try {
@@ -69,6 +73,7 @@ export const ActivityFeedbackModal: React.FC<ActivityFeedbackModalProps> = ({
     } catch {
       setError('Không thể gửi đánh giá. Vui lòng kiểm tra lại kết nối và thử lại.');
     } finally {
+      isSubmittingRef.current = false;
       setIsSubmitting(false);
     }
   };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Bell,
   X,
@@ -38,8 +38,10 @@ export const NotificationCenterDrawer: React.FC<NotificationCenterDrawerProps> =
   const [activeCategory, setActiveCategory] = useState<NotificationCategory | 'ALL'>('ALL');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const requestSeqRef = useRef<number>(0);
 
   const loadData = useCallback(async () => {
+    const currentSeq = ++requestSeqRef.current;
     setIsLoading(true);
     setError(null);
     try {
@@ -48,12 +50,16 @@ export const NotificationCenterDrawer: React.FC<NotificationCenterDrawerProps> =
         passengerNotificationService.getNotifications(passengerId, catParam),
         passengerNotificationService.getNotificationSummary(passengerId),
       ]);
+      if (currentSeq !== requestSeqRef.current) return;
       setNotifications(list);
       setSummary(sum);
-    } catch (err: unknown) {
+    } catch {
+      if (currentSeq !== requestSeqRef.current) return;
       setError('Không thể tải danh sách thông báo. Vui lòng thử lại sau.');
     } finally {
-      setIsLoading(false);
+      if (currentSeq === requestSeqRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [passengerId, activeCategory]);
 
@@ -64,17 +70,21 @@ export const NotificationCenterDrawer: React.FC<NotificationCenterDrawerProps> =
   }, [isOpen, loadData]);
 
   const handleMarkAsRead = async (notifId: number) => {
+    const target = notifications.find((n) => n.id === notifId);
+    const wasUnread = target && !target.isRead;
     try {
       await passengerNotificationService.markAsRead(passengerId, notifId);
       setNotifications((prev) =>
         prev.map((n) => (n.id === notifId ? { ...n, isRead: true } : n))
       );
-      setSummary((prev) => ({
-        ...prev,
-        totalUnread: Math.max(0, prev.totalUnread - 1),
-      }));
+      if (wasUnread) {
+        setSummary((prev) => ({
+          ...prev,
+          totalUnread: Math.max(0, prev.totalUnread - 1),
+        }));
+      }
     } catch {
-      // ignore
+      setError('Không thể đánh dấu đã đọc. Vui lòng thử lại.');
     }
   };
 
@@ -89,7 +99,7 @@ export const NotificationCenterDrawer: React.FC<NotificationCenterDrawerProps> =
         unreadByCategory: {},
       }));
     } catch {
-      // ignore
+      setError('Không thể đánh dấu đọc tất cả. Vui lòng thử lại.');
     }
   };
 

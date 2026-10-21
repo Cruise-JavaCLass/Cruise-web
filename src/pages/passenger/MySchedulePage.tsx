@@ -131,8 +131,11 @@ export const MySchedulePage: React.FC = () => {
 
   useEffect(() => {
     loadSchedule();
+  }, [loadSchedule]);
+
+  useEffect(() => {
     loadNotificationsSummary();
-  }, [loadSchedule, loadNotificationsSummary]);
+  }, [loadNotificationsSummary]);
 
   const handleDayChange = (day: number | undefined) => {
     setSelectedDay(day);
