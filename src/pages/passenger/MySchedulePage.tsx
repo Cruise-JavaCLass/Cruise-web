@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Compass,
   ArrowLeft,
+  Bell,
 } from 'lucide-react';
 import {
   passengerScheduleService,
@@ -21,6 +22,9 @@ import {
 import { ConflictAlertBanner } from '../../components/passenger/ConflictAlertBanner';
 import { MyScheduleTimeline } from '../../components/passenger/MyScheduleTimeline';
 import { ActivityPassModal } from '../../components/activities/ActivityPassModal';
+import { NotificationCenterDrawer } from '../../components/passenger/NotificationCenterDrawer';
+import { ActivityFeedbackModal } from '../../components/passenger/ActivityFeedbackModal';
+import { passengerNotificationService } from '../../services/passengerNotificationService';
 import { resolvePassengerId } from '../../services/passengerIdentity';
 
 export const MySchedulePage: React.FC = () => {
@@ -50,6 +54,13 @@ export const MySchedulePage: React.FC = () => {
   // Pass Modal State
   const [selectedPassItem, setSelectedPassItem] = useState<PersonalScheduleItem | null>(null);
 
+  // Notification Drawer & Badge State (KAN-366)
+  const [isNotificationOpen, setIsNotificationOpen] = useState<boolean>(false);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState<number>(0);
+
+  // Post-Activity Feedback Modal State (KAN-367)
+  const [ratingItem, setRatingItem] = useState<PersonalScheduleItem | null>(null);
+
   // Sync online / offline status
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
@@ -73,6 +84,15 @@ export const MySchedulePage: React.FC = () => {
       ? date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
       : isoString;
   };
+
+  const loadNotificationsSummary = useCallback(async () => {
+    try {
+      const summary = await passengerNotificationService.getNotificationSummary(passengerId);
+      setUnreadNotificationCount(summary.totalUnread || 0);
+    } catch {
+      // ignore
+    }
+  }, [passengerId]);
 
   const loadSchedule = useCallback(async () => {
     const currentSeq = ++requestSeqRef.current;
@@ -111,7 +131,8 @@ export const MySchedulePage: React.FC = () => {
 
   useEffect(() => {
     loadSchedule();
-  }, [loadSchedule]);
+    loadNotificationsSummary();
+  }, [loadSchedule, loadNotificationsSummary]);
 
   const handleDayChange = (day: number | undefined) => {
     setSelectedDay(day);
@@ -145,23 +166,26 @@ export const MySchedulePage: React.FC = () => {
       {/* Top Banner Navigation & Breadcrumb */}
       <div className="max-w-6xl mx-auto mb-8">
         <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/10">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <button
               type="button"
-              onClick={() => navigate('/passenger-home')}
-              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all"
-              aria-label="Quay lại trang chủ hành khách"
+              onClick={() => navigate('/passenger')}
+              className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all hover:scale-105"
+              aria-label="Quay lại trang chính"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-display font-bold text-xl sm:text-2xl text-white tracking-wide uppercase">
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
                   Lịch Trình Cá Nhân (My Day)
-                </span>
+                </h1>
                 {isOffline && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
-                    <WifiOff className="w-3 h-3" />
+                  <span
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 border border-amber-500/30 text-amber-400"
+                    title="Đang xem dữ liệu lưu trong bộ nhớ thiết bị"
+                  >
+                    <WifiOff className="w-3.5 h-3.5" />
                     <span>Ngoại tuyến {lastUpdated && `• Cập nhật ${lastUpdated}`}</span>
                   </span>
                 )}
@@ -175,6 +199,25 @@ export const MySchedulePage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Notification Bell with Badge (KAN-366) */}
+            <button
+              type="button"
+              data-testid="notification-bell-btn"
+              onClick={() => setIsNotificationOpen(true)}
+              className="relative p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all"
+              title="Mở trung tâm thông báo"
+            >
+              <Bell className="w-4 h-4 text-cyan-400" />
+              {unreadNotificationCount > 0 && (
+                <span
+                  data-testid="header-unread-counter"
+                  className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center px-1 border-2 border-black"
+                >
+                  {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
+                </span>
+              )}
+            </button>
+
             <button
               type="button"
               onClick={loadSchedule}
@@ -327,6 +370,7 @@ export const MySchedulePage: React.FC = () => {
               items={items}
               onOpenPass={(item) => setSelectedPassItem(item)}
               onBrowseCatalog={() => navigate('/catalog')}
+              onRateActivity={(item) => setRatingItem(item)}
             />
           )}
         </div>
@@ -340,6 +384,34 @@ export const MySchedulePage: React.FC = () => {
           activityId={selectedPassItem.eventId}
           passengerId={selectedPassItem.passengerId}
           activityTitle={selectedPassItem.title}
+        />
+      )}
+
+      {/* In-App Notification Center Drawer (KAN-366) */}
+      <NotificationCenterDrawer
+        passengerId={passengerId}
+        isOpen={isNotificationOpen}
+        onClose={() => {
+          setIsNotificationOpen(false);
+          loadNotificationsSummary();
+        }}
+        onNavigate={(url) => {
+          setIsNotificationOpen(false);
+          navigate(url);
+        }}
+      />
+
+      {/* Post-Activity CSAT Feedback Modal (KAN-367) */}
+      {ratingItem && (
+        <ActivityFeedbackModal
+          isOpen={true}
+          activityId={ratingItem.eventId}
+          activityTitle={ratingItem.title}
+          passengerId={ratingItem.passengerId}
+          onClose={() => setRatingItem(null)}
+          onSuccess={() => {
+            // Callback when rating is completed
+          }}
         />
       )}
     </div>
