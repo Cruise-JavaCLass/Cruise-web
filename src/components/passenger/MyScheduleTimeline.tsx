@@ -9,6 +9,7 @@ import {
   ShieldAlert,
   ChevronRight,
   Calendar,
+  Star,
 } from 'lucide-react';
 import type { PersonalScheduleItem } from '../../services/passengerScheduleService';
 
@@ -16,12 +17,14 @@ interface MyScheduleTimelineProps {
   items: PersonalScheduleItem[];
   onOpenPass: (item: PersonalScheduleItem) => void;
   onBrowseCatalog?: () => void;
+  onRateActivity?: (item: PersonalScheduleItem) => void;
 }
 
 export const MyScheduleTimeline: React.FC<MyScheduleTimelineProps> = ({
   items,
   onOpenPass,
   onBrowseCatalog,
+  onRateActivity,
 }) => {
   if (!items || items.length === 0) {
     return (
@@ -198,18 +201,34 @@ export const MyScheduleTimeline: React.FC<MyScheduleTimelineProps> = ({
                 )}
               </div>
 
-              {/* Show Pass button (KAN-353) */}
-              {item.status !== 'CANCELLED' && (
-                <button
-                  type="button"
-                  onClick={() => onOpenPass(item)}
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 hover:text-cyan-200 text-xs font-semibold shadow-sm transition-all hover:scale-105"
-                  aria-label={`Xem thẻ QR cho ${item.title}`}
-                >
-                  <QrCode className="w-3.5 h-3.5" />
-                  <span>Xem vé QR</span>
-                </button>
-              )}
+              <div className="flex items-center gap-2">
+                {/* Rate Activity button for COMPLETED items (KAN-367) */}
+                {item.status === 'COMPLETED' && onRateActivity && (
+                  <button
+                    type="button"
+                    onClick={() => onRateActivity(item)}
+                    data-testid={`rate-activity-btn-${item.eventId}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:text-amber-200 text-xs font-semibold shadow-sm transition-all hover:scale-105"
+                    aria-label={`Đánh giá trải nghiệm cho ${item.title}`}
+                  >
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    <span>Đánh giá trải nghiệm</span>
+                  </button>
+                )}
+
+                {/* Show Pass button (KAN-353) */}
+                {item.status !== 'CANCELLED' && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenPass(item)}
+                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 hover:text-cyan-200 text-xs font-semibold shadow-sm transition-all hover:scale-105"
+                    aria-label={`Xem thẻ QR cho ${item.title}`}
+                  >
+                    <QrCode className="w-3.5 h-3.5" />
+                    <span>Xem vé QR</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         );
