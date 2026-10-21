@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
 import { MainLayout } from './layouts/MainLayout';
 import { DashboardPage } from './pages/DashboardPage';
-import { ItineraryPage } from './pages/ItineraryPage';
+import { ActivitiesPage } from './pages/ActivitiesPage';
 import { ExcursionsPage } from './pages/ExcursionsPage';
 import { ExcursionDetailPage } from './pages/ExcursionDetailPage';
-import { ActivitiesPage } from './pages/ActivitiesPage';
 import { ActivityDetailPage } from './pages/ActivityDetailPage';
 import { PosPage } from './pages/PosPage';
+import { ItineraryPage } from './pages/ItineraryPage';
 import { PassengersPage } from './pages/PassengersPage';
 import { SettlementPage } from './pages/SettlementPage';
 import { PassengerCatalogPage } from './pages/PassengerCatalogPage';
@@ -15,6 +15,8 @@ import { ShipDetailPage } from './pages/ShipDetailPage';
 import { PassengerHomePage } from './pages/PassengerHomePage';
 import { ExcursionAttendancePage } from './pages/ExcursionAttendancePage';
 import { ExcursionAnalyticsDashboard } from './pages/ExcursionAnalyticsDashboard';
+import { PassengerExcursionPassPage } from './pages/PassengerExcursionPassPage';
+import { ExcursionDispatcherDashboard } from './pages/ExcursionDispatcherDashboard';
 import { ActivityAttendancePage } from './pages/ActivityAttendancePage';
 import { ActivityRosterPage } from './pages/ActivityRosterPage';
 import { MySchedulePage } from './pages/MySchedulePage';
@@ -37,6 +39,8 @@ export function App() {
         <Route path="itinerary" element={<ItineraryPage />} />
         <Route path="excursions" element={<ExcursionsPage />} />
         <Route path="excursions/:id" element={<ExcursionDetailPage />} />
+        <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />
+        <Route path="excursion-dispatcher" element={<ExcursionDispatcherDashboard />} />
         <Route path="excursion-attendance" element={<ExcursionAttendancePage />} />
         <Route path="excursion-analytics" element={<ExcursionAnalyticsDashboard />} />
         <Route path="activities" element={<ActivitiesPage />} />
@@ -57,3 +61,4 @@ export function App() {
 }
 
 export default App;
+
