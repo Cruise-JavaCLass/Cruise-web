@@ -88,7 +88,9 @@ describe('SyncControlPanel & Retry Logic Tests (KAN-257 & KAN-258)', () => {
       items: [{ itemCode: 'ITEM-2', itemName: 'Juice', quantity: 1, unitPrice: 15 }],
     });
 
-    vi.mocked(posService.syncOfflineBatch).mockRejectedValue(new Error('Network Connection Refused'));
+    vi.mocked(posService.syncOfflineBatch).mockRejectedValue(
+      new Error('Network Connection Refused')
+    );
 
     render(<SyncControlPanel />);
 
@@ -106,5 +108,48 @@ describe('SyncControlPanel & Retry Logic Tests (KAN-257 & KAN-258)', () => {
     expect(posService.syncOfflineBatch).toHaveBeenCalledTimes(3);
     // Queue is kept intact on failure
     expect(screen.getByText('1 GD')).toBeInTheDocument();
+  });
+
+  it('rethrows StoragePersistenceError immediately without retrying batch on local storage failure', async () => {
+    const user = userEvent.setup();
+    offlineSyncManager.enqueueTransaction({
+      transactionUuid: 'TX-STORE-FAIL-001',
+      stationId: 'BAR-DECK-9',
+      cashierId: 'CASHIER-1',
+      subtotal: 50,
+      paymentMethod: 'CASH',
+      items: [{ itemCode: 'ITEM-3', itemName: 'Wine', quantity: 1, unitPrice: 50 }],
+    });
+
+    vi.mocked(posService.syncOfflineBatch).mockResolvedValueOnce({
+      deviceId: 'POS-TERMINAL-DECK-9',
+      totalReceived: 1,
+      successfullyProcessed: 1,
+      duplicateCount: 0,
+      failedCount: 0,
+      processedUuids: ['TX-STORE-FAIL-001'],
+      failedReasons: [],
+    });
+
+    // Mock localStorage.setItem failure
+    const originalSetItem = localStorage.setItem;
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+
+    try {
+      render(<SyncControlPanel />);
+      const syncBtn = screen.getByRole('button', { name: /Đồng Bộ Thủ Công Ngay/i });
+      await user.click(syncBtn);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Không thể lưu trữ trạng thái hàng đợi/i)).toBeInTheDocument();
+      });
+
+      // Verify batch request was NOT retried (only called 1 time)
+      expect(posService.syncOfflineBatch).toHaveBeenCalledTimes(1);
+    } finally {
+      Storage.prototype.setItem = originalSetItem;
+    }
   });
 });

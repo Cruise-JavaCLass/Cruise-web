@@ -25,6 +25,15 @@ export interface SyncHistoryLog {
 const STORAGE_PENDING_TX = 'CRUISE_POS_OFFLINE_QUEUE';
 const STORAGE_SYNC_HISTORY = 'CRUISE_POS_SYNC_HISTORY';
 
+export class StoragePersistenceError extends Error {
+  constructor(
+    message: string = 'Không thể lưu trữ trạng thái hàng đợi ngoại tuyến vào bộ nhớ cục bộ.'
+  ) {
+    super(message);
+    this.name = 'StoragePersistenceError';
+  }
+}
+
 function safeStorageSet(key: string, value: string): boolean {
   try {
     localStorage.setItem(key, value);
@@ -175,7 +184,10 @@ export const offlineSyncManager = {
           const updatedQueue = this.getPendingQueue().filter(
             (q) => !completedUuids.has(q.id) && !completedUuids.has(q.payload?.transactionUuid)
           );
-          safeStorageSet(STORAGE_PENDING_TX, JSON.stringify(updatedQueue));
+          const saved = safeStorageSet(STORAGE_PENDING_TX, JSON.stringify(updatedQueue));
+          if (!saved) {
+            throw new StoragePersistenceError();
+          }
         }
 
         const status =
@@ -196,6 +208,9 @@ export const offlineSyncManager = {
 
         return response;
       } catch (err: any) {
+        if (err instanceof StoragePersistenceError) {
+          throw err;
+        }
         lastError = err;
         if (attempt < maxRetries) {
           const delay = baseDelayMs * 2 ** (attempt - 1);
