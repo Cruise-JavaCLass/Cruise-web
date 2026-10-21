@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PosPage } from './PosPage';
 import { posService } from '../services/posService';
+import { reconciliationService } from '../services/reconciliationService';
 
 vi.mock('../services/posService', () => ({
   posService: {
@@ -15,9 +16,34 @@ vi.mock('../services/posService', () => ({
   },
 }));
 
+vi.mock('../services/reconciliationService', () => ({
+  reconciliationService: {
+    getSummaryMetrics: vi.fn(),
+    getDiscrepancies: vi.fn(),
+    getDisputes: vi.fn(),
+  },
+}));
+
 describe('PosPage Component Tests (KAN-234, KAN-391, KAN-392)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.mocked(reconciliationService.getSummaryMetrics).mockResolvedValue({
+      totalReconciledAmount: 0,
+      totalDisputedAmount: 0,
+      totalVarianceAmount: 0,
+      totalTransactionsCount: 0,
+      openDisputesCount: 0,
+      resolvedDisputesCount: 0,
+      pendingDiscrepanciesCount: 0,
+      discrepancyRatePercent: 0,
+      criticalAlertActive: false,
+      alertMessage: '',
+      generatedAt: new Date().toISOString(),
+    });
+    vi.mocked(reconciliationService.getDiscrepancies).mockResolvedValue([]);
+    vi.mocked(reconciliationService.getDisputes).mockResolvedValue([]);
+
     vi.mocked(posService.getActiveShift).mockResolvedValue({
       id: 1,
       stationId: 'BAR-DECK-9',
