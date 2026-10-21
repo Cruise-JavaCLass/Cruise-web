@@ -4,7 +4,7 @@ import {
   getExcursionReviews,
   type ExcursionReview,
 } from '../../services/excursionAnalyticsService';
-import { Star, AlertTriangle, ShieldAlert, CheckCircle2, MessageSquare, Filter } from 'lucide-react';
+import { AlertTriangle, ShieldAlert, CheckCircle2, MessageSquare, Filter } from 'lucide-react';
 
 export const GuestReviewFeed: React.FC = () => {
   const [filterMode, setFilterMode] = useState<'all' | 'flagged'>('flagged');

@@ -4,10 +4,10 @@ import {
   getExcursionOpsKpi,
   type FleetOccupancyAnalyticsResponse,
   type ExcursionOpsKpi,
-} from '../../services/excursionAnalyticsService';
-import { FleetOccupancyChart } from '../../components/excursions/FleetOccupancyChart';
-import { GuestReviewFeed } from '../../components/excursions/GuestReviewFeed';
-import { GuideRatingMatrix } from '../../components/excursions/GuideRatingMatrix';
+} from '../services/excursionAnalyticsService';
+import { FleetOccupancyChart } from '../components/excursions/FleetOccupancyChart';
+import { GuestReviewFeed } from '../components/excursions/GuestReviewFeed';
+import { GuideRatingMatrix } from '../components/excursions/GuideRatingMatrix';
 import { BarChart3, MessageSquare, Award, RefreshCw, AlertCircle } from 'lucide-react';
 
 export const ExcursionAnalyticsDashboard: React.FC = () => {
