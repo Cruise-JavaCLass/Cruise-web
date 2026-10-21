@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
 import {
-  RefreshCw,
+  AlertCircle,
+  CheckCircle2,
   Clock,
   Database,
-  CheckCircle2,
-  AlertCircle,
-  Trash2,
   Radio,
+  RefreshCw,
   Server,
+  Trash2,
   Zap,
 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import {
-  offlineSyncManager,
   type OfflinePendingTransaction,
+  offlineSyncManager,
   type SyncHistoryLog,
 } from '../../services/offlineSyncService';
 
@@ -24,9 +24,11 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
   const [queue, setQueue] = useState<OfflinePendingTransaction[]>([]);
   const [history, setHistory] = useState<SyncHistoryLog[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [syncStatusMsg, setSyncStatusMsg] = useState<{ text: string; isError: boolean } | null>(null);
+  const [syncStatusMsg, setSyncStatusMsg] = useState<{ text: string; isError: boolean } | null>(
+    null
+  );
   const [filterMode, setFilterMode] = useState<'ALL' | 'FAILED' | 'SUCCESS'>('ALL');
-// auto retry configuration
+  // auto retry configuration
 
   const reloadData = () => {
     setQueue(offlineSyncManager.getPendingQueue());
@@ -42,8 +44,9 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
     setSyncStatusMsg(null);
     try {
       const res = await offlineSyncManager.syncBatchWithRetry('POS-TERMINAL-DECK-9', 3, 300);
+      const prefix = res.failedCount > 0 ? 'Đồng bộ có lỗi xảy ra!' : 'Đồng bộ thành công!';
       setSyncStatusMsg({
-        text: `Đồng bộ thành công! Đã xử lý ${res.successfullyProcessed} GD, trùng lặp: ${res.duplicateCount}, lỗi: ${res.failedCount}.`,
+        text: `${prefix} Đã xử lý ${res.successfullyProcessed} GD, trùng lặp: ${res.duplicateCount}, lỗi: ${res.failedCount}.`,
         isError: res.failedCount > 0,
       });
       reloadData();
@@ -73,8 +76,11 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
   };
 
   const handleCreateMockOfflineTx = () => {
+    const randomSuffix = window.crypto?.randomUUID
+      ? window.crypto.randomUUID().slice(0, 4).toUpperCase()
+      : Date.now().toString(36).slice(-4).toUpperCase();
     const mockTx = {
-      transactionUuid: `TX-OFFLINE-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+      transactionUuid: `TX-OFFLINE-${Date.now()}-${randomSuffix}`,
       stationId: 'BAR-DECK-9',
       cashierId: 'CASHIER-OFFLINE',
       cabinNumber: 'CABIN-7012',
@@ -133,7 +139,7 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
           <div>
             <span className="text-xs text-slate-400 font-medium">Chiến Lược Thử Lại (Retry)</span>
             <div className="text-sm font-bold text-emerald-400 mt-1">Exponential Backoff</div>
-            <span className="text-[11px] text-slate-500">3 Lần thử (500ms → 1s → 2s)</span>
+            <span className="text-[11px] text-slate-500">3 Lần thử (300ms → 600ms)</span>
           </div>
           <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
             <Zap className="w-6 h-6" />
@@ -172,8 +178,7 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
             className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
             title="Thêm một đơn hàng mẫu vào hàng đợi ngoại tuyến để kiểm thử"
           >
-            <Radio className="w-3.5 h-3.5 text-amber-400" />
-            + Giả Lập Giao Dịch Offline
+            <Radio className="w-3.5 h-3.5 text-amber-400" />+ Giả Lập Giao Dịch Offline
           </button>
         </div>
 
@@ -243,10 +248,15 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
               </div>
             ) : (
               queue.map((item) => (
-                <div key={item.id} className="p-3.5 hover:bg-slate-800/40 transition-colors flex items-center justify-between gap-3 text-xs">
+                <div
+                  key={item.id}
+                  className="p-3.5 hover:bg-slate-800/40 transition-colors flex items-center justify-between gap-3 text-xs"
+                >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-amber-400 text-[11px]">{item.payload?.transactionUuid || item.id}</span>
+                      <span className="font-mono font-bold text-amber-400 text-[11px]">
+                        {item.payload?.transactionUuid || item.id}
+                      </span>
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
                         {item.payload?.paymentMethod || 'CABIN_FOLIO'}
                       </span>
@@ -318,7 +328,10 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
               </div>
             ) : (
               filteredHistory.map((log) => (
-                <div key={log.id} className="p-3.5 hover:bg-slate-800/40 transition-colors space-y-1.5 text-xs">
+                <div
+                  key={log.id}
+                  className="p-3.5 hover:bg-slate-800/40 transition-colors space-y-1.5 text-xs"
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span
@@ -326,18 +339,20 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
                           log.status === 'SUCCESS'
                             ? 'bg-emerald-400'
                             : log.status === 'PARTIAL'
-                            ? 'bg-amber-400'
-                            : 'bg-rose-400'
+                              ? 'bg-amber-400'
+                              : 'bg-rose-400'
                         }`}
                       ></span>
-                      <span className="font-mono text-[11px] text-slate-300 font-bold">{log.id}</span>
+                      <span className="font-mono text-[11px] text-slate-300 font-bold">
+                        {log.id}
+                      </span>
                       <span
                         className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${
                           log.status === 'SUCCESS'
                             ? 'bg-emerald-500/10 text-emerald-400'
                             : log.status === 'PARTIAL'
-                            ? 'bg-amber-500/10 text-amber-400'
-                            : 'bg-rose-500/10 text-rose-400'
+                              ? 'bg-amber-500/10 text-amber-400'
+                              : 'bg-rose-500/10 text-rose-400'
                         }`}
                       >
                         {log.status}
@@ -349,16 +364,27 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
                   </div>
 
                   <div className="grid grid-cols-4 gap-1 text-[11px] text-slate-400 pt-1">
-                    <div>Tổng: <strong className="text-white">{log.totalReceived}</strong></div>
-                    <div>Đã nạp: <strong className="text-emerald-400">{log.successfullyProcessed}</strong></div>
-                    <div>Trùng: <strong className="text-cyan-400">{log.duplicateCount}</strong></div>
-                    <div>Lỗi: <strong className="text-rose-400">{log.failedCount}</strong></div>
+                    <div>
+                      Tổng: <strong className="text-white">{log.totalReceived}</strong>
+                    </div>
+                    <div>
+                      Đã nạp:{' '}
+                      <strong className="text-emerald-400">{log.successfullyProcessed}</strong>
+                    </div>
+                    <div>
+                      Trùng: <strong className="text-cyan-400">{log.duplicateCount}</strong>
+                    </div>
+                    <div>
+                      Lỗi: <strong className="text-rose-400">{log.failedCount}</strong>
+                    </div>
                   </div>
 
                   {log.failedReasons && log.failedReasons.length > 0 && (
                     <div className="mt-1 p-2 rounded bg-rose-500/10 border border-rose-500/20 text-[10px] text-rose-300 space-y-0.5">
                       {log.failedReasons.map((reason, idx) => (
-                        <div key={idx} className="truncate">• {reason}</div>
+                        <div key={idx} className="truncate">
+                          • {reason}
+                        </div>
                       ))}
                     </div>
                   )}
