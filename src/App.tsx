@@ -14,6 +14,7 @@ import { ShipsPage } from './pages/ShipsPage';
 import { ShipDetailPage } from './pages/ShipDetailPage';
 import { PassengerHomePage } from './pages/PassengerHomePage';
 import { ExcursionAttendancePage } from './pages/ExcursionAttendancePage';
+import { ExcursionAnalyticsDashboard } from './pages/ExcursionAnalyticsDashboard';
 import { ActivityAttendancePage } from './pages/ActivityAttendancePage';
 import { ActivityRosterPage } from './pages/ActivityRosterPage';
 import { MySchedulePage } from './pages/MySchedulePage';
@@ -34,6 +35,7 @@ export function App() {
         <Route path="excursions" element={<ExcursionsPage />} />
         <Route path="excursions/:id" element={<ExcursionDetailPage />} />
         <Route path="excursion-attendance" element={<ExcursionAttendancePage />} />
+        <Route path="excursion-analytics" element={<ExcursionAnalyticsDashboard />} />
         <Route path="activities" element={<ActivitiesPage />} />
         <Route path="activities/:id" element={<ActivityDetailPage />} />
         <Route path="activities/:id/attendance" element={<ActivityAttendancePage />} />
