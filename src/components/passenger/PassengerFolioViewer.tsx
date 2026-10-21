@@ -127,7 +127,7 @@ export const PassengerFolioViewer: React.FC<PassengerFolioViewerProps> = ({
 
         <div className="flex items-center gap-4 flex-wrap sm:flex-nowrap">
           <div className="flex items-baseline gap-2 bg-white/[0.03] border border-white/5 px-4 py-2.5 rounded-2xl">
-            <span className="text-xs text-slate-400">Tổng dư nợ tạm tính:</span>
+            <span className="text-xs text-slate-400">Tổng chi tiêu:</span>
             <span className="text-lg font-black font-mono text-emerald-400">
               ${totalSpent.toFixed(2)} USD
             </span>
