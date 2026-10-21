@@ -13,6 +13,7 @@ export type ExcursionCategory =
 
 export interface ExcursionPassenger {
   id: number;
+  passengerId?: number;
   passengerName: string;
   cabinNumber: string;
   ticketCode: string;
@@ -1063,6 +1064,7 @@ export interface ExcursionBookingResult {
 
 export interface ExcursionCancellationResult {
   bookingId: number;
+  currency?: string;
   excursionId: number;
   passengerId: number;
   status: string;
@@ -1074,6 +1076,7 @@ export interface ExcursionCancellationResult {
 
 export interface PassengerExcursionBooking {
   bookingId: number;
+  currency?: string;
   excursionId: number;
   excursionTitle: string;
   portName: string;
@@ -1108,6 +1111,10 @@ export interface ReassignBusResult {
   message: string;
 }
 
+function canUseLocalFallback(err: unknown): boolean {
+  return isAxiosError(err) && err.response === undefined;
+}
+
 export async function bookExcursion(
   excursionId: number,
   payload: ExcursionBookingPayload
@@ -1119,7 +1126,7 @@ export async function bookExcursion(
     );
     if (res.data?.data) return res.data.data;
   } catch (err) {
-    if (!isAxiosError(err)) throw err;
+    if (!canUseLocalFallback(err)) throw err;
   }
 
   // Local fallback simulation
@@ -1133,6 +1140,7 @@ export async function bookExcursion(
 
   const newP: ExcursionPassenger = {
     id: bookingId,
+    passengerId: payload.passengerId,
     passengerName: payload.passengerName || 'Hành khách vãng lai',
     cabinNumber: payload.cabinNumber || 'Suite-801',
     ticketCode,
@@ -1178,20 +1186,54 @@ export async function cancelExcursionBooking(
     );
     if (res.data?.data) return res.data.data;
   } catch (err) {
-    if (!isAxiosError(err)) throw err;
+    if (!canUseLocalFallback(err)) throw err;
   }
 
-  // Local fallback
+  // Local fallback: verify both excursion and booking via passengers collection
   const exc = localExcursions.find((e) => e.id === excursionId);
-  if (exc && exc.passengers) {
-    exc.passengers = exc.passengers.filter((p) => p.id !== bookingId);
-    if (exc.bookedCount > 0) exc.bookedCount -= 1;
+  if (!exc) {
+    throw new Error(`Excursion ${excursionId} not found`);
+  }
+  const passengerIndex = exc.passengers?.findIndex((p) => p.id === bookingId) ?? -1;
+  if (passengerIndex === -1 || !exc.passengers) {
+    throw new Error(`Booking ${bookingId} not found in excursion ${excursionId}`);
   }
 
-  const isWeather = reason?.toLowerCase().includes('thời tiết') || reason?.toLowerCase().includes('weather');
-  const charged = exc?.price || 100;
-  const refundAmount = isWeather ? charged : Math.round(charged * 0.5 * 100) / 100;
-  const penaltyFee = charged - refundAmount;
+  exc.passengers.splice(passengerIndex, 1);
+  if (exc.bookedCount > 0) {
+    exc.bookedCount -= 1;
+  }
+
+  const isWeather =
+    reason?.toLowerCase().includes('thời tiết') ||
+    reason?.toLowerCase().includes('weather') ||
+    reason?.toLowerCase().includes('storm') ||
+    reason?.toLowerCase().includes('bão');
+
+  const charged = exc.isIncluded ? 0 : (exc.price || 0);
+  let refundAmount = 0;
+  let penaltyFee = 0;
+
+  if (isWeather) {
+    refundAmount = charged;
+    penaltyFee = 0;
+  } else {
+    // Port-arrival / meeting-time cut-off: parse meetingTime (HH:mm) and excursionDate (YYYY-MM-DD)
+    const cutOffString = `${exc.excursionDate}T${exc.meetingTime || '08:00'}:00`;
+    const cutOffTime = new Date(cutOffString).getTime();
+    const hoursUntilCutOff = Number.isNaN(cutOffTime) ? 48 : (cutOffTime - Date.now()) / (1000 * 60 * 60);
+
+    if (hoursUntilCutOff >= 24) {
+      refundAmount = charged;
+      penaltyFee = 0;
+    } else if (hoursUntilCutOff >= 12) {
+      penaltyFee = Math.round(charged * 0.5 * 100) / 100;
+      refundAmount = charged - penaltyFee;
+    } else {
+      penaltyFee = charged;
+      refundAmount = 0;
+    }
+  }
 
   return {
     bookingId,
@@ -1200,6 +1242,7 @@ export async function cancelExcursionBooking(
     status: 'CANCELLED',
     refundAmount,
     penaltyFee,
+    currency: exc.currency || 'USD',
     cancellationReason: reason || 'Hành khách hủy tour',
     cancelledAt: new Date().toISOString(),
   };
@@ -1215,14 +1258,16 @@ export async function fetchMyExcursionBookings(
     );
     if (res.data?.data) return res.data.data;
   } catch (err) {
-    if (!isAxiosError(err)) throw err;
+    if (!canUseLocalFallback(err)) throw err;
   }
 
-  // Local fallback
+  // Local fallback: filter passengers by (passengerId ?? id) matching requested passengerId
   const result: PassengerExcursionBooking[] = [];
   for (const exc of localExcursions) {
-    const p = exc.passengers?.find((pass) => pass.id === passengerId || pass.cabinNumber === 'Suite-801');
-    if (p) {
+    const matchingPassengers = exc.passengers?.filter(
+      (pass) => (pass.passengerId ?? pass.id) === passengerId
+    ) || [];
+    for (const p of matchingPassengers) {
       result.push({
         bookingId: p.id,
         excursionId: exc.id,
@@ -1241,6 +1286,7 @@ export async function fetchMyExcursionBookings(
         groupName: p.groupName,
         status: p.status,
         chargedAmount: exc.isIncluded ? 0 : exc.price,
+        currency: exc.currency || 'USD',
         isIncluded: exc.isIncluded,
       });
     }
@@ -1260,25 +1306,32 @@ export async function reassignBusBooking(
     );
     if (res.data?.data) return res.data.data;
   } catch (err) {
-    if (!isAxiosError(err)) throw err;
+    if (!canUseLocalFallback(err)) throw err;
   }
 
-  // Local fallback
+  // Local fallback: rejects when the requested booking is absent
   const exc = localExcursions.find((e) => e.id === excursionId);
-  const p = exc?.passengers?.find((pass) => pass.id === bookingId);
-  const oldBus = p?.busNumber || 'XE-01';
-  if (p) {
-    p.busNumber = payload.newBusNumber;
-    if (payload.newGroupName) p.groupName = payload.newGroupName;
+  if (!exc) {
+    throw new Error(`Excursion ${excursionId} not found`);
+  }
+  const p = exc.passengers?.find((pass) => pass.id === bookingId);
+  if (!p) {
+    throw new Error(`Booking ${bookingId} not found in excursion ${excursionId}`);
+  }
+
+  const oldBus = p.busNumber || 'XE-01';
+  p.busNumber = payload.newBusNumber;
+  if (payload.newGroupName) {
+    p.groupName = payload.newGroupName;
   }
 
   return {
     bookingId,
     excursionId,
-    ticketCode: p?.ticketCode || 'EXC-TKT-MOCK',
+    ticketCode: p.ticketCode || 'EXC-TKT-MOCK',
     oldBusNumber: oldBus,
     newBusNumber: payload.newBusNumber,
-    groupName: payload.newGroupName || (p ? p.groupName : 'Nhóm 1'),
+    groupName: payload.newGroupName || p.groupName || 'Nhóm 1',
     message: 'Chuyển xe thành công',
   };
 }

@@ -3,6 +3,18 @@ import { Bus, Users, ArrowRightLeft, Search, Filter, AlertCircle, CheckCircle2, 
 import { fetchExcursions, reassignBusBooking } from '../services/excursionService';
 import type { ShoreExcursion, ExcursionPassenger } from '../services/excursionService';
 
+
+function getBusMaxCapacity(bus: string): number {
+  const match = bus.match(/\((\d+)\s*Chỗ\)/i);
+  if (match) return parseInt(match[1], 10);
+  if (bus.includes('16')) return 16;
+  if (bus.includes('29')) return 29;
+  return 45;
+}
+
+function getBusSeatedCount(passengers: ExcursionPassenger[], bus: string): number {
+  return passengers.filter((p) => p.busNumber === bus).length;
+}
 export const ExcursionDispatcherDashboard: React.FC = () => {
   const [excursions, setExcursions] = useState<ShoreExcursion[]>([]);
   const [selectedExcursionId, setSelectedExcursionId] = useState<number | null>(null);
@@ -27,8 +39,8 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
       try {
         const list = await fetchExcursions();
         setExcursions(list);
-        if (list.length > 0 && selectedExcursionId === null) {
-          setSelectedExcursionId(list[0].id);
+        if (list.length > 0) {
+          setSelectedExcursionId((prev) => (prev !== null ? prev : list[0].id));
         }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Không thể tải danh sách tour bờ';
@@ -38,7 +50,7 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
       }
     };
     void loadData();
-  }, [selectedExcursionId]);
+  }, []);
 
   const currentExcursion = excursions.find((e) => e.id === selectedExcursionId) || null;
   const passengers = currentExcursion?.passengers || [];
@@ -66,6 +78,15 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
   const handleReassignSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedPassenger || !selectedExcursionId) return;
+
+    if (targetBus !== selectedPassenger.busNumber) {
+      const seated = getBusSeatedCount(passengers, targetBus);
+      const maxCap = getBusMaxCapacity(targetBus);
+      if (seated >= maxCap) {
+        setError(`Xe ${targetBus} đã đầy (${seated}/${maxCap} chỗ). Vui lòng chọn xe khác.`);
+        return;
+      }
+    }
 
     setReassigning(true);
     setError(null);
@@ -134,7 +155,10 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
           <select
             id="excursion-select"
             value={selectedExcursionId || ''}
-            onChange={(e) => setSelectedExcursionId(Number(e.target.value))}
+            onChange={(e) => {
+              setSelectedExcursionId(Number(e.target.value));
+              setBusFilter('ALL');
+            }}
             className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
           >
             {excursions.map((exc) => (
@@ -163,8 +187,8 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
       {/* Fleet & Bus Occupancy Quick Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {buses.map((bus) => {
-          const seated = passengers.filter((p) => p.busNumber === bus).length;
-          const maxCapacity = bus.includes('16') ? 16 : bus.includes('29') ? 29 : 45;
+          const seated = getBusSeatedCount(passengers, bus);
+          const maxCapacity = getBusMaxCapacity(bus);
           const percentage = Math.min(100, Math.round((seated / maxCapacity) * 100));
 
           return (
@@ -316,11 +340,18 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
                   onChange={(e) => setTargetBus(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500"
                 >
-                  {buses.map((b) => (
-                    <option key={b} value={b}>
-                      {b}
-                    </option>
-                  ))}
+                  {buses.map((b) => {
+                    const seated = getBusSeatedCount(passengers, b);
+                    const maxCap = getBusMaxCapacity(b);
+                    const isFull = seated >= maxCap;
+                    const isCurrent = selectedPassenger.busNumber === b;
+                    const isDisabled = isFull && !isCurrent;
+                    return (
+                      <option key={b} value={b} disabled={isDisabled}>
+                        {b} ({seated}/{maxCap} chỗ){isDisabled ? ' - ĐÃ ĐẦY' : isCurrent ? ' - Xe hiện tại' : ''}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 

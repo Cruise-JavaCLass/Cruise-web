@@ -33,7 +33,7 @@ describe('Excursion Booking & Cancellation Component Tests (KAN-380)', () => {
     price: 120,
     currency: 'USD',
     isIncluded: false,
-    status: 'OPEN_FOR_BOOKING' as excursionService.ExcursionStatus,
+    status: 'SCHEDULED',
     active: true,
   };
 

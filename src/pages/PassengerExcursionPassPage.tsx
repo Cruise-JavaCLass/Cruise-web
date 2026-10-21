@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { Ticket, Bus, Calendar, Clock, MapPin, AlertCircle, X, ShieldAlert, CheckCircle2, RefreshCw } from 'lucide-react';
 import { fetchMyExcursionBookings, cancelExcursionBooking } from '../services/excursionService';
+import { resolvePassengerId } from '../services/passengerIdentity';
 import type { PassengerExcursionBooking } from '../services/excursionService';
 
 export const PassengerExcursionPassPage: React.FC = () => {
+  const cancelReasonSelectId = useId();
   const [bookings, setBookings] = useState<PassengerExcursionBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,11 +14,23 @@ export const PassengerExcursionPassPage: React.FC = () => {
   const [cancelReason, setCancelReason] = useState('Thay đổi lịch trình cá nhân');
   const [cancelSuccessMsg, setCancelSuccessMsg] = useState<string | null>(null);
 
+  const formatCurrency = (amount: number, currency: string = 'USD') => {
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency || 'USD',
+      }).format(amount);
+    } catch {
+      return `${amount.toFixed(2)} ${currency}`;
+    }
+  };
+
   const loadData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchMyExcursionBookings(1);
+      const activePassengerId = resolvePassengerId() ?? 1;
+      const data = await fetchMyExcursionBookings(activePassengerId);
       setBookings(data);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Không thể tải danh sách vé tour của bạn';
@@ -41,8 +55,9 @@ export const PassengerExcursionPassPage: React.FC = () => {
         cancelReason
       );
 
+      const cur = res.currency || cancelModalBooking.currency || 'USD';
       setCancelSuccessMsg(
-        `Hủy tour thành công! Số tiền hoàn: $${res.refundAmount.toFixed(2)} USD (Phí phạt: $${res.penaltyFee.toFixed(2)} USD)`
+        `Hủy tour thành công! Số tiền hoàn: ${formatCurrency(res.refundAmount, cur)} (Phí phạt: ${formatCurrency(res.penaltyFee, cur)})`
       );
       setCancelModalBooking(null);
       await loadData();
@@ -189,7 +204,7 @@ export const PassengerExcursionPassPage: React.FC = () => {
                   <div>
                     <span className="text-slate-400 text-[11px] block">Cước phí vé:</span>
                     <span className="text-sm font-bold text-white">
-                      {booking.isIncluded ? 'MIỄN PHÍ' : `$${booking.chargedAmount?.toFixed(2)} USD`}
+                      {booking.isIncluded ? 'MIỄN PHÍ' : formatCurrency(booking.chargedAmount ?? 0, booking.currency || 'USD')}
                     </span>
                   </div>
                   <div className="text-right">
@@ -250,9 +265,9 @@ export const PassengerExcursionPassPage: React.FC = () => {
             </p>
 
             <div className="mb-4">
-              <label htmlFor="cancel-reason-select" className="block text-xs font-medium text-slate-300 mb-1">Lý do hủy vé:</label>
+              <label htmlFor={cancelReasonSelectId} className="block text-xs font-medium text-slate-300 mb-1">Lý do hủy vé:</label>
               <select
-                id="cancel-reason-select"
+                id={cancelReasonSelectId}
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-rose-500"

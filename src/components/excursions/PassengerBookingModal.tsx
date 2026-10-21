@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { Bus, Users, ShieldCheck, CreditCard, AlertCircle, X, CheckCircle2 } from 'lucide-react';
 import type { ShoreExcursion } from '../../services/excursionService';
 import { bookExcursion } from '../../services/excursionService';
@@ -26,6 +26,24 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successTicket, setSuccessTicket] = useState<{ ticketCode: string; chargedAmount: number; busNumber: string } | null>(null);
+  const passengerNameId = useId();
+  const cabinNumberId = useId();
+  const selectedBusId = useId();
+  const linkedCabinsId = useId();
+  const emergencyPhoneId = useId();
+  const specialReqId = useId();
+
+  const formatMoney = (amount: number, currency: string = 'USD') => {
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency || 'USD',
+      }).format(amount);
+    } catch {
+      return `${amount.toFixed(2)} ${currency}`;
+    }
+  };
+
 
   if (!isOpen || !excursion) return null;
 
@@ -101,7 +119,7 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
               <div className="flex justify-between pt-1">
                 <span className="text-slate-400">Phí tính vào Folio:</span>
                 <span className="text-emerald-400 font-bold">
-                  {successTicket.chargedAmount === 0 ? 'MIỄN PHÍ (Included)' : `$${successTicket.chargedAmount.toFixed(2)}`}
+                  {successTicket.chargedAmount === 0 ? 'MIỄN PHÍ (Included)' : formatMoney(successTicket.chargedAmount, excursion.currency)}
                 </span>
               </div>
             </div>
@@ -134,9 +152,9 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="passenger-name-input" className="block text-xs font-medium text-slate-300 mb-1">Tên hành khách</label>
+                <label htmlFor={passengerNameId} className="block text-xs font-medium text-slate-300 mb-1">Tên hành khách</label>
                 <input
-                  id="passenger-name-input"
+                  id={passengerNameId}
                   type="text"
                   value={passengerName}
                   onChange={(e) => setPassengerName(e.target.value)}
@@ -145,9 +163,9 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
                 />
               </div>
               <div>
-                <label htmlFor="cabin-number-input" className="block text-xs font-medium text-slate-300 mb-1">Số cabin</label>
+                <label htmlFor={cabinNumberId} className="block text-xs font-medium text-slate-300 mb-1">Số cabin</label>
                 <input
-                  id="cabin-number-input"
+                  id={cabinNumberId}
                   type="text"
                   value={cabinNumber}
                   onChange={(e) => setCabinNumber(e.target.value)}
@@ -158,14 +176,14 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="selected-bus-select" className="block text-xs font-medium text-slate-300 mb-1">
+              <label htmlFor={selectedBusId} className="block text-xs font-medium text-slate-300 mb-1">
                 <span className="flex items-center gap-1.5">
                   <Bus className="w-3.5 h-3.5 text-cyan-400" />
                   Chọn xe du lịch (Vehicle Seat Allocation)
                 </span>
               </label>
               <select
-                id="selected-bus-select"
+                id={selectedBusId}
                 value={selectedBus}
                 onChange={(e) => setSelectedBus(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500"
@@ -178,14 +196,14 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="linked-cabins-input" className="block text-xs font-medium text-slate-300 mb-1">
+              <label htmlFor={linkedCabinsId} className="block text-xs font-medium text-slate-300 mb-1">
                 <span className="flex items-center gap-1.5">
                   <Users className="w-3.5 h-3.5 text-cyan-400" />
                   Cabin gia đình liên kết (Group Cohabitation - ưu tiên cùng xe)
                 </span>
               </label>
               <input
-                id="linked-cabins-input"
+                id={linkedCabinsId}
                 type="text"
                 placeholder="Ví dụ: Suite-802, Balcony-614"
                 value={linkedCabins}
@@ -195,9 +213,9 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="emergency-phone-input" className="block text-xs font-medium text-slate-300 mb-1">Số điện thoại liên hệ khẩn cấp</label>
+              <label htmlFor={emergencyPhoneId} className="block text-xs font-medium text-slate-300 mb-1">Số điện thoại liên hệ khẩn cấp</label>
               <input
-                id="emergency-phone-input"
+                id={emergencyPhoneId}
                 type="tel"
                 value={emergencyPhone}
                 onChange={(e) => setEmergencyPhone(e.target.value)}
@@ -207,9 +225,9 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="special-req-input" className="block text-xs font-medium text-slate-300 mb-1">Yêu cầu đặc biệt (Ăn kiêng / Ghế xe)</label>
+              <label htmlFor={specialReqId} className="block text-xs font-medium text-slate-300 mb-1">Yêu cầu đặc biệt (Ăn kiêng / Ghế xe)</label>
               <input
-                id="special-req-input"
+                id={specialReqId}
                 type="text"
                 placeholder="Ghế gần cửa, ăn chay..."
                 value={specialRequirements}
@@ -230,7 +248,7 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
               <div className="text-right">
                 <div className="text-xs text-slate-400">Tổng thanh toán</div>
                 <div className="text-base font-bold text-cyan-400">
-                  {isIncluded ? 'MIỄN PHÍ' : `$${price.toFixed(2)}`}
+                  {isIncluded ? 'MIỄN PHÍ' : formatMoney(price, excursion.currency)}
                 </div>
               </div>
             </div>
