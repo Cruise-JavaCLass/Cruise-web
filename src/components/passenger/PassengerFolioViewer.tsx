@@ -65,6 +65,7 @@ export const PassengerFolioViewer: React.FC<PassengerFolioViewerProps> = ({
         <h4 className="text-xs font-semibold text-white">Hoá đơn của tôi</h4>
         {isSettled ? (
           <InvoiceDownloadButton
+            key={cabinNumber}
             cabinNumber={cabinNumber}
             invoiceNumber={invoiceNumber}
           />

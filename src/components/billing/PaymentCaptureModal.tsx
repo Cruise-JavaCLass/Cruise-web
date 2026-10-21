@@ -45,6 +45,12 @@ export const PaymentCaptureModal: React.FC<PaymentCaptureModalProps> = ({
   }, [open, preview]);
 
   useEffect(() => {
+    if (errorMessage) {
+      setClicked(false);
+    }
+  }, [errorMessage]);
+
+  useEffect(() => {
     if (!open) {
       return;
     }
@@ -71,7 +77,7 @@ export const PaymentCaptureModal: React.FC<PaymentCaptureModalProps> = ({
     }
     if (amountTendered < netAmountDue) {
       setValidationError(
-        `Số tiền nhận chưa đủ. Cần tối thiểu ${formatCurrency(netAmountDue, preview.currency)}.`,
+        `Số tiền nhận chưa đủ. Cần tối thiểu ${formatCurrency(netAmountDue, preview.currency)}.`
       );
       return;
     }
