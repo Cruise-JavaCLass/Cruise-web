@@ -8,6 +8,7 @@ import { ActivitiesPage } from './pages/ActivitiesPage';
 import { ActivityDetailPage } from './pages/ActivityDetailPage';
 import { PosPage } from './pages/PosPage';
 import { PassengersPage } from './pages/PassengersPage';
+import { SettlementPage } from './pages/SettlementPage';
 import { PassengerCatalogPage } from './pages/PassengerCatalogPage';
 import { ShipsPage } from './pages/ShipsPage';
 import { ShipDetailPage } from './pages/ShipDetailPage';
@@ -15,6 +16,7 @@ import { PassengerHomePage } from './pages/PassengerHomePage';
 import { ExcursionAttendancePage } from './pages/ExcursionAttendancePage';
 import { ActivityAttendancePage } from './pages/ActivityAttendancePage';
 import { ActivityRosterPage } from './pages/ActivityRosterPage';
+import { MySchedulePage } from './pages/MySchedulePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export function App() {
@@ -23,6 +25,7 @@ export function App() {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="passenger-home" element={<PassengerHomePage />} />
+        <Route path="my-schedule" element={<MySchedulePage />} />
         <Route path="ships" element={<ShipsPage />} />
         <Route path="ships/:id" element={<ShipDetailPage />} />
         <Route path="itinerary" element={<ItineraryPage />} />
@@ -38,6 +41,7 @@ export function App() {
         <Route path="catalog" element={<PassengerCatalogPage />} />
         <Route path="pos" element={<PosPage />} />
         <Route path="passengers" element={<PassengersPage />} />
+        <Route path="billing/settlement" element={<SettlementPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

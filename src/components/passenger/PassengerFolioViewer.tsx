@@ -1,38 +1,38 @@
 import React, { useState } from 'react';
-import {
-  CreditCard,
-  Receipt,
-  Clock,
-  FileQuestion,
-} from 'lucide-react';
-import {
-  type GuestFolioItem,
-  type DisputeCase,
-} from '../../services/reconciliationService';
+import { CreditCard, Receipt, Clock, FileQuestion } from 'lucide-react';
+import type { FolioStatus } from '../../services/settlementService';
+import { type GuestFolioItem, type DisputeCase } from '../../services/reconciliationService';
+import { InvoiceDownloadButton } from './InvoiceDownloadButton';
 import { PassengerDisputeModal } from './PassengerDisputeModal';
 
 interface PassengerFolioViewerProps {
   cabinNumber: string;
-  passengerName: string;
+  passengerName?: string;
+  primaryGuestName?: string;
+  invoiceNumber?: string;
+  folioStatus?: FolioStatus;
 }
 
 export const PassengerFolioViewer: React.FC<PassengerFolioViewerProps> = ({
   cabinNumber,
   passengerName,
+  primaryGuestName,
+  invoiceNumber,
+  folioStatus = 'ACTIVE',
 }) => {
-  const [selectedItemForDispute, setSelectedItemForDispute] =
-    useState<GuestFolioItem | null>(null);
+  const isSettled = folioStatus === 'SETTLED' || folioStatus === 'CLOSED';
+  const effectivePassengerName = passengerName || primaryGuestName || 'Hành khách';
+
+  const [selectedItemForDispute, setSelectedItemForDispute] = useState<GuestFolioItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [disputedTransactions, setDisputedTransactions] = useState<
-    Record<string, DisputeCase>
-  >({
+  const [disputedTransactions, setDisputedTransactions] = useState<Record<string, DisputeCase>>({
     'TX-9842': {
       id: 1,
       disputeNumber: 'DISP-8812',
       transactionId: 'TX-9842',
       folioId: 'FOLIO-402',
       cabinNumber,
-      passengerName,
+      passengerName: effectivePassengerName,
       reason: 'DUPLICATE_BILLING',
       disputeAmount: 45.0,
       passengerNote: 'Quét thẻ 2 lần tại Sky Bar',
@@ -47,7 +47,7 @@ export const PassengerFolioViewer: React.FC<PassengerFolioViewerProps> = ({
       transactionId: 'TX-9842',
       folioId: 'FOLIO-402',
       cabinNumber,
-      passengerName,
+      passengerName: effectivePassengerName,
       description: 'Sky Bar & Cocktail Lounge - 2x Mojito & Snacks',
       serviceArea: 'Sky Bar',
       amount: 45.0,
@@ -59,7 +59,7 @@ export const PassengerFolioViewer: React.FC<PassengerFolioViewerProps> = ({
       transactionId: 'TX-9841',
       folioId: 'FOLIO-402',
       cabinNumber,
-      passengerName,
+      passengerName: effectivePassengerName,
       description: 'Lotus Wellness Spa - Massage Trị Liệu Thụy Điển',
       serviceArea: 'Lotus Spa',
       amount: 120.0,
@@ -71,7 +71,7 @@ export const PassengerFolioViewer: React.FC<PassengerFolioViewerProps> = ({
       transactionId: 'TX-9839',
       folioId: 'FOLIO-402',
       cabinNumber,
-      passengerName,
+      passengerName: effectivePassengerName,
       description: 'Cửa Hàng Miễn Thuế Duty-Free - Nước Hoa & Kính Mát',
       serviceArea: 'Duty-Free',
       amount: 210.0,
@@ -83,7 +83,7 @@ export const PassengerFolioViewer: React.FC<PassengerFolioViewerProps> = ({
       transactionId: 'TX-9820',
       folioId: 'FOLIO-402',
       cabinNumber,
-      passengerName,
+      passengerName: effectivePassengerName,
       description: 'Nhà Hàng Đại Dương Le Gourmet - Rượu Vang Bordeaux',
       serviceArea: 'Le Gourmet',
       amount: 85.0,
@@ -119,17 +119,46 @@ export const PassengerFolioViewer: React.FC<PassengerFolioViewerProps> = ({
               Sao Kê Chi Tiêu Phòng (Guest Folio)
             </h3>
             <p className="text-xs text-slate-400">
-              {cabinNumber} • Khách hàng: <span className="text-cyan-300">{passengerName}</span>
+              {cabinNumber} • Khách hàng:{' '}
+              <span className="text-cyan-300">{effectivePassengerName}</span>
             </p>
           </div>
         </div>
 
-        <div className="flex items-baseline gap-2 bg-white/[0.03] border border-white/5 px-4 py-2.5 rounded-2xl">
-          <span className="text-xs text-slate-400">Tổng dư nợ tạm tính:</span>
-          <span className="text-lg font-black font-mono text-emerald-400">
-            ${totalSpent.toFixed(2)} USD
-          </span>
+        <div className="flex items-center gap-4 flex-wrap sm:flex-nowrap">
+          <div className="flex items-baseline gap-2 bg-white/[0.03] border border-white/5 px-4 py-2.5 rounded-2xl">
+            <span className="text-xs text-slate-400">Tổng chi tiêu:</span>
+            <span className="text-lg font-black font-mono text-emerald-400">
+              ${totalSpent.toFixed(2)} USD
+            </span>
+          </div>
+
+          <div className="bg-white/[0.03] border border-white/5 px-4 py-2.5 rounded-2xl">
+            <span className="text-xs text-slate-400 mr-2">Trạng thái:</span>
+            <span className="font-mono text-xs font-semibold text-slate-200">
+              {isSettled ? 'Đã tất toán' : folioStatus}
+            </span>
+          </div>
         </div>
+      </div>
+
+      {/* Invoice Download section */}
+      <div className="bg-[#030303]/60 border border-white/10 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h4 className="text-xs font-semibold text-white">Hoá đơn của tôi</h4>
+          <p className="text-xs text-slate-400">
+            {isSettled
+              ? 'Tải hoá đơn điện tử PDF lưu thông tin quyết toán chi tiêu.'
+              : 'Chưa tất toán — vui lòng thanh toán tại quầy lễ tân để xuất hoá đơn.'}
+          </p>
+        </div>
+        {isSettled ? (
+          <InvoiceDownloadButton
+            key={cabinNumber}
+            cabinNumber={cabinNumber}
+            invoiceNumber={invoiceNumber}
+          />
+        ) : null}
       </div>
 
       {/* Transaction List */}
@@ -166,7 +195,9 @@ export const PassengerFolioViewer: React.FC<PassengerFolioViewerProps> = ({
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-semibold bg-amber-500/10 border border-amber-500/20 text-amber-300 mt-1">
                       <Clock className="w-3 h-3 text-amber-400 animate-spin" />
                       <span>
-                        Đang khiếu nại #{dispute.disputeNumber} ({dispute.status === 'SUBMITTED' ? 'Chờ Purser duyệt' : 'Đã duyệt hoàn tiền'})
+                        Đang khiếu nại #{dispute.disputeNumber} (
+                        {dispute.status === 'SUBMITTED' ? 'Chờ Purser duyệt' : 'Đã duyệt hoàn tiền'}
+                        )
                       </span>
                     </div>
                   )}

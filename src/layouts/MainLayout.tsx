@@ -14,6 +14,7 @@ import {
   Clock,
   Server,
   Navigation,
+  Receipt,
 } from 'lucide-react';
 import { checkBackendHealth, getBackendInfo } from '../services/api';
 import type { SystemHealth, SystemInfo } from '../services/api';
@@ -63,6 +64,7 @@ export function MainLayout() {
   const navItems = [
     { to: '/', label: 'Dashboard Tổng quan', icon: Compass },
     { to: '/passenger-home', label: 'Trang Chủ Khách (Guest)', icon: Compass },
+    { to: '/my-schedule', label: 'Lịch Cá Nhân (My Day)', icon: Clock },
     { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship },
     { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin },
     { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation },
@@ -71,6 +73,7 @@ export function MainLayout() {
     { to: '/catalog', label: 'Duyệt Hoạt Động (Guest)', icon: Compass },
     { to: '/pos', label: 'POS & Chi tiêu Onboard', icon: CreditCard },
     { to: '/passengers', label: 'Hành khách & Check-in', icon: Users },
+    { to: '/billing/settlement', label: 'Tất toán & Hoá đơn', icon: Receipt },
   ];
 
   return (
