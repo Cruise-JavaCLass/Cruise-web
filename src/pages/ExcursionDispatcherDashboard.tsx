@@ -235,7 +235,7 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
             Danh Sách Hành Khách Đã Đặt Chỗ ({filteredPassengers.length})
           </h2>
           <span className="text-xs text-slate-400 font-mono">
-            {currentExcursion?.gatheringTime} - {currentExcursion?.departureTime}
+            {currentExcursion?.meetingTime || currentExcursion?.departureTime} - {currentExcursion?.departureTime}
           </span>
         </div>
 
