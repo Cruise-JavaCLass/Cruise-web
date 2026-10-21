@@ -160,7 +160,7 @@ export const NotificationCenterDrawer: React.FC<NotificationCenterDrawerProps> =
           <div className="flex items-center gap-2">
             {summary.totalUnread > 0 && (
               <button
-                onClick={handleMarkAllAsRead}
+                onClick={() => void handleMarkAllAsRead()}
                 className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
                 title="Đánh dấu tất cả đã đọc"
               >
@@ -256,7 +256,9 @@ export const NotificationCenterDrawer: React.FC<NotificationCenterDrawerProps> =
                   {notif.actionUrl ? (
                     <button
                       onClick={() => {
-                        if (!notif.isRead) handleMarkAsRead(notif.id);
+                        if (!notif.isRead) {
+                          void handleMarkAsRead(notif.id);
+                        }
                         if (onNavigate) onNavigate(notif.actionUrl!);
                       }}
                       className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-medium hover:underline"
@@ -267,7 +269,7 @@ export const NotificationCenterDrawer: React.FC<NotificationCenterDrawerProps> =
 
                   {!notif.isRead && (
                     <button
-                      onClick={() => handleMarkAsRead(notif.id)}
+                      onClick={() => void handleMarkAsRead(notif.id)}
                       data-testid={`mark-read-btn-${notif.id}`}
                       className="text-[11px] text-slate-400 hover:text-white px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 transition-colors"
                     >

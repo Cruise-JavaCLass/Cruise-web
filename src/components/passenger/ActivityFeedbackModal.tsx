@@ -142,9 +142,9 @@ export const ActivityFeedbackModal: React.FC<ActivityFeedbackModalProps> = ({
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Overall Rating */}
               <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 text-center">
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <span className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
                   Mức độ hài lòng tổng quan
-                </label>
+                </span>
                 <div className="flex items-center justify-center gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -152,6 +152,7 @@ export const ActivityFeedbackModal: React.FC<ActivityFeedbackModalProps> = ({
                       key={star}
                       data-testid={`overall-star-${star}`}
                       onClick={() => setRating(star)}
+                      aria-label={`${star} sao`}
                       className="p-1.5 focus:outline-none transition-transform hover:scale-110"
                     >
                       <Star
