@@ -66,25 +66,28 @@ export const GuideRatingMatrix: React.FC<Props> = ({ kpi }) => {
             </thead>
             <tbody className="divide-y divide-slate-700/60">
               {kpi?.providerScorecards && kpi.providerScorecards.length > 0 ? (
-                kpi.providerScorecards.map((p) => (
-                  <tr key={p.providerName} className="hover:bg-slate-700/30 transition">
-                    <td className="py-3.5 px-4 font-medium text-white">{p.providerName}</td>
-                    <td className="py-3.5 px-4">{p.totalExcursions}</td>
-                    <td className="py-3.5 px-4">{p.totalReviews}</td>
-                    <td className="py-3.5 px-4 font-bold text-amber-400">{p.averageRating}★</td>
-                    <td className="py-3.5 px-4 text-xs text-slate-400">
-                      {p.averageGuideRating}★ / {p.averageBusRating}★ / {p.averageValueRating}★
-                    </td>
-                    <td className="py-3.5 px-4">
-                      {p.flaggedCount > 0 ? (
-                        <span className="text-rose-400 font-semibold">{p.flaggedCount} phản ánh</span>
-                      ) : (
-                        <span className="text-emerald-400">0</span>
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4">{getTierBadge(p.performanceTier)}</td>
-                  </tr>
-                ))
+                kpi.providerScorecards.map((p) => {
+                  const uniqueKey = p.providerId || p.providerName.toLowerCase().replace(/\s+/g, '-');
+                  return (
+                    <tr key={uniqueKey} className="hover:bg-slate-700/30 transition">
+                      <td className="py-3.5 px-4 font-medium text-white">{p.providerName}</td>
+                      <td className="py-3.5 px-4">{p.totalExcursions}</td>
+                      <td className="py-3.5 px-4">{p.totalReviews}</td>
+                      <td className="py-3.5 px-4 font-bold text-amber-400">{p.averageRating}★</td>
+                      <td className="py-3.5 px-4 text-xs text-slate-400">
+                        {p.averageGuideRating}★ / {p.averageBusRating}★ / {p.averageValueRating}★
+                      </td>
+                      <td className="py-3.5 px-4">
+                        {p.flaggedCount > 0 ? (
+                          <span className="text-rose-400 font-semibold">{p.flaggedCount} phản ánh</span>
+                        ) : (
+                          <span className="text-emerald-400">0</span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4">{getTierBadge(p.performanceTier)}</td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan={7} className="py-8 text-center text-slate-500">

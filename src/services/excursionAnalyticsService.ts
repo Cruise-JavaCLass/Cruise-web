@@ -76,6 +76,7 @@ export interface FleetOccupancyAnalyticsResponse {
 }
 
 export interface ProviderScorecard {
+  providerId?: string;
   providerName: string;
   totalExcursions: number;
   totalReviews: number;
@@ -133,20 +134,38 @@ export const getExcursionOpsKpi = async (): Promise<ExcursionOpsKpi> => {
 export const getExcursionReviews = async (
   excursionId: number,
   page = 0,
-  size = 20
-): Promise<{ content: ExcursionReview[]; totalElements: number }> => {
+  size = 20,
+  signal?: AbortSignal
+): Promise<{ content: ExcursionReview[]; totalElements: number; totalPages: number }> => {
   const res = await apiClient.get<{
     success: boolean;
-    data: { content: ExcursionReview[]; totalElements: number };
+    data: { content: ExcursionReview[]; totalElements: number; totalPages: number };
   }>(`/excursions/${excursionId}/reviews`, {
     params: { page, size },
+    signal,
   });
   return res.data.data;
 };
 
-export const getFlaggedReviews = async (): Promise<ExcursionReview[]> => {
+export const getAllExcursionReviews = async (
+  page = 0,
+  size = 20,
+  signal?: AbortSignal
+): Promise<{ content: ExcursionReview[]; totalElements: number; totalPages: number }> => {
+  const res = await apiClient.get<{
+    success: boolean;
+    data: { content: ExcursionReview[]; totalElements: number; totalPages: number };
+  }>('/excursions/reviews', {
+    params: { page, size },
+    signal,
+  });
+  return res.data.data;
+};
+
+export const getFlaggedReviews = async (signal?: AbortSignal): Promise<ExcursionReview[]> => {
   const res = await apiClient.get<{ success: boolean; data: ExcursionReview[] }>(
-    '/excursions/reviews/flagged'
+    '/excursions/reviews/flagged',
+    { signal }
   );
   return res.data.data;
 };

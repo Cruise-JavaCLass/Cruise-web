@@ -17,6 +17,7 @@ describe('Shore Excursion Analytics UI Suite (KAN-347)', () => {
     totalFlaggedReviews: 1,
     providerScorecards: [
       {
+        providerId: 'prov-1',
         providerName: 'Halong Heritage Tours',
         totalExcursions: 3,
         totalReviews: 15,
@@ -28,6 +29,7 @@ describe('Shore Excursion Analytics UI Suite (KAN-347)', () => {
         performanceTier: 'EXCELLENT',
       },
       {
+        providerId: 'prov-2',
         providerName: 'Coastal Speedboat Co',
         totalExcursions: 2,
         totalReviews: 9,
@@ -130,10 +132,15 @@ describe('Shore Excursion Analytics UI Suite (KAN-347)', () => {
     expect(screen.getByText('4.95')).toBeInTheDocument();
   });
 
-  it('switches tabs smoothly on ExcursionAnalyticsDashboard', async () => {
+  it('switches tabs smoothly on ExcursionAnalyticsDashboard and fetches all reviews', async () => {
     vi.spyOn(analyticsService, 'getExcursionOpsKpi').mockResolvedValue(mockKpi);
     vi.spyOn(analyticsService, 'getFleetOccupancyAnalytics').mockResolvedValue(mockFleet);
     vi.spyOn(analyticsService, 'getFlaggedReviews').mockResolvedValue(mockReviews);
+    vi.spyOn(analyticsService, 'getAllExcursionReviews').mockResolvedValue({
+      content: mockReviews,
+      totalElements: 1,
+      totalPages: 1,
+    });
 
     render(<ExcursionAnalyticsDashboard />);
 
@@ -147,6 +154,13 @@ describe('Shore Excursion Analytics UI Suite (KAN-347)', () => {
 
     await waitFor(() => {
       expect(screen.getByText('CẢNH BÁO KHẨN')).toBeInTheDocument();
+    });
+
+    const allFilterBtn = screen.getByRole('button', { name: /Tất Cả Đánh Giá/i });
+    fireEvent.click(allFilterBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Hiển thị/)).toBeInTheDocument();
     });
 
     const scorecardsTab = screen.getByRole('button', { name: /Đối Tác & Hướng Dẫn Viên/i });
