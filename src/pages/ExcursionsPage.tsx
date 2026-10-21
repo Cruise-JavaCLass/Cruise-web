@@ -18,6 +18,7 @@ import {
   ArrowRight,
   LayoutGrid,
   List,
+  Ticket,
 } from 'lucide-react';
 import {
   type ShoreExcursion,
@@ -33,6 +34,7 @@ import { INITIAL_PORTS } from '../services/portStopService';
 import { ExcursionModal } from '../components/excursions/ExcursionModal';
 import { ExcursionStatusModal } from '../components/excursions/ExcursionStatusModal';
 import { ExcursionManifestModal } from '../components/excursions/ExcursionManifestModal';
+import { PassengerBookingModal } from '../components/excursions/PassengerBookingModal';
 import { ExcursionStatusCards } from '../components/excursions/ExcursionStatusCards';
 
 export function ExcursionsPage() {
@@ -55,6 +57,9 @@ export function ExcursionsPage() {
   const [excursionToChangeStatus, setExcursionToChangeStatus] = useState<ShoreExcursion | null>(null);
 
   const [isManifestModalOpen, setIsManifestModalOpen] = useState<boolean>(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState<boolean>(false);
+  const [excursionForBooking, setExcursionForBooking] = useState<ShoreExcursion | null>(null);
+
   const [excursionForManifest, setExcursionForManifest] = useState<ShoreExcursion | null>(null);
 
   const showToast = (msg: string) => {
@@ -103,6 +108,10 @@ export function ExcursionsPage() {
     setIsStatusModalOpen(true);
   };
 
+  const handleOpenBookingModal = (exc: ShoreExcursion) => {
+    setExcursionForBooking(exc);
+    setIsBookingModalOpen(true);
+  };
   const handleOpenManifestModal = (exc: ShoreExcursion) => {
     setExcursionForManifest(exc);
     setIsManifestModalOpen(true);
@@ -492,6 +501,13 @@ export function ExcursionsPage() {
                 <div className="px-5 py-3.5 bg-slate-800/40 border-t border-slate-800 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
                     <button
+                      onClick={() => handleOpenBookingModal(exc)}
+                      className="px-2.5 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-medium transition-all flex items-center gap-1 shadow-sm"
+                      title="Đặt vé tour trên bờ"
+                    >
+                      <Ticket className="w-3.5 h-3.5" /> Đặt Tour
+                    </button>
+                    <button
                       onClick={() => handleOpenManifestModal(exc)}
                       className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-xl text-xs font-medium transition-colors flex items-center gap-1"
                       title="Xem danh sách đoàn & xe đưa đón"
@@ -612,6 +628,13 @@ export function ExcursionsPage() {
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <button
+                            onClick={() => handleOpenBookingModal(exc)}
+                            className="p-1.5 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                            title="Đặt vé tour"
+                          >
+                            <Ticket className="w-3.5 h-3.5" />
+                          </button>
+                          <button
                             onClick={() => handleOpenManifestModal(exc)}
                             className="p-1.5 text-slate-400 hover:text-cyan-300 hover:bg-slate-800 rounded-lg transition-colors"
                             title="Xem đoàn & xe"
@@ -693,6 +716,22 @@ export function ExcursionsPage() {
             setExcursions((prev) =>
               prev.map((e) => (e.id === updated.id ? updated : e))
             );
+          }}
+        />
+      )}
+
+      {/* Passenger Booking Modal */}
+      {isBookingModalOpen && excursionForBooking && (
+        <PassengerBookingModal
+          isOpen={isBookingModalOpen}
+          onClose={() => {
+            setIsBookingModalOpen(false);
+            setExcursionForBooking(null);
+          }}
+          excursion={excursionForBooking}
+          onBookingSuccess={() => {
+            showToast('Đặt tour thành công!');
+            void loadExcursionList();
           }}
         />
       )}
