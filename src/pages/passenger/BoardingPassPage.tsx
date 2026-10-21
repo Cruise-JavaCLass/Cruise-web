@@ -39,7 +39,7 @@ export const BoardingPassPage: React.FC = () => {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchProfile(controller.signal);
+    void fetchProfile(controller.signal);
     return () => controller.abort();
   }, []);
 
@@ -53,7 +53,7 @@ export const BoardingPassPage: React.FC = () => {
           <ArrowLeft className="w-4 h-4" /> Quay lại Trang Chủ
         </Link>
         <button
-          onClick={() => fetchProfile()}
+          onClick={() => { void fetchProfile(); }}
           className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200 transition"
         >
           <RefreshCw className="w-3.5 h-3.5" /> Làm mới
