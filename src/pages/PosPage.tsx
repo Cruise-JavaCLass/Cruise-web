@@ -37,9 +37,10 @@ import {
 } from '../services/reconciliationService';
 import { DiscrepancyInspectorModal } from '../components/pos/DiscrepancyInspectorModal';
 import { DisputeManagementWorkspace } from '../components/pos/DisputeManagementWorkspace';
+import { SyncControlPanel } from '../components/pos/SyncControlPanel';
 
 export function PosPage() {
-  const [activeTab, setActiveTab] = useState<'REGISTER' | 'LEDGER' | 'CATALOG' | 'RECONCILIATION' | 'DISPUTES'>('REGISTER');
+  const [activeTab, setActiveTab] = useState<'REGISTER' | 'LEDGER' | 'CATALOG' | 'RECONCILIATION' | 'DISPUTES' | 'SYNC'>('REGISTER');
   // Ledger state
   const [transactions, setTransactions] = useState<PosTransaction[]>([]);
   const [isLoadingLedger, setIsLoadingLedger] = useState(false);
@@ -396,6 +397,17 @@ export function PosPage() {
             </span>
           )}
         </button>
+        <button
+          onClick={() => setActiveTab('SYNC')}
+          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+            activeTab === 'SYNC'
+              ? 'border-orange-500 text-orange-400'
+              : 'border-transparent text-slate-400 hover:text-white'
+          }`}
+        >
+          <RefreshCw className="w-4 h-4" />
+          <span>Bảng Điều Khiển Đồng Bộ (Sync Center)</span>
+        </button>
       </div>
 
       {/* KPI Stats Bar */}
@@ -748,6 +760,11 @@ export function PosPage() {
           onResolveDispute={handleResolveDispute}
           isLoading={isLoadingData}
         />
+      )}
+
+      {/* TAB 5: SYNC CONTROL PANEL */}
+      {activeTab === 'SYNC' && (
+        <SyncControlPanel onSyncComplete={loadTransactions} />
       )}
 
       {/* Void / Refund Modal */}

@@ -136,6 +136,7 @@ export interface BatchSyncResponse {
   duplicateCount: number;
   failedCount: number;
   processedUuids: string[];
+  duplicateUuids?: string[];
   failedReasons: string[];
 }
 
