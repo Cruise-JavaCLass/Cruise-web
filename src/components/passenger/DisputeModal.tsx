@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FolioTransaction, DisputePayload } from '../../services/passengerFolioService';
+import type { FolioTransaction, DisputePayload } from '../../services/passengerFolioService';
 
 interface DisputeModalProps {
   isOpen: boolean;

@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   passengerFolioService,
-  PassengerFolioSummary,
-  FolioTransaction,
-  DisputePayload,
+  type PassengerFolioSummary,
+  type FolioTransaction,
+  type DisputePayload,
 } from '../../services/passengerFolioService';
 import { FolioTransactionList } from '../../components/passenger/FolioTransactionList';
 import { DisputeModal } from '../../components/passenger/DisputeModal';

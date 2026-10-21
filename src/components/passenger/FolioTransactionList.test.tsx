@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { FolioTransactionList } from './FolioTransactionList';
-import { FolioTransaction } from '../../services/passengerFolioService';
+import type { FolioTransaction } from '../../services/passengerFolioService';
 
 describe('FolioTransactionList Component', () => {
   const mockTransactions: FolioTransaction[] = [

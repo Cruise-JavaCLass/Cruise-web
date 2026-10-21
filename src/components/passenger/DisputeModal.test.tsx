@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { DisputeModal } from './DisputeModal';
-import { FolioTransaction } from '../../services/passengerFolioService';
+import type { FolioTransaction } from '../../services/passengerFolioService';
 
 describe('DisputeModal Component', () => {
   const mockTransaction: FolioTransaction = {

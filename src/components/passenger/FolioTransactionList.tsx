@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FolioTransaction } from '../../services/passengerFolioService';
+import type { FolioTransaction } from '../../services/passengerFolioService';
 
 interface FolioTransactionListProps {
   transactions: FolioTransaction[];

@@ -1,4 +1,4 @@
-import api from './api';
+import { apiClient } from './api';
 
 export interface SpendingByCategory {
   [category: string]: number;
@@ -72,7 +72,7 @@ export interface DisputeResponse {
 
 export const passengerFolioService = {
   getFolioSummary: async (passengerId: number): Promise<PassengerFolioSummary> => {
-    const response = await api.get<{ data: PassengerFolioSummary }>(`/api/passengers/${passengerId}/folio`);
+    const response = await apiClient.get<{ data: PassengerFolioSummary }>(`/api/passengers/${passengerId}/folio`);
     return response.data.data;
   },
 
@@ -89,7 +89,7 @@ export const passengerFolioService = {
     params.append('page', page.toString());
     params.append('size', size.toString());
 
-    const response = await api.get<{ data: PageResponse<FolioTransaction> }>(
+    const response = await apiClient.get<{ data: PageResponse<FolioTransaction> }>(
       `/api/passengers/${passengerId}/folio/transactions?${params.toString()}`
     );
     return response.data.data;
@@ -100,7 +100,7 @@ export const passengerFolioService = {
     transactionId: number,
     payload: DisputePayload
   ): Promise<DisputeResponse> => {
-    const response = await api.post<{ data: DisputeResponse }>(
+    const response = await apiClient.post<{ data: DisputeResponse }>(
       `/api/passengers/${passengerId}/folio/transactions/${transactionId}/dispute`,
       payload
     );
