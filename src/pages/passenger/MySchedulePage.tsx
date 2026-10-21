@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Calendar,
@@ -21,15 +21,22 @@ import {
 import { ConflictAlertBanner } from '../../components/passenger/ConflictAlertBanner';
 import { MyScheduleTimeline } from '../../components/passenger/MyScheduleTimeline';
 import { ActivityPassModal } from '../../components/activities/ActivityPassModal';
+import { resolvePassengerId } from '../../services/passengerIdentity';
 
 export const MySchedulePage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const passengerIdParam = searchParams.get('passengerId');
-  const passengerId = passengerIdParam ? parseInt(passengerIdParam, 10) : 1;
+  const passengerId = resolvePassengerId() ?? 1;
 
-  const initialDay = searchParams.get('day') ? parseInt(searchParams.get('day')!, 10) : 1;
+  const rawDayParam = searchParams.get('day');
+  const parseDayParam = (param: string | null): number | undefined => {
+    if (!param) return 1;
+    if (param.toLowerCase() === 'all') return undefined;
+    const parsed = parseInt(param, 10);
+    return !Number.isNaN(parsed) && parsed > 0 ? parsed : 1;
+  };
+  const initialDay = parseDayParam(rawDayParam);
   const initialScope = (searchParams.get('scope') === 'cabin' ? 'cabin' : 'my') as ScheduleScope;
 
   const [selectedDay, setSelectedDay] = useState<number | undefined>(initialDay);
@@ -57,27 +64,48 @@ export const MySchedulePage: React.FC = () => {
     };
   }, []);
 
+  const requestSeqRef = useRef<number>(0);
+
+  const formatCachedTime = (isoString?: string): string => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return !Number.isNaN(date.getTime())
+      ? date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+      : isoString;
+  };
+
   const loadSchedule = useCallback(async () => {
+    const currentSeq = ++requestSeqRef.current;
     setIsLoading(true);
     setErrorMessage('');
 
     try {
-      const data = await passengerScheduleService.getPersonalSchedule(passengerId, selectedDay, scope);
+      const data = await passengerScheduleService.getPersonalSchedule(
+        passengerId,
+        selectedDay,
+        scope
+      );
+      if (currentSeq !== requestSeqRef.current) return;
       setScheduleData(data);
-      setLastUpdated(new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }));
+      setLastUpdated(
+        new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+      );
     } catch (err) {
+      if (currentSeq !== requestSeqRef.current) return;
       console.warn('Lỗi khi tải lịch trình:', err);
       // Kiểm tra cache ngoại tuyến
       const cached = passengerScheduleService.loadFromCache(passengerId, selectedDay, scope);
       if (cached) {
         setScheduleData(cached.data);
         setIsOffline(true);
-        setLastUpdated(cached.cachedAt);
+        setLastUpdated(formatCachedTime(cached.cachedAt));
       } else {
         setErrorMessage(err instanceof Error ? err.message : 'Không thể tải lịch trình cá nhân');
       }
     } finally {
-      setIsLoading(false);
+      if (currentSeq === requestSeqRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [passengerId, selectedDay, scope]);
 
@@ -91,7 +119,7 @@ export const MySchedulePage: React.FC = () => {
     if (day !== undefined) {
       newParams.set('day', day.toString());
     } else {
-      newParams.delete('day');
+      newParams.set('day', 'all');
     }
     setSearchParams(newParams);
   };
@@ -106,7 +134,9 @@ export const MySchedulePage: React.FC = () => {
   // Tính toán số liệu thống kê tổng quan
   const items = scheduleData?.items || [];
   const totalEvents = items.length;
-  const checkedInCount = items.filter((i) => i.status === 'CHECKED_IN' || i.status === 'COMPLETED').length;
+  const checkedInCount = items.filter(
+    (i) => i.status === 'CHECKED_IN' || i.status === 'COMPLETED'
+  ).length;
   const pendingCount = items.filter((i) => i.status === 'REGISTERED').length;
   const totalConflicts = scheduleData?.totalConflicts || 0;
 
@@ -137,7 +167,9 @@ export const MySchedulePage: React.FC = () => {
                 )}
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                {scheduleData?.passengerName ? `${scheduleData.passengerName} • Cabin ${scheduleData.cabinNumber}` : 'Hành khách'}
+                {scheduleData?.passengerName
+                  ? `${scheduleData.passengerName} • Cabin ${scheduleData.cabinNumber}`
+                  : 'Hành khách'}
               </p>
             </div>
           </div>
@@ -258,7 +290,9 @@ export const MySchedulePage: React.FC = () => {
           >
             <div className="flex items-center justify-between text-xs mb-1">
               <span>Trùng lịch</span>
-              <AlertTriangle className={`w-4 h-4 ${totalConflicts > 0 ? 'text-amber-400' : 'text-slate-500'}`} />
+              <AlertTriangle
+                className={`w-4 h-4 ${totalConflicts > 0 ? 'text-amber-400' : 'text-slate-500'}`}
+              />
             </div>
             <div className="font-mono text-2xl font-bold">{totalConflicts}</div>
           </div>

@@ -87,11 +87,7 @@ export const passengerScheduleService = {
       passengerScheduleService.saveToCache(passengerId, day, scope, data);
       return data;
     } catch (error) {
-      console.warn('API /api/passengers/:id/personal-schedule không khả dụng, kiểm tra cache offline...', error);
-      const cached = passengerScheduleService.loadFromCache(passengerId, day, scope);
-      if (cached) {
-        return cached.data;
-      }
+      console.warn('API /api/passengers/:id/personal-schedule không khả dụng:', error);
       throw error;
     }
   },
@@ -129,7 +125,7 @@ export const passengerScheduleService = {
       const key = `${CACHE_PREFIX}${passengerId}_${day ?? 'all'}_${scope}`;
       const wrapper: CacheWrapper<PersonalScheduleResponse> = {
         data,
-        cachedAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+        cachedAt: new Date().toISOString(),
       };
       localStorage.setItem(key, JSON.stringify(wrapper));
     } catch (err) {

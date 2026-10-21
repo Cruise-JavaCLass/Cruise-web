@@ -26,14 +26,12 @@ import {
   passengerCatalogService,
   type PassengerCatalogItem,
 } from '../services/passengerCatalogService';
-import {
-  getTourNotifications,
-  type TourNotification,
-} from '../services/dailyItineraryService';
+import { getTourNotifications, type TourNotification } from '../services/dailyItineraryService';
 import {
   activityRegistrationService,
   type PassengerRegistrationItem,
 } from '../services/activityRegistrationService';
+import { resolvePassengerId } from '../services/passengerIdentity';
 import { UpcomingActivitiesAndNotifications } from '../components/passenger/UpcomingActivitiesAndNotifications';
 import { CancelActivityModal } from '../components/activities/CancelActivityModal';
 import { ActivityPassModal } from '../components/activities/ActivityPassModal';
@@ -43,56 +41,20 @@ export const PassengerHomePage: React.FC = () => {
   const [activities, setActivities] = useState<PassengerCatalogItem[]>([]);
   const [registeredActivities, setRegisteredActivities] = useState<PassengerRegistrationItem[]>([]);
   const [cancellingReg, setCancellingReg] = useState<PassengerRegistrationItem | null>(null);
-  const [passModalActivity, setPassModalActivity] = useState<PassengerRegistrationItem | null>(null);
+  const [passModalActivity, setPassModalActivity] = useState<PassengerRegistrationItem | null>(
+    null
+  );
   const [notifications, setNotifications] = useState<TourNotification[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
-
-  const resolvePassengerId = (): number | null => {
-    // 1. Check URL search param (e.g. ?passengerId=5)
-    const params = new URLSearchParams(window.location.search);
-    const queryId = params.get('passengerId') || params.get('id');
-    if (queryId && !isNaN(Number(queryId))) {
-      return Number(queryId);
-    }
-
-    // 2. Check session / local storage for authenticated passenger or user
-    try {
-      const storedPassenger = localStorage.getItem('currentPassenger') || sessionStorage.getItem('currentPassenger');
-      if (storedPassenger) {
-        const parsed = JSON.parse(storedPassenger);
-        if (parsed?.id || parsed?.passengerId) {
-          return Number(parsed.id || parsed.passengerId);
-        }
-      }
-
-      const storedUser = localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser');
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        if (parsedUser?.passengerId) {
-          return Number(parsedUser.passengerId);
-        }
-      }
-
-      const directId = localStorage.getItem('passengerId') || sessionStorage.getItem('passengerId');
-      if (directId && !isNaN(Number(directId))) {
-        return Number(directId);
-      }
-    } catch {
-      // Storage parsing failed, continue to fallback
-    }
-
-    // Default to active test passenger 1 if no explicit session exists
-    return 1;
-  };
 
   const loadData = async () => {
     setIsLoading(true);
     setIsError(false);
     setErrorMessage('');
     try {
-      const activePassengerId = resolvePassengerId();
+      const activePassengerId = resolvePassengerId(1);
       if (!activePassengerId) {
         throw new Error('Không tìm thấy danh tính hành khách hợp lệ. Vui lòng đăng nhập lại.');
       }
@@ -144,7 +106,8 @@ export const PassengerHomePage: React.FC = () => {
             </span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Cập nhật thẻ lên tàu RFID, lịch trình cá nhân, tour bờ và các thông báo hải trình thời gian thực.
+            Cập nhật thẻ lên tàu RFID, lịch trình cá nhân, tour bờ và các thông báo hải trình thời
+            gian thực.
           </p>
         </div>
 
@@ -218,7 +181,9 @@ export const PassengerHomePage: React.FC = () => {
                   </span>
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    {bookingSummary.checkInStatus === 'BOARDED' ? 'Đã Check-in Lên Tàu' : 'Chưa Check-in'}
+                    {bookingSummary.checkInStatus === 'BOARDED'
+                      ? 'Đã Check-in Lên Tàu'
+                      : 'Chưa Check-in'}
                   </span>
                 </div>
 
@@ -227,24 +192,35 @@ export const PassengerHomePage: React.FC = () => {
                     {bookingSummary.tourName}
                   </h2>
                   <p className="text-xs text-slate-400 mt-1 flex items-center gap-2">
-                    <Ship className="w-3.5 h-3.5 text-cyan-400" /> Du Thuyền Grand Pearl Voyager • Hải Trình 4 Ngày 3 Đêm
+                    <Ship className="w-3.5 h-3.5 text-cyan-400" /> Du Thuyền Grand Pearl Voyager •
+                    Hải Trình 4 Ngày 3 Đêm
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
                   <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
                     <span className="text-[10px] text-slate-400 uppercase font-mono">Số Cabin</span>
-                    <p className="text-sm font-bold text-white mt-0.5">{bookingSummary.cabinNumber}</p>
-                    <span className="text-[10px] text-cyan-400">{bookingSummary.cabinCategory}</span>
+                    <p className="text-sm font-bold text-white mt-0.5">
+                      {bookingSummary.cabinNumber}
+                    </p>
+                    <span className="text-[10px] text-cyan-400">
+                      {bookingSummary.cabinCategory}
+                    </span>
                   </div>
                   <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-                    <span className="text-[10px] text-slate-400 uppercase font-mono">Thẻ RFID & Zone</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-mono">
+                      Thẻ RFID & Zone
+                    </span>
                     <p className="text-sm font-bold text-white mt-0.5">{bookingSummary.rfidTag}</p>
-                    <span className="text-[10px] text-slate-400">{bookingSummary.bleZone || 'Zone A - Sky Lounge'}</span>
+                    <span className="text-[10px] text-slate-400">
+                      {bookingSummary.bleZone || 'Zone A - Sky Lounge'}
+                    </span>
                   </div>
                   <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 col-span-2 sm:col-span-1">
                     <span className="text-[10px] text-slate-400 uppercase font-mono">Gói Tour</span>
-                    <p className="text-sm font-bold text-amber-300 mt-0.5 truncate">{bookingSummary.tourPackage}</p>
+                    <p className="text-sm font-bold text-amber-300 mt-0.5 truncate">
+                      {bookingSummary.tourPackage}
+                    </p>
                     <span className="text-[10px] text-emerald-400">Trọn gói cao cấp</span>
                   </div>
                 </div>
@@ -279,7 +255,9 @@ export const PassengerHomePage: React.FC = () => {
               </div>
               <div>
                 <span className="text-[11px] text-slate-400">Tour bờ đã đăng ký</span>
-                <p className="text-lg font-bold text-white">{bookingSummary.totalRegisteredExcursions} tour</p>
+                <p className="text-lg font-bold text-white">
+                  {bookingSummary.totalRegisteredExcursions} tour
+                </p>
               </div>
             </div>
 
@@ -289,7 +267,9 @@ export const PassengerHomePage: React.FC = () => {
               </div>
               <div>
                 <span className="text-[11px] text-slate-400">Chi phí tour bờ</span>
-                <p className="text-lg font-bold text-white">${bookingSummary.totalExcursionSpent} USD</p>
+                <p className="text-lg font-bold text-white">
+                  ${bookingSummary.totalExcursionSpent} USD
+                </p>
               </div>
             </div>
 
@@ -310,7 +290,12 @@ export const PassengerHomePage: React.FC = () => {
               <div>
                 <span className="text-[11px] text-slate-400">Giờ lên tàu</span>
                 <p className="text-sm font-bold text-white">
-                  {bookingSummary.boardedAt ? new Date(bookingSummary.boardedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '08:30'}
+                  {bookingSummary.boardedAt
+                    ? new Date(bookingSummary.boardedAt).toLocaleTimeString('vi-VN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    : '08:30'}
                 </p>
               </div>
             </div>
@@ -324,7 +309,9 @@ export const PassengerHomePage: React.FC = () => {
                   <Tag className="w-4 h-4 text-cyan-400" />
                   Danh Sách Vé & Tour Bờ Đã Đặt (Excursions)
                 </h3>
-                <p className="text-[11px] text-slate-400">Theo dõi giờ tập trung, số xe đưa đón và số vé điện tử</p>
+                <p className="text-[11px] text-slate-400">
+                  Theo dõi giờ tập trung, số xe đưa đón và số vé điện tử
+                </p>
               </div>
               <Link
                 to="/catalog?itemType=SHORE_EXCURSION"
@@ -357,7 +344,9 @@ export const PassengerHomePage: React.FC = () => {
                         <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase">
                           Vé: {exc.ticketCode}
                         </span>
-                        <h4 className="text-xs font-bold text-white mt-0.5">{exc.excursionTitle}</h4>
+                        <h4 className="text-xs font-bold text-white mt-0.5">
+                          {exc.excursionTitle}
+                        </h4>
                       </div>
                       <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                         {exc.status}
@@ -375,11 +364,15 @@ export const PassengerHomePage: React.FC = () => {
                       </div>
                       <div>
                         <span className="text-slate-500 text-[10px] block">Giờ tập trung:</span>
-                        <span className="font-mono text-amber-300 font-semibold">{exc.gatheringTime || '08:00'}</span>
+                        <span className="font-mono text-amber-300 font-semibold">
+                          {exc.gatheringTime || '08:00'}
+                        </span>
                       </div>
                       <div>
                         <span className="text-slate-500 text-[10px] block">Giờ về tàu:</span>
-                        <span className="font-mono text-cyan-300 font-semibold">{exc.returnToShipTime || '16:00'}</span>
+                        <span className="font-mono text-cyan-300 font-semibold">
+                          {exc.returnToShipTime || '16:00'}
+                        </span>
                       </div>
                     </div>
 
@@ -403,7 +396,9 @@ export const PassengerHomePage: React.FC = () => {
                   <Sparkles className="w-4 h-4 text-cyan-400" />
                   Hoạt Động Trên Du Thuyền Đã Đăng Ký (Onboard Activities)
                 </h3>
-                <p className="text-[11px] text-slate-400">Theo dõi trạng thái xác nhận, thứ tự hàng đợi Waitlist và thẻ tham gia QR Pass</p>
+                <p className="text-[11px] text-slate-400">
+                  Theo dõi trạng thái xác nhận, thứ tự hàng đợi Waitlist và thẻ tham gia QR Pass
+                </p>
               </div>
               <div className="flex items-center gap-3">
                 <Link
@@ -470,17 +465,23 @@ export const PassengerHomePage: React.FC = () => {
                       </div>
                       <div>
                         <span className="text-slate-500 text-[10px] block">Thời gian:</span>
-                        <span className="font-mono text-cyan-300 font-semibold">{reg.startTime} - {reg.endTime}</span>
+                        <span className="font-mono text-cyan-300 font-semibold">
+                          {reg.startTime} - {reg.endTime}
+                        </span>
                       </div>
                       <div>
                         <span className="text-slate-500 text-[10px] block">Chi phí:</span>
                         <span className="font-semibold text-emerald-400">
-                          {reg.chargedAmount > 0 ? `${reg.chargedAmount.toLocaleString('vi-VN')} VND` : 'Miễn phí'}
+                          {reg.chargedAmount > 0
+                            ? `${reg.chargedAmount.toLocaleString('vi-VN')} VND`
+                            : 'Miễn phí'}
                         </span>
                       </div>
                       <div>
                         <span className="text-slate-500 text-[10px] block">Mã giao dịch:</span>
-                        <span className="font-mono text-[10px] text-slate-400">{reg.transactionId || 'N/A'}</span>
+                        <span className="font-mono text-[10px] text-slate-400">
+                          {reg.transactionId || 'N/A'}
+                        </span>
                       </div>
                     </div>
 
@@ -533,7 +534,7 @@ export const PassengerHomePage: React.FC = () => {
             startTime: cancellingReg.startTime,
             chargedAmount: cancellingReg.chargedAmount,
             cancellationCutOffMinutes: cancellingReg.cancellationCutOffMinutes,
-            passengerId: bookingSummary?.passengerId
+            passengerId: bookingSummary?.passengerId,
           }}
           onSuccess={() => {
             void loadData();
