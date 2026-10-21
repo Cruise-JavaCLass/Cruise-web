@@ -21,6 +21,8 @@ import { ActivityAttendancePage } from './pages/ActivityAttendancePage';
 import { ActivityRosterPage } from './pages/ActivityRosterPage';
 import { MySchedulePage } from './pages/MySchedulePage';
 import { PassengerFolioPage } from './pages/passenger/PassengerFolioPage';
+import { BoardingPassPage } from './pages/passenger/BoardingPassPage';
+import { TerminalEmbarkationPage } from './pages/TerminalEmbarkationPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export function App() {
@@ -29,6 +31,7 @@ export function App() {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="passenger-home" element={<PassengerHomePage />} />
+        <Route path="boarding-pass" element={<BoardingPassPage />} />
         <Route path="my-schedule" element={<MySchedulePage />} />
         <Route path="passenger/folio" element={<PassengerFolioPage />} />
         <Route path="ships" element={<ShipsPage />} />
@@ -49,6 +52,7 @@ export function App() {
         <Route path="catalog" element={<PassengerCatalogPage />} />
         <Route path="pos" element={<PosPage />} />
         <Route path="passengers" element={<PassengersPage />} />
+        <Route path="embarkation" element={<TerminalEmbarkationPage />} />
         <Route path="billing/settlement" element={<SettlementPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

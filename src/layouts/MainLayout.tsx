@@ -73,6 +73,7 @@ export function MainLayout() {
     { to: '/catalog', label: 'Duyệt Hoạt Động (Guest)', icon: Compass },
     { to: '/pos', label: 'POS & Chi tiêu Onboard', icon: CreditCard },
     { to: '/passengers', label: 'Hành khách & Check-in', icon: Users },
+    { to: '/embarkation', label: 'Cảng Đón Khách (Terminal)', icon: Ship },
     { to: '/billing/settlement', label: 'Tất toán & Hoá đơn', icon: Receipt },
   ];
 
