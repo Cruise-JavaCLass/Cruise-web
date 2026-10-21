@@ -64,6 +64,7 @@ export function MainLayout() {
   const navItems = [
     { to: '/', label: 'Dashboard Tổng quan', icon: Compass },
     { to: '/passenger-home', label: 'Trang Chủ Khách (Guest)', icon: Compass },
+    { to: '/my-schedule', label: 'Lịch Cá Nhân (My Day)', icon: Clock },
     { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship },
     { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin },
     { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation },
