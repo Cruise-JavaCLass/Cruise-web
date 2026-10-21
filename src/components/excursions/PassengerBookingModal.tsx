@@ -134,8 +134,9 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Tên hành khách</label>
+                <label htmlFor="passenger-name-input" className="block text-xs font-medium text-slate-300 mb-1">Tên hành khách</label>
                 <input
+                  id="passenger-name-input"
                   type="text"
                   value={passengerName}
                   onChange={(e) => setPassengerName(e.target.value)}
@@ -144,8 +145,9 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Số cabin</label>
+                <label htmlFor="cabin-number-input" className="block text-xs font-medium text-slate-300 mb-1">Số cabin</label>
                 <input
+                  id="cabin-number-input"
                   type="text"
                   value={cabinNumber}
                   onChange={(e) => setCabinNumber(e.target.value)}
@@ -156,13 +158,14 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label htmlFor="selected-bus-select" className="block text-xs font-medium text-slate-300 mb-1">
                 <span className="flex items-center gap-1.5">
                   <Bus className="w-3.5 h-3.5 text-cyan-400" />
                   Chọn xe du lịch (Vehicle Seat Allocation)
                 </span>
               </label>
               <select
+                id="selected-bus-select"
                 value={selectedBus}
                 onChange={(e) => setSelectedBus(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500"
@@ -175,13 +178,14 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label htmlFor="linked-cabins-input" className="block text-xs font-medium text-slate-300 mb-1">
                 <span className="flex items-center gap-1.5">
                   <Users className="w-3.5 h-3.5 text-cyan-400" />
                   Cabin gia đình liên kết (Group Cohabitation - ưu tiên cùng xe)
                 </span>
               </label>
               <input
+                id="linked-cabins-input"
                 type="text"
                 placeholder="Ví dụ: Suite-802, Balcony-614"
                 value={linkedCabins}
@@ -191,8 +195,9 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Số điện thoại liên hệ khẩn cấp</label>
+              <label htmlFor="emergency-phone-input" className="block text-xs font-medium text-slate-300 mb-1">Số điện thoại liên hệ khẩn cấp</label>
               <input
+                id="emergency-phone-input"
                 type="tel"
                 value={emergencyPhone}
                 onChange={(e) => setEmergencyPhone(e.target.value)}
@@ -202,8 +207,9 @@ export const PassengerBookingModal: React.FC<PassengerBookingModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Yêu cầu đặc biệt (Ăn kiêng / Ghế xe)</label>
+              <label htmlFor="special-req-input" className="block text-xs font-medium text-slate-300 mb-1">Yêu cầu đặc biệt (Ăn kiêng / Ghế xe)</label>
               <input
+                id="special-req-input"
                 type="text"
                 placeholder="Ghế gần cửa, ăn chay..."
                 value={specialRequirements}

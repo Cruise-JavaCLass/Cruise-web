@@ -1190,7 +1190,7 @@ export async function cancelExcursionBooking(
 
   const isWeather = reason?.toLowerCase().includes('thời tiết') || reason?.toLowerCase().includes('weather');
   const charged = exc?.price || 100;
-  const refundAmount = isWeather ? charged : charged;
+  const refundAmount = isWeather ? charged : Math.round(charged * 0.5 * 100) / 100;
   const penaltyFee = charged - refundAmount;
 
   return {

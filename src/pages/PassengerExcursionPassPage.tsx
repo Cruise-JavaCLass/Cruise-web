@@ -27,7 +27,7 @@ export const PassengerExcursionPassPage: React.FC = () => {
   };
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, []);
 
   const handleConfirmCancel = async () => {
@@ -250,8 +250,9 @@ export const PassengerExcursionPassPage: React.FC = () => {
             </p>
 
             <div className="mb-4">
-              <label className="block text-xs font-medium text-slate-300 mb-1">Lý do hủy vé:</label>
+              <label htmlFor="cancel-reason-select" className="block text-xs font-medium text-slate-300 mb-1">Lý do hủy vé:</label>
               <select
+                id="cancel-reason-select"
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-rose-500"

@@ -37,7 +37,7 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
         setLoading(false);
       }
     };
-    loadData();
+    void loadData();
   }, [selectedExcursionId]);
 
   const currentExcursion = excursions.find((e) => e.id === selectedExcursionId) || null;
@@ -130,8 +130,9 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
 
         {/* Excursion Switcher */}
         <div className="flex items-center gap-2">
-          <label className="text-xs text-slate-400 font-medium">Chọn Tour Bờ:</label>
+          <label htmlFor="excursion-select" className="text-xs text-slate-400 font-medium">Chọn Tour Bờ:</label>
           <select
+            id="excursion-select"
             value={selectedExcursionId || ''}
             onChange={(e) => setSelectedExcursionId(Number(e.target.value))}
             className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
@@ -167,9 +168,10 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
           const percentage = Math.min(100, Math.round((seated / maxCapacity) * 100));
 
           return (
-            <div
+            <button
+              type="button"
               key={bus}
-              className={`p-4 rounded-xl border transition-all ${
+              className={`p-4 rounded-xl border text-left transition-all ${
                 busFilter === bus
                   ? 'bg-cyan-500/10 border-cyan-500/50 shadow-lg shadow-cyan-500/10'
                   : 'bg-slate-900/60 border-white/5 hover:border-white/10'
@@ -191,7 +193,7 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
                   style={{ width: `${percentage}%` }}
                 />
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -307,8 +309,9 @@ export const ExcursionDispatcherDashboard: React.FC = () => {
 
             <form onSubmit={handleReassignSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Xe vận chuyển mới:</label>
+                <label htmlFor="reassign-bus-select" className="block text-xs font-medium text-slate-300 mb-1">Xe vận chuyển mới:</label>
                 <select
+                  id="reassign-bus-select"
                   value={targetBus}
                   onChange={(e) => setTargetBus(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500"
