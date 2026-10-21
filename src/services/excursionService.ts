@@ -1028,3 +1028,257 @@ export function resetExcursionServiceState(): void {
     passengers: e.passengers?.map((p) => ({ ...p })),
   }));
 }
+
+
+// ==========================================
+// EXCURSION BOOKING, VEHICLE & CANCELLATION (KAN-374, KAN-375, KAN-376)
+// ==========================================
+
+export interface ExcursionBookingPayload {
+  passengerId: number;
+  passengerName?: string;
+  cabinNumber?: string;
+  busNumber?: string;
+  groupName?: string;
+  emergencyPhone?: string;
+  specialRequirements?: string;
+  linkedCabins?: string[];
+}
+
+export interface ExcursionBookingResult {
+  bookingId: number;
+  excursionId: number;
+  passengerId: number;
+  passengerName: string;
+  cabinNumber: string;
+  ticketCode: string;
+  busNumber: string;
+  groupName: string;
+  chargedAmount: number;
+  transactionId?: string;
+  isIncluded: boolean;
+  status: string;
+  bookedAt: string;
+}
+
+export interface ExcursionCancellationResult {
+  bookingId: number;
+  excursionId: number;
+  passengerId: number;
+  status: string;
+  refundAmount: number;
+  penaltyFee: number;
+  cancellationReason?: string;
+  cancelledAt: string;
+}
+
+export interface PassengerExcursionBooking {
+  bookingId: number;
+  excursionId: number;
+  excursionTitle: string;
+  portName: string;
+  excursionDate: string;
+  gatheringTime: string;
+  departureTime: string;
+  returnToShipTime: string;
+  meetingPoint: string;
+  passengerId: number;
+  passengerName: string;
+  cabinNumber: string;
+  ticketCode: string;
+  busNumber: string;
+  groupName: string;
+  status: string;
+  chargedAmount: number;
+  isIncluded: boolean;
+}
+
+export interface ReassignBusPayload {
+  newBusNumber: string;
+  newGroupName?: string;
+}
+
+export interface ReassignBusResult {
+  bookingId: number;
+  excursionId: number;
+  ticketCode: string;
+  oldBusNumber: string;
+  newBusNumber: string;
+  groupName: string;
+  message: string;
+}
+
+export async function bookExcursion(
+  excursionId: number,
+  payload: ExcursionBookingPayload
+): Promise<ExcursionBookingResult> {
+  try {
+    const res = await apiClient.post<{ data: ExcursionBookingResult }>(
+      `/activities/excursions/${excursionId}/bookings`,
+      payload
+    );
+    if (res.data?.data) return res.data.data;
+  } catch (err) {
+    if (!isAxiosError(err)) throw err;
+  }
+
+  // Local fallback simulation
+  const exc = localExcursions.find((e) => e.id === excursionId);
+  const ticketCode = `EXC-${excursionId}-${Date.now()}`;
+  const isIncluded = exc?.isIncluded || false;
+  const chargedAmount = isIncluded ? 0 : (exc?.price || 0);
+  const busNumber = payload.busNumber || 'XE-01 (45 Chỗ)';
+  const groupName = payload.groupName || `Nhóm ${busNumber}`;
+  const bookingId = Date.now();
+
+  const newP: ExcursionPassenger = {
+    id: bookingId,
+    passengerName: payload.passengerName || 'Hành khách vãng lai',
+    cabinNumber: payload.cabinNumber || 'Suite-801',
+    ticketCode,
+    busNumber,
+    groupName,
+    emergencyPhone: payload.emergencyPhone || '0987654321',
+    status: 'REGISTERED',
+    specialRequirements: payload.specialRequirements,
+  };
+
+  if (exc) {
+    if (!exc.passengers) exc.passengers = [];
+    exc.passengers.push(newP);
+    exc.bookedCount = (exc.bookedCount || 0) + 1;
+  }
+
+  return {
+    bookingId,
+    excursionId,
+    passengerId: payload.passengerId,
+    passengerName: newP.passengerName,
+    cabinNumber: newP.cabinNumber,
+    ticketCode,
+    busNumber,
+    groupName,
+    chargedAmount,
+    transactionId: isIncluded ? undefined : `FOLIO-EXC-${bookingId}`,
+    isIncluded,
+    status: 'REGISTERED',
+    bookedAt: new Date().toISOString(),
+  };
+}
+
+export async function cancelExcursionBooking(
+  excursionId: number,
+  bookingId: number,
+  reason?: string
+): Promise<ExcursionCancellationResult> {
+  try {
+    const res = await apiClient.delete<{ data: ExcursionCancellationResult }>(
+      `/activities/excursions/${excursionId}/bookings/${bookingId}`,
+      { params: { reason } }
+    );
+    if (res.data?.data) return res.data.data;
+  } catch (err) {
+    if (!isAxiosError(err)) throw err;
+  }
+
+  // Local fallback
+  const exc = localExcursions.find((e) => e.id === excursionId);
+  if (exc && exc.passengers) {
+    exc.passengers = exc.passengers.filter((p) => p.id !== bookingId);
+    if (exc.bookedCount > 0) exc.bookedCount -= 1;
+  }
+
+  const isWeather = reason?.toLowerCase().includes('thời tiết') || reason?.toLowerCase().includes('weather');
+  const charged = exc?.price || 100;
+  const refundAmount = isWeather ? charged : charged;
+  const penaltyFee = charged - refundAmount;
+
+  return {
+    bookingId,
+    excursionId,
+    passengerId: 1,
+    status: 'CANCELLED',
+    refundAmount,
+    penaltyFee,
+    cancellationReason: reason || 'Hành khách hủy tour',
+    cancelledAt: new Date().toISOString(),
+  };
+}
+
+export async function fetchMyExcursionBookings(
+  passengerId: number = 1
+): Promise<PassengerExcursionBooking[]> {
+  try {
+    const res = await apiClient.get<{ data: PassengerExcursionBooking[] }>(
+      `/activities/excursions/bookings/my`,
+      { params: { passengerId } }
+    );
+    if (res.data?.data) return res.data.data;
+  } catch (err) {
+    if (!isAxiosError(err)) throw err;
+  }
+
+  // Local fallback
+  const result: PassengerExcursionBooking[] = [];
+  for (const exc of localExcursions) {
+    const p = exc.passengers?.find((pass) => pass.id === passengerId || pass.cabinNumber === 'Suite-801');
+    if (p) {
+      result.push({
+        bookingId: p.id,
+        excursionId: exc.id,
+        excursionTitle: exc.title,
+        portName: exc.portName,
+        excursionDate: exc.excursionDate,
+        gatheringTime: exc.meetingTime,
+        departureTime: exc.departureTime,
+        returnToShipTime: exc.returnToShipTime,
+        meetingPoint: 'Cầu cảng du lịch số 1',
+        passengerId,
+        passengerName: p.passengerName,
+        cabinNumber: p.cabinNumber,
+        ticketCode: p.ticketCode,
+        busNumber: p.busNumber,
+        groupName: p.groupName,
+        status: p.status,
+        chargedAmount: exc.isIncluded ? 0 : exc.price,
+        isIncluded: exc.isIncluded,
+      });
+    }
+  }
+  return result;
+}
+
+export async function reassignBusBooking(
+  excursionId: number,
+  bookingId: number,
+  payload: ReassignBusPayload
+): Promise<ReassignBusResult> {
+  try {
+    const res = await apiClient.patch<{ data: ReassignBusResult }>(
+      `/activities/excursions/${excursionId}/bookings/${bookingId}/reassign-bus`,
+      payload
+    );
+    if (res.data?.data) return res.data.data;
+  } catch (err) {
+    if (!isAxiosError(err)) throw err;
+  }
+
+  // Local fallback
+  const exc = localExcursions.find((e) => e.id === excursionId);
+  const p = exc?.passengers?.find((pass) => pass.id === bookingId);
+  const oldBus = p?.busNumber || 'XE-01';
+  if (p) {
+    p.busNumber = payload.newBusNumber;
+    if (payload.newGroupName) p.groupName = payload.newGroupName;
+  }
+
+  return {
+    bookingId,
+    excursionId,
+    ticketCode: p?.ticketCode || 'EXC-TKT-MOCK',
+    oldBusNumber: oldBus,
+    newBusNumber: payload.newBusNumber,
+    groupName: payload.newGroupName || (p ? p.groupName : 'Nhóm 1'),
+    message: 'Chuyển xe thành công',
+  };
+}

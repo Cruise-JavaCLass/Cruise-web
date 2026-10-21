@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Ticket, Bus, Calendar, Clock, MapPin, AlertCircle, X, ShieldAlert, CheckCircle2, RefreshCw } from 'lucide-react';
-import { fetchMyExcursionBookings, cancelExcursionBooking } from '../../services/excursionService';
-import type { PassengerExcursionBooking } from '../../services/excursionService';
+import { fetchMyExcursionBookings, cancelExcursionBooking } from '../services/excursionService';
+import type { PassengerExcursionBooking } from '../services/excursionService';
 
 export const PassengerExcursionPassPage: React.FC = () => {
   const [bookings, setBookings] = useState<PassengerExcursionBooking[]>([]);
