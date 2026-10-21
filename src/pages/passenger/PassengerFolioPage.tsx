@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   passengerFolioService,
   type PassengerFolioSummary,
   type FolioTransaction,
   type DisputePayload,
 } from '../../services/passengerFolioService';
+import { resolvePassengerId } from '../../services/passengerIdentity';
 import { FolioTransactionList } from '../../components/passenger/FolioTransactionList';
 import { DisputeModal } from '../../components/passenger/DisputeModal';
 
@@ -25,7 +26,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export const PassengerFolioPage: React.FC = () => {
-  const [passengerId] = useState<number>(101); // Default active guest
+  const [passengerId] = useState<number>(() => resolvePassengerId(101) ?? 101);
   const [summary, setSummary] = useState<PassengerFolioSummary | null>(null);
   const [transactions, setTransactions] = useState<FolioTransaction[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
@@ -35,6 +36,8 @@ export const PassengerFolioPage: React.FC = () => {
   const [isLoadingTx, setIsLoadingTx] = useState<boolean>(true);
   const [disputingTx, setDisputingTx] = useState<FolioTransaction | null>(null);
   const [feedbackMessage, setFeedbackMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const txRequestIdRef = useRef<number>(0);
 
   const fetchSummary = useCallback(async () => {
     try {
@@ -48,26 +51,38 @@ export const PassengerFolioPage: React.FC = () => {
     }
   }, [passengerId]);
 
-  const fetchTransactions = useCallback(async () => {
-    try {
-      setIsLoadingTx(true);
-      const data = await passengerFolioService.getTransactions(passengerId, categoryFilter, page, 10);
-      setTransactions(data.content);
-      setTotalPages(data.totalPages);
-    } catch {
-      setFeedbackMessage({ type: 'error', text: 'Không thể tải lịch sử giao dịch.' });
-    } finally {
-      setIsLoadingTx(false);
-    }
-  }, [passengerId, categoryFilter, page]);
-
   useEffect(() => {
     fetchSummary();
   }, [fetchSummary]);
 
   useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
+    const currentRequestId = ++txRequestIdRef.current;
+    let isCancelled = false;
+
+    setIsLoadingTx(true);
+    passengerFolioService
+      .getTransactions(passengerId, categoryFilter, page, 10)
+      .then((data) => {
+        if (!isCancelled && currentRequestId === txRequestIdRef.current) {
+          setTransactions(data.content);
+          setTotalPages(data.totalPages);
+        }
+      })
+      .catch(() => {
+        if (!isCancelled && currentRequestId === txRequestIdRef.current) {
+          setFeedbackMessage({ type: 'error', text: 'Không thể tải lịch sử giao dịch.' });
+        }
+      })
+      .finally(() => {
+        if (!isCancelled && currentRequestId === txRequestIdRef.current) {
+          setIsLoadingTx(false);
+        }
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [passengerId, categoryFilter, page]);
 
   const handleDisputeSubmit = async (payload: DisputePayload) => {
     if (!disputingTx) return;
@@ -77,7 +92,9 @@ export const PassengerFolioPage: React.FC = () => {
         type: 'success',
         text: `Đã gửi khiếu nại giao dịch ${disputingTx.transactionUuid} thành công đến Lễ tân.`,
       });
-      fetchTransactions();
+      const data = await passengerFolioService.getTransactions(passengerId, categoryFilter, page, 10);
+      setTransactions(data.content);
+      setTotalPages(data.totalPages);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Khiếu nại thất bại';
       setFeedbackMessage({ type: 'error', text: msg });
@@ -104,6 +121,7 @@ export const PassengerFolioPage: React.FC = () => {
     link.setAttribute('download', `Interim-Statement-${summary.cabinNumber}-${dateStr}.txt`);
     document.body.appendChild(link);
     link.click();
+    URL.revokeObjectURL(url);
     document.body.removeChild(link);
   };
 
@@ -125,7 +143,7 @@ export const PassengerFolioPage: React.FC = () => {
           <button
             onClick={handleExportStatement}
             disabled={!summary}
-            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition flex items-center gap-2"
+            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span>📥</span> Xuất Sao Kê Tạm Tính (Interim Statement)
           </button>
@@ -289,6 +307,7 @@ export const PassengerFolioPage: React.FC = () => {
 
         {/* Dispute Modal */}
         <DisputeModal
+          key={disputingTx?.id ?? 'none'}
           isOpen={disputingTx !== null}
           onClose={() => setDisputingTx(null)}
           transaction={disputingTx}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { FolioTransaction, DisputePayload } from '../../services/passengerFolioService';
 
 interface DisputeModalProps {
@@ -19,6 +19,15 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
   const [note, setNote] = useState<string>('');
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (transaction) {
+      setReason('INCORRECT_AMOUNT');
+      setDisputeAmount(transaction.amount.toString());
+      setNote('');
+      setError(null);
+    }
+  }, [transaction]);
 
   if (!isOpen || !transaction) return null;
 
