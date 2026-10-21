@@ -67,7 +67,48 @@ export interface EmbarkationSummary {
   vipBoarded: number;
 }
 
+export interface HealthDeclarationPayload {
+  healthDeclarationCompleted: boolean;
+  hasHealthSymptoms: boolean;
+}
+
+const isMockEnabled = (): boolean => {
+  return (
+    import.meta.env.DEV ||
+    import.meta.env.VITE_EMBARKATION_MOCK === 'true' ||
+    import.meta.env.VITE_USE_MOCK_DATA === 'true'
+  );
+};
+
 export const embarkationService = {
+  async submitHealthDeclaration(
+    passengerId: number,
+    payload: HealthDeclarationPayload
+  ): Promise<PassengerEmbarkationProfile> {
+    try {
+      const response = await apiClient.post<PassengerEmbarkationProfile>(
+        `/activities/passengers/${passengerId}/embarkation/health-declaration`,
+        payload
+      );
+      if (response && response.data) {
+        return response.data;
+      }
+      throw new Error('Empty response from health declaration');
+    } catch (error) {
+      if (!isMockEnabled()) {
+        throw error;
+      }
+      return {
+        id: passengerId,
+        tourId: 1,
+        fullName: 'Nguyễn Văn An',
+        cabinNumber: 'Suite-801',
+        healthDeclarationCompleted: payload.healthDeclarationCompleted,
+        checkInStatus: 'NOT_CHECKED_IN',
+      };
+    }
+  },
+
   async lookupPassenger(keyword: string): Promise<PassengerEmbarkationProfile> {
     try {
       const response = await apiClient.get<PassengerEmbarkationProfile>(
@@ -76,8 +117,11 @@ export const embarkationService = {
       if (response && response.data) {
         return response.data;
       }
-    } catch {
-      // Fallback for offline/mock demo
+      throw new Error('Empty response from passenger lookup');
+    } catch (error) {
+      if (!isMockEnabled()) {
+        throw error;
+      }
     }
 
     // High fidelity fallback mock
@@ -116,8 +160,11 @@ export const embarkationService = {
       if (response && response.data) {
         return response.data;
       }
-    } catch {
-      // Fallback
+      throw new Error('Empty response from check-in');
+    } catch (error) {
+      if (!isMockEnabled()) {
+        throw error;
+      }
     }
 
     return {
@@ -140,8 +187,11 @@ export const embarkationService = {
       if (response && response.data) {
         return response.data;
       }
-    } catch {
-      // Fallback
+      throw new Error('Empty response from bind-rfid');
+    } catch (error) {
+      if (!isMockEnabled()) {
+        throw error;
+      }
     }
 
     return {
@@ -162,8 +212,11 @@ export const embarkationService = {
       if (response && response.data) {
         return response.data;
       }
-    } catch {
-      // Fallback
+      throw new Error('Empty response from embarkation summary');
+    } catch (error) {
+      if (!isMockEnabled()) {
+        throw error;
+      }
     }
 
     return {
@@ -192,8 +245,11 @@ export const embarkationService = {
       if (response && response.data) {
         return response.data;
       }
-    } catch {
-      // Fallback
+      throw new Error('Empty response from export manifest');
+    } catch (error) {
+      if (!isMockEnabled()) {
+        throw error;
+      }
     }
 
     const mockCsv =

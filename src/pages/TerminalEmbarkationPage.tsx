@@ -59,9 +59,10 @@ export const TerminalEmbarkationPage: React.FC = () => {
     void loadSummary();
   }, []);
 
-  const handleLookup = async (e?: React.FormEvent) => {
+  const handleLookup = async (e?: React.FormEvent, keywordOverride?: string) => {
     if (e) e.preventDefault();
-    if (!keyword.trim()) return;
+    const term = (keywordOverride !== undefined ? keywordOverride : keyword).trim();
+    if (!term) return;
 
     setLoadingLookup(true);
     setLookupError(null);
@@ -69,11 +70,9 @@ export const TerminalEmbarkationPage: React.FC = () => {
     setRfidStatusMsg(null);
 
     try {
-      const result = await embarkationService.lookupPassenger(keyword.trim());
+      const result = await embarkationService.lookupPassenger(term);
       setProfile(result);
-      if (result.rfidTag) {
-        setRfidInput(result.rfidTag);
-      }
+      setRfidInput(result.rfidTag || '');
     } catch {
       setLookupError('Không tìm thấy hành khách với từ khóa đã nhập.');
       setProfile(null);
@@ -89,7 +88,7 @@ export const TerminalEmbarkationPage: React.FC = () => {
       setKeyword('B9827361');
       void embarkationService.lookupPassenger('B9827361').then((res) => {
         setProfile(res);
-        if (res.rfidTag) setRfidInput(res.rfidTag);
+        setRfidInput(res.rfidTag || '');
       });
     }, 800);
   };
@@ -254,11 +253,12 @@ export const TerminalEmbarkationPage: React.FC = () => {
 
             <form onSubmit={handleLookup} className="space-y-3">
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">
+                <label htmlFor="embarkation-keyword" className="text-[11px] text-slate-400 block mb-1">
                   Mã Đặt Chỗ (Booking) / Số Hộ Chiếu / Tên
                 </label>
                 <div className="relative">
                   <input
+                    id="embarkation-keyword"
                     type="text"
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
@@ -297,8 +297,9 @@ export const TerminalEmbarkationPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    setKeyword('CRUISE-PASS-8899');
-                    void handleLookup();
+                    const scannedCode = 'CRUISE-PASS-8899';
+                    setKeyword(scannedCode);
+                    void handleLookup(undefined, scannedCode);
                   }}
                   className="flex-1 py-2 px-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs text-slate-200 transition flex items-center justify-center gap-1.5"
                 >
@@ -316,8 +317,9 @@ export const TerminalEmbarkationPage: React.FC = () => {
             </div>
 
             <div className="mt-4 pt-4 border-t border-white/10">
-              <label className="text-[11px] text-slate-400 block mb-1">Cửa / Làn Check-in Hiện Tại</label>
+              <label htmlFor="embarkation-lane" className="text-[11px] text-slate-400 block mb-1">Cửa / Làn Check-in Hiện Tại</label>
               <select
+                id="embarkation-lane"
                 value={activeLane}
                 onChange={(e) => setActiveLane(e.target.value)}
                 className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"

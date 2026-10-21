@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import {
-  QrCode,
   ShieldCheck,
   HeartPulse,
   CreditCard,
@@ -9,7 +9,10 @@ import {
   AlertCircle,
   FileCheck,
 } from 'lucide-react';
-import type { PassengerEmbarkationProfile } from '../../services/embarkationService';
+import {
+  embarkationService,
+  type PassengerEmbarkationProfile,
+} from '../../services/embarkationService';
 
 interface MobileBoardingPassProps {
   profile: PassengerEmbarkationProfile;
@@ -21,24 +24,43 @@ export const MobileBoardingPass: React.FC<MobileBoardingPassProps> = ({
   onHealthDeclared,
 }) => {
   const [hasHealthSymptoms, setHasHealthSymptoms] = useState<boolean>(false);
-  const [safetyBriefingRead, setSafetyBriefingRead] = useState<boolean>(true);
+  const [safetyBriefingRead, setSafetyBriefingRead] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [successToast, setSuccessToast] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [needsMedicalReview, setNeedsMedicalReview] = useState<boolean>(false);
 
   const isDeclared = Boolean(profile.healthDeclarationCompleted);
 
-  const handleCompleteHealthDeclaration = () => {
+  const handleCompleteHealthDeclaration = async () => {
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSuccessToast('Khai báo y tế & an toàn hàng hải thành công!');
+    setErrorMessage(null);
+    try {
+      const updatedProfile = await embarkationService.submitHealthDeclaration(profile.id, {
+        healthDeclarationCompleted: true,
+        hasHealthSymptoms,
+      });
+
+      if (hasHealthSymptoms) {
+        setNeedsMedicalReview(true);
+        setSuccessToast(null);
+      } else {
+        setSuccessToast('Khai báo y tế & an toàn hàng hải thành công!');
+        setNeedsMedicalReview(false);
+      }
+
       if (onHealthDeclared) {
         onHealthDeclared({
           ...profile,
+          ...updatedProfile,
           healthDeclarationCompleted: true,
         });
       }
-    }, 400);
+    } catch {
+      setErrorMessage('Không thể gửi khai báo y tế. Vui lòng thử lại hoặc liên hệ nhân viên y tế.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -96,7 +118,11 @@ export const MobileBoardingPass: React.FC<MobileBoardingPassProps> = ({
 
       {/* Dynamic QR Code Area */}
       <div className="flex flex-col items-center justify-center p-5 bg-white rounded-xl shadow-inner mb-5">
-        <QrCode className="w-40 h-40 text-slate-900" />
+        <QRCodeSVG
+          value={profile.qrCode || profile.bookingCode || 'PASSENGER'}
+          size={160}
+          className="w-40 h-40"
+        />
         <p className="font-mono text-[11px] text-slate-700 font-semibold tracking-wider mt-2">
           {profile.qrCode || `QR-${profile.bookingCode || 'PASSENGER'}`}
         </p>
@@ -172,6 +198,18 @@ export const MobileBoardingPass: React.FC<MobileBoardingPassProps> = ({
 
         {successToast && (
           <p className="mt-2 text-center text-xs text-emerald-400 font-medium">{successToast}</p>
+        )}
+        {needsMedicalReview && (
+          <div className="mt-2 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
+            <span>Bạn đã ghi nhận có triệu chứng sức khỏe. Vui lòng di chuyển đến quầy Kiểm Tra Y Tế tại Cảng trước khi lên tàu.</span>
+          </div>
+        )}
+        {errorMessage && (
+          <div className="mt-2 p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+            <span>{errorMessage}</span>
+          </div>
         )}
       </div>
 

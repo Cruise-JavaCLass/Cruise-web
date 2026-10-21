@@ -18,6 +18,9 @@ export const BoardingPassPage: React.FC = () => {
     setError(null);
     try {
       const passengerId = resolvePassengerId();
+      if (!passengerId) {
+        throw new Error('Không xác định được danh tính hành khách (Passenger ID is missing)');
+      }
       // Lookup passenger boarding pass profile
       const data = await embarkationService.lookupPassenger(String(passengerId));
       if (!signal?.aborted) {

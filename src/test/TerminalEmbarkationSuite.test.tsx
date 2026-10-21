@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { MobileBoardingPass } from '../components/passenger/MobileBoardingPass';
 import { TerminalEmbarkationPage } from '../pages/TerminalEmbarkationPage';
 import { embarkationService, type PassengerEmbarkationProfile } from '../services/embarkationService';
@@ -36,8 +35,17 @@ describe('MobileBoardingPass Component Tests (KAN-386 / KAN-388)', () => {
     const onHealthDeclared = vi.fn();
     render(<MobileBoardingPass profile={mockProfile} onHealthDeclared={onHealthDeclared} />);
 
+    // safetyBriefingRead starts as false, verify button is disabled before checking box
+    const safetyCheckbox = screen.getByLabelText(/Tôi đã đọc và cam kết tuân thủ quy định an toàn SOLAS quốc tế/i);
+    expect(safetyCheckbox).not.toBeChecked();
+
     const submitBtn = screen.getByRole('button', { name: /Xác Nhận Khai Báo Sức Khỏe/i });
-    expect(submitBtn).toBeInTheDocument();
+    expect(submitBtn).toBeDisabled();
+
+    // Check safety briefing box
+    fireEvent.click(safetyCheckbox);
+    expect(safetyCheckbox).toBeChecked();
+    expect(submitBtn).not.toBeDisabled();
 
     fireEvent.click(submitBtn);
 
