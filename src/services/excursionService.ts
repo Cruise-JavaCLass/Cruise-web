@@ -1335,3 +1335,276 @@ export async function reassignBusBooking(
     message: 'Chuyển xe thành công',
   };
 }
+
+
+export interface ExcursionPassengerRosterItem {
+  id: number;
+  excursionId: number;
+  passengerId: number;
+  passengerName: string;
+  cabinNumber: string;
+  ticketCode: string;
+  rfidTag?: string;
+  busNumber?: string;
+  groupName?: string;
+  emergencyPhone?: string;
+  bookingStatus: 'CONFIRMED' | 'WAITLISTED' | 'CANCELLED';
+  waitlistPosition?: number;
+  status: 'REGISTERED' | 'CHECKED_IN' | 'ON_TOUR' | 'RETURNED_SAFE';
+  specialRequirements?: string;
+  needsSpecialAssistance?: boolean;
+  chargedAmount: number;
+  refundAmount: number;
+  penaltyFee: number;
+  isIncluded?: boolean;
+  checkedInAt?: string;
+  cancelledAt?: string;
+  cancellationReason?: string;
+  medicalWaiver?: boolean;
+  medicalWaiverReason?: string;
+  createdAt?: string;
+}
+
+export interface ExcursionRosterSummary {
+  excursionId: number;
+  excursionTitle: string;
+  maxCapacity?: number;
+  confirmedCount: number;
+  waitlistCount: number;
+  cancelledCount: number;
+  checkedInCount: number;
+  specialAssistanceCount: number;
+  items: ExcursionPassengerRosterItem[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface ExcursionWaitlistEntry {
+  position: number;
+  bookingId: number;
+  excursionId: number;
+  passengerId: number;
+  passengerName: string;
+  cabinNumber: string;
+  emergencyPhone?: string;
+  specialRequirements?: string;
+  bookedAt?: string;
+}
+
+export interface WaitlistPromotionResult {
+  excursionId: number;
+  bookingId: number;
+  passengerId: number;
+  passengerName: string;
+  cabinNumber: string;
+  ticketCode: string;
+  assignedBus?: string;
+  status: string;
+  chargedAmount: number;
+  transactionId?: string;
+  promotedAt?: string;
+  message: string;
+}
+
+export interface MedicalWaiverPayload {
+  reason: string;
+  approvedByStaffId?: string;
+}
+
+export interface ScheduleAlertPayload {
+  title: string;
+  message: string;
+  isUrgent?: boolean;
+  updatedMeetingLocation?: string;
+  updatedGatheringTime?: string;
+}
+
+export interface ScheduleAlertResult {
+  excursionId: number;
+  recipientsCount: number;
+  title: string;
+  message: string;
+  broadcastedAt?: string;
+  status: string;
+}
+
+export async function fetchExcursionRoster(
+  excursionId: number,
+  params?: {
+    search?: string;
+    bookingStatus?: string;
+    specialAssistance?: boolean;
+    includeCancelled?: boolean;
+    page?: number;
+    size?: number;
+  }
+): Promise<ExcursionRosterSummary> {
+  try {
+    const res = await apiClient.get<{ data: ExcursionRosterSummary }>(
+      `/v1/shore-excursions/${excursionId}/roster`,
+      { params }
+    );
+    if (res.data?.data) return res.data.data;
+  } catch (err) {
+    if (!canUseLocalFallback(err)) throw err;
+  }
+
+  const exc = localExcursions.find((e) => e.id === excursionId);
+  const passengers = exc?.passengers || [];
+
+  const filtered = passengers.filter((p) => {
+    if (params?.search) {
+      const q = params.search.toLowerCase();
+      const matchName = p.passengerName?.toLowerCase().includes(q);
+      const matchCabin = p.cabinNumber?.toLowerCase().includes(q);
+      const matchTicket = p.ticketCode?.toLowerCase().includes(q);
+      if (!matchName && !matchCabin && !matchTicket) return false;
+    }
+    if (params?.specialAssistance && !p.specialRequirements) return false;
+    return true;
+  });
+
+  const items: ExcursionPassengerRosterItem[] = filtered.map((p) => ({
+    id: p.id,
+    excursionId,
+    passengerId: p.passengerId || p.id,
+    passengerName: p.passengerName,
+    cabinNumber: p.cabinNumber,
+    ticketCode: p.ticketCode,
+    rfidTag: (p as unknown as { rfidTag?: string }).rfidTag,
+    busNumber: p.busNumber,
+    groupName: p.groupName,
+    emergencyPhone: p.emergencyPhone,
+    bookingStatus: 'CONFIRMED',
+    waitlistPosition: undefined,
+    status: p.status || 'REGISTERED',
+    specialRequirements: p.specialRequirements,
+    needsSpecialAssistance: Boolean(p.specialRequirements && p.specialRequirements.trim().length > 0),
+    chargedAmount: exc?.price || 0,
+    refundAmount: 0,
+    penaltyFee: 0,
+    isIncluded: exc?.isIncluded,
+    checkedInAt: (p as unknown as { checkedInAt?: string }).checkedInAt,
+  }));
+
+  return {
+    excursionId,
+    excursionTitle: exc?.title || 'Tour tham quan bờ',
+    maxCapacity: exc?.maxCapacity || 50,
+    confirmedCount: items.length,
+    waitlistCount: 0,
+    cancelledCount: 0,
+    checkedInCount: items.filter((i) => i.status === 'CHECKED_IN').length,
+    specialAssistanceCount: items.filter((i) => i.needsSpecialAssistance).length,
+    items,
+    page: params?.page || 0,
+    size: params?.size || 20,
+    totalElements: items.length,
+    totalPages: 1,
+  };
+}
+
+export async function fetchExcursionWaitlist(excursionId: number): Promise<ExcursionWaitlistEntry[]> {
+  try {
+    const res = await apiClient.get<{ data: ExcursionWaitlistEntry[] }>(
+      `/v1/shore-excursions/${excursionId}/waitlist`
+    );
+    if (res.data?.data) return res.data.data;
+  } catch (err) {
+    if (!canUseLocalFallback(err)) throw err;
+  }
+  return [];
+}
+
+export async function promoteWaitlistPassenger(excursionId: number): Promise<WaitlistPromotionResult> {
+  try {
+    const res = await apiClient.post<{ data: WaitlistPromotionResult }>(
+      `/v1/shore-excursions/${excursionId}/waitlist/promote`
+    );
+    if (res.data?.data) return res.data.data;
+  } catch (err) {
+    if (!canUseLocalFallback(err)) throw err;
+  }
+
+  return {
+    excursionId,
+    bookingId: 999,
+    passengerId: 101,
+    passengerName: 'Hành khách chờ',
+    cabinNumber: 'C-000',
+    ticketCode: `EXC-${excursionId}-${Date.now()}`,
+    assignedBus: 'XE-01',
+    status: 'CONFIRMED',
+    chargedAmount: 100,
+    promotedAt: new Date().toISOString(),
+    message: 'Đã đôn hành khách lên vé chính thức',
+  };
+}
+
+export async function cancelBookingWithMedicalWaiver(
+  excursionId: number,
+  bookingId: number,
+  payload: MedicalWaiverPayload
+): Promise<ExcursionCancellationResult> {
+  try {
+    const res = await apiClient.post<{ data: ExcursionCancellationResult }>(
+      `/v1/shore-excursions/${excursionId}/bookings/${bookingId}/cancel-waiver`,
+      payload
+    );
+    if (res.data?.data) return res.data.data;
+  } catch (err) {
+    if (!canUseLocalFallback(err)) throw err;
+  }
+
+  return {
+    bookingId,
+    excursionId,
+    passengerId: 1,
+    status: 'CANCELLED_MEDICAL_WAIVER',
+    refundAmount: 120,
+    penaltyFee: 0,
+    cancellationReason: `Miễn trừ y tế/khẩn cấp: ${payload.reason}`,
+    cancelledAt: new Date().toISOString(),
+  };
+}
+
+export async function exportExcursionRosterCsv(excursionId: number): Promise<Blob> {
+  try {
+    const res = await apiClient.get(
+      `/v1/shore-excursions/${excursionId}/roster/export`,
+      { responseType: 'blob' }
+    );
+    return res.data;
+  } catch (err) {
+    if (!canUseLocalFallback(err)) throw err;
+  }
+
+  const csvContent = 'Ticket Code,Passenger Name,Cabin Number\nEXC-01,Nguyen Van A,C-101';
+  return new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+}
+
+export async function sendScheduleChangeAlert(
+  excursionId: number,
+  payload: ScheduleAlertPayload
+): Promise<ScheduleAlertResult> {
+  try {
+    const res = await apiClient.post<{ data: ScheduleAlertResult }>(
+      `/v1/shore-excursions/${excursionId}/alerts/schedule-change`,
+      payload
+    );
+    if (res.data?.data) return res.data.data;
+  } catch (err) {
+    if (!canUseLocalFallback(err)) throw err;
+  }
+
+  return {
+    excursionId,
+    recipientsCount: 15,
+    title: payload.title,
+    message: payload.message,
+    broadcastedAt: new Date().toISOString(),
+    status: 'BROADCAST_SUCCESS',
+  };
+}
