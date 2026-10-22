@@ -42,6 +42,11 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
     <div className="space-y-6">
       {/* Query Filter Bar */}
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
+        {isLoading && (
+          <div className="text-xs text-indigo-600 font-medium animate-pulse">
+            Đang tải dữ liệu báo cáo...
+          </div>
+        )}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
           <div>
             <h2 className="text-lg font-bold text-gray-900">Báo Cáo Doanh Thu & Vận Hành POS</h2>
