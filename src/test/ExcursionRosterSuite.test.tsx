@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ExcursionRosterPage } from '../pages/ExcursionRosterPage';
 import { WaitlistModal, MedicalWaiverModal } from '../components/excursions/WaitlistAndWaiverModals';

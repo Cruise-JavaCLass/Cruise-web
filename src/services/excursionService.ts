@@ -1,4 +1,11 @@
 import { isAxiosError } from 'axios';
+
+export class IndeterminateOperationError extends Error {
+  constructor(message: string = 'Operation state indeterminate due to network failure') {
+    super(message);
+    this.name = 'IndeterminateOperationError';
+  }
+}
 import { apiClient } from './api';
 
 export type ExcursionStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'DELAYED';
@@ -1454,6 +1461,26 @@ export async function fetchExcursionRoster(
   const exc = localExcursions.find((e) => e.id === excursionId);
   const passengers = exc?.passengers || [];
 
+  if (params?.bookingStatus && params.bookingStatus !== 'CONFIRMED' && params.bookingStatus !== 'ALL') {
+    const page = params?.page || 0;
+    const size = params?.size || 20;
+    return {
+      excursionId,
+      excursionTitle: exc?.title || 'Tour tham quan bờ',
+      maxCapacity: exc?.maxCapacity || 50,
+      confirmedCount: 0,
+      waitlistCount: 0,
+      cancelledCount: 0,
+      checkedInCount: 0,
+      specialAssistanceCount: 0,
+      items: [],
+      page,
+      size,
+      totalElements: 0,
+      totalPages: 0,
+    };
+  }
+
   const filtered = passengers.filter((p) => {
     if (params?.search) {
       const q = params.search.toLowerCase();
@@ -1466,7 +1493,7 @@ export async function fetchExcursionRoster(
     return true;
   });
 
-  const items: ExcursionPassengerRosterItem[] = filtered.map((p) => ({
+  const allItems: ExcursionPassengerRosterItem[] = filtered.map((p) => ({
     id: p.id,
     excursionId,
     passengerId: p.passengerId || p.id,
@@ -1489,20 +1516,26 @@ export async function fetchExcursionRoster(
     checkedInAt: (p as unknown as { checkedInAt?: string }).checkedInAt,
   }));
 
+  const page = params?.page !== undefined && params.page >= 0 ? params.page : 0;
+  const size = params?.size !== undefined && params.size > 0 ? params.size : 20;
+  const start = page * size;
+  const pagedItems = allItems.slice(start, start + size);
+  const totalPages = Math.ceil(allItems.length / size) || 1;
+
   return {
     excursionId,
     excursionTitle: exc?.title || 'Tour tham quan bờ',
     maxCapacity: exc?.maxCapacity || 50,
-    confirmedCount: items.length,
+    confirmedCount: allItems.length,
     waitlistCount: 0,
     cancelledCount: 0,
-    checkedInCount: items.filter((i) => i.status === 'CHECKED_IN').length,
-    specialAssistanceCount: items.filter((i) => i.needsSpecialAssistance).length,
-    items,
-    page: params?.page || 0,
-    size: params?.size || 20,
-    totalElements: items.length,
-    totalPages: 1,
+    checkedInCount: allItems.filter((i) => i.status === 'CHECKED_IN').length,
+    specialAssistanceCount: allItems.filter((i) => i.needsSpecialAssistance).length,
+    items: pagedItems,
+    page,
+    size,
+    totalElements: allItems.length,
+    totalPages,
   };
 }
 
@@ -1525,7 +1558,10 @@ export async function promoteWaitlistPassenger(excursionId: number): Promise<Wai
     );
     if (res.data?.data) return res.data.data;
   } catch (err) {
-    if (!canUseLocalFallback(err)) throw err;
+    if (canUseLocalFallback(err)) {
+      throw new IndeterminateOperationError('Promote waitlist passenger status indeterminate due to network failure');
+    }
+    throw err;
   }
 
   return {
@@ -1555,7 +1591,10 @@ export async function cancelBookingWithMedicalWaiver(
     );
     if (res.data?.data) return res.data.data;
   } catch (err) {
-    if (!canUseLocalFallback(err)) throw err;
+    if (canUseLocalFallback(err)) {
+      throw new IndeterminateOperationError('Medical waiver cancellation status indeterminate due to network failure');
+    }
+    throw err;
   }
 
   return {
@@ -1581,7 +1620,16 @@ export async function exportExcursionRosterCsv(excursionId: number): Promise<Blo
     if (!canUseLocalFallback(err)) throw err;
   }
 
-  const csvContent = 'Ticket Code,Passenger Name,Cabin Number\nEXC-01,Nguyen Van A,C-101';
+  const exc = localExcursions.find((e) => e.id === excursionId);
+  if (!exc || !exc.passengers || exc.passengers.length === 0) {
+    throw new Error('Roster is unavailable for export');
+  }
+
+  const headers = 'Ticket Code,Passenger Name,Cabin Number,Bus Number,Group Name,Status';
+  const rows = exc.passengers.map((p) =>
+    `"${p.ticketCode}","${p.passengerName}","${p.cabinNumber}","${p.busNumber}","${p.groupName}","${p.status}"`
+  );
+  const csvContent = [headers, ...rows].join('\n');
   return new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
 }
 
@@ -1596,7 +1644,10 @@ export async function sendScheduleChangeAlert(
     );
     if (res.data?.data) return res.data.data;
   } catch (err) {
-    if (!canUseLocalFallback(err)) throw err;
+    if (canUseLocalFallback(err)) {
+      throw new IndeterminateOperationError('Schedule change alert status indeterminate due to network failure');
+    }
+    throw err;
   }
 
   return {

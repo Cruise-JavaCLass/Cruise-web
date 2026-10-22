@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   promoteWaitlistPassenger,
   cancelBookingWithMedicalWaiver,
@@ -157,6 +157,11 @@ export const MedicalWaiverModal: React.FC<MedicalWaiverModalProps> = ({
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    setReason('');
+    setErrorMsg(null);
+  }, [booking?.id, isOpen]);
 
   if (!isOpen || !booking) return null;
 

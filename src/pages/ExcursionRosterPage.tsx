@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   fetchExcursionRoster,
@@ -22,6 +22,9 @@ export const ExcursionRosterPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [specialOnly, setSpecialOnly] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(0);
+  const [waitlistError, setWaitlistError] = useState<string | null>(null);
+  const requestIdRef = useRef<number>(0);
 
   // Modals state
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
@@ -34,27 +37,56 @@ export const ExcursionRosterPage: React.FC = () => {
   const [notificationMsg, setNotificationMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const loadData = useCallback(async () => {
+    const currentRequestId = ++requestIdRef.current;
     setIsLoading(true);
+
     try {
-      const [roster, waitlistEntries] = await Promise.all([
-        fetchExcursionRoster(excursionId, {
-          search: searchQuery || undefined,
-          bookingStatus: statusFilter !== 'ALL' ? statusFilter : undefined,
-          specialAssistance: specialOnly ? true : undefined,
-        }),
-        fetchExcursionWaitlist(excursionId),
-      ]);
-      setRosterData(roster);
-      setWaitlist(waitlistEntries);
-    } catch (err: unknown) {
-      setNotificationMsg({
-        type: 'error',
-        text: err instanceof Error ? err.message : 'Lỗi khi tải danh sách đăng ký tour bờ',
+      const rosterPromise = fetchExcursionRoster(excursionId, {
+        search: searchQuery || undefined,
+        bookingStatus: statusFilter !== 'ALL' ? statusFilter : undefined,
+        specialAssistance: specialOnly ? true : undefined,
+        page,
+        size: 20,
       });
+
+      const waitlistPromise = fetchExcursionWaitlist(excursionId);
+
+      const [rosterResult, waitlistResult] = await Promise.allSettled([
+        rosterPromise,
+        waitlistPromise,
+      ]);
+
+      if (currentRequestId !== requestIdRef.current) {
+        return;
+      }
+
+      if (rosterResult.status === 'fulfilled') {
+        setRosterData(rosterResult.value);
+      } else {
+        setRosterData(null);
+        setNotificationMsg({
+          type: 'error',
+          text: rosterResult.reason instanceof Error ? rosterResult.reason.message : 'Lỗi khi tải danh sách đăng ký tour bờ',
+        });
+      }
+
+      if (waitlistResult.status === 'fulfilled') {
+        setWaitlist(waitlistResult.value);
+        setWaitlistError(null);
+      } else {
+        setWaitlist([]);
+        setWaitlistError(waitlistResult.reason instanceof Error ? waitlistResult.reason.message : 'Danh sách chờ tạm thời không khả dụng');
+      }
     } finally {
-      setIsLoading(false);
+      if (currentRequestId === requestIdRef.current) {
+        setIsLoading(false);
+      }
     }
-  }, [excursionId, searchQuery, statusFilter, specialOnly]);
+  }, [excursionId, searchQuery, statusFilter, specialOnly, page]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [searchQuery, statusFilter, specialOnly]);
 
   useEffect(() => {
     void loadData();
@@ -128,7 +160,7 @@ export const ExcursionRosterPage: React.FC = () => {
               onClick={() => setIsWaitlistOpen(true)}
               className="px-3.5 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition shadow-sm"
             >
-              <span>⏳</span> Danh Sách Chờ ({waitlist.length})
+              <span>⏳</span> Danh Sách Chờ {waitlistError ? '(Không khả dụng)' : `(${waitlist.length})`}
             </button>
             <button
               onClick={() => setIsAlertModalOpen(true)}
@@ -175,7 +207,11 @@ export const ExcursionRosterPage: React.FC = () => {
           </div>
           <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
             <div className="text-xs text-slate-400">Danh Sách Chờ (Waitlist)</div>
-            <div className="text-2xl font-bold text-amber-400 mt-1">{waitlist.length}</div>
+            {waitlistError ? (
+              <div className="text-sm font-semibold text-rose-400 mt-2">Không khả dụng</div>
+            ) : (
+              <div className="text-2xl font-bold text-amber-400 mt-1">{waitlist.length}</div>
+            )}
           </div>
           <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
             <div className="text-xs text-slate-400">Đã Check-In</div>
@@ -303,6 +339,32 @@ export const ExcursionRosterPage: React.FC = () => {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {rosterData && rosterData.totalPages > 1 && (
+            <div className="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-950/40">
+              <span className="text-xs text-slate-400">
+                Trang <strong className="text-white">{page + 1}</strong> / <strong className="text-white">{rosterData.totalPages}</strong> ({rosterData.totalElements} hành khách)
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={page <= 0}
+                  onClick={() => setPage((prev) => Math.max(0, prev - 1))}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs text-slate-300 font-medium rounded-lg transition"
+                >
+                  Trang Trước
+                </button>
+                <button
+                  type="button"
+                  disabled={page >= rosterData.totalPages - 1}
+                  onClick={() => setPage((prev) => prev + 1)}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs text-slate-300 font-medium rounded-lg transition"
+                >
+                  Trang Kế
+                </button>
+              </div>
             </div>
           )}
         </div>
