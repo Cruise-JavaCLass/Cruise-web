@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   DollarSign,
   Users,
@@ -25,8 +25,10 @@ export const ProviderSettlementDashboard: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [selectedSettlement, setSelectedSettlement] = useState<SettlementDetail | null>(null);
   const [isAdjustmentModalOpen, setIsAdjustmentModalOpen] = useState(false);
+  const activeRequestIdRef = useRef<number>(0);
 
   const loadData = useCallback(async () => {
+    const currentRequestId = ++activeRequestIdRef.current;
     try {
       setLoading(true);
       setError(null);
@@ -34,11 +36,17 @@ export const ProviderSettlementDashboard: React.FC = () => {
         status: statusFilter === 'ALL' ? undefined : (statusFilter as SettlementStatus),
         size: 100,
       });
-      setSettlements(res.content || []);
+      if (currentRequestId === activeRequestIdRef.current) {
+        setSettlements(res.content || []);
+      }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Không thể tải danh sách quyết toán nhà cung cấp');
+      if (currentRequestId === activeRequestIdRef.current) {
+        setError(err instanceof Error ? err.message : 'Không thể tải danh sách quyết toán nhà cung cấp');
+      }
     } finally {
-      setLoading(false);
+      if (currentRequestId === activeRequestIdRef.current) {
+        setLoading(false);
+      }
     }
   }, [statusFilter]);
 

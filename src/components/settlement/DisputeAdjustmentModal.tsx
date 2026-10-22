@@ -71,7 +71,8 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-lg"
+            disabled={submitting}
+            className="text-slate-400 hover:text-white p-1 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Đóng dialog"
           >
             <X className="w-5 h-5" />
