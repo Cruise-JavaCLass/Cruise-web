@@ -1,0 +1,185 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import type {
+  OperationalReportQuery,
+  OperationalReportResponse,
+  ReportDimension,
+} from '../../services/reportTypes';
+import { operationalReportService } from '../../services/operationalReportService';
+
+interface OperationalReportDashboardProps {
+  onOpenExportDrawer?: (query: OperationalReportQuery) => void;
+}
+
+export const OperationalReportDashboard: React.FC<OperationalReportDashboardProps> = ({
+  onOpenExportDrawer,
+}) => {
+  const [query, setQuery] = useState<OperationalReportQuery>({
+    dimension: 'OUTLET',
+  });
+  const [report, setReport] = useState<OperationalReportResponse | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const fetchReport = useCallback(async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      const data = await operationalReportService.getRevenueReport(query);
+      setReport(data);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Không thể tải báo cáo doanh thu';
+      setErrorMessage(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [query]);
+
+  useEffect(() => {
+    void fetchReport();
+  }, [fetchReport]);
+
+  return (
+    <div className="space-y-6">
+      {/* Query Filter Bar */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Báo Cáo Doanh Thu & Vận Hành POS</h2>
+            <p className="text-xs text-gray-500">Phân tích đa chiều theo điểm bán, phương thức thanh toán</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onOpenExportDrawer && onOpenExportDrawer(query)}
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-700 transition"
+          >
+            📥 Xuất Báo Cáo (CSV / Excel / PDF)
+          </button>
+        </div>
+
+        {/* Filter Form Controls */}
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+          <div>
+            <label className="block font-semibold text-gray-600 mb-1">Chiều phân tích</label>
+            <select
+              value={query.dimension}
+              onChange={(e) => setQuery({ ...query, dimension: e.target.value as ReportDimension })}
+              className="w-full rounded-xl border border-gray-300 p-2 focus:border-indigo-500 focus:outline-none"
+            >
+              <option value="OUTLET">Theo Điểm Bán (Outlet / Station)</option>
+              <option value="PAYMENT_METHOD">Theo Phương Thức Thanh Toán</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block font-semibold text-gray-600 mb-1">Phương thức thanh toán</label>
+            <select
+              value={query.paymentMethod || ''}
+              onChange={(e) => setQuery({ ...query, paymentMethod: e.target.value || undefined })}
+              className="w-full rounded-xl border border-gray-300 p-2 focus:border-indigo-500 focus:outline-none"
+            >
+              <option value="">Tất cả phương thức</option>
+              <option value="CABIN_FOLIO">Tài khoản Cabin Folio</option>
+              <option value="CREDIT_CARD">Thẻ Tín Dụng</option>
+              <option value="CASH">Tiền Mặt</option>
+              <option value="VIETQR">Chuyển Khoản VietQR</option>
+            </select>
+          </div>
+
+          <div className="sm:col-span-2 flex items-end">
+            <button
+              type="button"
+              onClick={() => void fetchReport()}
+              className="w-full rounded-xl bg-gray-900 py-2 text-xs font-semibold text-white hover:bg-gray-800 transition"
+            >
+              Áp Dụng Bộ Lọc
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {errorMessage && (
+        <div className="rounded-xl bg-rose-50 p-4 text-sm text-rose-700 border border-rose-200">
+          {errorMessage}
+        </div>
+      )}
+
+      {/* KPI Summary Cards */}
+      {report && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+            <span className="text-xs font-semibold text-gray-500">Tổng doanh thu gộp</span>
+            <div className="text-xl font-bold text-gray-900 mt-1">
+              ${report.totalGrossRevenue.toFixed(2)}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+            <span className="text-xs font-semibold text-gray-500">Doanh thu thuần (Net)</span>
+            <div className="text-xl font-bold text-emerald-600 mt-1">
+              ${report.totalNetRevenue.toFixed(2)}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+            <span className="text-xs font-semibold text-gray-500">Tổng số giao dịch</span>
+            <div className="text-xl font-bold text-gray-900 mt-1">
+              {report.totalTransactionCount}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+            <span className="text-xs font-semibold text-gray-500">Giá trị đơn trung bình</span>
+            <div className="text-xl font-bold text-indigo-600 mt-1">
+              ${report.averageTicketSize.toFixed(2)}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Data Table */}
+      {report && (
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className="border-b border-gray-100 bg-gray-50 px-6 py-3 text-xs font-bold uppercase tracking-wider text-gray-600">
+            Chi tiết phân rã số liệu
+          </div>
+          <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
+            <thead className="bg-gray-50/50 text-xs font-semibold text-gray-500">
+              <tr>
+                <th className="px-6 py-3">Phân loại</th>
+                <th className="px-6 py-3">Số lượt giao dịch</th>
+                <th className="px-6 py-3">Doanh thu gộp</th>
+                <th className="px-6 py-3">Doanh thu thuần</th>
+                <th className="px-6 py-3 text-right">Tỷ trọng (%)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {report.breakdown.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-sm text-gray-400">
+                    Không có giao dịch nào phù hợp với bộ lọc
+                  </td>
+                </tr>
+              ) : (
+                report.breakdown.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-gray-50/50">
+                    <td className="px-6 py-3 font-semibold text-gray-900">{row.label}</td>
+                    <td className="px-6 py-3 text-gray-600">{row.transactionCount}</td>
+                    <td className="px-6 py-3 font-medium text-gray-900">
+                      ${row.grossRevenue.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-3 font-semibold text-emerald-600">
+                      ${row.netRevenue.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-3 text-right font-bold text-indigo-600">
+                      {row.revenuePercentage}%
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
