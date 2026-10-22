@@ -1,44 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import {
   solasMusterService,
-  MusterStationTallyDto,
-  BroadcastTriggerRequest
+  SolasMusterIncident,
+  SolasEmergencyType
 } from '../../services/solasMusterService';
 
-interface BridgeMusterCommandConsoleProps {
-  voyageId: string;
-}
-
-export const BridgeMusterCommandConsole: React.FC<BridgeMusterCommandConsoleProps> = ({ voyageId }) => {
-  const [tally, setTally] = useState<MusterStationTallyDto[]>([]);
+export const BridgeMusterCommandConsole: React.FC = () => {
+  const [activeMuster, setActiveMuster] = useState<SolasMusterIncident | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [incidentType, setIncidentType] = useState<string>('FIRE_OUTBREAK');
-  const [affectedDeck, setAffectedDeck] = useState<string>('Deck 4 Midship');
-  const [customInstructions, setCustomInstructions] = useState<string>(
-    'Prepare to proceed to your designated Muster Station immediately with warm clothing and lifejackets.'
+  const [emergencyType, setEmergencyType] = useState<SolasEmergencyType>('FIRE_ALARM');
+  const [announcementText, setAnnouncementText] = useState<string>(
+    'Attention all passengers and crew: General Emergency. Proceed to muster stations.'
   );
   const [broadcasting, setBroadcasting] = useState<boolean>(false);
   const [broadcastSuccess, setBroadcastSuccess] = useState<string | null>(null);
 
-  const fetchTally = async () => {
+  const fetchActiveMuster = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await solasMusterService.getMusterStationTally(voyageId);
-      setTally(data);
+      const incident = await solasMusterService.getActiveMuster();
+      setActiveMuster(incident);
     } catch (err: any) {
-      setError(err?.message || 'Failed to fetch muster station tallies');
+      setError(err?.message || 'Failed to fetch active muster incident');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTally();
-    const interval = setInterval(fetchTally, 10000);
+    fetchActiveMuster();
+    const interval = setInterval(fetchActiveMuster, 8000);
     return () => clearInterval(interval);
-  }, [voyageId]);
+  }, []);
 
   const handleBroadcast = async () => {
     if (!window.confirm('WARNING: You are about to initiate a VESSEL-WIDE SOLAS EMERGENCY ALARM. Proceed?')) {
@@ -49,18 +44,13 @@ export const BridgeMusterCommandConsole: React.FC<BridgeMusterCommandConsoleProp
       setBroadcastSuccess(null);
       setError(null);
 
-      const payload: BroadcastTriggerRequest = {
-        voyageId,
-        incidentType,
-        affectedDeckZone: affectedDeck,
-        customInstructions,
-        soundGeneralAlarm: true,
-        triggeredBy: 'Bridge Officer on Duty'
-      };
-
-      await solasMusterService.triggerEmergencyBroadcast(payload);
+      const incident = await solasMusterService.triggerEmergencyMuster({
+        emergencyType,
+        triggeredBy: 'Bridge Officer on Duty',
+        announcementText
+      });
+      setActiveMuster(incident);
       setBroadcastSuccess('GENERAL EMERGENCY ALARM BROADCASTED SUCCESSFULLY TO ALL TERMINALS');
-      await fetchTally();
     } catch (err: any) {
       setError(err?.message || 'Failed to trigger SOLAS emergency broadcast');
     } finally {
@@ -69,25 +59,31 @@ export const BridgeMusterCommandConsole: React.FC<BridgeMusterCommandConsoleProp
   };
 
   const handleAllClear = async () => {
+    if (!activeMuster?.id) return;
     if (!window.confirm('Confirm ALL CLEAR signal broadcast across vessel?')) {
       return;
     }
     try {
       setBroadcasting(true);
       setError(null);
-      await solasMusterService.cancelEmergencyAlert(voyageId, 'Drill complete or situation neutralized by Bridge');
+      const incident = await solasMusterService.setAllClear(activeMuster.id);
+      setActiveMuster(incident);
       setBroadcastSuccess('ALL-CLEAR SIGNAL TRANSMITTED. ALARMS DEACTIVATED.');
-      await fetchTally();
     } catch (err: any) {
-      setError(err?.message || 'Failed to cancel emergency');
+      setError(err?.message || 'Failed to transmit All-Clear');
     } finally {
       setBroadcasting(false);
     }
   };
 
-  const totalAssigned = tally.reduce((acc, curr) => acc + curr.assignedPassengerCount, 0);
-  const totalCheckedIn = tally.reduce((acc, curr) => acc + curr.checkedInCount, 0);
-  const overallPercentage = totalAssigned > 0 ? Math.round((totalCheckedIn / totalAssigned) * 100) : 0;
+  const totalSouls = activeMuster?.totalSoulsOnBoard || 0;
+  const musteredSouls = activeMuster?.musteredSoulsCount || 0;
+  const completionRate =
+    activeMuster?.musterCompletionRate ??
+    (totalSouls > 0 ? Math.round((musteredSouls / totalSouls) * 100) : 0);
+
+  const headCounts = activeMuster?.headCountByStation || {};
+  const stationEntries = Object.entries(headCounts);
 
   return (
     <div className="bg-slate-900 border-2 border-red-700/60 rounded-xl p-6 text-slate-100 shadow-2xl">
@@ -100,23 +96,27 @@ export const BridgeMusterCommandConsole: React.FC<BridgeMusterCommandConsoleProp
               Bridge SOLAS Command & Muster Telemetry Console
             </h2>
           </div>
-          <p className="text-xs text-slate-400 mt-1 font-mono">Voyage Ref: {voyageId}</p>
+          <p className="text-xs text-slate-400 mt-1 font-mono">
+            Incident Status: {activeMuster?.status || 'STANDBY'} {activeMuster ? `(${activeMuster.incidentCode})` : ''}
+          </p>
         </div>
         <div className="flex gap-2 mt-2 sm:mt-0">
           <button
-            onClick={fetchTally}
+            onClick={fetchActiveMuster}
             disabled={loading}
             className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded border border-slate-700 text-slate-200 transition"
           >
             {loading ? 'Refreshing...' : 'Refresh Telemetry'}
           </button>
-          <button
-            onClick={handleAllClear}
-            disabled={broadcasting}
-            className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-xs font-bold rounded text-white shadow transition"
-          >
-            Broadcast All-Clear
-          </button>
+          {activeMuster && activeMuster.status !== 'ALL_CLEAR' && (
+            <button
+              onClick={handleAllClear}
+              disabled={broadcasting}
+              className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-xs font-bold rounded text-white shadow transition"
+            >
+              Broadcast All-Clear
+            </button>
+          )}
         </div>
       </div>
 
@@ -140,23 +140,23 @@ export const BridgeMusterCommandConsole: React.FC<BridgeMusterCommandConsoleProp
               Total Vessel Muster Progress
             </span>
             <div className="text-2xl font-black text-white mt-1">
-              {totalCheckedIn} / {totalAssigned} <span className="text-sm font-normal text-slate-400">souls accounted for</span>
+              {musteredSouls} / {totalSouls} <span className="text-sm font-normal text-slate-400">souls accounted for</span>
             </div>
           </div>
-          <div className="text-3xl font-black font-mono text-cyan-400">{overallPercentage}%</div>
+          <div className="text-3xl font-black font-mono text-cyan-400">{completionRate}%</div>
         </div>
 
         {/* Progress Bar */}
         <div className="w-full bg-slate-700 h-4 rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-500 ${
-              overallPercentage >= 100
+              completionRate >= 100
                 ? 'bg-emerald-500'
-                : overallPercentage >= 70
+                : completionRate >= 70
                 ? 'bg-amber-400'
                 : 'bg-red-500'
             }`}
-            style={{ width: `${Math.min(overallPercentage, 100)}%` }}
+            style={{ width: `${Math.min(completionRate, 100)}%` }}
           />
         </div>
       </div>
@@ -166,46 +166,29 @@ export const BridgeMusterCommandConsole: React.FC<BridgeMusterCommandConsoleProp
         {/* Muster Stations Grid */}
         <div className="lg:col-span-2 space-y-3">
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 font-mono">
-            Muster Station Headcount Stations
+            Muster Station Headcount Breakdown
           </h3>
-          {tally.length === 0 ? (
+          {stationEntries.length === 0 ? (
             <div className="p-4 bg-slate-800/40 rounded border border-slate-800 text-center text-sm text-slate-500">
-              No active muster station tallies reporting.
+              No station check-ins reported yet or standby mode.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {tally.map((st) => {
-                const pct = st.assignedPassengerCount > 0
-                  ? Math.round((st.checkedInCount / st.assignedPassengerCount) * 100)
-                  : 0;
-                return (
-                  <div
-                    key={st.stationCode}
-                    className="p-3.5 bg-slate-800/60 rounded-lg border border-slate-700 hover:border-slate-600 transition"
-                  >
-                    <div className="flex justify-between items-center mb-1">
-                      <div className="font-bold text-white text-base">Station {st.stationCode}</div>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded font-mono font-bold ${
-                          st.allAccountedFor
-                            ? 'bg-emerald-950 text-emerald-400 border border-emerald-700'
-                            : 'bg-amber-950 text-amber-400 border border-amber-700'
-                        }`}
-                      >
-                        {st.allAccountedFor ? '100% ACCOUNTED' : `${pct}% TALLY`}
-                      </span>
-                    </div>
-                    <div className="text-xs text-slate-400 mb-2">
-                      Deck: {st.deckZone} | Lifeboat #{st.lifeboatNumber}
-                    </div>
-                    <div className="flex justify-between text-xs font-mono text-slate-300">
-                      <span>Checked-In: <strong>{st.checkedInCount}</strong></span>
-                      <span>Missing: <strong className="text-red-400">{st.missingCount}</strong></span>
-                      <span>Assigned: <strong>{st.assignedPassengerCount}</strong></span>
-                    </div>
+              {stationEntries.map(([code, count]) => (
+                <div
+                  key={code}
+                  className="p-3.5 bg-slate-800/60 rounded-lg border border-slate-700 hover:border-slate-600 transition flex justify-between items-center"
+                >
+                  <div>
+                    <div className="font-bold text-white text-base">Station {code}</div>
+                    <span className="text-xs text-slate-400">Headcount tally</span>
                   </div>
-                );
-              })}
+                  <div className="text-right">
+                    <span className="text-xl font-bold font-mono text-emerald-400">{count}</span>
+                    <span className="text-xs text-slate-400 block">souls checked in</span>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -219,36 +202,26 @@ export const BridgeMusterCommandConsole: React.FC<BridgeMusterCommandConsoleProp
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 mb-1">Incident Type</label>
+                <label className="block text-slate-400 mb-1">Emergency Type</label>
                 <select
-                  value={incidentType}
-                  onChange={(e) => setIncidentType(e.target.value)}
+                  value={emergencyType}
+                  onChange={(e) => setEmergencyType(e.target.value as SolasEmergencyType)}
                   className="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-white font-medium focus:ring-1 focus:ring-red-500"
                 >
-                  <option value="FIRE_OUTBREAK">FIRE OUTBREAK</option>
-                  <option value="HULL_BREACH">HULL BREACH / FLOODING</option>
-                  <option value="COLLISION_HAZARD">COLLISION HAZARD</option>
-                  <option value="MUSTER_DRILL">SCHEDULED MUSTER DRILL</option>
-                  <option value="ABANDON_SHIP">ABANDON SHIP PREPARATION</option>
+                  <option value="GENERAL_EMERGENCY">GENERAL EMERGENCY</option>
+                  <option value="FIRE_ALARM">FIRE ALARM</option>
+                  <option value="ABANDON_SHIP">ABANDON SHIP</option>
+                  <option value="MAN_OVERBOARD">MAN OVERBOARD</option>
+                  <option value="DRILL_PRACTICE">DRILL PRACTICE</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1">Affected Deck / Sector</label>
-                <input
-                  type="text"
-                  value={affectedDeck}
-                  onChange={(e) => setAffectedDeck(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-white font-medium focus:ring-1 focus:ring-red-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-400 mb-1">Custom Broadcast Directive</label>
+                <label className="block text-slate-400 mb-1">Announcement Broadcast Message</label>
                 <textarea
                   rows={3}
-                  value={customInstructions}
-                  onChange={(e) => setCustomInstructions(e.target.value)}
+                  value={announcementText}
+                  onChange={(e) => setAnnouncementText(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-white font-medium focus:ring-1 focus:ring-red-500"
                 />
               </div>
