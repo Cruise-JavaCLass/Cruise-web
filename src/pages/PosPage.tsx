@@ -38,6 +38,8 @@ import {
 import { DiscrepancyInspectorModal } from '../components/pos/DiscrepancyInspectorModal';
 import { DisputeManagementWorkspace } from '../components/pos/DisputeManagementWorkspace';
 import { SyncControlPanel } from '../components/pos/SyncControlPanel';
+import { OfflineStatusBadge } from '../components/pos/OfflineStatusBadge';
+import { PendingQueueInspectorModal } from '../components/pos/PendingQueueInspectorModal';
 
 export function PosPage() {
   const [activeTab, setActiveTab] = useState<'REGISTER' | 'LEDGER' | 'CATALOG' | 'RECONCILIATION' | 'DISPUTES' | 'SYNC'>('REGISTER');
@@ -68,6 +70,7 @@ export function PosPage() {
   const [disputes, setDisputes] = useState<DisputeCase[]>([]);
   const [selectedDiscrepancy, setSelectedDiscrepancy] = useState<DiscrepancyRecord | null>(null);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
+  const [isQueueInspectorOpen, setIsQueueInspectorOpen] = useState(false);
   const [isRunningRecon, setIsRunningRecon] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
