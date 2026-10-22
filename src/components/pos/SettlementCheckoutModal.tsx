@@ -55,18 +55,21 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (qrData && pollingStatus === 'PENDING') {
-      interval = setInterval(async () => {
+      const checkStatus = async () => {
         try {
           const status = await paymentGatewayService.getPaymentStatus(qrData.paymentReference);
           setPollingStatus(status);
           if (status === 'PAID') {
-            clearInterval(interval);
             if (onPaymentSuccess) onPaymentSuccess();
           }
         } catch {
           // ignore transient polling network errors
         }
-      }, 3000);
+      };
+
+      // Trigger immediate check then interval
+      void checkStatus();
+      interval = setInterval(checkStatus, 2000);
     }
     return () => {
       if (interval) clearInterval(interval);
