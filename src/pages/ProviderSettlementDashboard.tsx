@@ -4,7 +4,6 @@ import {
   Users,
   ShieldCheck,
   RefreshCw,
-  FileSpreadsheet,
   AlertCircle,
   Filter,
 } from 'lucide-react';
@@ -12,7 +11,6 @@ import {
   fetchSettlements,
   updateSettlementStatus,
   addSettlementAdjustment,
-  fetchProviderSummary,
   type SettlementDetail,
   type SettlementStatus,
   type CreateAdjustmentRequest,
@@ -34,6 +32,7 @@ export const ProviderSettlementDashboard: React.FC = () => {
       setError(null);
       const res = await fetchSettlements({
         status: statusFilter === 'ALL' ? undefined : (statusFilter as SettlementStatus),
+        size: 100,
       });
       setSettlements(res.content || []);
     } catch (err: unknown) {
@@ -64,21 +63,31 @@ export const ProviderSettlementDashboard: React.FC = () => {
   };
 
   const handleVerify = async (id: number) => {
-    await updateSettlementStatus(id, {
-      targetStatus: 'PENDING_VERIFICATION',
-      actor: 'SHORE_EXCURSION_MANAGER',
-      note: 'Chuyển sang trạng thái chờ xác minh đối soát',
-    });
-    await loadData();
+    try {
+      setError(null);
+      await updateSettlementStatus(id, {
+        targetStatus: 'PENDING_VERIFICATION',
+        actor: 'SHORE_EXCURSION_MANAGER',
+        note: 'Chuyển sang trạng thái chờ xác minh đối soát',
+      });
+      await loadData();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Không thể gửi đối soát quyết toán');
+    }
   };
 
   const handleApprove = async (id: number) => {
-    await updateSettlementStatus(id, {
-      targetStatus: 'APPROVED',
-      actor: 'FINANCE_MANAGER',
-      note: 'Phê duyệt ủy nhiệm chi & khóa sổ cái vĩnh viễn',
-    });
-    await loadData();
+    try {
+      setError(null);
+      await updateSettlementStatus(id, {
+        targetStatus: 'APPROVED',
+        actor: 'FINANCE_MANAGER',
+        note: 'Phê duyệt ủy nhiệm chi & khóa sổ cái vĩnh viễn',
+      });
+      await loadData();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Không thể phê duyệt quyết toán');
+    }
   };
 
   // Metrics summary

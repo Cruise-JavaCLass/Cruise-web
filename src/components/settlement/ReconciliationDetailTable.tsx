@@ -1,5 +1,6 @@
 import React from 'react';
-import { AlertCircle, Clock, CheckCircle2, DollarSign, PlusCircle } from 'lucide-react';
+import { useState } from 'react';
+import { Clock, CheckCircle2, DollarSign, PlusCircle } from 'lucide-react';
 import type { SettlementDetail } from '../../services/providerSettlementService';
 import { PayoutApprovalButton } from './PayoutApprovalButton';
 
@@ -16,6 +17,7 @@ export const ReconciliationDetailTable: React.FC<ReconciliationDetailTableProps>
   onApprove,
   onVerify,
 }) => {
+  const [verifyingId, setVerifyingId] = useState<number | null>(null);
   if (settlements.length === 0) {
     return (
       <div className="p-8 text-center bg-[#07090e] border border-white/5 rounded-2xl text-slate-400 text-xs">
@@ -117,10 +119,20 @@ export const ReconciliationDetailTable: React.FC<ReconciliationDetailTableProps>
                   <div className="flex items-center justify-end gap-1.5">
                     {s.status === 'DRAFT' && (
                       <button
-                        onClick={() => onVerify(s.id)}
-                        className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs border border-amber-500/20"
+                        disabled={verifyingId === s.id}
+                        onClick={async () => {
+                          try {
+                            setVerifyingId(s.id);
+                            await onVerify(s.id);
+                          } catch (err) {
+                            console.error('Lỗi khi gửi đối soát:', err);
+                          } finally {
+                            setVerifyingId(null);
+                          }
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed text-amber-300 text-xs border border-amber-500/20"
                       >
-                        Gửi Đối Soát
+                        {verifyingId === s.id ? 'Đang gửi...' : 'Gửi Đối Soát'}
                       </button>
                     )}
 

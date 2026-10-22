@@ -19,7 +19,7 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
   const [amount, setAmount] = useState<number | ''>('');
   const [invoiceReference, setInvoiceReference] = useState('');
   const [explanation, setExplanation] = useState('');
-  const [recordedBy, setRecordedBy] = useState('SHORE_EXCURSION_MANAGER');
+  const [recordedBy] = useState('SHORE_EXCURSION_MANAGER');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

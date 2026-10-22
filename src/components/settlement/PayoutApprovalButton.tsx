@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Lock, ShieldCheck } from 'lucide-react';
-import type { SettlementDetail, SettlementStatus } from '../../services/providerSettlementService';
+import { Lock, ShieldCheck } from 'lucide-react';
+import type { SettlementDetail } from '../../services/providerSettlementService';
 
 interface PayoutApprovalButtonProps {
   settlement: SettlementDetail;
