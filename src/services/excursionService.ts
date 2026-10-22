@@ -1540,15 +1540,10 @@ export async function fetchExcursionRoster(
 }
 
 export async function fetchExcursionWaitlist(excursionId: number): Promise<ExcursionWaitlistEntry[]> {
-  try {
-    const res = await apiClient.get<{ data: ExcursionWaitlistEntry[] }>(
-      `/v1/shore-excursions/${excursionId}/waitlist`
-    );
-    if (res.data?.data) return res.data.data;
-  } catch (err) {
-    if (!canUseLocalFallback(err)) throw err;
-  }
-  return [];
+  const res = await apiClient.get<{ data: ExcursionWaitlistEntry[] }>(
+    `/v1/shore-excursions/${excursionId}/waitlist`
+  );
+  return res.data?.data || [];
 }
 
 export async function promoteWaitlistPassenger(excursionId: number): Promise<WaitlistPromotionResult> {
@@ -1625,9 +1620,24 @@ export async function exportExcursionRosterCsv(excursionId: number): Promise<Blo
     throw new Error('Roster is unavailable for export');
   }
 
+  const escapeCsvField = (val: unknown): string => {
+    let str = val == null ? '' : String(val);
+    if (/^[=+\-@]/.test(str)) {
+      str = `'${str}`;
+    }
+    return `"${str.replace(/"/g, '""')}"`;
+  };
+
   const headers = 'Ticket Code,Passenger Name,Cabin Number,Bus Number,Group Name,Status';
   const rows = exc.passengers.map((p) =>
-    `"${p.ticketCode}","${p.passengerName}","${p.cabinNumber}","${p.busNumber}","${p.groupName}","${p.status}"`
+    [
+      escapeCsvField(p.ticketCode),
+      escapeCsvField(p.passengerName),
+      escapeCsvField(p.cabinNumber),
+      escapeCsvField(p.busNumber),
+      escapeCsvField(p.groupName),
+      escapeCsvField(p.status),
+    ].join(',')
   );
   const csvContent = [headers, ...rows].join('\n');
   return new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
