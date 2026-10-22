@@ -34,6 +34,10 @@ import {
 } from '../../services/posCatalogService';
 import { PosReceiptModal } from './PosReceiptModal';
 import { ModifierSelectorModal } from './ModifierSelectorModal';
+import { PosDigitalSignaturePad } from './PosDigitalSignaturePad';
+import { CabinBillSplittingWizard } from './CabinBillSplittingWizard';
+import { cabinBillingService } from '../../services/cabinBillingService';
+import { Users, PenTool } from 'lucide-react';
 
 export interface CartItemEntry {
   cartId: string;
@@ -183,6 +187,9 @@ export const PosRegister: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [completedTx, setCompletedTx] = useState<PosTransaction | null>(null);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
+  const [isSplitWizardOpen, setIsSplitWizardOpen] = useState(false);
+  const [capturedSignatureBase64, setCapturedSignatureBase64] = useState<string | undefined>(undefined);
   const [heldOrders, setHeldOrders] = useState<HeldOrder[]>(() => {
     try {
       const stored = localStorage.getItem('CRUISE_POS_HELD_ORDERS');
@@ -616,6 +623,7 @@ export const PosRegister: React.FC = () => {
       return;
     }
 
+    
     setIsSubmitting(true);
     setSubmitError(null);
 
@@ -645,8 +653,25 @@ export const PosRegister: React.FC = () => {
       };
 
       const result = await posService.createTransaction(payload, idempotencyKeyRef.current);
+      if (capturedSignatureBase64 && result.transactionUuid && activeFolio?.cabinNumber) {
+        try {
+          await cabinBillingService.archiveSignature({
+            transactionUuid: result.transactionUuid,
+            transactionId: result.id,
+            cabinNumber: activeFolio.cabinNumber,
+            passengerId: activeFolio.passengerId,
+            signerName: (activeFolio as unknown as { guestName?: string })?.guestName || activeFolio?.primaryGuestName || 'Valued Guest',
+            signatureImageBase64: capturedSignatureBase64,
+            capturedBy: cashierId,
+            amount: result.totalAmount,
+          });
+        } catch (sigErr) {
+          console.warn('Could not archive signature:', sigErr);
+        }
+      }
       setCompletedTx(result);
       setIsReceiptOpen(true);
+      setCapturedSignatureBase64(undefined);
       clearCart();
       if (paymentMethod === 'CABIN_FOLIO' && activeFolio) {
         void handleLookupFolio();
@@ -1196,6 +1221,32 @@ export const PosRegister: React.FC = () => {
           <div className="mt-2.5 p-2 rounded-xl bg-rose-950/60 border border-rose-800 text-[11px] text-rose-300 flex items-center gap-1.5">
             <AlertCircle className="w-3.5 h-3.5 shrink-0" />
             <span>{submitError}</span>
+          </div>
+        )}
+
+        {/* Split Bill & Digital Signature Controls */}
+        {cart.length > 0 && paymentMethod === 'CABIN_FOLIO' && (
+          <div className="mt-2 flex gap-2">
+            <button
+              type="button"
+              onClick={() => setIsSplitWizardOpen(true)}
+              className="flex-1 py-2 px-3 rounded-xl bg-indigo-900/40 hover:bg-indigo-900/60 border border-indigo-700/60 text-indigo-300 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition"
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Chia Bill Phòng</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsSignatureModalOpen(true)}
+              className={`py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                capturedSignatureBase64
+                  ? 'bg-emerald-950/50 border-emerald-600 text-emerald-300'
+                  : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+              }`}
+            >
+              <PenTool className="w-3.5 h-3.5" />
+              <span>{capturedSignatureBase64 ? 'Đã Ký Chữ Ký Số' : 'Ký Số Trước'}</span>
+            </button>
           </div>
         )}
 
