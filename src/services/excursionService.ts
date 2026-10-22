@@ -1543,7 +1543,10 @@ export async function fetchExcursionWaitlist(excursionId: number): Promise<Excur
   const res = await apiClient.get<{ data: ExcursionWaitlistEntry[] }>(
     `/v1/shore-excursions/${excursionId}/waitlist`
   );
-  return res.data?.data || [];
+  if (!Array.isArray(res.data?.data)) {
+    throw new Error('Invalid waitlist response received from server');
+  }
+  return res.data.data;
 }
 
 export async function promoteWaitlistPassenger(excursionId: number): Promise<WaitlistPromotionResult> {
@@ -1622,7 +1625,7 @@ export async function exportExcursionRosterCsv(excursionId: number): Promise<Blo
 
   const escapeCsvField = (val: unknown): string => {
     let str = val == null ? '' : String(val);
-    if (/^[=+\-@]/.test(str)) {
+    if (/^\s*[=+\-@]/.test(str)) {
       str = `'${str}`;
     }
     return `"${str.replace(/"/g, '""')}"`;
