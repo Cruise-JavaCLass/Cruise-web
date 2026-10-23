@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Gift,
   CheckCircle,
@@ -22,6 +22,8 @@ export const ApologyVoucherCard: React.FC<ApologyVoucherCardProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [claimResult, setClaimResult] = useState<ClaimObcVoucherResponse | null>(null);
+  const currentVoucherIdRef = useRef(voucher.id);
+  currentVoucherIdRef.current = voucher.id;
 
   useEffect(() => {
     setClaimResult(null);
