@@ -30,12 +30,16 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [dispatching, setDispatching] = useState(false);
   const [dispatchSuccess, setDispatchSuccess] = useState<string | null>(null);
+  const [dispatchError, setDispatchError] = useState<string | null>(null);
+  const activePortCallRef = useRef({ tourId, portCallId });
+  const inFlightRef = useRef(false);
   const [now, setNow] = useState(() => Date.now());
   const [receivedAt, setReceivedAt] = useState(() => Date.now());
   const requestSeq = useRef(0);
 
   const fetchStatus = useCallback(async () => {
     const seq = ++requestSeq.current;
+    inFlightRef.current = true;
     try {
       setLoading(true);
       setError(null);
@@ -52,16 +56,22 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
     } finally {
       if (seq === requestSeq.current) {
         setLoading(false);
+        inFlightRef.current = false;
       }
     }
   }, [tourId, portCallId]);
 
   useEffect(() => {
+    activePortCallRef.current = { tourId, portCallId };
     setStatus(null);
     setError(null);
+    setDispatchError(null);
+    inFlightRef.current = false;
     void fetchStatus();
     const interval = setInterval(() => {
-      void fetchStatus();
+      if (!inFlightRef.current) {
+        void fetchStatus();
+      }
     }, 10000);
     return () => clearInterval(interval);
   }, [tourId, portCallId, fetchStatus]);
@@ -75,9 +85,12 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
     if (!window.confirm('Broadcast urgent All-Aboard recall alarm to ALL un-boarded passengers?')) {
       return;
     }
+    const capturedTourId = tourId;
+    const capturedPortCallId = portCallId;
     try {
       setDispatching(true);
       setDispatchSuccess(null);
+      setDispatchError(null);
       const res = await allAboardWatchdogService.dispatchAlert({
         tourId,
         portCallId,
@@ -91,12 +104,17 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
       if (hasDelivery) {
         setDispatchSuccess(`Alert sent to ${res.targetedPassengersCount} missing guests (${res.alertBatchId})`);
       } else {
-        setError(`Unsuccessful recall attempt: no messages were delivered (${res.alertBatchId})`);
+        setDispatchError(`Unsuccessful recall attempt: no messages were delivered (${res.alertBatchId})`);
       }
-      await fetchStatus();
+      if (
+        activePortCallRef.current.tourId === capturedTourId &&
+        activePortCallRef.current.portCallId === capturedPortCallId
+      ) {
+        await fetchStatus();
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to dispatch alert';
-      setError(message);
+      setDispatchError(message);
     } finally {
       setDispatching(false);
     }
@@ -162,6 +180,11 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
       {error && (
         <div className="p-3 bg-red-950/80 border border-red-500 rounded-xl text-red-200 text-xs">
           {error}
+        </div>
+      )}
+      {dispatchError && (
+        <div role="alert" className="p-3 bg-red-950/80 border border-red-500 rounded-xl text-red-200 text-xs font-semibold">
+          {dispatchError}
         </div>
       )}
       {dispatchSuccess && (

@@ -226,7 +226,7 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
 
           {/* Quick Action Triggers */}
           <div className="space-y-3">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
+            <label htmlFor="search-party-notes" className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
               Direct Contact & Alert Protocols:
             </label>
 
