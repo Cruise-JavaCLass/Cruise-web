@@ -9,7 +9,7 @@ import {
   Scale,
   ShieldAlert,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   type ShipDeckZone,
   type SystemCancellationPolicy,
@@ -51,8 +51,10 @@ export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = (
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const latestLoadId = useRef(0);
 
   const loadData = async () => {
+    const loadId = ++latestLoadId.current;
     setLoading(true);
     setError(null);
     try {
@@ -60,12 +62,20 @@ export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = (
         cruiseAreaPolicyService.getDeckZones(shipId),
         cruiseAreaPolicyService.getCancellationPolicies(),
       ]);
-      setZones(zList);
-      setPolicies(pList);
+      if (loadId === latestLoadId.current) {
+        setZones(zList);
+      }
+      if (loadId === latestLoadId.current) {
+        setPolicies(pList);
+      }
     } catch (err: any) {
-      setError(err?.message || 'Không thể tải dữ liệu cấu hình boong & chính sách');
+      if (loadId === latestLoadId.current) {
+        setError(err?.message || 'Không thể tải dữ liệu cấu hình boong & chính sách');
+      }
     } finally {
-      setLoading(false);
+      if (loadId === latestLoadId.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -76,6 +86,8 @@ export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = (
   const handleCreateZone = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newZone.zoneName || !newZone.zoneCode) return;
+    setError(null);
+    setSuccessMsg(null);
     setIsSubmitting(true);
     try {
       await cruiseAreaPolicyService.createDeckZone({
@@ -104,6 +116,8 @@ export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = (
   const handleCreatePolicy = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPolicy.policyName) return;
+    setError(null);
+    setSuccessMsg(null);
     setIsSubmitting(true);
     try {
       await cruiseAreaPolicyService.createCancellationPolicy(newPolicy as SystemCancellationPolicy);
