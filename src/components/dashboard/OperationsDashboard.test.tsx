@@ -1,5 +1,5 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import React from 'react';
+
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { OperationsDashboard } from './OperationsDashboard';
 import { operationsDashboardService } from '../../services/operationsDashboardService';

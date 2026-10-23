@@ -67,7 +67,7 @@ export const OperationsDashboard: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">
+        <div role="alert" className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">
           {error}
         </div>
       )}
@@ -147,7 +147,11 @@ export const OperationsDashboard: React.FC = () => {
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Đánh Giá Hài Lòng</p>
               <h3 className="text-2xl font-black text-slate-800 mt-1 flex items-center gap-1">
-                {kpis?.averageActivityRating ? kpis.averageActivityRating.toFixed(1) : '5.0'}
+                {!kpis
+                  ? '...'
+                  : kpis.totalFeedbackSubmitted > 0
+                  ? kpis.averageActivityRating.toFixed(1)
+                  : '–'}
                 <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
               </h3>
               <p className="text-xs text-slate-500 mt-1">
