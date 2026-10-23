@@ -1,5 +1,6 @@
 import { CheckCircle, ShieldAlert, X } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { useModalFocusTrap } from './useModalFocusTrap';
 import {
   type BlacklistResponse,
   type RfidCardInventoryDto,
@@ -28,68 +29,7 @@ export const LostCardQuarantineDrawer: React.FC<LostCardQuarantineDrawerProps> =
   const [result, setResult] = useState<BlacklistResponse | null>(null);
 
   const drawerRef = useRef<HTMLDivElement>(null);
-  const previousActiveElement = useRef<HTMLElement | null>(null);
-  const onCloseRef = useRef(onClose);
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  useEffect(() => {
-    if (isOpen) {
-      previousActiveElement.current = document.activeElement as HTMLElement | null;
-
-      const timer = setTimeout(() => {
-        const focusables = drawerRef.current?.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusables && focusables.length > 0) {
-          focusables[0].focus();
-        }
-      }, 50);
-
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          onCloseRef.current();
-          return;
-        }
-
-        if (e.key === 'Tab' && drawerRef.current) {
-          const focusables = Array.from(
-            drawerRef.current.querySelectorAll<HTMLElement>(
-              'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-            )
-          );
-          if (focusables.length === 0) return;
-
-          const first = focusables[0];
-          const last = focusables[focusables.length - 1];
-
-          if (e.shiftKey) {
-            if (document.activeElement === first) {
-              e.preventDefault();
-              last.focus();
-            }
-          } else {
-            if (document.activeElement === last) {
-              e.preventDefault();
-              first.focus();
-            }
-          }
-        }
-      };
-
-      window.addEventListener('keydown', handleKeyDown);
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener('keydown', handleKeyDown);
-        const prev = previousActiveElement.current;
-        if (prev && typeof prev.focus === 'function') {
-          requestAnimationFrame(() => prev.focus());
-        }
-      };
-    }
-  }, [isOpen]);
+  useModalFocusTrap(isOpen, drawerRef, onClose);
 
   if (!isOpen) return null;
 
