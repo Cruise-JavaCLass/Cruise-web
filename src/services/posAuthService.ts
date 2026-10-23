@@ -1,4 +1,4 @@
-import api from './api';
+import { apiClient } from './api';
 import type {
   IdentifyPassengerRequest,
   PassengerIdentificationResponse,
@@ -10,7 +10,7 @@ const MANIFEST_CACHE_KEY = 'pos_credential_manifest_cache';
 export const posAuthService = {
   async identify(request: IdentifyPassengerRequest): Promise<PassengerIdentificationResponse> {
     try {
-      const response = await api.post<{ success: boolean; data: PassengerIdentificationResponse }>(
+      const response = await apiClient.post<{ success: boolean; data: PassengerIdentificationResponse }>(
         '/api/pos/auth/identify',
         request
       );
@@ -26,7 +26,7 @@ export const posAuthService = {
   },
 
   async syncManifestCache(): Promise<CredentialManifestCacheResponse> {
-    const response = await api.get<{ success: boolean; data: CredentialManifestCacheResponse }>(
+    const response = await apiClient.get<{ success: boolean; data: CredentialManifestCacheResponse }>(
       '/api/pos/auth/manifest/cache'
     );
     const data = response.data.data;

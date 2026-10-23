@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, renderHook, act } from '@testing-library/react';
-import React from 'react';
 import { GuestIdentificationPreviewModal } from './GuestIdentificationPreviewModal';
 import { usePosScanner, parseScannerInput } from '../../hooks/usePosScanner';
 import { posAuthService } from '../../services/posAuthService';
