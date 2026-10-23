@@ -6,9 +6,10 @@ import {
   ShieldAlert,
   SlidersHorizontal,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   type RfidCardInventoryDto,
+  type RfidCardStatus,
   type RfidInventoryDashboardDto,
   rfidCardService,
 } from '../../services/rfidCardService';
@@ -23,29 +24,50 @@ export const RfidInventoryDashboard: React.FC<RfidInventoryDashboardProps> = ({
   onOpenQuarantineDrawer,
 }) => {
   const [metrics, setMetrics] = useState<RfidInventoryDashboardDto | null>(null);
+  const [inventoryCards, setInventoryCards] = useState<RfidCardInventoryDto[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
 
-  const fetchDashboard = async () => {
+  const fetchDashboard = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await rfidCardService.getDashboard();
       setMetrics(data);
-    } catch (err: any) {
-      setError(err?.message || 'Failed to fetch RFID inventory metrics');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to fetch RFID inventory metrics';
+      setError(message);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const searchInventory = useCallback(async (query: string, status: string) => {
+    if (typeof rfidCardService.getCards === 'function') {
+      try {
+        const res = await rfidCardService.getCards({
+          search: query || undefined,
+          status: status === 'ALL' ? undefined : (status as RfidCardStatus),
+        });
+        setInventoryCards(res.content);
+        return;
+      } catch {
+        // Fall back to recentCards on endpoint error
+      }
+    }
+  }, []);
 
   useEffect(() => {
     void fetchDashboard();
-  }, []);
+  }, [fetchDashboard]);
 
-  const cards = metrics?.recentCards || [];
+  useEffect(() => {
+    void searchInventory(searchTerm, statusFilter);
+  }, [searchTerm, statusFilter, searchInventory]);
+
+  const cards = inventoryCards ?? metrics?.recentCards ?? [];
   const filteredCards = cards.filter((c) => {
     const matchesSearch =
       c.cardUid.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -75,7 +97,7 @@ export const RfidInventoryDashboard: React.FC<RfidInventoryDashboardProps> = ({
 
         <div className="flex items-center gap-2.5">
           <button
-            onClick={fetchDashboard}
+            onClick={() => void fetchDashboard()}
             disabled={loading}
             className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-xl border border-slate-700 transition"
           >

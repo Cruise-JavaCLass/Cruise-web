@@ -71,14 +71,27 @@ export interface BlacklistResponse {
 export const rfidCardService = {
   async getDashboard(): Promise<RfidInventoryDashboardDto> {
     const res = await apiClient.get<{ success: boolean; data: RfidInventoryDashboardDto }>(
-      '/api/operations/rfid-cards/dashboard'
+      '/operations/rfid-cards/dashboard'
     );
+    return res.data.data;
+  },
+
+  async getCards(params?: {
+    search?: string;
+    status?: RfidCardStatus;
+    page?: number;
+    size?: number;
+  }): Promise<{ content: RfidCardInventoryDto[]; totalElements: number }> {
+    const res = await apiClient.get<{
+      success: boolean;
+      data: { content: RfidCardInventoryDto[]; totalElements: number };
+    }>('/operations/rfid-cards', { params });
     return res.data.data;
   },
 
   async ingestBatch(payload: BulkIngestPayload): Promise<BulkIngestResponse> {
     const res = await apiClient.post<{ success: boolean; data: BulkIngestResponse }>(
-      '/api/operations/rfid-cards/batch-ingest',
+      '/operations/rfid-cards/batch-ingest',
       payload
     );
     return res.data.data;
@@ -86,7 +99,7 @@ export const rfidCardService = {
 
   async blacklistCard(payload: BlacklistPayload): Promise<BlacklistResponse> {
     const res = await apiClient.post<{ success: boolean; data: BlacklistResponse }>(
-      '/api/operations/rfid-cards/blacklist',
+      '/operations/rfid-cards/blacklist',
       payload
     );
     return res.data.data;
@@ -94,7 +107,7 @@ export const rfidCardService = {
 
   async getActiveBlacklistUids(): Promise<string[]> {
     const res = await apiClient.get<{ success: boolean; data: string[] }>(
-      '/api/operations/rfid-cards/blacklist-uids'
+      '/operations/rfid-cards/blacklist-uids'
     );
     return res.data.data;
   },
