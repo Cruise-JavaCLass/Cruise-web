@@ -36,7 +36,7 @@ export const adminDeviceService = {
 
   async getTerminal(deviceId: string): Promise<PosTerminal> {
     const res = await apiClient.get<ApiResponse<PosTerminal>>(
-      `/admin/pos/terminals/${deviceId}`
+      `/admin/pos/terminals/${encodeURIComponent(deviceId)}`
     );
     return res.data.data;
   },
@@ -51,7 +51,7 @@ export const adminDeviceService = {
 
   async rotateApiKey(deviceId: string, payload?: RotateKeyRequest): Promise<ProvisionTerminalResponse> {
     const res = await apiClient.post<ApiResponse<ProvisionTerminalResponse>>(
-      `/admin/pos/terminals/${deviceId}/rotate-key`,
+      `/admin/pos/terminals/${encodeURIComponent(deviceId)}/rotate-key`,
       payload
     );
     return res.data.data;
@@ -59,7 +59,7 @@ export const adminDeviceService = {
 
   async revokeTerminal(deviceId: string, payload?: RevokeTerminalRequest): Promise<PosTerminal> {
     const res = await apiClient.post<ApiResponse<PosTerminal>>(
-      `/admin/pos/terminals/${deviceId}/revoke`,
+      `/admin/pos/terminals/${encodeURIComponent(deviceId)}/revoke`,
       payload
     );
     return res.data.data;
@@ -67,7 +67,7 @@ export const adminDeviceService = {
 
   async renewCertificate(deviceId: string, payload?: RenewCertificateRequest): Promise<CertificateRenewalResponse> {
     const res = await apiClient.post<ApiResponse<CertificateRenewalResponse>>(
-      `/admin/pos/terminals/${deviceId}/renew-certificate`,
+      `/admin/pos/terminals/${encodeURIComponent(deviceId)}/renew-certificate`,
       payload
     );
     return res.data.data;
@@ -75,7 +75,7 @@ export const adminDeviceService = {
 
   async issueRemoteWipe(deviceId: string, payload: RemoteWipeRequest): Promise<PosTerminal> {
     const res = await apiClient.post<ApiResponse<PosTerminal>>(
-      `/admin/pos/terminals/${deviceId}/remote-wipe`,
+      `/admin/pos/terminals/${encodeURIComponent(deviceId)}/remote-wipe`,
       payload
     );
     return res.data.data;

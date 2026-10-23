@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   FileSearch,
   Filter,
@@ -23,6 +23,13 @@ export const SecurityAuditTrailExplorer: React.FC = () => {
   const [action, setAction] = useState<string>('');
   const [actor, setActor] = useState<string>('');
   const [targetId, setTargetId] = useState<string>('');
+  const [appliedFilters, setAppliedFilters] = useState<{
+    category: string;
+    action: string;
+    actor: string;
+    targetId: string;
+  }>({ category: '', action: '', actor: '', targetId: '' });
+  const fetchGenRef = useRef(0);
   const [page, setPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalElements, setTotalElements] = useState<number>(0);
@@ -31,27 +38,32 @@ export const SecurityAuditTrailExplorer: React.FC = () => {
   const [inspectedLog, setInspectedLog] = useState<SystemAuditLog | null>(null);
 
   const fetchLogs = useCallback(async () => {
+    const gen = ++fetchGenRef.current;
     try {
       setLoading(true);
       setError(null);
       const query: SystemAuditLogQuery = {
-        category: category || undefined,
-        action: action || undefined,
-        actor: actor || undefined,
-        targetId: targetId || undefined,
+        category: appliedFilters.category || undefined,
+        action: appliedFilters.action || undefined,
+        actor: appliedFilters.actor || undefined,
+        targetId: appliedFilters.targetId || undefined,
         page,
         size: 15,
       };
       const res = await adminAuditService.queryLogs(query);
+      if (gen !== fetchGenRef.current) return;
       setLogs(res.content || []);
       setTotalPages(res.totalPages || 1);
       setTotalElements(res.totalElements || 0);
     } catch (err: unknown) {
+      if (gen !== fetchGenRef.current) return;
       setError(err instanceof Error ? err.message : 'Failed to retrieve system audit trails');
     } finally {
-      setLoading(false);
+      if (gen === fetchGenRef.current) {
+        setLoading(false);
+      }
     }
-  }, [category, action, actor, targetId, page]);
+  }, [appliedFilters, page]);
 
   useEffect(() => {
     void fetchLogs();
@@ -59,19 +71,28 @@ export const SecurityAuditTrailExplorer: React.FC = () => {
 
   const handleApplyFilter = (e: React.FormEvent) => {
     e.preventDefault();
+    setAppliedFilters({ category, action, actor, targetId });
     setPage(0);
-    void fetchLogs();
   };
 
   const handleExportCsv = () => {
     const query: SystemAuditLogQuery = {
-      category: category || undefined,
-      action: action || undefined,
-      actor: actor || undefined,
-      targetId: targetId || undefined,
+      category: appliedFilters.category || undefined,
+      action: appliedFilters.action || undefined,
+      actor: appliedFilters.actor || undefined,
+      targetId: appliedFilters.targetId || undefined,
     };
     const url = adminAuditService.getExportCsvUrl(query);
     window.open(url, '_blank');
+  };
+
+  const safeFormatJson = (val?: string): string => {
+    if (!val) return '';
+    try {
+      return JSON.stringify(JSON.parse(val), null, 2);
+    } catch {
+      return val;
+    }
   };
 
   const renderJsonDiff = (before?: string, after?: string) => {
@@ -86,7 +107,7 @@ export const SecurityAuditTrailExplorer: React.FC = () => {
             <span className="w-2 h-2 rounded-full bg-rose-500"></span> Previous State (Before)
           </div>
           <pre className="text-[11px] text-rose-900 overflow-x-auto whitespace-pre-wrap">
-            {before ? JSON.stringify(JSON.parse(before), null, 2) : 'null (Newly created)'}
+            {before ? safeFormatJson(before) : 'null (Newly created)'}
           </pre>
         </div>
 
@@ -95,7 +116,7 @@ export const SecurityAuditTrailExplorer: React.FC = () => {
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Updated State (After)
           </div>
           <pre className="text-[11px] text-emerald-900 overflow-x-auto whitespace-pre-wrap">
-            {after ? JSON.stringify(JSON.parse(after), null, 2) : 'null (Deleted/Purged)'}
+            {after ? safeFormatJson(after) : 'null (Deleted/Purged)'}
           </pre>
         </div>
       </div>

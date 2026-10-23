@@ -21,6 +21,9 @@ export const PosTerminalRegistry: React.FC = () => {
   const [terminals, setTerminals] = useState<PosTerminal[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
 
   // Modal states
   const [isProvisionOpen, setIsProvisionOpen] = useState(false);
@@ -38,14 +41,16 @@ export const PosTerminalRegistry: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await adminDeviceService.listTerminals();
+      const res = await adminDeviceService.listTerminals(page, 20);
       setTerminals(res.content || []);
+      setTotalPages(res.totalPages || 1);
+      setTotalElements(res.totalElements || 0);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to fetch terminal registry');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     void loadTerminals();
@@ -210,10 +215,13 @@ export const PosTerminalRegistry: React.FC = () => {
               className="w-full font-mono text-xs p-2.5 bg-white border border-amber-300 rounded-lg selection:bg-amber-200"
             />
             <button
-              onClick={() => {
-                if (provisionResult.rawApiKey) {
-                  navigator.clipboard.writeText(provisionResult.rawApiKey);
+              onClick={async () => {
+                if (!provisionResult.rawApiKey) return;
+                try {
+                  await navigator.clipboard.writeText(provisionResult.rawApiKey);
                   alert('API key copied to clipboard!');
+                } catch {
+                  alert('Copy failed. Select the key text and copy it manually.');
                 }
               }}
               className="p-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg flex items-center gap-1 text-xs font-semibold"
@@ -233,7 +241,7 @@ export const PosTerminalRegistry: React.FC = () => {
       {/* Terminal Fleet Table */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-          <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Registered Terminals ({terminals.length})</span>
+          <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Registered Terminals ({totalElements})</span>
         </div>
         <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
           <thead className="bg-slate-50/70 text-slate-500 font-semibold">
@@ -248,7 +256,21 @@ export const PosTerminalRegistry: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-slate-700">
-            {terminals.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan={7} className="text-center py-12 text-slate-400">
+                  <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-500" />
+                  Loading POS terminals...
+                </td>
+              </tr>
+            ) : error ? (
+              <tr>
+                <td colSpan={7} className="text-center py-12 text-rose-500">
+                  <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-rose-500" />
+                  {error}
+                </td>
+              </tr>
+            ) : terminals.length === 0 ? (
               <tr>
                 <td colSpan={7} className="text-center py-12 text-slate-400">
                   <Smartphone className="w-8 h-8 mx-auto mb-2 opacity-40" />
@@ -319,6 +341,27 @@ export const PosTerminalRegistry: React.FC = () => {
             )}
           </tbody>
         </table>
+        <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 bg-slate-50">
+          <span>Page {page + 1} of {totalPages || 1} ({totalElements} total)</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={page === 0 || loading}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 font-medium"
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              disabled={page >= totalPages - 1 || loading}
+              onClick={() => setPage((p) => p + 1)}
+              className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 font-medium"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Provision Terminal Modal */}
