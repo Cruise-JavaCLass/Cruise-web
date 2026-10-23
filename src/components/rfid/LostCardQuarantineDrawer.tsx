@@ -29,6 +29,10 @@ export const LostCardQuarantineDrawer: React.FC<LostCardQuarantineDrawerProps> =
 
   const drawerRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -46,7 +50,7 @@ export const LostCardQuarantineDrawer: React.FC<LostCardQuarantineDrawerProps> =
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {
           e.preventDefault();
-          onClose();
+          onCloseRef.current();
           return;
         }
 
@@ -79,12 +83,13 @@ export const LostCardQuarantineDrawer: React.FC<LostCardQuarantineDrawerProps> =
       return () => {
         clearTimeout(timer);
         window.removeEventListener('keydown', handleKeyDown);
-        if (previousActiveElement.current && typeof previousActiveElement.current.focus === 'function') {
-          previousActiveElement.current.focus();
+        const prev = previousActiveElement.current;
+        if (prev && typeof prev.focus === 'function') {
+          requestAnimationFrame(() => prev.focus());
         }
       };
     }
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
