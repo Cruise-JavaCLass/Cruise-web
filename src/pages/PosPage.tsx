@@ -38,6 +38,8 @@ import {
 import { DiscrepancyInspectorModal } from '../components/pos/DiscrepancyInspectorModal';
 import { DisputeManagementWorkspace } from '../components/pos/DisputeManagementWorkspace';
 import { SyncControlPanel } from '../components/pos/SyncControlPanel';
+import { OfflineStatusBadge } from '../components/pos/OfflineStatusBadge';
+import { PendingQueueInspectorModal } from '../components/pos/PendingQueueInspectorModal';
 
 export function PosPage() {
   const [activeTab, setActiveTab] = useState<'REGISTER' | 'LEDGER' | 'CATALOG' | 'RECONCILIATION' | 'DISPUTES' | 'SYNC'>('REGISTER');
@@ -68,6 +70,7 @@ export function PosPage() {
   const [disputes, setDisputes] = useState<DisputeCase[]>([]);
   const [selectedDiscrepancy, setSelectedDiscrepancy] = useState<DiscrepancyRecord | null>(null);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
+  const [isQueueInspectorOpen, setIsQueueInspectorOpen] = useState(false);
   const [isRunningRecon, setIsRunningRecon] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -281,6 +284,7 @@ export function PosPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <OfflineStatusBadge onOpenInspector={() => setIsQueueInspectorOpen(true)} />
           <button
             onClick={handleRunReconciliation}
             disabled={isRunningRecon}
@@ -791,6 +795,12 @@ export function PosPage() {
         isOpen={isReceiptOpen}
         onClose={() => setIsReceiptOpen(false)}
         transaction={selectedTx}
+      />
+
+      {/* Offline Queue Inspector Modal */}
+      <PendingQueueInspectorModal
+        isOpen={isQueueInspectorOpen}
+        onClose={() => setIsQueueInspectorOpen(false)}
       />
     </div>
   );

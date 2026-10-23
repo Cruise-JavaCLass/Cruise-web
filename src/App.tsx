@@ -17,12 +17,14 @@ import { ExcursionAttendancePage } from './pages/ExcursionAttendancePage';
 import { ExcursionAnalyticsDashboard } from './pages/ExcursionAnalyticsDashboard';
 import { PassengerExcursionPassPage } from './pages/PassengerExcursionPassPage';
 import { ExcursionDispatcherDashboard } from './pages/ExcursionDispatcherDashboard';
+import { ExcursionRosterPage } from './pages/ExcursionRosterPage';
 import { ActivityAttendancePage } from './pages/ActivityAttendancePage';
 import { ActivityRosterPage } from './pages/ActivityRosterPage';
 import { MySchedulePage } from './pages/MySchedulePage';
 import { PassengerFolioPage } from './pages/passenger/PassengerFolioPage';
 import { BoardingPassPage } from './pages/passenger/BoardingPassPage';
 import { TerminalEmbarkationPage } from './pages/TerminalEmbarkationPage';
+import { ProviderSettlementDashboard } from './pages/ProviderSettlementDashboard';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export function App() {
@@ -41,6 +43,8 @@ export function App() {
         <Route path="excursions/:id" element={<ExcursionDetailPage />} />
         <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />
         <Route path="excursion-dispatcher" element={<ExcursionDispatcherDashboard />} />
+        <Route path="excursions/:id/roster" element={<ExcursionRosterPage />} />
+        <Route path="excursions/roster" element={<ExcursionRosterPage />} />
         <Route path="excursion-attendance" element={<ExcursionAttendancePage />} />
         <Route path="excursion-analytics" element={<ExcursionAnalyticsDashboard />} />
         <Route path="activities" element={<ActivitiesPage />} />
@@ -54,6 +58,7 @@ export function App() {
         <Route path="passengers" element={<PassengersPage />} />
         <Route path="embarkation" element={<TerminalEmbarkationPage />} />
         <Route path="billing/settlement" element={<SettlementPage />} />
+        <Route path="provider-settlement" element={<ProviderSettlementDashboard />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
@@ -61,4 +66,3 @@ export function App() {
 }
 
 export default App;
-
