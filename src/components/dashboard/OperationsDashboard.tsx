@@ -42,12 +42,14 @@ export const OperationsDashboard: React.FC = () => {
       if (kpiResult.status === 'fulfilled') {
         setKpis(kpiResult.value);
       } else {
+        setKpis(null);
         setKpiError(kpiResult.reason?.message || 'Không thể tải chỉ số KPI vận hành');
       }
 
       if (radarResult.status === 'fulfilled') {
         setRadar(radarResult.value);
       } else {
+        setRadar(null);
         setRadarError(radarResult.reason?.message || 'Không thể tải dữ liệu radar hoạt động');
       }
     } finally {
@@ -208,9 +210,11 @@ export const OperationsDashboard: React.FC = () => {
               <Activity className="w-5 h-5 text-indigo-600" />
               Tải Công Suất Hoạt Động (Activity Capacity Radar)
             </h3>
-            <span className="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-bold">
-              Trực Tiếp
-            </span>
+            {radar && (
+              <span className="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-bold">
+                Trực Tiếp
+              </span>
+            )}
           </div>
 
           <div className="space-y-3">
