@@ -6,19 +6,20 @@ import {
 } from '../../services/operationalNotificationService';
 
 export const UrgentOperationalBanner: React.FC = () => {
-  const [activeAlert, setActiveAlert] = useState<OperationalNotificationEvent | null>(null);
-  const [alertQueue, setAlertQueue] = useState<OperationalNotificationEvent[]>([]);
+  const [alertState, setAlertState] = useState<{
+    active: OperationalNotificationEvent | null;
+    queue: OperationalNotificationEvent[];
+  }>({ active: null, queue: [] });
+  const { active: activeAlert, queue: alertQueue } = alertState;
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const handleDismiss = () => {
-    setAlertQueue((prevQueue) => {
-      if (prevQueue.length > 0) {
-        const [nextAlert, ...rest] = prevQueue;
-        setActiveAlert(nextAlert);
-        return rest;
+    setAlertState((prev) => {
+      if (prev.queue.length > 0) {
+        const [nextAlert, ...rest] = prev.queue;
+        return { active: nextAlert, queue: rest };
       }
-      setActiveAlert(null);
-      return [];
+      return { active: null, queue: [] };
     });
   };
 
@@ -31,13 +32,12 @@ export const UrgentOperationalBanner: React.FC = () => {
         try {
           const parsed = JSON.parse(event.data) as OperationalNotificationEvent;
           
-          setActiveAlert((current) => {
-            if (current && current.requireAcknowledgment) {
+          setAlertState((prev) => {
+            if (prev.active && prev.active.requireAcknowledgment) {
               // Current alert requires acknowledgment, queue incoming alert
-              setAlertQueue((q) => [...q, parsed]);
-              return current;
+              return { ...prev, queue: [...prev.queue, parsed] };
             }
-            return parsed;
+            return { ...prev, active: parsed };
           });
 
           // Web Audio API or beep fallback if sound enabled
