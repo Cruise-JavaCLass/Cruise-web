@@ -23,6 +23,7 @@ interface CruiseAreaPolicyManagerProps {
 export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = ({ shipId: initialShipId = 1 }) => {
   const [activeTab, setActiveTab] = useState<'DECKS' | 'POLICIES'>('DECKS');
   const [zones, setZones] = useState<ShipDeckZone[]>([]);
+  const [zonesShipId, setZonesShipId] = useState<number | null>(null);
   const [policies, setPolicies] = useState<SystemCancellationPolicy[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -69,6 +70,7 @@ export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = (
       ]);
       if (loadId === latestLoadId.current) {
         setZones(zList);
+        setZonesShipId(shipId);
       }
       if (loadId === latestLoadId.current) {
         setPolicies(pList);
@@ -226,7 +228,7 @@ export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = (
             </div>
 
             <div className="divide-y divide-slate-100">
-              {zones.length > 0 ? (
+              {zonesShipId === shipId && zones.length > 0 ? (
                 zones.map((z) => (
                   <div key={z.id} className="py-3 flex items-center justify-between">
                     <div>
