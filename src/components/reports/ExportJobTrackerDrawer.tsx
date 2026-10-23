@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, 
   Download, 
@@ -28,17 +28,26 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchGenerationRef = useRef(0);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
   const fetchJobs = async () => {
+    const generation = ++fetchGenerationRef.current;
     try {
       setLoading(true);
       setError(null);
       const data = await operationalReportService.getExportJobs();
+      if (generation !== fetchGenerationRef.current) return;
       setJobs(data);
     } catch (err: unknown) {
+      if (generation !== fetchGenerationRef.current) return;
       const msg = err instanceof Error ? err.message : 'Failed to fetch export tasks';
       setError(msg);
     } finally {
-      setLoading(false);
+      if (generation === fetchGenerationRef.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -47,6 +56,24 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
       void fetchJobs();
     }
   }, [isOpen, triggerRefreshSignal]);
+
+  useEffect(() => {
+    if (isOpen) {
+      previousFocusRef.current = document.activeElement as HTMLElement | null;
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
+          previousFocusRef.current.focus();
+        }
+      };
+    }
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -115,12 +142,14 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/40 backdrop-blur-sm transition-opacity flex justify-end">
       <div 
+        ref={drawerRef}
         className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col transform transition-transform"
         role="dialog"
+        aria-modal="true"
         aria-label="Export Jobs Tracker"
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
           <div>
             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
               <Download className="w-5 h-5 text-indigo-600" /> Export Downloads
@@ -133,6 +162,7 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
               disabled={loading}
               className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded-md transition-colors"
               title="Refresh status"
+              aria-label="Refresh status"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -140,6 +170,7 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
               onClick={onClose}
               className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded-md transition-colors"
               title="Close drawer"
+              aria-label="Close drawer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -221,7 +252,7 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
         </div>
 
         {/* Footer info */}
-        <div className="p-4 border-t border-slate-200 bg-slate-50 text-center">
+        <div className="p-4 border-t border-slate-200 bg-slate-50 text-center shrink-0">
           <p className="text-[11px] text-slate-400">
             Export files are stored temporarily and expire after 24 hours.
           </p>

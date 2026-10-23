@@ -87,8 +87,9 @@ describe('Operational Reporting & Export UI (KAN-276, KAN-460, KAN-461)', () => 
     });
   });
 
-  it('calls onOpenExportDrawer callback when user clicks export button', async () => {
+  it('calls createExportJob and onOpenExportDrawer callback when user clicks export button', async () => {
     vi.mocked(operationalReportService.getRevenueReport).mockResolvedValueOnce(mockReportData);
+    vi.mocked(operationalReportService.createExportJob).mockResolvedValueOnce(mockJobs[0]);
     const mockOnOpen = vi.fn();
     const user = userEvent.setup();
 
@@ -97,8 +98,46 @@ describe('Operational Reporting & Export UI (KAN-276, KAN-460, KAN-461)', () => 
     const exportBtn = screen.getByRole('button', { name: /Xuất Báo Cáo/i });
     await user.click(exportBtn);
 
-    expect(mockOnOpen).toHaveBeenCalledTimes(1);
-    expect(mockOnOpen).toHaveBeenCalledWith(expect.objectContaining({ dimension: 'OUTLET' }));
+    await waitFor(() => {
+      expect(operationalReportService.createExportJob).toHaveBeenCalledWith(
+        expect.objectContaining({
+          format: 'CSV',
+          query: expect.objectContaining({ dimension: 'OUTLET' }),
+        })
+      );
+      expect(mockOnOpen).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('supports selecting export format and date range filtering', async () => {
+    vi.mocked(operationalReportService.getRevenueReport).mockResolvedValue(mockReportData);
+    vi.mocked(operationalReportService.createExportJob).mockResolvedValue(mockJobs[1]);
+    const user = userEvent.setup();
+
+    render(<OperationalReportDashboard />);
+
+    const startDateInput = screen.getByLabelText(/Từ ngày/i);
+    const endDateInput = screen.getByLabelText(/Đến ngày/i);
+    await user.type(startDateInput, '2026-10-01');
+    await user.type(endDateInput, '2026-10-15');
+
+    const formatSelect = screen.getByLabelText(/Định dạng xuất file/i);
+    await user.selectOptions(formatSelect, 'PDF');
+
+    const exportBtn = screen.getByRole('button', { name: /Xuất Báo Cáo \(PDF\)/i });
+    await user.click(exportBtn);
+
+    await waitFor(() => {
+      expect(operationalReportService.createExportJob).toHaveBeenCalledWith(
+        expect.objectContaining({
+          format: 'PDF',
+          query: expect.objectContaining({
+            startDate: '2026-10-01',
+            endDate: '2026-10-15',
+          }),
+        })
+      );
+    });
   });
 
   it('renders export drawer with job statuses and download action', async () => {

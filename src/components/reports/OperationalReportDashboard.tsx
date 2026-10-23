@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type {
   OperationalReportQuery,
   OperationalReportResponse,
   ReportDimension,
+  ExportFormat,
 } from '../../services/reportTypes';
 import { operationalReportService } from '../../services/operationalReportService';
 
@@ -20,23 +21,56 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('CSV');
+  const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [exportMessage, setExportMessage] = useState<string | null>(null);
+
+  const fetchGenerationRef = useRef(0);
+
   const fetchReport = useCallback(async () => {
+    const generation = ++fetchGenerationRef.current;
     setIsLoading(true);
     setErrorMessage(null);
     try {
       const data = await operationalReportService.getRevenueReport(query);
+      if (generation !== fetchGenerationRef.current) return;
       setReport(data);
     } catch (err: unknown) {
+      if (generation !== fetchGenerationRef.current) return;
       const msg = err instanceof Error ? err.message : 'Không thể tải báo cáo doanh thu';
       setErrorMessage(msg);
     } finally {
-      setIsLoading(false);
+      if (generation === fetchGenerationRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [query]);
 
   useEffect(() => {
     void fetchReport();
   }, [fetchReport]);
+
+  const handleExport = async (format: ExportFormat) => {
+    try {
+      setIsExporting(true);
+      setErrorMessage(null);
+      setExportMessage(null);
+      await operationalReportService.createExportJob({
+        format,
+        reportTitle: `Revenue Report (${query.dimension || 'OUTLET'})`,
+        query,
+      });
+      setExportMessage(`Đã khởi tạo tác vụ xuất báo cáo ${format} thành công.`);
+      if (onOpenExportDrawer) {
+        onOpenExportDrawer(query);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Lỗi khi khởi tạo tác vụ xuất báo cáo';
+      setErrorMessage(msg);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -52,20 +86,52 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
             <h2 className="text-lg font-bold text-gray-900">Báo Cáo Doanh Thu & Vận Hành POS</h2>
             <p className="text-xs text-gray-500">Phân tích đa chiều theo điểm bán, phương thức thanh toán</p>
           </div>
-          <button
-            type="button"
-            onClick={() => onOpenExportDrawer && onOpenExportDrawer(query)}
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-700 transition"
-          >
-            📥 Xuất Báo Cáo (CSV / Excel / PDF)
-          </button>
+          
+          <div className="flex items-center gap-2 flex-wrap">
+            <select
+              aria-label="Định dạng xuất file"
+              value={selectedFormat}
+              onChange={(e) => setSelectedFormat(e.target.value as ExportFormat)}
+              className="rounded-xl border border-gray-300 px-3 py-2 text-xs focus:border-indigo-500 focus:outline-none bg-white font-medium text-gray-700"
+            >
+              <option value="CSV">CSV</option>
+              <option value="EXCEL">EXCEL</option>
+              <option value="PDF">PDF</option>
+            </select>
+            <button
+              type="button"
+              disabled={isExporting}
+              onClick={() => void handleExport(selectedFormat)}
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50 transition"
+            >
+              📥 {isExporting ? 'Đang tạo...' : `Xuất Báo Cáo (${selectedFormat})`}
+            </button>
+            {onOpenExportDrawer && (
+              <button
+                type="button"
+                onClick={() => onOpenExportDrawer(query)}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition"
+              >
+                📂 Khay Tải
+              </button>
+            )}
+          </div>
         </div>
+
+        {exportMessage && (
+          <div className="rounded-xl bg-emerald-50 p-3 text-xs text-emerald-700 border border-emerald-200">
+            {exportMessage}
+          </div>
+        )}
 
         {/* Filter Form Controls */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
           <div>
-            <label className="block font-semibold text-gray-600 mb-1">Chiều phân tích</label>
+            <label htmlFor="report-filter-dimension" className="block font-semibold text-gray-600 mb-1">
+              Chiều phân tích
+            </label>
             <select
+              id="report-filter-dimension"
               value={query.dimension}
               onChange={(e) => setQuery({ ...query, dimension: e.target.value as ReportDimension })}
               className="w-full rounded-xl border border-gray-300 p-2 focus:border-indigo-500 focus:outline-none"
@@ -76,8 +142,11 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
           </div>
 
           <div>
-            <label className="block font-semibold text-gray-600 mb-1">Phương thức thanh toán</label>
+            <label htmlFor="report-filter-payment" className="block font-semibold text-gray-600 mb-1">
+              Phương thức thanh toán
+            </label>
             <select
+              id="report-filter-payment"
               value={query.paymentMethod || ''}
               onChange={(e) => setQuery({ ...query, paymentMethod: e.target.value || undefined })}
               className="w-full rounded-xl border border-gray-300 p-2 focus:border-indigo-500 focus:outline-none"
@@ -90,11 +159,37 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
             </select>
           </div>
 
-          <div className="sm:col-span-2 flex items-end">
+          <div>
+            <label htmlFor="report-filter-start-date" className="block font-semibold text-gray-600 mb-1">
+              Từ ngày
+            </label>
+            <input
+              id="report-filter-start-date"
+              type="date"
+              value={query.startDate || ''}
+              onChange={(e) => setQuery({ ...query, startDate: e.target.value || undefined })}
+              className="w-full rounded-xl border border-gray-300 p-2 focus:border-indigo-500 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="report-filter-end-date" className="block font-semibold text-gray-600 mb-1">
+              Đến ngày
+            </label>
+            <input
+              id="report-filter-end-date"
+              type="date"
+              value={query.endDate || ''}
+              onChange={(e) => setQuery({ ...query, endDate: e.target.value || undefined })}
+              className="w-full rounded-xl border border-gray-300 p-2 focus:border-indigo-500 focus:outline-none"
+            />
+          </div>
+
+          <div className="sm:col-span-4 flex justify-end">
             <button
               type="button"
               onClick={() => void fetchReport()}
-              className="w-full rounded-xl bg-gray-900 py-2 text-xs font-semibold text-white hover:bg-gray-800 transition"
+              className="rounded-xl bg-gray-900 px-6 py-2 text-xs font-semibold text-white hover:bg-gray-800 transition"
             >
               Áp Dụng Bộ Lọc
             </button>
