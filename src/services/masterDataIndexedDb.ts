@@ -38,7 +38,7 @@ export class MasterDataIndexedDbAdapter {
           const productStore = db.createObjectStore('products', { keyPath: 'id' });
           productStore.createIndex('by_outlet', 'outletId', { unique: false });
           productStore.createIndex('by_category', 'categoryId', { unique: false });
-          productStore.createIndex('by_sku', 'sku', { unique: true });
+          productStore.createIndex('by_sku', 'sku', { unique: false });
           productStore.createIndex('by_barcode', 'barcode', { unique: false });
         }
 
@@ -91,6 +91,12 @@ export class MasterDataIndexedDbAdapter {
       const ruleStore = tx.objectStore('happyHourRules');
       const metaStore = tx.objectStore('syncMeta');
 
+      // Purge existing records to prevent stale deleted data
+      productStore.clear();
+      categoryStore.clear();
+      outletStore.clear();
+      ruleStore.clear();
+
       // Put products
       if (pkg.products && Array.isArray(pkg.products)) {
         for (const p of pkg.products) {
@@ -135,7 +141,8 @@ export class MasterDataIndexedDbAdapter {
         tx.onabort = () => reject(tx.error);
       });
     } catch (e) {
-      console.warn('IndexedDB persistence fallback:', e);
+      console.warn('IndexedDB persistence error:', e);
+      throw e;
     }
   }
 
@@ -157,11 +164,12 @@ export class MasterDataIndexedDbAdapter {
       const ruleStore = tx.objectStore('happyHourRules');
       const metaStore = tx.objectStore('syncMeta');
 
-      for (const p of updatedProducts) {
-        productStore.put(p);
-      }
+      // Delete first, then apply updates to prevent SKU conflicts
       for (const id of deletedProductIds) {
         productStore.delete(id);
+      }
+      for (const p of updatedProducts) {
+        productStore.put(p);
       }
       if (updatedCategories) {
         for (const c of updatedCategories) {
@@ -174,27 +182,34 @@ export class MasterDataIndexedDbAdapter {
         }
       }
 
-      // Update metadata
-      const metaReq = metaStore.get(key);
-      metaReq.onsuccess = () => {
-        const meta = (metaReq.result as MasterDataSyncMeta) || {
-          outletId: key,
-          etag: currentVersionHash,
-          version: '1.0.0',
-          lastSyncedAt: new Date().toISOString(),
-          productCount: 0,
+      // Update metadata with accurate productCount
+      const countReq = productStore.count();
+      countReq.onsuccess = () => {
+        const currentCount = countReq.result;
+        const metaReq = metaStore.get(key);
+        metaReq.onsuccess = () => {
+          const meta = (metaReq.result as MasterDataSyncMeta) || {
+            outletId: key,
+            etag: currentVersionHash,
+            version: '1.0.0',
+            lastSyncedAt: new Date().toISOString(),
+            productCount: 0,
+          };
+          meta.etag = currentVersionHash;
+          meta.lastSyncedAt = new Date().toISOString();
+          meta.productCount = currentCount;
+          metaStore.put(meta);
         };
-        meta.etag = currentVersionHash;
-        meta.lastSyncedAt = new Date().toISOString();
-        metaStore.put(meta);
       };
 
       return new Promise((resolve, reject) => {
         tx.oncomplete = () => resolve();
         tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
       });
     } catch (err) {
       console.warn('Failed to apply delta updates to IndexedDB:', err);
+      throw err;
     }
   }
 
@@ -256,12 +271,14 @@ export class MasterDataIndexedDbAdapter {
       tx.objectStore('outlets').clear();
       tx.objectStore('happyHourRules').clear();
       tx.objectStore('syncMeta').clear();
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         tx.oncomplete = () => resolve();
-        tx.onerror = () => resolve();
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
       });
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn('Failed to clear database:', err);
+      throw err;
     }
   }
 }

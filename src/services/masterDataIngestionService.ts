@@ -64,35 +64,41 @@ export class MasterDataIngestionEngine {
 
       // Try delta sync
       this.updateProgress('DOWNLOADING_DELTA', 40, 'Đang tải gói cập nhật thay đổi (Delta)...', 0);
+      let delta: PosDeltaCatalogChangefeedDto;
       try {
         const deltaRes = await apiClient.get<{ success: boolean; data: PosDeltaCatalogChangefeedDto }>('/api/pos/catalog/delta', {
           params: {
             outletId,
             versionHash: currentEtag,
           },
+          timeout: 60_000,
         });
-
-        const delta = deltaRes.data.data;
-        if (delta.requiresFullSnapshot) {
-          return await this.downloadFullPackage(outletId);
+        delta = deltaRes.data.data;
+      } catch (deltaErr: any) {
+        // If there was no response from server (network disconnect, offline, timeout), rethrow immediately
+        if (!deltaErr?.response) {
+          throw deltaErr;
         }
-
-        this.updateProgress('PERSISTING_LOCAL', 75, 'Đang cập nhật thay đổi vào cơ sở dữ liệu IndexedDB...', delta.updatedProducts.length);
-        await masterDataDb.applyDeltaUpdate(
-          outletId,
-          delta.currentVersionHash,
-          delta.updatedProducts,
-          delta.deletedProductIds,
-          delta.updatedCategories,
-          delta.updatedHappyHourRules
-        );
-
-        this.updateProgress('COMPLETED', 100, `Đã cập nhật ${delta.updatedProducts.length} mặt hàng mới/sửa`, delta.updatedProducts.length);
-        return { success: true, itemCount: delta.updatedProducts.length };
-      } catch (deltaErr) {
-        console.warn('Delta sync failed, falling back to full snapshot:', deltaErr);
+        console.warn('Delta sync failed with server response, falling back to full snapshot:', deltaErr);
         return await this.downloadFullPackage(outletId);
       }
+
+      if (delta.requiresFullSnapshot) {
+        return await this.downloadFullPackage(outletId);
+      }
+
+      this.updateProgress('PERSISTING_LOCAL', 75, 'Đang cập nhật thay đổi vào cơ sở dữ liệu IndexedDB...', delta.updatedProducts.length);
+      await masterDataDb.applyDeltaUpdate(
+        outletId,
+        delta.currentVersionHash,
+        delta.updatedProducts,
+        delta.deletedProductIds,
+        delta.updatedCategories,
+        delta.updatedHappyHourRules
+      );
+
+      this.updateProgress('COMPLETED', 100, `Đã cập nhật ${delta.updatedProducts.length} mặt hàng mới/sửa`, delta.updatedProducts.length);
+      return { success: true, itemCount: delta.updatedProducts.length };
     } catch (err: any) {
       const errMsg = err?.message || 'Lỗi không xác định khi đồng bộ dữ liệu ngoại tuyến';
       this.updateProgress('ERROR', 0, 'Đồng bộ thất bại', 0, errMsg);
@@ -104,6 +110,7 @@ export class MasterDataIngestionEngine {
     this.updateProgress('DOWNLOADING_SNAPSHOT', 45, 'Đang tải toàn bộ dữ liệu danh mục & bảng giá từ máy chủ...', 0);
     const res = await apiClient.get<{ success: boolean; data: PosOfflineCatalogPackageDto }>('/api/pos/catalog/offline-package', {
       params: outletId ? { outletId } : undefined,
+      timeout: 60_000,
     });
 
     const pkg = res.data.data;

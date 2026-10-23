@@ -1,5 +1,4 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { MasterDataSyncModal } from './MasterDataSyncModal';
 import { masterDataDb } from '../../services/masterDataIndexedDb';
