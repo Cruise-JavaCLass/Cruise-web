@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FileText,
   Mail,
@@ -28,6 +28,11 @@ export const ExecutivePdfBookletModal: React.FC<ExecutivePdfBookletModalProps> =
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSuccessMsg(null);
+    setError(null);
+  }, [isOpen, voyage?.voyageNumber]);
 
   if (!isOpen || !voyage) return null;
 

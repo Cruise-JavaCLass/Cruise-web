@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import {
   TrendingUp,
   DollarSign,
@@ -27,6 +27,9 @@ import { ExecutivePdfBookletModal } from './ExecutivePdfBookletModal';
 export const ExecutivePostVoyageDashboard: React.FC = () => {
   const [summary, setSummary] = useState<ExecutiveVoyageAnalyticsSummary | null>(null);
   const [loading, setLoading] = useState(false);
+  const closureSubmitRef = useRef(false);
+  const [closureSubmitPending, setClosureSubmitPending] = useState(false);
+  const [initiateError, setInitiateError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Modal states
@@ -38,6 +41,9 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
   const [voyageNumber, setVoyageNumber] = useState('VOY-2026-MED-02');
   const [shipId, setShipId] = useState('SHIP-CELEBRATION');
   const [itineraryName, setItineraryName] = useState('Greek Isles & Turkish Coast 7-Day');
+  const [voyageStartDate, setVoyageStartDate] = useState(() => new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0]);
+  const [voyageEndDate, setVoyageEndDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [closureAuditNotes, setClosureAuditNotes] = useState('Executive ledger reconciled with PMS & POS.');
   const [capacity, setCapacity] = useState(2500);
   const [attendance, setAttendance] = useState(2380);
   const [budgetGross, setBudgetGross] = useState(1500000);
@@ -67,14 +73,18 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
 
   const handleInitiateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (closureSubmitRef.current) return;
+    closureSubmitRef.current = true;
+    setClosureSubmitPending(true);
+    setInitiateError(null);
     try {
       setLoading(true);
       const req: InitiateVoyageClosureRequest = {
         voyageNumber,
         shipId,
         itineraryName,
-        voyageStartDate: new Date(Date.now() - 7 * 86400000).toISOString(),
-        voyageEndDate: new Date().toISOString(),
+        voyageStartDate: new Date(voyageStartDate).toISOString(),
+        voyageEndDate: new Date(voyageEndDate).toISOString(),
         totalPassengerCapacity: capacity,
         actualPassengerAttendance: attendance,
         budgetedGrossRevenue: budgetGross,
@@ -84,30 +94,38 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
         revenueSpaWellness: revSpa,
         revenueRetailBoutiques: revRetail,
         totalDiscountsAndObc: discounts,
-        closureAuditNotes: 'Executive ledger reconciled with PMS & POS.',
+        closureAuditNotes: closureAuditNotes.trim() || 'Executive ledger reconciled with PMS & POS.',
       };
       await voyageAnalyticsService.initiateClosure(req);
       setIsInitiateOpen(false);
-      void loadAnalytics();
+      await loadAnalytics();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Closure initiation failed');
+      setInitiateError(err instanceof Error ? err.message : 'Closure initiation failed');
     } finally {
+      closureSubmitRef.current = false;
+      setClosureSubmitPending(false);
       setLoading(false);
     }
   };
 
   const handleFinalize = async (vNumber: string) => {
-    if (!window.confirm(`Officially finalize and audit financial closure for ${vNumber}?`)) return;
+    if (closureSubmitRef.current) return;
+    const assertionText = 'All voyage accounts audited by Corporate Finance.';
+    if (!window.confirm(`Officially finalize and audit financial closure for ${vNumber}?\n\nConfirm audit assertion: "${assertionText}"`)) return;
+    closureSubmitRef.current = true;
+    setClosureSubmitPending(true);
     try {
       setLoading(true);
       const req: FinalizeVoyageClosureRequest = {
-        closureAuditNotes: 'All voyage accounts audited by Corporate Finance.',
+        closureAuditNotes: assertionText,
       };
       await voyageAnalyticsService.finalizeClosure(vNumber, req);
-      void loadAnalytics();
+      await loadAnalytics();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Finalization failed');
     } finally {
+      closureSubmitRef.current = false;
+      setClosureSubmitPending(false);
       setLoading(false);
     }
   };
@@ -139,7 +157,10 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
           </button>
           <button
-            onClick={() => setIsInitiateOpen(true)}
+            onClick={() => {
+              setInitiateError(null);
+              setIsInitiateOpen(true);
+            }}
             className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm transition"
           >
             <Plus className="w-3.5 h-3.5" /> Close Voyage Financials
@@ -329,7 +350,8 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
                     {v.status === 'CLOSURE_IN_PROGRESS' && (
                       <button
                         onClick={() => handleFinalize(v.voyageNumber)}
-                        className="text-emerald-600 hover:text-emerald-800 font-semibold"
+                        disabled={closureSubmitPending || loading}
+                        className="text-emerald-600 hover:text-emerald-800 font-semibold disabled:opacity-50"
                       >
                         Finalize
                       </button>
@@ -360,6 +382,11 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
             <p className="text-xs text-slate-500 mb-4">Reconcile department revenues, calculate RevPCD, and generate executive archive.</p>
 
             <form onSubmit={handleInitiateSubmit} className="space-y-3.5 text-xs">
+              {initiateError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 font-semibold">
+                  {initiateError}
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Voyage Number</label>
@@ -389,7 +416,53 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
                   type="text"
                   required
                   value={itineraryName}
-                  onChange={(e) => setItineraryName(e.target.value)}
+                  onChange={(e) => {
+                    setItineraryName(e.target.value);
+                    if (initiateError) setInitiateError(null);
+                  }}
+                  className="w-full p-2 border border-slate-300 rounded-xl"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Voyage Start Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={voyageStartDate}
+                    onChange={(e) => {
+                      setVoyageStartDate(e.target.value);
+                      if (initiateError) setInitiateError(null);
+                    }}
+                    className="w-full p-2 border border-slate-300 rounded-xl"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Voyage End Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={voyageEndDate}
+                    onChange={(e) => {
+                      setVoyageEndDate(e.target.value);
+                      if (initiateError) setInitiateError(null);
+                    }}
+                    className="w-full p-2 border border-slate-300 rounded-xl"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Audit Notes / Verification</label>
+                <input
+                  type="text"
+                  required
+                  value={closureAuditNotes}
+                  onChange={(e) => {
+                    setClosureAuditNotes(e.target.value);
+                    if (initiateError) setInitiateError(null);
+                  }}
                   className="w-full p-2 border border-slate-300 rounded-xl"
                 />
               </div>
@@ -467,7 +540,8 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl"
+                  disabled={closureSubmitPending || loading}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl disabled:opacity-50"
                 >
                   Initiate Closure
                 </button>
