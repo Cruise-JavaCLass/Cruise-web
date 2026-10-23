@@ -23,20 +23,21 @@ export const ApologyVoucherCard: React.FC<ApologyVoucherCardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [claimResult, setClaimResult] = useState<ClaimObcVoucherResponse | null>(null);
   const currentVoucherIdRef = useRef(voucher.id);
-  currentVoucherIdRef.current = voucher.id;
 
   useEffect(() => {
+    currentVoucherIdRef.current = voucher.id;
     setClaimResult(null);
     setError(null);
+    setLoading(false);
   }, [voucher.id]);
 
   const handleClaim = async () => {
-    const activeId = voucher.id;
+    const initiatedId = voucher.id;
     try {
       setLoading(true);
       setError(null);
       const res = await serviceRecoveryService.claimVoucher(voucher.voucherCode);
-      if (voucher.id !== activeId) {
+      if (currentVoucherIdRef.current !== initiatedId) {
         return;
       }
       setClaimResult(res);
@@ -44,11 +45,11 @@ export const ApologyVoucherCard: React.FC<ApologyVoucherCardProps> = ({
         onVoucherClaimed(res);
       }
     } catch (err: unknown) {
-      if (voucher.id === activeId) {
+      if (currentVoucherIdRef.current === initiatedId) {
         setError(err instanceof Error ? err.message : 'Failed to claim voucher');
       }
     } finally {
-      if (voucher.id === activeId) {
+      if (currentVoucherIdRef.current === initiatedId) {
         setLoading(false);
       }
     }

@@ -161,5 +161,45 @@ describe('Real-time Service Recovery & OBC Compensation UI (KAN-453, KAN-454, KA
         expect(onClaimed).toHaveBeenCalledWith(claimResponse);
       });
     });
+
+    it('does not apply claim result or invoke callback when voucher changes while request is pending', async () => {
+      const user = userEvent.setup();
+      const onClaimed = vi.fn();
+
+      let resolveClaim = (_val: ClaimObcVoucherResponse) => {};
+      const pendingPromise = new Promise<ClaimObcVoucherResponse>((resolve) => {
+        resolveClaim = resolve;
+      });
+      vi.mocked(serviceRecoveryService.claimVoucher).mockReturnValueOnce(pendingPromise);
+
+      const voucherA: ServiceRecoveryObcVoucher = { ...mockVoucher, id: 101, voucherCode: 'VOUCHER-A' };
+      const voucherB: ServiceRecoveryObcVoucher = { ...mockVoucher, id: 102, voucherCode: 'VOUCHER-B', apologyTitle: 'Alternative Apology Title' };
+
+      const { rerender } = render(<ApologyVoucherCard voucher={voucherA} onVoucherClaimed={onClaimed} />);
+
+      const claimBtn = screen.getByRole('button', { name: /Accept Apology & Claim/i });
+      await user.click(claimBtn);
+
+      // Re-render with voucher B before promise resolves
+      rerender(<ApologyVoucherCard voucher={voucherB} onVoucherClaimed={onClaimed} />);
+
+      // Now resolve the promise for voucher A
+      const claimResponseA: ClaimObcVoucherResponse = {
+        voucher: { ...voucherA, status: 'CLAIMED_TO_FOLIO' },
+        folioTransactionId: 'TX-STALE-VOUCHER-A',
+        creditedAmount: 100.0,
+        cabinNumber: 'CABIN-7012',
+        updatedAvailableLimit: 1700.0,
+        processedAt: new Date().toISOString(),
+        message: 'Onboard credit applied',
+      };
+      resolveClaim(claimResponseA);
+
+      await new Promise((r) => setTimeout(r, 50));
+
+      // Callback should NOT be called because voucher changed
+      expect(onClaimed).not.toHaveBeenCalled();
+      expect(screen.queryByText('TX-STALE-VOUCHER-A')).not.toBeInTheDocument();
+    });
   });
 });
