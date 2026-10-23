@@ -108,7 +108,8 @@ export const PackageBreakdownModal: React.FC<PackageBreakdownModalProps> = ({
                         <div className="font-semibold text-gray-900">{item.productName}</div>
                         {item.appliedPackageName && (
                           <span className="text-[11px] font-medium text-emerald-600">
-                            ✓ {item.appliedPackageName} (-{item.quotaDeducted} suất)
+                            ✓ {item.appliedPackageName}
+                            {typeof item.quotaDeducted === 'number' && ` (-${item.quotaDeducted} suất)`}
                           </span>
                         )}
                       </td>

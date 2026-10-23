@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
 
 const FOCUSABLE_ELEMENTS_SELECTOR =
@@ -15,6 +15,12 @@ export function useModalFocusTrap({
   containerRef,
   onClose,
 }: UseModalFocusTrapOptions): void {
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -34,7 +40,7 @@ export function useModalFocusTrap({
     const onKeydown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -66,5 +72,5 @@ export function useModalFocusTrap({
         previousFocusedElement.focus();
       }
     };
-  }, [isOpen, containerRef, onClose]);
+  }, [isOpen, containerRef]);
 }
