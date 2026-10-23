@@ -21,6 +21,7 @@ export const PosTerminalRegistry: React.FC = () => {
   const [terminals, setTerminals] = useState<PosTerminal[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
@@ -40,13 +41,13 @@ export const PosTerminalRegistry: React.FC = () => {
   const loadTerminals = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
+      setLoadError(null);
       const res = await adminDeviceService.listTerminals(page, 20);
       setTerminals(res.content || []);
       setTotalPages(res.totalPages || 1);
       setTotalElements(res.totalElements || 0);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch terminal registry');
+      setLoadError(err instanceof Error ? err.message : 'Failed to fetch terminal registry');
     } finally {
       setLoading(false);
     }
@@ -83,6 +84,8 @@ export const PosTerminalRegistry: React.FC = () => {
     if (!window.confirm(`Rotate API Key for device ${deviceId}? Previous key will stop working.`)) return;
     try {
       setActionLoading(true);
+      setError(null);
+      setActionMessage(null);
       const res = await adminDeviceService.rotateApiKey(deviceId, { reason: 'Operator manual rotation' });
       setProvisionResult(res);
       setActionMessage(`New API key generated for ${deviceId}`);
@@ -97,6 +100,8 @@ export const PosTerminalRegistry: React.FC = () => {
   const handleRenewCertificate = async (deviceId: string) => {
     try {
       setActionLoading(true);
+      setError(null);
+      setActionMessage(null);
       const res = await adminDeviceService.renewCertificate(deviceId);
       setActionMessage(`Certificate renewed successfully for ${deviceId}. Expiry: ${new Date(res.certificateExpiry).toLocaleDateString()}`);
       void loadTerminals();
@@ -111,6 +116,8 @@ export const PosTerminalRegistry: React.FC = () => {
     if (!window.confirm(`REVOKE credentials for device ${deviceId}? The terminal cannot process transactions anymore.`)) return;
     try {
       setActionLoading(true);
+      setError(null);
+      setActionMessage(null);
       await adminDeviceService.revokeTerminal(deviceId, { reason: 'Security de-authorization' });
       setActionMessage(`Device ${deviceId} revoked.`);
       void loadTerminals();
@@ -126,6 +133,8 @@ export const PosTerminalRegistry: React.FC = () => {
     if (!reason) return;
     try {
       setActionLoading(true);
+      setError(null);
+      setActionMessage(null);
       await adminDeviceService.issueRemoteWipe(deviceId, { reason });
       setActionMessage(`REMOTE WIPE instruction issued for ${deviceId}. Memory & encryption keys will be purged.`);
       void loadTerminals();
@@ -263,11 +272,11 @@ export const PosTerminalRegistry: React.FC = () => {
                   Loading POS terminals...
                 </td>
               </tr>
-            ) : error ? (
+            ) : loadError ? (
               <tr>
                 <td colSpan={7} className="text-center py-12 text-rose-500">
                   <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-rose-500" />
-                  {error}
+                  {loadError}
                 </td>
               </tr>
             ) : terminals.length === 0 ? (
