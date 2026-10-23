@@ -23,7 +23,7 @@ export const voyageLifecycleService = {
 
   async getVoyageState(voyageNumber: string): Promise<VoyageLifecycleState> {
     const res = await apiClient.get<ApiResponse<VoyageLifecycleState>>(
-      `/admin/voyage-lifecycle/${voyageNumber}`
+      `/admin/voyage-lifecycle/${encodeURIComponent(voyageNumber)}`
     );
     return res.data.data;
   },
@@ -41,7 +41,7 @@ export const voyageLifecycleService = {
     request: TransitionVoyagePhaseRequest
   ): Promise<VoyageLifecycleState> {
     const res = await apiClient.post<ApiResponse<VoyageLifecycleState>>(
-      `/admin/voyage-lifecycle/${voyageNumber}/transition`,
+      `/admin/voyage-lifecycle/${encodeURIComponent(voyageNumber)}/transition`,
       request
     );
     return res.data.data;
@@ -52,7 +52,7 @@ export const voyageLifecycleService = {
     request: SyncPortTimezoneRequest
   ): Promise<VoyageLifecycleState> {
     const res = await apiClient.post<ApiResponse<VoyageLifecycleState>>(
-      `/admin/voyage-lifecycle/${voyageNumber}/sync-timezone`,
+      `/admin/voyage-lifecycle/${encodeURIComponent(voyageNumber)}/sync-timezone`,
       request
     );
     return res.data.data;
@@ -60,7 +60,7 @@ export const voyageLifecycleService = {
 
   async getTimezoneSchedule(voyageNumber: string): Promise<TimezoneShiftScheduleResponse> {
     const res = await apiClient.get<ApiResponse<TimezoneShiftScheduleResponse>>(
-      `/admin/voyage-lifecycle/${voyageNumber}/timezone-schedule`
+      `/admin/voyage-lifecycle/${encodeURIComponent(voyageNumber)}/timezone-schedule`
     );
     return res.data.data;
   },

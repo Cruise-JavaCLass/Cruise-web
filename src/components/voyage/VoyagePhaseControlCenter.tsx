@@ -18,12 +18,15 @@ import type {
   TransitionVoyagePhaseRequest,
 } from '../../services/voyageLifecycleTypes';
 import { voyageLifecycleService } from '../../services/voyageLifecycleService';
-import { MaritimeTimezoneSchedulerModal } from './MaritimeTimezoneSchedulerModal';
+import { MaritimeTimezoneSchedulerModal, formatOffset } from './MaritimeTimezoneSchedulerModal';
 
 export const VoyagePhaseControlCenter: React.FC = () => {
   const [voyages, setVoyages] = useState<VoyageLifecycleState[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [transitionError, setTransitionError] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   // Timezone modal state
   const [selectedVoyageForTz, setSelectedVoyageForTz] = useState<VoyageLifecycleState | null>(null);
@@ -52,6 +55,7 @@ export const VoyagePhaseControlCenter: React.FC = () => {
       setError(err instanceof Error ? err.message : 'Failed to retrieve voyage states');
     } finally {
       setLoading(false);
+      setHasLoaded(true);
     }
   }, []);
 
@@ -77,6 +81,7 @@ export const VoyagePhaseControlCenter: React.FC = () => {
     setTargetPhase(nextPhase);
     setTransitionReason(`Routine scheduled transition to ${nextPhase}`);
     setCurrentPortName(v.currentPortName || '');
+    setTransitionError(null);
     setIsTransitionOpen(true);
   };
 
@@ -85,7 +90,7 @@ export const VoyagePhaseControlCenter: React.FC = () => {
     if (!transitionVoyage) return;
     try {
       setLoading(true);
-      setError(null);
+      setTransitionError(null);
       const req: TransitionVoyagePhaseRequest = {
         targetPhase,
         transitionReason,
@@ -94,9 +99,9 @@ export const VoyagePhaseControlCenter: React.FC = () => {
       await voyageLifecycleService.transitionPhase(transitionVoyage.voyageNumber, req);
       setIsTransitionOpen(false);
       setTransitionVoyage(null);
-      void fetchVoyages();
+      await fetchVoyages();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Phase transition failed');
+      setTransitionError(err instanceof Error ? err.message : 'Phase transition failed');
     } finally {
       setLoading(false);
     }
@@ -106,7 +111,7 @@ export const VoyagePhaseControlCenter: React.FC = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      setError(null);
+      setCreateError(null);
       const req: CreateVoyageStateRequest = {
         voyageNumber: newVoyageNumber,
         shipId: newShipId,
@@ -116,9 +121,9 @@ export const VoyagePhaseControlCenter: React.FC = () => {
       };
       await voyageLifecycleService.createVoyageState(req);
       setIsCreateOpen(false);
-      void fetchVoyages();
+      await fetchVoyages();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Voyage creation failed');
+      setCreateError(err instanceof Error ? err.message : 'Voyage creation failed');
     } finally {
       setLoading(false);
     }
@@ -160,7 +165,10 @@ export const VoyagePhaseControlCenter: React.FC = () => {
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
           </button>
           <button
-            onClick={() => setIsCreateOpen(true)}
+            onClick={() => {
+              setCreateError(null);
+              setIsCreateOpen(true);
+            }}
             className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm transition"
           >
             <Plus className="w-3.5 h-3.5" /> Initialize New Voyage State
@@ -176,7 +184,12 @@ export const VoyagePhaseControlCenter: React.FC = () => {
 
       {/* Voyage Cards List */}
       <div className="space-y-6">
-        {voyages.length === 0 ? (
+        {loading && !hasLoaded ? (
+          <div className="bg-white rounded-2xl p-12 text-center text-slate-400 border border-slate-200">
+            <RefreshCw className="w-8 h-8 mx-auto mb-2 animate-spin text-indigo-600 opacity-50" />
+            Loading voyage lifecycle states...
+          </div>
+        ) : voyages.length === 0 ? (
           <div className="bg-white rounded-2xl p-12 text-center text-slate-400 border border-slate-200">
             <Compass className="w-10 h-10 mx-auto mb-2 opacity-40 text-indigo-600" />
             No voyage lifecycle states active. Click 'Initialize New Voyage State' to register one.
@@ -277,7 +290,7 @@ export const VoyagePhaseControlCenter: React.FC = () => {
                   <div>
                     <span className="text-slate-400 block">Ship Timezone:</span>
                     <strong className="text-slate-800 text-xs">
-                      {v.currentTimezone} (+{v.vesselClockOffsetMinutes} mins)
+                      {v.currentTimezone} ({formatOffset(v.vesselClockOffsetMinutes)} mins)
                     </strong>
                   </div>
                   <div>
@@ -326,6 +339,11 @@ export const VoyagePhaseControlCenter: React.FC = () => {
             </p>
 
             <form onSubmit={handleConfirmTransition} className="space-y-3.5 text-xs">
+              {transitionError && (
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl font-semibold">
+                  {transitionError}
+                </div>
+              )}
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Target Next Phase</label>
                 <select
@@ -393,6 +411,11 @@ export const VoyagePhaseControlCenter: React.FC = () => {
             <p className="text-xs text-slate-500 mb-4">Register new voyage in the state machine.</p>
 
             <form onSubmit={handleCreateSubmit} className="space-y-3.5 text-xs">
+              {createError && (
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl font-semibold">
+                  {createError}
+                </div>
+              )}
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Voyage Number</label>
                 <input

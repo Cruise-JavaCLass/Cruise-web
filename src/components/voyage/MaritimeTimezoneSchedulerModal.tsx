@@ -15,6 +15,8 @@ import type {
 } from '../../services/voyageLifecycleTypes';
 import { voyageLifecycleService } from '../../services/voyageLifecycleService';
 
+export const formatOffset = (m: number) => `${m >= 0 ? '+' : ''}${m}`;
+
 interface MaritimeTimezoneSchedulerModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -29,7 +31,8 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
   onTimezoneUpdated,
 }) => {
   const [schedule, setSchedule] = useState<TimezoneShiftScheduleResponse | null>(null);
-  const [, setLoadingSchedule] = useState(false);
+  const [loadingSchedule, setLoadingSchedule] = useState(false);
+  const [scheduleError, setScheduleError] = useState<string | null>(null);
   const [portName, setPortName] = useState(voyage?.currentPortName || 'Piraeus Port (Athens)');
   const [timezone, setTimezone] = useState(voyage?.currentTimezone || 'Europe/Athens');
   const [clockOffsetMinutes, setClockOffsetMinutes] = useState(voyage?.vesselClockOffsetMinutes || 120);
@@ -45,22 +48,28 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
       setClockOffsetMinutes(voyage.vesselClockOffsetMinutes || 0);
       setSuccessMsg(null);
       setError(null);
+      setSchedule(null);
+      setScheduleError(null);
 
-      // Load schedule
+      let cancelled = false;
       const fetchSchedule = async () => {
         try {
           setLoadingSchedule(true);
           const res = await voyageLifecycleService.getTimezoneSchedule(voyage.voyageNumber);
-          setSchedule(res);
+          if (!cancelled && res) setSchedule(res);
         } catch {
-          // ignore background schedule fail
+          if (!cancelled) setScheduleError('Failed to load timezone schedule');
         } finally {
-          setLoadingSchedule(false);
+          if (!cancelled) setLoadingSchedule(false);
         }
       };
       void fetchSchedule();
+      return () => {
+        cancelled = true;
+      };
     }
-  }, [isOpen, voyage]);
+    return undefined;
+  }, [isOpen, voyage?.voyageNumber]);
 
   if (!isOpen || !voyage) return null;
 
@@ -77,7 +86,13 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
       };
       const updated = await voyageLifecycleService.syncPortTimezone(voyage.voyageNumber, req);
       onTimezoneUpdated(updated);
-      setSuccessMsg(`Ship master clock synchronized to ${timezone} (Offset: +${clockOffsetMinutes}m)`);
+      setSuccessMsg(`Ship master clock synchronized to ${timezone} (Offset: ${formatOffset(clockOffsetMinutes)}m)`);
+      try {
+        const res = await voyageLifecycleService.getTimezoneSchedule(voyage.voyageNumber);
+        if (res) setSchedule(res);
+      } catch {
+        // ignore background schedule refresh failure
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Timezone synchronization failed');
     } finally {
@@ -122,6 +137,13 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
           </div>
         )}
 
+        {scheduleError && (
+          <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>{scheduleError}</span>
+          </div>
+        )}
+
         {/* Master Clock Preview Card */}
         <div className="bg-slate-900 text-white p-4 rounded-xl flex items-center justify-between shadow-inner">
           <div>
@@ -130,15 +152,17 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
             </span>
             <div className="text-2xl font-mono font-bold text-emerald-400 mt-1 flex items-center gap-2">
               <Clock className="w-5 h-5 text-emerald-400 animate-pulse" />
-              {schedule
+              {loadingSchedule
+                ? 'Synchronizing Clock...'
+                : schedule
                 ? new Date(schedule.currentShipClockTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-                : new Date().toLocaleTimeString()}
+                : '--:--:--'}
             </div>
           </div>
           <div className="text-right">
             <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active Timezone</span>
             <div className="font-semibold text-slate-200 text-xs mt-1">{voyage.currentTimezone}</div>
-            <div className="text-[10px] text-indigo-300 font-mono">Offset: +{voyage.vesselClockOffsetMinutes} mins</div>
+            <div className="text-[10px] text-indigo-300 font-mono">Offset: {formatOffset(voyage.vesselClockOffsetMinutes)} mins</div>
           </div>
         </div>
 
@@ -166,6 +190,17 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
                 onChange={(e) => setTimezone(e.target.value)}
                 className="w-full p-2 border border-slate-300 rounded-xl"
               >
+                {voyage.currentTimezone &&
+                  ![
+                    'Europe/Athens',
+                    'Europe/Rome',
+                    'Europe/Istanbul',
+                    'America/New_York',
+                    'America/Halifax',
+                    'UTC',
+                  ].includes(voyage.currentTimezone) && (
+                    <option value={voyage.currentTimezone}>{voyage.currentTimezone}</option>
+                  )}
                 <option value="Europe/Athens">Europe/Athens (UTC+02:00 / UTC+03:00)</option>
                 <option value="Europe/Rome">Europe/Rome (UTC+01:00 / UTC+02:00)</option>
                 <option value="Europe/Istanbul">Europe/Istanbul (UTC+03:00)</option>
@@ -224,7 +259,7 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
                     <span className="text-slate-400 ml-1.5">({shift.timezone})</span>
                   </div>
                   <span className="font-mono text-indigo-600 font-bold">
-                    +{shift.clockOffsetMinutes}m offset
+                    {formatOffset(shift.clockOffsetMinutes)}m offset
                   </span>
                 </div>
               ))}
