@@ -6,7 +6,7 @@ import {
   ShieldAlert,
   X,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   type MissingPassengerDto,
   allAboardWatchdogService,
@@ -18,6 +18,8 @@ interface PortSearchPartyModalProps {
   portCallId: number;
   onClose: () => void;
   onActionComplete?: () => void;
+  initialNotes?: string;
+  onSaveNotes?: (passengerId: number, notes: string) => void;
 }
 
 export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
@@ -26,25 +28,100 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
   portCallId,
   onClose,
   onActionComplete,
+  initialNotes,
+  onSaveNotes,
 }) => {
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
+
   const customMsg =
     'FINAL CALL: All-Aboard countdown closing. Please return to the gangway now!';
 
+  const storageKey = passenger
+    ? `watchdog_notes_${tourId}_${portCallId}_${passenger.passengerId}`
+    : '';
+
+  // Load notes on passenger change
   useEffect(() => {
     setFeedback(null);
-    setNotes('');
-  }, [passenger?.passengerId]);
+    if (storageKey) {
+      const saved = localStorage.getItem(storageKey);
+      setNotes(initialNotes ?? saved ?? '');
+    } else {
+      setNotes('');
+    }
+  }, [passenger?.passengerId, storageKey, initialNotes]);
+
+  // Focus trap and Escape key listener
+  useEffect(() => {
+    if (!passenger) return;
+
+    previousActiveElement.current = document.activeElement as HTMLElement | null;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Initial focus into modal
+    const focusable = modalRef.current?.querySelector<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    focusable?.focus();
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      previousActiveElement.current?.focus?.();
+    };
+  }, [passenger, onClose]);
 
   if (!passenger) return null;
+
+  const handleNotesChange = (val: string) => {
+    setNotes(val);
+    if (storageKey) {
+      localStorage.setItem(storageKey, val);
+    }
+    if (passenger) {
+      onSaveNotes?.(passenger.passengerId, val);
+    }
+  };
 
   const handleSendDirectAlert = async (type: 'SMS' | 'IN_APP' | 'PA') => {
     try {
       setSubmitting(true);
       setFeedback(null);
-      await allAboardWatchdogService.dispatchAlert({
+      const res = await allAboardWatchdogService.dispatchAlert({
         tourId,
         portCallId,
         passengerIds: [passenger.passengerId],
@@ -54,10 +131,23 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
         customUrgentMessage: customMsg,
         dispatchedBy: 'Port Search Party Coordinator',
       });
-      setFeedback(`Direct ${type} alert successfully dispatched to ${passenger.fullName}`);
-      onActionComplete?.();
-    } catch (err: any) {
-      setFeedback(err?.message || 'Failed to dispatch alert');
+
+      const isDelivered =
+        type === 'SMS'
+          ? (res.smsSentCount || 0) > 0
+          : type === 'IN_APP'
+          ? (res.inAppSentCount || 0) > 0
+          : Boolean(res.paBroadcastTriggered);
+
+      if (isDelivered) {
+        setFeedback(`Direct ${type} alert successfully dispatched to ${passenger.fullName}`);
+        onActionComplete?.();
+      } else {
+        setFeedback(`Recall attempt made but ${type} alert was not delivered (0 sent)`);
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to dispatch alert';
+      setFeedback(message);
     } finally {
       setSubmitting(false);
     }
@@ -75,19 +165,25 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby="search-party-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in"
     >
-      <div className="bg-slate-900 border-2 border-amber-500 rounded-2xl w-full max-w-lg overflow-hidden text-slate-100 shadow-2xl">
+      <div
+        ref={modalRef}
+        tabIndex={-1}
+        className="bg-slate-900 border-2 border-amber-500 rounded-2xl w-full max-w-lg overflow-hidden text-slate-100 shadow-2xl focus:outline-none"
+      >
         {/* Modal Header */}
         <div className="bg-amber-600 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Search className="w-5 h-5 text-white" />
-            <h3 className="text-base font-black uppercase tracking-wider text-white">
+            <h3 id="search-party-title" className="text-base font-black uppercase tracking-wider text-white">
               Port Search Party Coordinator
             </h3>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close coordinator"
             className="p-1 rounded-lg text-amber-200 hover:text-white hover:bg-amber-700 transition"
           >
             <X className="w-5 h-5" />
@@ -123,7 +219,7 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
           </div>
 
           {feedback && (
-            <div className="p-3 bg-amber-950/80 border border-amber-500 rounded-lg text-amber-200 text-xs">
+            <div className="p-3 bg-amber-950/80 border border-amber-500 rounded-lg text-amber-200 text-xs font-semibold">
               {feedback}
             </div>
           )}
@@ -136,18 +232,18 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={() => handleSendDirectAlert('SMS')}
+                onClick={() => void handleSendDirectAlert('SMS')}
                 disabled={submitting || !passenger.phoneNumber}
-                className="flex items-center justify-center gap-2 p-3 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 text-xs font-bold text-slate-200 transition"
+                className="flex items-center justify-center gap-2 p-3 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 text-xs font-bold text-slate-200 transition disabled:opacity-50"
               >
                 <MessageSquare className="w-4 h-4 text-cyan-400" />
                 Dispatch Direct SMS
               </button>
 
               <button
-                onClick={() => handleSendDirectAlert('IN_APP')}
+                onClick={() => void handleSendDirectAlert('IN_APP')}
                 disabled={submitting}
-                className="flex items-center justify-center gap-2 p-3 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 text-xs font-bold text-slate-200 transition"
+                className="flex items-center justify-center gap-2 p-3 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 text-xs font-bold text-slate-200 transition disabled:opacity-50"
               >
                 <Megaphone className="w-4 h-4 text-amber-400" />
                 Push Urgent App Alert
@@ -164,9 +260,9 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
               </button>
 
               <button
-                onClick={() => handleSendDirectAlert('PA')}
+                onClick={() => void handleSendDirectAlert('PA')}
                 disabled={submitting}
-                className="flex items-center justify-center gap-2 p-3 bg-red-950/40 hover:bg-red-900/50 rounded-xl border border-red-800 text-xs font-bold text-red-300 transition"
+                className="flex items-center justify-center gap-2 p-3 bg-red-950/40 hover:bg-red-900/50 rounded-xl border border-red-800 text-xs font-bold text-red-300 transition disabled:opacity-50"
               >
                 <ShieldAlert className="w-4 h-4" />
                 Terminal PA Page
@@ -176,13 +272,16 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
 
           {/* Search Party Dispatch Directive */}
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
-              Search Party Dispatch Notes:
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
+                Search Party Dispatch Notes:
+              </label>
+              <span className="text-[10px] text-slate-500 font-mono">Auto-saved to coordination log</span>
+            </div>
             <textarea
               rows={2}
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(e) => handleNotesChange(e.target.value)}
               placeholder="e.g. Dispatched local port security team to Marina shopping district..."
               className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
             />

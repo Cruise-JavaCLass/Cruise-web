@@ -6,7 +6,7 @@ import {
   UserCheck,
   UserX,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   type AllAboardStatusDto,
   type MissingPassengerDto,
@@ -32,26 +32,39 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
   const [dispatchSuccess, setDispatchSuccess] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [receivedAt, setReceivedAt] = useState(() => Date.now());
+  const requestSeq = useRef(0);
 
-  const fetchStatus = async () => {
+  const fetchStatus = useCallback(async () => {
+    const seq = ++requestSeq.current;
     try {
       setLoading(true);
       setError(null);
       const data = await allAboardWatchdogService.getStatus(tourId, portCallId);
-      setStatus(data);
-      setReceivedAt(Date.now());
-    } catch (err: any) {
-      setError(err?.message || 'Failed to fetch All-Aboard status');
+      if (seq === requestSeq.current) {
+        setStatus(data);
+        setReceivedAt(Date.now());
+      }
+    } catch (err: unknown) {
+      if (seq === requestSeq.current) {
+        const message = err instanceof Error ? err.message : 'Failed to fetch All-Aboard status';
+        setError(message);
+      }
     } finally {
-      setLoading(false);
+      if (seq === requestSeq.current) {
+        setLoading(false);
+      }
     }
-  };
+  }, [tourId, portCallId]);
 
   useEffect(() => {
+    setStatus(null);
+    setError(null);
     void fetchStatus();
-    const interval = setInterval(fetchStatus, 10000);
+    const interval = setInterval(() => {
+      void fetchStatus();
+    }, 10000);
     return () => clearInterval(interval);
-  }, [tourId, portCallId]);
+  }, [tourId, portCallId, fetchStatus]);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -73,10 +86,17 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
         broadcastPaSystem: true,
         customUrgentMessage: `ALL-ABOARD CALL: The gangway is closing shortly. Return to the ship immediately!`,
       });
-      setDispatchSuccess(`Alert sent to ${res.targetedPassengersCount} missing guests (${res.alertBatchId})`);
+      const deliveredCount = (res.smsSentCount || 0) + (res.inAppSentCount || 0);
+      const hasDelivery = deliveredCount > 0 || Boolean(res.paBroadcastTriggered);
+      if (hasDelivery) {
+        setDispatchSuccess(`Alert sent to ${res.targetedPassengersCount} missing guests (${res.alertBatchId})`);
+      } else {
+        setError(`Unsuccessful recall attempt: no messages were delivered (${res.alertBatchId})`);
+      }
       await fetchStatus();
-    } catch (err: any) {
-      setError(err?.message || 'Failed to dispatch alert');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to dispatch alert';
+      setError(message);
     } finally {
       setDispatching(false);
     }
@@ -95,7 +115,8 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
     : 0;
   const isExpired = status ? (status.countdownExpired || effectiveSecondsRemaining <= 0) : false;
 
-  const filteredMissing = (status?.missingPassengers || []).filter(
+  const missingList = status?.missingPassengers || [];
+  const filteredMissing = missingList.filter(
     (p) =>
       p.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.cabinNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -120,7 +141,7 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
 
         <div className="flex gap-2 mt-3 sm:mt-0">
           <button
-            onClick={fetchStatus}
+            onClick={() => void fetchStatus()}
             disabled={loading}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-lg border border-slate-700 transition"
           >
@@ -130,7 +151,7 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
           <button
             onClick={handleBroadcastAllAshore}
             disabled={dispatching || !status || status.missingAshoreCount === 0}
-            className="flex items-center gap-1.5 px-4 py-1.5 bg-red-600 hover:bg-red-700 text-xs font-bold rounded-lg text-white shadow-lg transition"
+            className="flex items-center gap-1.5 px-4 py-1.5 bg-red-600 hover:bg-red-700 text-xs font-bold rounded-lg text-white shadow-lg transition disabled:opacity-50"
           >
             <Radio className="w-4 h-4 animate-ping" />
             Recall All Ashore
@@ -214,7 +235,7 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 font-mono flex items-center gap-2">
             <UserX className="w-4 h-4 text-red-400" />
-            Missing Ashore Passengers ({filteredMissing.length})
+            Missing Ashore Passengers ({status ? filteredMissing.length : 0})
           </h3>
 
           <div className="relative">
@@ -229,11 +250,22 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
           </div>
         </div>
 
-        {filteredMissing.length === 0 ? (
+        {!status ? (
+          <div className="p-8 bg-slate-800/40 rounded-xl border border-slate-800 text-center space-y-2">
+            <Clock className="w-10 h-10 text-slate-500 animate-spin mx-auto" />
+            <p className="text-sm text-slate-400 font-bold font-mono">LOADING ALL-ABOARD TELEMETRY...</p>
+          </div>
+        ) : missingList.length === 0 ? (
           <div className="p-8 bg-slate-800/40 rounded-xl border border-slate-800 text-center space-y-2">
             <UserCheck className="w-10 h-10 text-emerald-400 mx-auto" />
             <p className="text-sm text-emerald-400 font-bold">ALL PASSENGERS ACCOUNTED FOR ONBOARD</p>
             <p className="text-xs text-slate-500">No missing or delayed shore party guests detected.</p>
+          </div>
+        ) : filteredMissing.length === 0 ? (
+          <div className="p-8 bg-slate-800/40 rounded-xl border border-slate-800 text-center space-y-2">
+            <Search className="w-10 h-10 text-slate-500 mx-auto" />
+            <p className="text-sm text-slate-300 font-bold">NO MATCHING PASSENGERS FOUND</p>
+            <p className="text-xs text-slate-500">No ashore guests matched your search filter "{searchQuery}".</p>
           </div>
         ) : (
           <div className="overflow-x-auto rounded-xl border border-slate-800">
