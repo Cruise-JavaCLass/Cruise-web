@@ -41,7 +41,7 @@ export const FeedbackTriageDrawer: React.FC<FeedbackTriageDrawerProps> = ({
       setResolvedBy('GuestRelationsManager');
       setErrorMessage(null);
     }
-  }, [review?.id, review, isOpen]);
+  }, [review?.id, isOpen]);
 
   // Focus trap and keyboard navigation
   useEffect(() => {

@@ -11,7 +11,7 @@ import type {
 export const passengerReviewService = {
   async submitReview(request: SubmitPassengerReviewRequest): Promise<PassengerServiceReviewResponse> {
     const response = await api.post<{ success: boolean; data: PassengerServiceReviewResponse }>(
-      '/api/feedback/reviews',
+      '/feedback/reviews',
       request
     );
     return response.data.data;
@@ -27,20 +27,20 @@ export const passengerReviewService = {
     const response = await api.get<{
       success: boolean;
       data: { content: PassengerServiceReviewResponse[]; totalElements: number };
-    }>('/api/feedback/reviews', { params });
+    }>('/feedback/reviews', { params });
     return response.data.data;
   },
 
   async getAnalytics(): Promise<FeedbackAnalyticsDto> {
     const response = await api.get<{ success: boolean; data: FeedbackAnalyticsDto }>(
-      '/api/feedback/reviews/analytics'
+      '/feedback/reviews/analytics'
     );
     return response.data.data;
   },
 
   async triageReview(reviewId: number, request: TriageReviewRequest): Promise<PassengerServiceReviewResponse> {
     const response = await api.patch<{ success: boolean; data: PassengerServiceReviewResponse }>(
-      `/api/feedback/reviews/${reviewId}/triage`,
+      `/feedback/reviews/${reviewId}/triage`,
       request
     );
     return response.data.data;

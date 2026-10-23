@@ -121,10 +121,11 @@ describe('StarRatingModal (KAN-266 & KAN-441)', () => {
       createdAt: new Date().toISOString(),
     });
 
+    const onClose = vi.fn();
     render(
       <StarRatingModal
         isOpen={true}
-        onClose={vi.fn()}
+        onClose={onClose}
         passengerId={101}
         passengerName="Bob"
         cabinNumber="101"
@@ -137,6 +138,9 @@ describe('StarRatingModal (KAN-266 & KAN-441)', () => {
 
     await waitFor(() => {
       expect(passengerReviewService.submitReview).toHaveBeenCalled();
+      expect(failingOnSuccess).toHaveBeenCalled();
+      expect(onClose).toHaveBeenCalled();
+      expect(screen.queryByText(/Callback crash/i)).not.toBeInTheDocument();
       expect(screen.queryByText('Không thể gửi đánh giá')).not.toBeInTheDocument();
     });
   });

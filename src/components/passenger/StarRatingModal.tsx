@@ -48,13 +48,52 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       previousFocusRef.current = document.activeElement as HTMLElement | null;
+
+      // Focus first focusable element inside the modal
+      const timer = setTimeout(() => {
+        const focusables = modalRef.current?.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusables && focusables.length > 0) {
+          focusables[0].focus();
+        }
+      }, 50);
+
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {
+          e.preventDefault();
           onClose();
+          return;
+        }
+
+        if (e.key === 'Tab' && modalRef.current) {
+          const focusables = Array.from(
+            modalRef.current.querySelectorAll<HTMLElement>(
+              'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )
+          );
+          if (focusables.length === 0) return;
+
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+
+          if (e.shiftKey) {
+            if (document.activeElement === first) {
+              e.preventDefault();
+              last.focus();
+            }
+          } else {
+            if (document.activeElement === last) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
         }
       };
+
       window.addEventListener('keydown', handleKeyDown);
       return () => {
+        clearTimeout(timer);
         window.removeEventListener('keydown', handleKeyDown);
         if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
           previousFocusRef.current.focus();
@@ -112,7 +151,8 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
     >
       <div
         ref={modalRef}
-        className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl transition-all"
+        tabIndex={-1}
+        className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl transition-all focus:outline-none"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-4">
@@ -164,7 +204,7 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
                     onClick={() => setRating(star)}
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
-                    className="p-1 text-3xl transition-transform hover:scale-125 focus:outline-none"
+                    className="p-1 text-3xl transition-transform hover:scale-125 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
                     aria-label={`${star} sao`}
                   >
                     <span className={active ? 'text-amber-400' : 'text-gray-200'}>★</span>
