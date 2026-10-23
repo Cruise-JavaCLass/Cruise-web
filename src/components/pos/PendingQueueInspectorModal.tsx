@@ -33,19 +33,14 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
   } | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      setQueue(transactionQueueEngine.getQueue());
-      setFlushResult(null);
-      const unsub = transactionQueueEngine.subscribe((updated) => {
-        setQueue(updated);
-        if (selectedTx) {
-          const refreshed = updated.find((t) => t.id === selectedTx.id);
-          setSelectedTx(refreshed || null);
-        }
-      });
-      return () => unsub();
-    }
-  }, [isOpen, selectedTx]);
+    if (!isOpen) return;
+    setFlushResult(null);
+    const unsub = transactionQueueEngine.subscribe((updated) => {
+      setQueue(updated);
+      setSelectedTx((prev) => (prev ? updated.find((t) => t.id === prev.id) ?? null : null));
+    });
+    return () => unsub();
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -64,8 +59,17 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
 
   const handleClearAll = async () => {
     if (window.confirm('Bạn có chắc chắn muốn xóa toàn bộ hàng đợi ngoại tuyến? Các giao dịch chưa đồng bộ sẽ bị mất vĩnh viễn!')) {
-      await transactionQueueEngine.clearAll();
-      setSelectedTx(null);
+      try {
+        await transactionQueueEngine.clearAll();
+        setSelectedTx(null);
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : 'Không thể xóa hàng đợi lưu trữ cục bộ.';
+        setFlushResult({
+          succeeded: 0,
+          failed: 1,
+          errors: [errorMsg],
+        });
+      }
     }
   };
 
@@ -81,7 +85,12 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
         setSelectedTx(null);
       }
     } catch (err) {
-      console.error('Failed to remove transaction:', err);
+      const errorMsg = err instanceof Error ? err.message : `Không thể xóa giao dịch #${tx.seq} khỏi bộ nhớ cục bộ.`;
+      setFlushResult({
+        succeeded: 0,
+        failed: 1,
+        errors: [errorMsg],
+      });
     }
   };
 
@@ -242,16 +251,18 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
                         </span>
                         <button
                           type="button"
-                          disabled={tx.status === 'SYNCING'}
+                          disabled={tx.status === 'SYNCING' || isFlushing}
                           onClick={() => void handleRemoveItem(tx)}
                           className={`p-1 transition ${
-                            tx.status === 'SYNCING'
+                            tx.status === 'SYNCING' || isFlushing
                               ? 'text-slate-700 cursor-not-allowed opacity-40'
                               : 'text-slate-500 hover:text-rose-400 cursor-pointer'
                           }`}
                           title={
                             tx.status === 'SYNCING'
                               ? 'Giao dịch đang được đồng bộ, không thể hủy'
+                              : isFlushing
+                              ? 'Hàng đợi đang đồng bộ, không thể hủy'
                               : 'Hủy giao dịch này khỏi hàng đợi'
                           }
                           aria-label={`Hủy giao dịch #${tx.seq}`}

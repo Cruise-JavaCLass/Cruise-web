@@ -419,6 +419,8 @@ class TransactionQueueEngine {
         .sort((a, b) => a.seq - b.seq);
 
       for (const item of pendingItems) {
+        // Skip records removed by dequeue()/clearAll() after the snapshot was taken
+        if (!this.inMemoryQueue.includes(item)) continue;
         item.status = 'SYNCING';
         item.lastAttemptAt = new Date().toISOString();
         this.notifyListeners();
