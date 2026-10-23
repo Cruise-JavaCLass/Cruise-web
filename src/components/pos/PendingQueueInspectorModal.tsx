@@ -70,6 +70,9 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
   };
 
   const handleRemoveItem = async (id: string) => {
+    const confirmed = window.confirm(`Bạn có chắc chắn muốn hủy giao dịch ${id} khỏi hàng đợi? Dữ liệu chưa đồng bộ sẽ bị mất vĩnh viễn!`);
+    if (!confirmed) return;
+
     await transactionQueueEngine.dequeue(id);
     if (selectedTx?.id === id) {
       setSelectedTx(null);
@@ -185,14 +188,18 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
                   return (
                     <div
                       key={tx.id}
-                      onClick={() => setSelectedTx(tx)}
-                      className={`p-3 rounded-lg border text-xs cursor-pointer transition flex items-center justify-between ${
+                      className={`p-3 rounded-lg border text-xs transition flex items-center justify-between ${
                         isSelected
                           ? 'bg-amber-950/30 border-amber-500/70 shadow-sm'
                           : 'bg-slate-900/60 border-slate-800/80 hover:border-slate-700'
                       }`}
                     >
-                      <div className="space-y-1">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedTx(tx)}
+                        className="text-left space-y-1 flex-1 pr-2 cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500 rounded"
+                        title="Xem chi tiết giao dịch"
+                      >
                         <div className="flex items-center gap-2">
                           <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-400">
                             #{tx.seq}
@@ -207,7 +214,7 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
                           Tạo lúc: {new Date(tx.createdAt).toLocaleTimeString()}
                           {tx.retryCount > 0 && ` • Thử lại: ${tx.retryCount} lần`}
                         </p>
-                      </div>
+                      </button>
 
                       <div className="flex flex-col items-end gap-1.5">
                         <span
