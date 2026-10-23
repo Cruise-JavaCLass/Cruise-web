@@ -73,7 +73,6 @@ class TransactionQueueEngine {
     const status: QueuedTransactionRecord['status'] =
       raw.status === 'PENDING' ||
       raw.status === 'STAGED' ||
-      raw.status === 'SYNCING' ||
       raw.status === 'FAILED' ||
       raw.status === 'SYNCED'
         ? raw.status
@@ -341,7 +340,7 @@ class TransactionQueueEngine {
   /**
    * Remove transaction from queue after successful sync, surfacing local deletion failures
    */
-  public async dequeue(id: string): Promise<void> {
+  public async dequeue(id: string, options: { markSyncedOnFailure?: boolean } = {}): Promise<void> {
     // If IndexedDB is supported, attempt persistent deletion first
     if (posIndexedDb.isSupported()) {
       try {
@@ -351,7 +350,9 @@ class TransactionQueueEngine {
         // Mark transaction as SYNCED to prevent duplicate dispatch, but retain error state in memory
         const target = this.inMemoryQueue.find((t) => t.id === id);
         if (target) {
-          target.status = 'SYNCED';
+          if (options.markSyncedOnFailure) {
+            target.status = 'SYNCED';
+          }
           target.lastError = `Xóa IndexedDB thất bại: ${e instanceof Error ? e.message : String(e)}`;
           this.notifyListeners();
         }
@@ -433,7 +434,7 @@ class TransactionQueueEngine {
           );
 
           try {
-            await this.dequeue(item.id);
+            await this.dequeue(item.id, { markSyncedOnFailure: true });
             succeeded += 1;
           } catch (dequeueErr) {
             failed += 1;

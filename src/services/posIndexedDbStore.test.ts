@@ -121,8 +121,22 @@ describe('Transaction FIFO Queue Engine & Storage Resilience (KAN-254, KAN-255, 
     expect(queue[0].retryCount).toBe(1);
   });
 
-  it('surfaces persistent storage failure during dequeue and marks SYNCED', async () => {
+  it('surfaces persistent storage failure during dequeue and marks SYNCED when markSyncedOnFailure is set', async () => {
     const item = await transactionQueueEngine.enqueue({ notes: 'Storage Test' }, 50.0, 'BAR-DECK-9', 'CASHIER-01');
+
+    vi.spyOn(posIndexedDb, 'isSupported').mockReturnValue(true);
+    vi.spyOn(posIndexedDb, 'deleteTransaction').mockRejectedValueOnce(new Error('IndexedDB I/O failure'));
+
+    await expect(transactionQueueEngine.dequeue(item.id, { markSyncedOnFailure: true })).rejects.toThrow(/IndexedDB I\/O failure/i);
+
+    const queue = transactionQueueEngine.getQueue();
+    const target = queue.find((t) => t.id === item.id);
+    expect(target).toBeDefined();
+    expect(target?.status).toBe('SYNCED');
+  });
+
+  it('keeps original status on manual dequeue failure without markSyncedOnFailure', async () => {
+    const item = await transactionQueueEngine.enqueue({ notes: 'Manual Cancel' }, 50.0, 'BAR-DECK-9', 'CASHIER-01');
 
     vi.spyOn(posIndexedDb, 'isSupported').mockReturnValue(true);
     vi.spyOn(posIndexedDb, 'deleteTransaction').mockRejectedValueOnce(new Error('IndexedDB I/O failure'));
@@ -132,7 +146,29 @@ describe('Transaction FIFO Queue Engine & Storage Resilience (KAN-254, KAN-255, 
     const queue = transactionQueueEngine.getQueue();
     const target = queue.find((t) => t.id === item.id);
     expect(target).toBeDefined();
-    expect(target?.status).toBe('SYNCED');
+    expect(target?.status).toBe('PENDING');
+  });
+
+  it('resets recovered SYNCING status to PENDING in fallback storage', async () => {
+    localStorage.setItem(
+      'CRUISE_POS_OFFLINE_QUEUE',
+      JSON.stringify([
+        {
+          id: 'TX-SYNCING-01',
+          createdAt: new Date().toISOString(),
+          status: 'SYNCING',
+          retryCount: 0,
+          totalAmount: 30.0,
+          payload: { totalAmount: 30.0, stationId: 'STATION-1' },
+        },
+      ])
+    );
+
+    await transactionQueueEngine.initialize(true);
+    const queue = transactionQueueEngine.getQueue();
+    const restored = queue.find((q) => q.id === 'TX-SYNCING-01');
+    expect(restored).toBeDefined();
+    expect(restored?.status).toBe('PENDING');
   });
 
   it('recovers queue from fallback storage if IndexedDB is unavailable and skips null entries safely', async () => {
