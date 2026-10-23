@@ -1,15 +1,12 @@
 import {
-  AlertCircle,
-  CheckCircle,
   Megaphone,
   MessageSquare,
   PhoneCall,
   Search,
   ShieldAlert,
-  UserCheck,
   X,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   type MissingPassengerDto,
   allAboardWatchdogService,
@@ -33,9 +30,13 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
-  const [customMsg, setCustomMsg] = useState(
-    'FINAL CALL: All-Aboard countdown closing. Please return to the gangway now!'
-  );
+  const customMsg =
+    'FINAL CALL: All-Aboard countdown closing. Please return to the gangway now!';
+
+  useEffect(() => {
+    setFeedback(null);
+    setNotes('');
+  }, [passenger?.passengerId]);
 
   if (!passenger) return null;
 

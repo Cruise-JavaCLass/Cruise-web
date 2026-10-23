@@ -1,12 +1,8 @@
 import {
-  AlertTriangle,
   Clock,
-  PhoneCall,
   Radio,
   RefreshCw,
   Search,
-  Send,
-  ShieldAlert,
   UserCheck,
   UserX,
 } from 'lucide-react';
@@ -34,6 +30,8 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [dispatching, setDispatching] = useState(false);
   const [dispatchSuccess, setDispatchSuccess] = useState<string | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  const [receivedAt, setReceivedAt] = useState(() => Date.now());
 
   const fetchStatus = async () => {
     try {
@@ -41,6 +39,7 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
       setError(null);
       const data = await allAboardWatchdogService.getStatus(tourId, portCallId);
       setStatus(data);
+      setReceivedAt(Date.now());
     } catch (err: any) {
       setError(err?.message || 'Failed to fetch All-Aboard status');
     } finally {
@@ -53,6 +52,11 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
     const interval = setInterval(fetchStatus, 10000);
     return () => clearInterval(interval);
   }, [tourId, portCallId]);
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleBroadcastAllAshore = async () => {
     if (!window.confirm('Broadcast urgent All-Aboard recall alarm to ALL un-boarded passengers?')) {
@@ -85,6 +89,11 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
     const s = seconds % 60;
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
+
+  const effectiveSecondsRemaining = status
+    ? Math.max(0, status.secondsRemaining - Math.floor((now - receivedAt) / 1000))
+    : 0;
+  const isExpired = status ? (status.countdownExpired || effectiveSecondsRemaining <= 0) : false;
 
   const filteredMissing = (status?.missingPassengers || []).filter(
     (p) =>
@@ -149,14 +158,14 @@ export const BridgeAllAboardBoard: React.FC<BridgeAllAboardBoardProps> = ({
           </span>
           <div
             className={`text-2xl lg:text-3xl font-black font-mono tracking-tight ${
-              status?.countdownExpired
+              isExpired
                 ? 'text-red-500 animate-bounce'
-                : (status?.secondsRemaining || 0) < 1800
+                : effectiveSecondsRemaining < 1800
                 ? 'text-red-400'
                 : 'text-amber-300'
             }`}
           >
-            {status ? formatCountdown(status.secondsRemaining) : '--:--:--'}
+            {status ? formatCountdown(effectiveSecondsRemaining) : '--:--:--'}
           </div>
           <span className="text-[11px] text-slate-500 mt-1 block">
             Gangway Closing: {status ? new Date(status.allAboardTime).toLocaleTimeString() : '--'}

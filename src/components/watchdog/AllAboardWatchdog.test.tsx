@@ -1,12 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { BridgeAllAboardBoard } from './BridgeAllAboardBoard';
 import { PortSearchPartyModal } from './PortSearchPartyModal';
 import {
   allAboardWatchdogService,
-  AllAboardStatusDto,
-  MissingPassengerDto,
+  type AllAboardStatusDto,
+  type MissingPassengerDto,
 } from '../../services/allAboardWatchdogService';
 
 vi.mock('../../services/allAboardWatchdogService', () => ({
