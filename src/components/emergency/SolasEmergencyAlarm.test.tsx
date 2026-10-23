@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
+
 import { SolasEmergencyAlarmModal } from './SolasEmergencyAlarmModal';
 import { BridgeMusterCommandConsole } from './BridgeMusterCommandConsole';
-import { solasMusterService, SolasMusterIncident } from '../../services/solasMusterService';
+import { solasMusterService, type SolasMusterIncident } from '../../services/solasMusterService';
 
 vi.mock('../../services/solasMusterService', () => ({
   solasMusterService: {

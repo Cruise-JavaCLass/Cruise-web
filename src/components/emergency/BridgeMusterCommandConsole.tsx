@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   solasMusterService,
-  SolasMusterIncident,
-  SolasEmergencyType
+  type SolasMusterIncident,
+  type SolasEmergencyType,
 } from '../../services/solasMusterService';
 
 export const BridgeMusterCommandConsole: React.FC = () => {
@@ -202,8 +202,9 @@ export const BridgeMusterCommandConsole: React.FC = () => {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 mb-1">Emergency Type</label>
+                <label htmlFor="muster-emergency-type" className="block text-slate-400 mb-1">Emergency Type</label>
                 <select
+                  id="muster-emergency-type"
                   value={emergencyType}
                   onChange={(e) => setEmergencyType(e.target.value as SolasEmergencyType)}
                   className="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-white font-medium focus:ring-1 focus:ring-red-500"
@@ -217,8 +218,9 @@ export const BridgeMusterCommandConsole: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1">Announcement Broadcast Message</label>
+                <label htmlFor="muster-announcement" className="block text-slate-400 mb-1">Announcement Broadcast Message</label>
                 <textarea
+                  id="muster-announcement"
                   rows={3}
                   value={announcementText}
                   onChange={(e) => setAnnouncementText(e.target.value)}

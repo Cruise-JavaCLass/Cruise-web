@@ -1,13 +1,11 @@
 import {
   AlertOctagon,
-  BellRing,
   LifeBuoy,
   MapPin,
   ShieldAlert,
   Volume2,
-  X,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { type SolasMusterIncident, solasMusterService } from '../../services/solasMusterService';
 
 interface SolasEmergencyAlarmModalProps {
@@ -15,10 +13,13 @@ interface SolasEmergencyAlarmModalProps {
 }
 
 export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> = ({
-  passengerMusterStation = 'STATION-B (Boong 4 - Mạn Phải)',
+  passengerMusterStation,
 }) => {
   const [activeMuster, setActiveMuster] = useState<SolasMusterIncident | null>(null);
-  const [acknowledged, setAcknowledged] = useState(false);
+  const [acknowledgedCode, setAcknowledgedCode] = useState<string | null>(null);
+
+  const ackButtonRef = useRef<HTMLButtonElement>(null);
+  const isVisible = !!activeMuster && acknowledgedCode !== activeMuster.incidentCode;
 
   useEffect(() => {
     const checkActiveMuster = async () => {
@@ -28,7 +29,7 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
           setActiveMuster(incident);
         } else {
           setActiveMuster(null);
-          setAcknowledged(false);
+          setAcknowledgedCode(null);
         }
       } catch {
         // quiet fallback
@@ -40,12 +41,25 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
     return () => clearInterval(interval);
   }, []);
 
-  if (!activeMuster || acknowledged) return null;
+  useEffect(() => {
+    if (isVisible) {
+      const previous = document.activeElement as HTMLElement | null;
+      ackButtonRef.current?.focus();
+      return () => {
+        if (previous && typeof previous.focus === 'function') {
+          previous.focus();
+        }
+      };
+    }
+  }, [isVisible]);
+
+  if (!isVisible || !activeMuster) return null;
 
   return (
     <div
-      role="dialog"
+      role="alertdialog"
       aria-modal="true"
+      aria-labelledby="solas-alarm-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-red-950/90 backdrop-blur-md p-4 animate-in fade-in duration-300"
     >
       <div className="bg-slate-900 border-4 border-red-600 rounded-3xl shadow-[0_0_80px_rgba(220,38,38,0.8)] w-full max-w-2xl overflow-hidden text-white flex flex-col animate-pulse">
@@ -54,7 +68,7 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
           <div className="flex items-center gap-3">
             <AlertOctagon className="w-8 h-8 text-white animate-spin" />
             <div>
-              <h2 className="text-xl font-black uppercase tracking-wider">
+              <h2 id="solas-alarm-title" className="text-xl font-black uppercase tracking-wider">
                 Báo Động Khẩn Cấp SOLAS Hàng Hải
               </h2>
               <p className="text-xs font-bold text-red-100 uppercase tracking-widest">
@@ -90,7 +104,7 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
                 <span className="text-xs text-slate-400 block font-semibold">Trạm Tập Trung Của Bạn:</span>
                 <span className="text-lg font-black text-amber-300 mt-0.5 block flex items-center gap-1.5">
                   <MapPin className="w-5 h-5 text-amber-400 shrink-0" />
-                  {passengerMusterStation}
+                  {passengerMusterStation || 'Kiểm tra trạm tập trung trên thẻ phòng của bạn'}
                 </span>
               </div>
 
@@ -112,7 +126,8 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
           {/* Acknowledge Button */}
           <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
             <button
-              onClick={() => setAcknowledged(true)}
+              ref={ackButtonRef}
+              onClick={() => setAcknowledgedCode(activeMuster.incidentCode)}
               className="w-full py-4 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-black text-base uppercase tracking-wider rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2"
             >
               <ShieldAlert className="w-6 h-6" />
