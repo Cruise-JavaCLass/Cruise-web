@@ -1,6 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
-import React from 'react';
 import { MarineSatelliteSignalIndicator } from './MarineSatelliteSignalIndicator';
 import { NetworkQualityMonitor, networkSyncService } from '../../services/networkSyncService';
 
@@ -39,10 +38,18 @@ describe('MarineSatelliteSignalIndicator (KAN-428 & KAN-429)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
+    vi.spyOn(networkSyncService, 'pingHeartbeat').mockResolvedValue({
+      serverTimestamp: new Date().toISOString(),
+      serverProcessingTimeMs: 1,
+      satelliteLinkStatus: 'EXCELLENT',
+      recommendedBatchSize: 50,
+      recommendedSyncIntervalSec: 5,
+    });
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it('renders satellite signal status indicator and queue size badge', () => {
@@ -68,8 +75,9 @@ describe('MarineSatelliteSignalIndicator (KAN-428 & KAN-429)', () => {
     );
 
     // Fast-forward interval timer
-    act(() => {
+    await act(async () => {
       vi.advanceTimersByTime(5500);
+      await Promise.resolve();
     });
 
     expect(onTriggerSyncNow).toHaveBeenCalledWith(50);

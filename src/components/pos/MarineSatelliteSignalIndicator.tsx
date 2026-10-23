@@ -61,6 +61,8 @@ export const MarineSatelliteSignalIndicator: React.FC<MarineSatelliteSignalIndic
         setIsSyncing(true);
         try {
           await onTriggerSyncNow(stats.recommendedBatchSize);
+        } catch (err) {
+          console.error('Background sync failed', err);
         } finally {
           isSyncingRef.current = false;
           setIsSyncing(false);
@@ -99,20 +101,19 @@ export const MarineSatelliteSignalIndicator: React.FC<MarineSatelliteSignalIndic
         };
       case 'DEGRADED':
         return {
+          color: 'bg-orange-500',
+          textColor: 'text-orange-700',
+          bgColor: 'bg-orange-50',
+          borderColor: 'border-orange-200',
+          label: 'Suy giảm nghiêm trọng',
+        };
+      default:
+        return {
           color: 'bg-rose-500',
           textColor: 'text-rose-700',
           bgColor: 'bg-rose-50',
           borderColor: 'border-rose-200',
-          label: 'Vệ tinh chập chờn',
-        };
-      case 'OFFLINE':
-      default:
-        return {
-          color: 'bg-gray-400',
-          textColor: 'text-gray-700',
-          bgColor: 'bg-gray-100',
-          borderColor: 'border-gray-300',
-          label: 'Mất sóng vệ tinh',
+          label: 'Mất kết nối',
         };
     }
   };
@@ -121,29 +122,30 @@ export const MarineSatelliteSignalIndicator: React.FC<MarineSatelliteSignalIndic
 
   return (
     <div
-      className={`inline-flex items-center gap-2.5 rounded-xl border px-3 py-1.5 text-xs font-medium shadow-sm transition-all ${badge.bgColor} ${badge.borderColor}`}
-      role="status"
-      aria-label="Tình trạng sóng vệ tinh hàng hải"
+      className={`inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl border text-xs font-semibold shadow-sm transition-all ${badge.bgColor} ${badge.borderColor}`}
     >
       <div className="flex items-center gap-1.5">
-        <span className={`h-2.5 w-2.5 rounded-full ${badge.color} animate-pulse`} />
-        <span className={`font-bold ${badge.textColor}`}>{badge.label}</span>
+        <span className={`h-2.5 w-2.5 rounded-full ${badge.color} ${stats.linkStatus !== 'OFFLINE' ? 'animate-pulse' : ''}`} />
+        <span className={badge.textColor}>{badge.label}</span>
       </div>
 
-      <span className="text-gray-300">|</span>
+      <div className="h-3 w-[1px] bg-gray-300" />
 
-      <div className="flex items-center gap-2 text-gray-600">
+      <div className="flex items-center gap-2 text-[11px] text-gray-600 font-mono">
         <span>{stats.latencyMs}ms</span>
         {stats.packetLossPercent > 0 && (
-          <span className="font-semibold text-rose-600">Loss {stats.packetLossPercent}%</span>
+          <span className="text-amber-600 font-semibold">
+            (Mất gói {stats.packetLossPercent}%)
+          </span>
         )}
       </div>
 
       {syncQueueLength > 0 && (
         <>
-          <span className="text-gray-300">|</span>
-          <span className="rounded-md bg-indigo-100 px-1.5 py-0.5 text-[10px] font-bold text-indigo-800">
-            {isSyncing ? 'Đang đồng bộ...' : `Hàng đợi: ${syncQueueLength} (Batch ${stats.recommendedBatchSize})`}
+          <div className="h-3 w-[1px] bg-gray-300" />
+          <span className="text-[11px] font-bold text-indigo-700">
+            Hàng đợi: {syncQueueLength}
+            {isSyncing && <span className="ml-1 text-[10px] animate-spin">⟳</span>}
           </span>
         </>
       )}

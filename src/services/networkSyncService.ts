@@ -1,4 +1,4 @@
-import api from './api';
+import { apiClient } from './api';
 import type {
   NetworkHeartbeatResponse,
   AdaptiveChunkSyncRequest,
@@ -8,9 +8,8 @@ import type {
 } from './networkSyncTypes';
 
 export class NetworkQualityMonitor {
-  private latencyHistory: number[] = [];
-  private missedPings = 0;
-  private maxHistoryLength = 5;
+  private samples: Array<{ ok: boolean; latency: number }> = [];
+  private maxHistoryLength = 10;
 
   classifyQuality(latency: number, packetLoss: number): SatelliteLinkStatus {
     if (packetLoss >= 50 || latency < 0) return 'OFFLINE';
@@ -21,20 +20,17 @@ export class NetworkQualityMonitor {
   }
 
   recordPing(latencyMs: number, success: boolean): NetworkQualityStats {
-    if (!success) {
-      this.missedPings++;
-    } else {
-      this.latencyHistory.push(latencyMs);
-      if (this.latencyHistory.length > this.maxHistoryLength) {
-        this.latencyHistory.shift();
-      }
+    this.samples.push({ ok: success, latency: latencyMs });
+    if (this.samples.length > this.maxHistoryLength) {
+      this.samples.shift();
     }
 
-    const totalSamples = this.latencyHistory.length + this.missedPings;
-    const packetLoss = totalSamples > 0 ? (this.missedPings / totalSamples) * 100 : 0;
+    const okLatencies = this.samples.filter((s) => s.ok).map((s) => s.latency);
+    const missed = this.samples.length - okLatencies.length;
+    const packetLoss = (missed / this.samples.length) * 100;
     const avgLatency =
-      this.latencyHistory.length > 0
-        ? this.latencyHistory.reduce((a, b) => a + b, 0) / this.latencyHistory.length
+      okLatencies.length > 0
+        ? okLatencies.reduce((a, b) => a + b, 0) / okLatencies.length
         : 9999;
 
     const linkStatus = this.classifyQuality(avgLatency, packetLoss);
@@ -69,8 +65,7 @@ export class NetworkQualityMonitor {
   }
 
   reset() {
-    this.latencyHistory = [];
-    this.missedPings = 0;
+    this.samples = [];
   }
 }
 
@@ -79,7 +74,7 @@ export const networkQualityMonitor = new NetworkQualityMonitor();
 export const networkSyncService = {
   async pingHeartbeat(reportedLatencyMs?: number): Promise<NetworkHeartbeatResponse> {
     const clientTimestamp = Date.now();
-    const response = await api.get<{ success: boolean; data: NetworkHeartbeatResponse }>(
+    const response = await apiClient.get<{ success: boolean; data: NetworkHeartbeatResponse }>(
       '/api/pos/network/heartbeat',
       {
         params: {
@@ -92,7 +87,7 @@ export const networkSyncService = {
   },
 
   async syncAdaptiveChunk(request: AdaptiveChunkSyncRequest): Promise<AdaptiveChunkSyncResponse> {
-    const response = await api.post<{ success: boolean; data: AdaptiveChunkSyncResponse }>(
+    const response = await apiClient.post<{ success: boolean; data: AdaptiveChunkSyncResponse }>(
       '/api/pos/network/sync/adaptive-chunk',
       request
     );
