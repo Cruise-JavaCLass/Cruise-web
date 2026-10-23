@@ -77,9 +77,11 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
       setQrData(null);
       setError(null);
       setLoading(false);
+      setPollingStatus('PENDING');
     } else {
       setQrData(null);
       setLoading(false);
+      setPollingStatus('PENDING');
     }
 
     return () => {

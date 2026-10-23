@@ -133,6 +133,7 @@ describe('SettlementCheckoutModal (KAN-310 & KAN-432)', () => {
 
     await waitFor(() => {
       expect(screen.queryByAltText('Mã VietQR Thanh Toán')).not.toBeInTheDocument();
+      expect(screen.queryByText(/Thanh toán thành công/)).not.toBeInTheDocument();
     });
   });
 });
