@@ -75,7 +75,7 @@ export const networkSyncService = {
   async pingHeartbeat(reportedLatencyMs?: number): Promise<NetworkHeartbeatResponse> {
     const clientTimestamp = Date.now();
     const response = await apiClient.get<{ success: boolean; data: NetworkHeartbeatResponse }>(
-      '/api/pos/network/heartbeat',
+      '/pos/network/heartbeat',
       {
         params: {
           clientTimestamp,
@@ -88,7 +88,7 @@ export const networkSyncService = {
 
   async syncAdaptiveChunk(request: AdaptiveChunkSyncRequest): Promise<AdaptiveChunkSyncResponse> {
     const response = await apiClient.post<{ success: boolean; data: AdaptiveChunkSyncResponse }>(
-      '/api/pos/network/sync/adaptive-chunk',
+      '/pos/network/sync/adaptive-chunk',
       request
     );
     return response.data.data;

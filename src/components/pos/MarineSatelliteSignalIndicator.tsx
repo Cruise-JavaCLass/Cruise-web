@@ -51,7 +51,7 @@ export const MarineSatelliteSignalIndicator: React.FC<MarineSatelliteSignalIndic
 
   // Adaptive background sync trigger
   useEffect(() => {
-    if (syncQueueLength === 0 || isSyncingRef.current || stats.linkStatus === 'OFFLINE') {
+    if (syncQueueLength === 0 || isSyncing || isSyncingRef.current || stats.linkStatus === 'OFFLINE') {
       return;
     }
 
@@ -71,7 +71,7 @@ export const MarineSatelliteSignalIndicator: React.FC<MarineSatelliteSignalIndic
     }, stats.recommendedSyncIntervalSec * 1000);
 
     return () => clearTimeout(timer);
-  }, [syncQueueLength, stats, onTriggerSyncNow]);
+  }, [syncQueueLength, stats, isSyncing, onTriggerSyncNow]);
 
   const getStatusBadge = (status: SatelliteLinkStatus) => {
     switch (status) {
