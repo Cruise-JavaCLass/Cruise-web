@@ -24,6 +24,7 @@ import { MySchedulePage } from './pages/MySchedulePage';
 import { PassengerFolioPage } from './pages/passenger/PassengerFolioPage';
 import { BoardingPassPage } from './pages/passenger/BoardingPassPage';
 import { TerminalEmbarkationPage } from './pages/TerminalEmbarkationPage';
+import { ProviderSettlementDashboard } from './pages/ProviderSettlementDashboard';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export function App() {
@@ -57,6 +58,7 @@ export function App() {
         <Route path="passengers" element={<PassengersPage />} />
         <Route path="embarkation" element={<TerminalEmbarkationPage />} />
         <Route path="billing/settlement" element={<SettlementPage />} />
+        <Route path="provider-settlement" element={<ProviderSettlementDashboard />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
@@ -64,4 +66,3 @@ export function App() {
 }
 
 export default App;
-
