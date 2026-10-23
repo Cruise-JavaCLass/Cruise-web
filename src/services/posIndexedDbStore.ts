@@ -42,6 +42,31 @@ export const STORE_TRANSACTIONS = 'transactions';
 export const STORE_CATALOG = 'catalog';
 export const STORE_AUDIT_LOGS = 'auditLogs';
 
+function toError(errorCandidate: unknown, fallbackMessage: string): Error {
+  if (errorCandidate instanceof Error) return errorCandidate;
+  if (errorCandidate && typeof errorCandidate === 'object' && 'message' in errorCandidate) {
+    return new Error(String((errorCandidate as { message: unknown }).message));
+  }
+  return new Error(fallbackMessage);
+}
+
+export function generateSecureId(prefix: string): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `${prefix}-${crypto.randomUUID()}`;
+  }
+  const bytes = new Uint8Array(6);
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    crypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+  }
+  const hex = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase();
+  return `${prefix}-${Date.now()}-${hex}`;
+}
+
 export class PosIndexedDbStore {
   private dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -91,7 +116,7 @@ export class PosIndexedDbStore {
 
       req.onerror = () => {
         this.dbPromise = null;
-        reject(req.error || new Error('Failed to open IndexedDB'));
+        reject(toError(req.error, 'Failed to open IndexedDB'));
       };
 
       req.onblocked = () => {
@@ -120,8 +145,8 @@ export class PosIndexedDbStore {
       const req = store.put(record);
 
       tx.oncomplete = () => resolve();
-      tx.onabort = () => reject(tx.error || new Error('Transaction aborted'));
-      tx.onerror = () => reject(tx.error || req.error);
+      tx.onabort = () => reject(toError(tx.error, 'Transaction aborted'));
+      tx.onerror = () => reject(toError(tx.error || req.error, 'Failed to save transaction'));
     });
   }
 
@@ -134,7 +159,7 @@ export class PosIndexedDbStore {
       const req = index.getAll();
 
       req.onsuccess = () => resolve(req.result || []);
-      req.onerror = () => reject(req.error);
+      req.onerror = () => reject(toError(req.error, 'Failed to get all transactions'));
     });
   }
 
@@ -146,8 +171,8 @@ export class PosIndexedDbStore {
       const req = store.delete(id);
 
       tx.oncomplete = () => resolve();
-      tx.onabort = () => reject(tx.error || new Error('Transaction aborted'));
-      tx.onerror = () => reject(tx.error || req.error);
+      tx.onabort = () => reject(toError(tx.error, 'Transaction aborted'));
+      tx.onerror = () => reject(toError(tx.error || req.error, 'Failed to delete transaction'));
     });
   }
 
@@ -159,8 +184,8 @@ export class PosIndexedDbStore {
       const req = store.clear();
 
       tx.oncomplete = () => resolve();
-      tx.onabort = () => reject(tx.error || new Error('Transaction aborted'));
-      tx.onerror = () => reject(tx.error || req.error);
+      tx.onabort = () => reject(toError(tx.error, 'Transaction aborted'));
+      tx.onerror = () => reject(toError(tx.error || req.error, 'Failed to clear transactions'));
     });
   }
 
@@ -174,8 +199,8 @@ export class PosIndexedDbStore {
       const req = store.put(record);
 
       tx.oncomplete = () => resolve();
-      tx.onabort = () => reject(tx.error || new Error('Transaction aborted'));
-      tx.onerror = () => reject(tx.error || req.error);
+      tx.onabort = () => reject(toError(tx.error, 'Transaction aborted'));
+      tx.onerror = () => reject(toError(tx.error || req.error, 'Failed to save catalog cache'));
     });
   }
 
@@ -193,7 +218,7 @@ export class PosIndexedDbStore {
           resolve(null);
         }
       };
-      req.onerror = () => reject(req.error);
+      req.onerror = () => reject(toError(req.error, 'Failed to get catalog cache'));
     });
   }
 
@@ -206,7 +231,7 @@ export class PosIndexedDbStore {
         const tx = db.transaction(STORE_AUDIT_LOGS, 'readwrite');
         const store = tx.objectStore(STORE_AUDIT_LOGS);
         const record: OfflineAuditLogRecord = {
-          id: `LOG-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          id: generateSecureId('LOG'),
           action,
           timestamp: new Date().toISOString(),
           details,
@@ -214,8 +239,8 @@ export class PosIndexedDbStore {
         const req = store.put(record);
 
         tx.oncomplete = () => resolve();
-        tx.onabort = () => reject(tx.error || new Error('Audit log transaction aborted'));
-        tx.onerror = () => reject(tx.error || req.error);
+        tx.onabort = () => reject(toError(tx.error, 'Audit log transaction aborted'));
+        tx.onerror = () => reject(toError(tx.error || req.error, 'Failed to record audit log'));
       });
     } catch (e) {
       console.warn('Failed to record offline audit log:', e);

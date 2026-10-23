@@ -69,13 +69,19 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
     }
   };
 
-  const handleRemoveItem = async (id: string) => {
-    const confirmed = window.confirm(`Bạn có chắc chắn muốn hủy giao dịch ${id} khỏi hàng đợi? Dữ liệu chưa đồng bộ sẽ bị mất vĩnh viễn!`);
-    if (!confirmed) return;
+  const handleRemoveItem = async (tx: QueuedTransactionRecord) => {
+    const isConfirmed = window.confirm(
+      `Bạn có chắc chắn muốn hủy giao dịch #${tx.seq} (${tx.id}) khỏi hàng đợi? Giao dịch này sẽ bị xóa vĩnh viễn và không được gửi lên server.`
+    );
+    if (!isConfirmed) return;
 
-    await transactionQueueEngine.dequeue(id);
-    if (selectedTx?.id === id) {
-      setSelectedTx(null);
+    try {
+      await transactionQueueEngine.dequeue(tx.id);
+      if (selectedTx?.id === tx.id) {
+        setSelectedTx(null);
+      }
+    } catch (err) {
+      console.error('Failed to remove transaction:', err);
     }
   };
 
@@ -91,7 +97,9 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
             </h3>
           </div>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Đóng thanh tra hàng đợi"
             className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -188,7 +196,7 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
                   return (
                     <div
                       key={tx.id}
-                      className={`p-3 rounded-lg border text-xs transition flex items-center justify-between ${
+                      className={`p-3 rounded-lg border text-xs transition flex items-center justify-between gap-3 ${
                         isSelected
                           ? 'bg-amber-950/30 border-amber-500/70 shadow-sm'
                           : 'bg-slate-900/60 border-slate-800/80 hover:border-slate-700'
@@ -197,8 +205,8 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
                       <button
                         type="button"
                         onClick={() => setSelectedTx(tx)}
-                        className="text-left space-y-1 flex-1 pr-2 cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500 rounded"
-                        title="Xem chi tiết giao dịch"
+                        className="flex-1 text-left space-y-1 cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-400 rounded"
+                        aria-label={`Xem chi tiết giao dịch #${tx.seq} ${tx.id}`}
                       >
                         <div className="flex items-center gap-2">
                           <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-400">
@@ -208,7 +216,9 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
                         </div>
                         <p className="text-[11px] text-slate-400">
                           Trạm: {tx.stationId} • Thu ngân: {tx.cashierId} • Số tiền:{' '}
-                          <strong className="text-emerald-400 font-mono">${tx.totalAmount.toFixed(2)}</strong>
+                          <strong className="text-emerald-400 font-mono">
+                            ${Number(tx.totalAmount || 0).toFixed(2)}
+                          </strong>
                         </p>
                         <p className="text-[10px] text-slate-500">
                           Tạo lúc: {new Date(tx.createdAt).toLocaleTimeString()}
@@ -216,7 +226,7 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
                         </p>
                       </button>
 
-                      <div className="flex flex-col items-end gap-1.5">
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                             tx.status === 'PENDING'
@@ -233,10 +243,7 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
                         <button
                           type="button"
                           disabled={tx.status === 'SYNCING'}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            void handleRemoveItem(tx.id);
-                          }}
+                          onClick={() => void handleRemoveItem(tx)}
                           className={`p-1 transition ${
                             tx.status === 'SYNCING'
                               ? 'text-slate-700 cursor-not-allowed opacity-40'
@@ -247,6 +254,7 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
                               ? 'Giao dịch đang được đồng bộ, không thể hủy'
                               : 'Hủy giao dịch này khỏi hàng đợi'
                           }
+                          aria-label={`Hủy giao dịch #${tx.seq}`}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -283,7 +291,7 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
                     <div className="flex justify-between">
                       <span className="text-slate-400">Số tiền:</span>
                       <span className="font-bold text-emerald-400 font-mono">
-                        ${selectedTx.totalAmount.toFixed(2)}
+                        ${Number(selectedTx.totalAmount || 0).toFixed(2)}
                       </span>
                     </div>
                     {selectedTx.lastError && (

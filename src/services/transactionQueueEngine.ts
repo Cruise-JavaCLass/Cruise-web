@@ -1,6 +1,7 @@
 import {
   type QueuedTransactionRecord,
   posIndexedDb,
+  generateSecureId,
 } from './posIndexedDbStore';
 import { posService } from './posService';
 
@@ -15,17 +16,8 @@ export interface OptimisticCartMutation {
 
 export type QueueChangeListener = (queue: QueuedTransactionRecord[]) => void;
 
-function isValidFallbackItem(item: unknown): item is Record<string, unknown> {
-  if (!item || typeof item !== 'object') return false;
-  const obj = item as Record<string, unknown>;
-  if (typeof obj.id !== 'string' || !obj.id.trim()) return false;
-  const amt = Number(obj.totalAmount ?? (obj.payload as Record<string, unknown> | undefined)?.totalAmount);
-  if (isNaN(amt) || !isFinite(amt)) return false;
-  if (obj.payload !== undefined && (typeof obj.payload !== 'object' || obj.payload === null)) {
-    return false;
-  }
-  return true;
-}
+const STORAGE_KEY_QUEUE = 'CRUISE_POS_OFFLINE_QUEUE';
+const STORAGE_KEY_SEQ = 'CRUISE_POS_OFFLINE_SEQ';
 
 class TransactionQueueEngine {
   private inMemoryQueue: QueuedTransactionRecord[] = [];
@@ -36,8 +28,91 @@ class TransactionQueueEngine {
   private initPromise: Promise<void> | null = null;
 
   constructor() {
-    // Attempt recovery on instantiate
-    void this.initialize();
+    // Avoid asynchronous operations in constructor to comply with quality & security standards
+  }
+
+  private getNextSequence(): number {
+    let nextSeq = (this.sequenceCounter || 0) + 1;
+    try {
+      const storedSeq = localStorage.getItem(STORAGE_KEY_SEQ);
+      const parsedStored = storedSeq ? parseInt(storedSeq, 10) : 0;
+      if (Number.isFinite(parsedStored) && parsedStored >= nextSeq) {
+        nextSeq = parsedStored + 1;
+      }
+      localStorage.setItem(STORAGE_KEY_SEQ, String(nextSeq));
+    } catch {
+      // fallback to in-memory counter
+    }
+    this.sequenceCounter = nextSeq;
+    return nextSeq;
+  }
+
+  private validateFallbackRecord(
+    item: unknown,
+    index: number,
+    baseSeq: number
+  ): QueuedTransactionRecord | null {
+    if (!item || typeof item !== 'object') {
+      console.warn(`[QueueEngine] Skipping invalid fallback record at index ${index}: not an object`);
+      return null;
+    }
+
+    const raw = item as Record<string, unknown>;
+    const id = typeof raw.id === 'string' && raw.id.trim()
+      ? raw.id.trim()
+      : `TX-LEGACY-${Date.now()}-${index}`;
+
+    const rawSeq = typeof raw.seq === 'number' && Number.isFinite(raw.seq)
+      ? raw.seq
+      : baseSeq + index + 1;
+
+    const rawCreatedAt = typeof raw.createdAt === 'string' && raw.createdAt
+      ? raw.createdAt
+      : new Date().toISOString();
+
+    const status: QueuedTransactionRecord['status'] =
+      raw.status === 'PENDING' ||
+      raw.status === 'STAGED' ||
+      raw.status === 'SYNCING' ||
+      raw.status === 'FAILED' ||
+      raw.status === 'SYNCED'
+        ? raw.status
+        : 'PENDING';
+
+    const retryCount =
+      typeof raw.retryCount === 'number' && Number.isFinite(raw.retryCount) && raw.retryCount >= 0
+        ? raw.retryCount
+        : 0;
+
+    const payload = raw.payload && typeof raw.payload === 'object'
+      ? (raw.payload as Record<string, unknown>)
+      : {};
+
+    const rawAmount = typeof raw.totalAmount === 'number' && Number.isFinite(raw.totalAmount)
+      ? raw.totalAmount
+      : (typeof payload.totalAmount === 'number' && Number.isFinite(payload.totalAmount)
+          ? payload.totalAmount
+          : 0);
+
+    const stationId = typeof raw.stationId === 'string' && raw.stationId
+      ? raw.stationId
+      : (typeof payload.stationId === 'string' && payload.stationId ? payload.stationId : 'OFFLINE');
+
+    const cashierId = typeof raw.cashierId === 'string' && raw.cashierId
+      ? raw.cashierId
+      : (typeof payload.cashierId === 'string' && payload.cashierId ? payload.cashierId : 'CASHIER');
+
+    return {
+      id,
+      seq: rawSeq,
+      createdAt: rawCreatedAt,
+      status,
+      retryCount,
+      payload,
+      totalAmount: rawAmount,
+      stationId,
+      cashierId,
+    };
   }
 
   public async initialize(forceReload: boolean = false): Promise<void> {
@@ -57,55 +132,56 @@ class TransactionQueueEngine {
           }
         }
 
-        // Reconcile fallback records from localStorage
+        // Reconcile fallback records from localStorage with item-by-item validation
         try {
-          const fallbackData = localStorage.getItem('CRUISE_POS_OFFLINE_QUEUE');
+          const fallbackData = localStorage.getItem(STORAGE_KEY_QUEUE);
           if (fallbackData) {
             const parsed = JSON.parse(fallbackData);
             if (Array.isArray(parsed)) {
               for (let idx = 0; idx < parsed.length; idx++) {
-                const rawItem = parsed[idx];
-                if (!isValidFallbackItem(rawItem)) {
-                  console.warn(`Skipping invalid offline queue record at index ${idx}:`, rawItem);
-                  continue;
-                }
-                const item = rawItem;
-                const existing = records.find((r) => r.id === item.id);
-                if (!existing) {
-                  const amt = Number(item.totalAmount ?? (item.payload as Record<string, unknown>)?.totalAmount ?? 0);
-                  const reconciledRecord: QueuedTransactionRecord = {
-                    id: String(item.id),
-                    seq: typeof item.seq === 'number' ? item.seq : (records.length + idx + 1),
-                    createdAt: (item.createdAt as string) || new Date().toISOString(),
-                    status: (item.status as QueuedTransactionRecord['status']) || 'PENDING',
-                    retryCount: Number(item.retryCount || 0),
-                    payload: (item.payload as Record<string, unknown>) || {},
-                    totalAmount: amt,
-                    stationId: (item.stationId as string) || ((item.payload as Record<string, unknown>)?.stationId as string) || 'OFFLINE',
-                    cashierId: (item.cashierId as string) || ((item.payload as Record<string, unknown>)?.cashierId as string) || 'CASHIER',
-                  };
-                  records.push(reconciledRecord);
-                  if (posIndexedDb.isSupported()) {
-                    try {
-                      await posIndexedDb.saveTransaction(reconciledRecord);
-                    } catch {
-                      // ignore
+                try {
+                  const validated = this.validateFallbackRecord(parsed[idx], idx, records.length);
+                  if (!validated) continue;
+
+                  const existing = records.find((r) => r.id === validated.id);
+                  if (!existing) {
+                    records.push(validated);
+                    if (posIndexedDb.isSupported()) {
+                      try {
+                        await posIndexedDb.saveTransaction(validated);
+                      } catch {
+                        // ignore save error during recovery
+                      }
                     }
                   }
+                } catch (recErr) {
+                  console.warn(`[QueueEngine] Error validating fallback record at index ${idx}:`, recErr);
                 }
               }
             }
           }
-        } catch {
-          // ignore fallback reconciliation parsing error
+        } catch (e) {
+          console.warn('[QueueEngine] Fallback queue JSON parsing error:', e);
         }
 
         this.inMemoryQueue = records.sort((a, b) => a.seq - b.seq);
         if (this.inMemoryQueue.length > 0) {
-          this.sequenceCounter = Math.max(...this.inMemoryQueue.map((r) => r.seq));
-        } else {
-          this.sequenceCounter = 0;
+          const maxSeq = Math.max(...this.inMemoryQueue.map((r) => r.seq));
+          this.sequenceCounter = Math.max(maxSeq, this.sequenceCounter);
         }
+
+        try {
+          const storedSeq = localStorage.getItem(STORAGE_KEY_SEQ);
+          if (storedSeq) {
+            const parsedSeq = parseInt(storedSeq, 10);
+            if (Number.isFinite(parsedSeq) && parsedSeq > this.sequenceCounter) {
+              this.sequenceCounter = parsedSeq;
+            }
+          }
+        } catch {
+          // ignore
+        }
+
         this.isInitialized = true;
         this.notifyListeners();
       } finally {
@@ -118,6 +194,9 @@ class TransactionQueueEngine {
 
   public subscribe(listener: QueueChangeListener): () => void {
     this.listeners.add(listener);
+    void this.initialize().then(() => {
+      listener([...this.inMemoryQueue]);
+    });
     listener([...this.inMemoryQueue]);
     return () => {
       this.listeners.delete(listener);
@@ -136,6 +215,9 @@ class TransactionQueueEngine {
   }
 
   public getQueue(): QueuedTransactionRecord[] {
+    if (!this.isInitialized && !this.initPromise) {
+      void this.initialize();
+    }
     return [...this.inMemoryQueue];
   }
 
@@ -143,60 +225,33 @@ class TransactionQueueEngine {
     return this.inMemoryQueue.filter((t) => t.status !== 'SYNCED').length;
   }
 
-  private allocateNextSequence(): number {
-    let maxSeq = this.sequenceCounter;
-    for (const r of this.inMemoryQueue) {
-      if (typeof r.seq === 'number' && r.seq > maxSeq) {
-        maxSeq = r.seq;
-      }
-    }
-
-    try {
-      const storedSeq = parseInt(localStorage.getItem('CRUISE_POS_SEQ_COUNTER') || '0', 10);
-      if (!isNaN(storedSeq) && storedSeq > maxSeq) {
-        maxSeq = storedSeq;
-      }
-    } catch {
-      // ignore
-    }
-
-    const nextSeq = maxSeq + 1;
-    this.sequenceCounter = nextSeq;
-
-    try {
-      localStorage.setItem('CRUISE_POS_SEQ_COUNTER', String(nextSeq));
-    } catch {
-      // ignore
-    }
-
-    return nextSeq;
-  }
-
   private persistToLocalStorageFallback(record: QueuedTransactionRecord): void {
     try {
-      const raw = localStorage.getItem('CRUISE_POS_OFFLINE_QUEUE');
-      let sharedQueue: QueuedTransactionRecord[] = [];
-      if (raw) {
+      let existing: QueuedTransactionRecord[] = [];
+      const stored = localStorage.getItem(STORAGE_KEY_QUEUE);
+      if (stored) {
         try {
-          const parsed = JSON.parse(raw);
+          const parsed = JSON.parse(stored);
           if (Array.isArray(parsed)) {
-            sharedQueue = parsed.filter(isValidFallbackItem) as unknown as QueuedTransactionRecord[];
+            existing = parsed.filter(
+              (r): r is QueuedTransactionRecord => Boolean(r && typeof r === 'object' && typeof (r as QueuedTransactionRecord).id === 'string')
+            );
           }
         } catch {
-          // ignore parsing error
+          existing = [];
         }
       }
 
-      // Merge record into sharedQueue preserving other tabs' records
-      const existingIdx = sharedQueue.findIndex((t) => t.id === record.id);
-      if (existingIdx >= 0) {
-        sharedQueue[existingIdx] = record;
-      } else {
-        sharedQueue.push(record);
+      // Merge current memory queue and existing storage by unique id to coordinate across tabs
+      const mergedMap = new Map<string, QueuedTransactionRecord>();
+      for (const item of existing) {
+        mergedMap.set(item.id, item);
       }
-      sharedQueue.sort((a, b) => a.seq - b.seq);
-
-      localStorage.setItem('CRUISE_POS_OFFLINE_QUEUE', JSON.stringify(sharedQueue));
+      for (const item of this.inMemoryQueue) {
+        mergedMap.set(item.id, item);
+      }
+      const mergedList = Array.from(mergedMap.values()).sort((a, b) => a.seq - b.seq);
+      localStorage.setItem(STORAGE_KEY_QUEUE, JSON.stringify(mergedList));
     } catch (storageErr) {
       this.inMemoryQueue = this.inMemoryQueue.filter((t) => t.id !== record.id);
       this.notifyListeners();
@@ -219,24 +274,25 @@ class TransactionQueueEngine {
 
     const txUuid =
       (payload.transactionUuid as string) ||
-      `TX-OFFLINE-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+      generateSecureId('TX-OFFLINE');
 
-    // Check for existing record with identical UUID
+    // Reject conflicting enqueues with the same transaction UUID or return identical retry
     const existing = this.inMemoryQueue.find((t) => t.id === txUuid);
     if (existing) {
       const isIdentical =
         existing.totalAmount === totalAmount &&
         existing.stationId === stationId &&
         existing.cashierId === cashierId;
+
       if (isIdentical) {
         return existing;
       }
       throw new Error(
-        `Conflicting enqueue rejected: transaction UUID ${txUuid} already exists with different details.`
+        `Conflicting transaction enqueue: UUID '${txUuid}' is already queued with a different payload.`
       );
     }
 
-    const nextSeq = this.allocateNextSequence();
+    const nextSeq = this.getNextSequence();
 
     const record: QueuedTransactionRecord = {
       id: txUuid,
@@ -271,20 +327,7 @@ class TransactionQueueEngine {
       try {
         await posIndexedDb.saveTransaction(record);
         await posIndexedDb.recordAuditLog('ENQUEUE_TX', `Enqueued txUuid=${txUuid}, amount=$${totalAmount}`);
-      } catch (e: unknown) {
-        // If unique seq index conflict occurred due to concurrent tab write, coordinate and retry once
-        if (e && typeof e === 'object' && (e as { name?: string }).name === 'ConstraintError') {
-          try {
-            const all = await posIndexedDb.getAllTransactions();
-            const maxDbSeq = all.length > 0 ? Math.max(...all.map((r) => r.seq)) : 0;
-            record.seq = Math.max(record.seq, maxDbSeq) + 1;
-            await posIndexedDb.saveTransaction(record);
-            await posIndexedDb.recordAuditLog('ENQUEUE_TX', `Enqueued txUuid=${txUuid}, amount=$${totalAmount}`);
-            return record;
-          } catch (retryErr) {
-            console.warn('Retry saveTransaction failed, falling back to localStorage:', retryErr);
-          }
-        }
+      } catch (e) {
         console.warn('Failed to persist transaction to IndexedDB, fallback to localStorage:', e);
         this.persistToLocalStorageFallback(record);
       }
@@ -296,46 +339,45 @@ class TransactionQueueEngine {
   }
 
   /**
-   * Remove transaction from queue after successful sync
+   * Remove transaction from queue after successful sync, surfacing local deletion failures
    */
   public async dequeue(id: string): Promise<void> {
-    const item = this.inMemoryQueue.find((t) => t.id === id);
-
-    // Update fallback storage snapshot to remove synced transaction
-    try {
-      const stored = localStorage.getItem('CRUISE_POS_OFFLINE_QUEUE');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          const filtered = parsed.filter((t: { id?: string }) => t.id !== id);
-          if (filtered.length > 0) {
-            localStorage.setItem('CRUISE_POS_OFFLINE_QUEUE', JSON.stringify(filtered));
-          } else {
-            localStorage.removeItem('CRUISE_POS_OFFLINE_QUEUE');
-          }
-        }
-      }
-    } catch {
-      // ignore
-    }
-
+    // If IndexedDB is supported, attempt persistent deletion first
     if (posIndexedDb.isSupported()) {
       try {
         await posIndexedDb.deleteTransaction(id);
         await posIndexedDb.recordAuditLog('DEQUEUE_TX', `Dequeued txUuid=${id}`);
       } catch (e) {
-        console.error(`Failed to delete transaction ${id} from IndexedDB:`, e);
-        if (item) {
-          item.status = 'SYNCED';
-          item.lastError = 'IndexedDB deletion failed after sync';
+        // Mark transaction as SYNCED to prevent duplicate dispatch, but retain error state in memory
+        const target = this.inMemoryQueue.find((t) => t.id === id);
+        if (target) {
+          target.status = 'SYNCED';
+          target.lastError = `Xóa IndexedDB thất bại: ${e instanceof Error ? e.message : String(e)}`;
           this.notifyListeners();
         }
-        throw new Error(
-          `Failed to delete transaction ${id} from IndexedDB after successful sync: ${e}`
-        );
+        throw new Error(`Failed to remove transaction '${id}' from IndexedDB: ${e instanceof Error ? e.message : String(e)}`);
       }
     }
 
+    // Clean up fallback localStorage
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY_QUEUE);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          const filtered = parsed.filter((t: { id?: string }) => t.id !== id);
+          if (filtered.length > 0) {
+            localStorage.setItem(STORAGE_KEY_QUEUE, JSON.stringify(filtered));
+          } else {
+            localStorage.removeItem(STORAGE_KEY_QUEUE);
+          }
+        }
+      }
+    } catch {
+      // ignore fallback cleanup
+    }
+
+    // Deletion from storage succeeded; remove from memory
     this.inMemoryQueue = this.inMemoryQueue.filter((t) => t.id !== id);
     this.notifyListeners();
   }
@@ -345,8 +387,8 @@ class TransactionQueueEngine {
       await posIndexedDb.clearTransactions();
     }
     try {
-      localStorage.removeItem('CRUISE_POS_OFFLINE_QUEUE');
-      localStorage.removeItem('CRUISE_POS_SEQ_COUNTER');
+      localStorage.removeItem(STORAGE_KEY_QUEUE);
+      localStorage.removeItem(STORAGE_KEY_SEQ);
     } catch (err) {
       console.warn('Failed to clear fallback localStorage:', err);
       throw err;
@@ -388,11 +430,15 @@ class TransactionQueueEngine {
             item.id
           );
 
-          succeeded += 1;
           try {
             await this.dequeue(item.id);
-          } catch (delErr) {
-            console.warn(`Local deletion for transaction ${item.id} failed after sync:`, delErr);
+            succeeded += 1;
+          } catch (dequeueErr) {
+            failed += 1;
+            const dMsg = dequeueErr instanceof Error ? dequeueErr.message : String(dequeueErr);
+            errors.push(`Giao dịch ${item.id} đã gửi thành công nhưng xóa bộ nhớ cục bộ thất bại: ${dMsg}`);
+            // Stop dispatch to inspect storage health
+            break;
           }
         } catch (err: unknown) {
           failed += 1;

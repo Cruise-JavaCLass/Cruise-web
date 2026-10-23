@@ -111,7 +111,7 @@ describe('OfflineStatusBadge & Queue Inspector Modal Tests (KAN-253, KAN-434, KA
     });
   });
 
-  it('selects a transaction to view raw JSON payload preview', async () => {
+  it('selects a transaction with native button keyboard accessibility to view raw payload', async () => {
     (transactionQueueEngine as any)._setMockQueue([
       {
         id: 'TX-INSPECT-02',
@@ -128,10 +128,46 @@ describe('OfflineStatusBadge & Queue Inspector Modal Tests (KAN-253, KAN-434, KA
 
     render(<PendingQueueInspectorModal isOpen={true} onClose={vi.fn()} />);
 
-    const txItem = screen.getByText('TX-INSPECT-02');
-    fireEvent.click(txItem);
+    const selectBtn = screen.getByRole('button', { name: /Xem chi tiết giao dịch #2 TX-INSPECT-02/i });
+    expect(selectBtn).toBeInTheDocument();
+    fireEvent.click(selectBtn);
 
     expect(screen.getByText(/Raw Transaction JSON Payload/i)).toBeInTheDocument();
     expect(screen.getByText(/"guest": "VIP Guest"/i)).toBeInTheDocument();
+  });
+
+  it('confirms individual transaction deletion before calling dequeue', async () => {
+    (transactionQueueEngine as any)._setMockQueue([
+      {
+        id: 'TX-DELETE-01',
+        seq: 5,
+        createdAt: '2026-10-22T10:10:00Z',
+        status: 'PENDING',
+        retryCount: 0,
+        payload: { item: 'Whiskey' },
+        totalAmount: 85.0,
+        stationId: 'BAR-DECK-9',
+        cashierId: 'CASHIER-01',
+      },
+    ]);
+
+    const confirmSpy = vi.spyOn(window, 'confirm');
+
+    render(<PendingQueueInspectorModal isOpen={true} onClose={vi.fn()} />);
+
+    const deleteBtn = screen.getByRole('button', { name: /Hủy giao dịch #5/i });
+    expect(deleteBtn).toBeInTheDocument();
+
+    // 1. User cancels confirmation
+    confirmSpy.mockReturnValueOnce(false);
+    fireEvent.click(deleteBtn);
+    expect(confirmSpy).toHaveBeenCalledWith(expect.stringContaining('#5 (TX-DELETE-01)'));
+    expect(transactionQueueEngine.dequeue).not.toHaveBeenCalled();
+
+    // 2. User confirms deletion
+    confirmSpy.mockReturnValueOnce(true);
+    fireEvent.click(deleteBtn);
+    expect(confirmSpy).toHaveBeenCalledTimes(2);
+    expect(transactionQueueEngine.dequeue).toHaveBeenCalledWith('TX-DELETE-01');
   });
 });
