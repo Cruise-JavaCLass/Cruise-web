@@ -86,10 +86,11 @@ describe('RfidInventoryDashboard', () => {
     );
 
     await waitFor(() => {
-      const quarantineBtns = screen.getAllByRole('button', { name: /Quarantine/i });
-      fireEvent.click(quarantineBtns[quarantineBtns.length - 1]);
-      expect(onOpenQuarantine).toHaveBeenCalled();
+      expect(screen.getAllByRole('button', { name: /Quarantine/i }).length).toBeGreaterThan(0);
     });
+    const quarantineBtns = screen.getAllByRole('button', { name: /Quarantine/i });
+    fireEvent.click(quarantineBtns[quarantineBtns.length - 1]);
+    expect(onOpenQuarantine).toHaveBeenCalled();
   });
 });
 
