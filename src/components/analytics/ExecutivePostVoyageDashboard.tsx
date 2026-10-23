@@ -38,21 +38,21 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
   const [isInitiateOpen, setIsInitiateOpen] = useState(false);
 
   // Form State for Initiate Closure
-  const [voyageNumber, setVoyageNumber] = useState('VOY-2026-MED-02');
-  const [shipId, setShipId] = useState('SHIP-CELEBRATION');
-  const [itineraryName, setItineraryName] = useState('Greek Isles & Turkish Coast 7-Day');
-  const [voyageStartDate, setVoyageStartDate] = useState(() => new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0]);
-  const [voyageEndDate, setVoyageEndDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [closureAuditNotes, setClosureAuditNotes] = useState('Executive ledger reconciled with PMS & POS.');
-  const [capacity, setCapacity] = useState(2500);
-  const [attendance, setAttendance] = useState(2380);
-  const [budgetGross, setBudgetGross] = useState(1500000);
-  const [revBars, setRevBars] = useState(620000);
-  const [revDining, setRevDining] = useState(410000);
-  const [revExcursions, setRevExcursions] = useState(380000);
-  const [revSpa, setRevSpa] = useState(140000);
-  const [revRetail, setRevRetail] = useState(90000);
-  const [discounts, setDiscounts] = useState(40000);
+  const [voyageNumber, setVoyageNumber] = useState('');
+  const [shipId, setShipId] = useState('');
+  const [itineraryName, setItineraryName] = useState('');
+  const [voyageStartDate, setVoyageStartDate] = useState('');
+  const [voyageEndDate, setVoyageEndDate] = useState('');
+  const [closureAuditNotes, setClosureAuditNotes] = useState('');
+  const [capacity, setCapacity] = useState('');
+  const [attendance, setAttendance] = useState('');
+  const [budgetGross, setBudgetGross] = useState('');
+  const [revBars, setRevBars] = useState('');
+  const [revDining, setRevDining] = useState('');
+  const [revExcursions, setRevExcursions] = useState('');
+  const [revSpa, setRevSpa] = useState('');
+  const [revRetail, setRevRetail] = useState('');
+  const [discounts, setDiscounts] = useState('');
 
   const loadAnalytics = useCallback(async () => {
     try {
@@ -85,16 +85,16 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
         itineraryName,
         voyageStartDate: new Date(voyageStartDate).toISOString(),
         voyageEndDate: new Date(voyageEndDate).toISOString(),
-        totalPassengerCapacity: capacity,
-        actualPassengerAttendance: attendance,
-        budgetedGrossRevenue: budgetGross,
-        revenueBeverageBars: revBars,
-        revenueSpecialtyDining: revDining,
-        revenueShoreExcursions: revExcursions,
-        revenueSpaWellness: revSpa,
-        revenueRetailBoutiques: revRetail,
-        totalDiscountsAndObc: discounts,
-        closureAuditNotes: closureAuditNotes.trim() || 'Executive ledger reconciled with PMS & POS.',
+        totalPassengerCapacity: Number(capacity),
+        actualPassengerAttendance: Number(attendance),
+        budgetedGrossRevenue: Number(budgetGross),
+        revenueBeverageBars: Number(revBars),
+        revenueSpecialtyDining: Number(revDining),
+        revenueShoreExcursions: Number(revExcursions),
+        revenueSpaWellness: Number(revSpa),
+        revenueRetailBoutiques: Number(revRetail),
+        totalDiscountsAndObc: Number(discounts),
+        closureAuditNotes: closureAuditNotes.trim(),
       };
       await voyageAnalyticsService.initiateClosure(req);
       setIsInitiateOpen(false);
@@ -474,7 +474,7 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
                     type="number"
                     required
                     value={capacity}
-                    onChange={(e) => setCapacity(Number(e.target.value))}
+                    onChange={(e) => setCapacity(e.target.value)}
                     className="w-full p-2 border border-slate-300 rounded-xl"
                   />
                 </div>
@@ -484,7 +484,7 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
                     type="number"
                     required
                     value={attendance}
-                    onChange={(e) => setAttendance(Number(e.target.value))}
+                    onChange={(e) => setAttendance(e.target.value)}
                     className="w-full p-2 border border-slate-300 rounded-xl"
                   />
                 </div>
@@ -494,7 +494,7 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
                     type="number"
                     required
                     value={budgetGross}
-                    onChange={(e) => setBudgetGross(Number(e.target.value))}
+                    onChange={(e) => setBudgetGross(e.target.value)}
                     className="w-full p-2 border border-slate-300 rounded-xl"
                   />
                 </div>
@@ -505,27 +505,27 @@ export const ExecutivePostVoyageDashboard: React.FC = () => {
                 <div className="grid grid-cols-3 gap-2">
                   <div>
                     <label className="text-[10px] text-slate-500">Bars</label>
-                    <input type="number" value={revBars} onChange={(e) => setRevBars(Number(e.target.value))} className="w-full p-1.5 border rounded" />
+                    <input type="number" required value={revBars} onChange={(e) => setRevBars(e.target.value)} className="w-full p-1.5 border rounded" />
                   </div>
                   <div>
                     <label className="text-[10px] text-slate-500">Dining</label>
-                    <input type="number" value={revDining} onChange={(e) => setRevDining(Number(e.target.value))} className="w-full p-1.5 border rounded" />
+                    <input type="number" required value={revDining} onChange={(e) => setRevDining(e.target.value)} className="w-full p-1.5 border rounded" />
                   </div>
                   <div>
                     <label className="text-[10px] text-slate-500">Excursions</label>
-                    <input type="number" value={revExcursions} onChange={(e) => setRevExcursions(Number(e.target.value))} className="w-full p-1.5 border rounded" />
+                    <input type="number" required value={revExcursions} onChange={(e) => setRevExcursions(e.target.value)} className="w-full p-1.5 border rounded" />
                   </div>
                   <div>
                     <label className="text-[10px] text-slate-500">Spa</label>
-                    <input type="number" value={revSpa} onChange={(e) => setRevSpa(Number(e.target.value))} className="w-full p-1.5 border rounded" />
+                    <input type="number" required value={revSpa} onChange={(e) => setRevSpa(e.target.value)} className="w-full p-1.5 border rounded" />
                   </div>
                   <div>
                     <label className="text-[10px] text-slate-500">Retail</label>
-                    <input type="number" value={revRetail} onChange={(e) => setRevRetail(Number(e.target.value))} className="w-full p-1.5 border rounded" />
+                    <input type="number" required value={revRetail} onChange={(e) => setRevRetail(e.target.value)} className="w-full p-1.5 border rounded" />
                   </div>
                   <div>
                     <label className="text-[10px] text-slate-500">Discounts/OBC</label>
-                    <input type="number" value={discounts} onChange={(e) => setDiscounts(Number(e.target.value))} className="w-full p-1.5 border rounded" />
+                    <input type="number" required value={discounts} onChange={(e) => setDiscounts(e.target.value)} className="w-full p-1.5 border rounded" />
                   </div>
                 </div>
               </div>

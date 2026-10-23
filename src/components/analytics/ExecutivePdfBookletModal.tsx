@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   FileText,
   Mail,
@@ -28,8 +28,13 @@ export const ExecutivePdfBookletModal: React.FC<ExecutivePdfBookletModalProps> =
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const sessionGeneration = useRef(0);
+  const requestGeneration = useRef(0);
 
   useEffect(() => {
+    sessionGeneration.current += 1;
+    requestGeneration.current += 1;
+    setLoading(false);
     setSuccessMsg(null);
     setError(null);
   }, [isOpen, voyage?.voyageNumber]);
@@ -43,6 +48,8 @@ export const ExecutivePdfBookletModal: React.FC<ExecutivePdfBookletModalProps> =
 
   const handleDispatchEmail = async (e: React.FormEvent) => {
     e.preventDefault();
+    const dispatchSession = sessionGeneration.current;
+    const dispatchRequest = ++requestGeneration.current;
     try {
       setLoading(true);
       setError(null);
@@ -50,13 +57,26 @@ export const ExecutivePdfBookletModal: React.FC<ExecutivePdfBookletModalProps> =
         recipientEmail,
         executiveNote: executiveNote || undefined,
       });
+      if (
+        sessionGeneration.current !== dispatchSession ||
+        requestGeneration.current !== dispatchRequest
+      ) return;
       setSuccessMsg(`Executive booklet successfully sent to ${recipientEmail}`);
       setRecipientEmail('');
       setExecutiveNote('');
     } catch (err: unknown) {
+      if (
+        sessionGeneration.current !== dispatchSession ||
+        requestGeneration.current !== dispatchRequest
+      ) return;
       setError(err instanceof Error ? err.message : 'Failed to dispatch email');
     } finally {
-      setLoading(false);
+      if (
+        sessionGeneration.current === dispatchSession &&
+        requestGeneration.current === dispatchRequest
+      ) {
+        setLoading(false);
+      }
     }
   };
 
