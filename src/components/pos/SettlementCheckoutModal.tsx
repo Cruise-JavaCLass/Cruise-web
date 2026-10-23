@@ -25,6 +25,12 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
   // Track completed payment references so onPaymentSuccess is called at most once per reference
   const completedRefs = useRef<Set<string>>(new Set());
 
+  // Keep latest onPaymentSuccess callback in a ref to prevent effect re-runs
+  const onPaymentSuccessRef = useRef(onPaymentSuccess);
+  useEffect(() => {
+    onPaymentSuccessRef.current = onPaymentSuccess;
+  });
+
   useEffect(() => {
     let isCancelled = false;
 
@@ -50,7 +56,7 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
               setQrData(data);
               if (!completedRefs.current.has(data.paymentReference)) {
                 completedRefs.current.add(data.paymentReference);
-                if (onPaymentSuccess) onPaymentSuccess();
+                onPaymentSuccessRef.current?.();
               }
             } else if (status === 'FAILED' || status === 'EXPIRED' || status === 'CANCELLED') {
               // Terminal failure: Do not leave a scannable QR
@@ -71,12 +77,15 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
       setQrData(null);
       setError(null);
       setLoading(false);
+    } else {
+      setQrData(null);
+      setLoading(false);
     }
 
     return () => {
       isCancelled = true;
     };
-  }, [isOpen, cabinNumber, amount, onPaymentSuccess]);
+  }, [isOpen, cabinNumber, amount]);
 
   // Polling for payment status
   useEffect(() => {
@@ -95,9 +104,7 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
           if (status === 'PAID') {
             if (!completedRefs.current.has(currentRef)) {
               completedRefs.current.add(currentRef);
-              if (onPaymentSuccess) {
-                onPaymentSuccess();
-              }
+              onPaymentSuccessRef.current?.();
             }
           } else if (status === 'FAILED' || status === 'EXPIRED' || status === 'CANCELLED') {
             // Dismiss scannable QR upon terminal failure
@@ -119,7 +126,7 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
         clearInterval(interval);
       }
     };
-  }, [isOpen, qrData, pollingStatus, onPaymentSuccess]);
+  }, [isOpen, qrData, pollingStatus]);
 
   if (!isOpen) return null;
 
@@ -186,7 +193,8 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
             </div>
           )}
 
-          {qrData && !loading && (
+          {/* Active scannable QR when payment is pending */}
+          {qrData && !loading && pollingStatus !== 'PAID' && (
             <>
               <div className="rounded-xl bg-emerald-50 p-3 border border-emerald-100">
                 <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
@@ -224,7 +232,7 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
                 </p>
               </div>
 
-              {/* Status Badge */}
+              {/* Polling Status Badge */}
               <div className="pt-2">
                 {pollingStatus === 'PENDING' && (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 border border-amber-200">
@@ -232,13 +240,31 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
                     Đang chờ hệ thống ngân hàng xác nhận tiền về...
                   </span>
                 )}
-                {pollingStatus === 'PAID' && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
-                    ✓ Đã nhận thanh toán thành công! Folio đã được tất toán.
-                  </span>
-                )}
               </div>
             </>
+          )}
+
+          {/* Success confirmation view - QR is hidden upon successful payment */}
+          {!loading && pollingStatus === 'PAID' && (
+            <div className="py-6 space-y-4">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-3xl font-bold shadow-inner">
+                ✓
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-gray-900">Thanh toán thành công!</h3>
+                <p className="text-sm text-gray-600">
+                  Cabin {cabinNumber} đã tất toán số tiền{' '}
+                  <span className="font-bold text-emerald-700">
+                    {(qrData?.amount ?? amount).toLocaleString('vi-VN')} {qrData?.currency || 'đ'}
+                  </span>
+                </p>
+              </div>
+              <div className="pt-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                  ✓ Đã nhận thanh toán thành công! Folio đã được tất toán.
+                </span>
+              </div>
+            </div>
           )}
         </div>
 

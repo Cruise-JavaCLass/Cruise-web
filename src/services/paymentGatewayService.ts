@@ -18,7 +18,7 @@ export const paymentGatewayService = {
 
   async getPaymentStatus(reference: string): Promise<PaymentGatewayStatus> {
     const response = await apiClient.get<{ success: boolean; data: PaymentGatewayStatus }>(
-      `/pos/payments/orders/${reference}/status`
+      `/pos/payments/orders/${encodeURIComponent(reference)}/status`
     );
     return response.data.data;
   },

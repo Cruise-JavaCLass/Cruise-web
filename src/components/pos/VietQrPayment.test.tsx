@@ -64,6 +64,75 @@ describe('SettlementCheckoutModal (KAN-310 & KAN-432)', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Đã nhận thanh toán thành công/)).toBeInTheDocument();
+      // QR image should be hidden when status is PAID
+      expect(screen.queryByAltText('Mã VietQR Thanh Toán')).not.toBeInTheDocument();
+      expect(onPaymentSuccess).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('does not re-trigger generateVietQr when onPaymentSuccess callback changes', async () => {
+    const generateSpy = vi.spyOn(paymentGatewayService, 'generateVietQr').mockResolvedValue(mockQrResponse);
+    vi.spyOn(paymentGatewayService, 'getPaymentStatus').mockResolvedValue('PENDING');
+
+    const fn1 = vi.fn();
+    const { rerender } = render(
+      <SettlementCheckoutModal
+        isOpen={true}
+        onClose={vi.fn()}
+        cabinNumber="CABIN-701"
+        amount={1200000}
+        onPaymentSuccess={fn1}
+      />
+    );
+
+    await waitFor(() => {
+      expect(generateSpy).toHaveBeenCalledTimes(1);
+    });
+
+    const fn2 = vi.fn();
+    rerender(
+      <SettlementCheckoutModal
+        isOpen={true}
+        onClose={vi.fn()}
+        cabinNumber="CABIN-701"
+        amount={1200000}
+        onPaymentSuccess={fn2}
+      />
+    );
+
+    // generateVietQr should NOT be called again simply because the callback changed
+    expect(generateSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears QR data and stops loading when cabinNumber becomes empty or amount <= 0', async () => {
+    vi.spyOn(paymentGatewayService, 'generateVietQr').mockResolvedValue(mockQrResponse);
+    vi.spyOn(paymentGatewayService, 'getPaymentStatus').mockResolvedValue('PENDING');
+
+    const { rerender } = render(
+      <SettlementCheckoutModal
+        isOpen={true}
+        onClose={vi.fn()}
+        cabinNumber="CABIN-701"
+        amount={1200000}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByAltText('Mã VietQR Thanh Toán')).toBeInTheDocument();
+    });
+
+    // Invalidate input
+    rerender(
+      <SettlementCheckoutModal
+        isOpen={true}
+        onClose={vi.fn()}
+        cabinNumber=""
+        amount={1200000}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByAltText('Mã VietQR Thanh Toán')).not.toBeInTheDocument();
     });
   });
 });
