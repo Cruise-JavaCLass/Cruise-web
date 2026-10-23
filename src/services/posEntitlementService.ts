@@ -1,4 +1,5 @@
-import api from './api';
+import { apiClient } from './api';
+import { isAxiosError } from 'axios';
 import type {
   GuestPackageEntitlement,
   EntitlementEvaluateRequest,
@@ -37,14 +38,38 @@ export class LocalEntitlementCache {
   async saveEntitlements(passengerId: number, entitlements: GuestPackageEntitlement[]): Promise<void> {
     try {
       const db = await this.getDB();
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-      store.put({ passengerId, entitlements, updatedAt: Date.now() });
+      await new Promise<void>((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.put({ passengerId, entitlements, updatedAt: Date.now() });
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error || new Error('Transaction aborted'));
+      });
     } catch {
       // Fallback to localStorage if IndexedDB is blocked
       if (typeof window !== 'undefined' && window.localStorage) {
         localStorage.setItem(`pos_entitlement_${passengerId}`, JSON.stringify(entitlements));
       }
+    }
+  }
+
+  async invalidateEntitlements(passengerId: number): Promise<void> {
+    try {
+      const db = await this.getDB();
+      await new Promise<void>((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        store.delete(passengerId);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error || new Error('Transaction aborted'));
+      });
+    } catch {
+      // ignore
+    }
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem(`pos_entitlement_${passengerId}`);
     }
   }
 
@@ -85,12 +110,15 @@ export const localEntitlementCache = new LocalEntitlementCache();
 export const posEntitlementService = {
   async evaluateCart(request: EntitlementEvaluateRequest): Promise<EntitlementEvaluateResponse> {
     try {
-      const response = await api.post<{ success: boolean; data: EntitlementEvaluateResponse }>(
+      const response = await apiClient.post<{ success: boolean; data: EntitlementEvaluateResponse }>(
         '/api/pos/entitlements/evaluate',
         request
       );
       return response.data.data;
     } catch (err: unknown) {
+      if (isAxiosError(err) && err.response) {
+        throw err;
+      }
       // Offline fallback evaluation using cached entitlements in IndexedDB
       const cached = await localEntitlementCache.getEntitlements(request.passengerId);
       if (cached && cached.length > 0) {
@@ -102,7 +130,7 @@ export const posEntitlementService = {
 
   async getPassengerEntitlements(passengerId: number): Promise<GuestPackageEntitlement[]> {
     try {
-      const response = await api.get<{ success: boolean; data: GuestPackageEntitlement[] }>(
+      const response = await apiClient.get<{ success: boolean; data: GuestPackageEntitlement[] }>(
         `/api/pos/entitlements/passengers/${passengerId}`
       );
       const data = response.data.data;
@@ -116,56 +144,99 @@ export const posEntitlementService = {
   },
 
   async deductQuota(request: EntitlementDeductRequest): Promise<void> {
-    await api.post('/api/pos/entitlements/deduct', request);
+    await apiClient.post('/api/pos/entitlements/deduct', request);
+    const cached = await localEntitlementCache.getEntitlements(request.passengerId);
+    if (cached && cached.length > 0) {
+      const updated = cached.map((pkg) => {
+        const deduction = request.items
+          .filter((item) => item.entitlementId === pkg.id)
+          .reduce((sum, item) => sum + item.units, 0);
+        if (deduction > 0) {
+          const usedQuota = pkg.usedQuota + deduction;
+          const status = usedQuota >= pkg.totalQuota ? 'EXHAUSTED' : pkg.status;
+          return {
+            ...pkg,
+            usedQuota,
+            status,
+          };
+        }
+        return pkg;
+      });
+      await localEntitlementCache.saveEntitlements(request.passengerId, updated);
+    }
   },
 
   async rollbackQuota(request: EntitlementRollbackRequest): Promise<void> {
-    await api.post('/api/pos/entitlements/rollback', request);
+    await apiClient.post('/api/pos/entitlements/rollback', request);
   },
 
   evaluateOffline(request: EntitlementEvaluateRequest, entitlements: GuestPackageEntitlement[]): EntitlementEvaluateResponse {
     let originalTotal = 0;
     let packageDiscountTotal = 0;
     const virtualQuota = new Map<number, number>();
+    const now = new Date();
 
     entitlements.forEach((e) => {
       virtualQuota.set(e.id, Math.max(0, e.totalQuota - e.usedQuota));
     });
 
+    const isEntitlementValid = (e: GuestPackageEntitlement): boolean => {
+      if (e.status !== 'ACTIVE') return false;
+      if (e.validFrom) {
+        const from = new Date(e.validFrom);
+        if (!isNaN(from.getTime()) && now < from) return false;
+      }
+      if (e.validTo) {
+        const to = new Date(e.validTo);
+        if (!isNaN(to.getTime()) && now > to) return false;
+      }
+      return true;
+    };
+
     const items = request.items.map((item) => {
       const gross = item.unitPrice * item.quantity;
       originalTotal += gross;
 
-      const matched = entitlements.find((e) => {
-        const remaining = virtualQuota.get(e.id) || 0;
-        const matchesCategory = !e.eligibleCategory || e.eligibleCategory === 'ALL' || e.eligibleCategory.toLowerCase() === item.category.toLowerCase();
-        return e.status === 'ACTIVE' && remaining > 0 && matchesCategory;
-      });
+      let remainingQuantity = item.quantity;
+      let itemCoveredAmount = 0;
+      let totalQuotaDeducted = 0;
+      let primaryPackageName: string | undefined;
+      let primaryEntitlementId: number | undefined;
 
-      if (matched) {
-        const rem = virtualQuota.get(matched.id) || 0;
-        const coveredUnits = Math.min(item.quantity, rem);
-        virtualQuota.set(matched.id, rem - coveredUnits);
+      while (remainingQuantity > 0) {
+        const matched = entitlements.find((e) => {
+          const rem = virtualQuota.get(e.id) || 0;
+          const matchesCategory =
+            !e.eligibleCategory ||
+            e.eligibleCategory === 'ALL' ||
+            e.eligibleCategory.toLowerCase() === item.category.toLowerCase();
+          return isEntitlementValid(e) && rem > 0 && matchesCategory;
+        });
 
-        const coveredUnitRate = matched.maxItemPriceCap ? Math.min(item.unitPrice, matched.maxItemPriceCap) : item.unitPrice;
-        const itemCovered = coveredUnitRate * coveredUnits;
-        const outOfPocket = gross - itemCovered;
-        packageDiscountTotal += itemCovered;
+        if (!matched) {
+          break;
+        }
 
-        return {
-          productId: item.productId,
-          productName: item.productName,
-          quantity: item.quantity,
-          unitPrice: item.unitPrice,
-          grossAmount: gross,
-          coveredAmount: itemCovered,
-          outOfPocketAmount: outOfPocket,
-          fullyCovered: outOfPocket === 0,
-          appliedPackageName: matched.packageName,
-          appliedEntitlementId: matched.id,
-          quotaDeducted: coveredUnits,
-        };
+        if (!primaryPackageName) {
+          primaryPackageName = matched.packageName;
+          primaryEntitlementId = matched.id;
+        }
+
+        const currentRem = virtualQuota.get(matched.id) || 0;
+        const alloc = Math.min(remainingQuantity, currentRem);
+        virtualQuota.set(matched.id, currentRem - alloc);
+
+        const coveredUnitRate = matched.maxItemPriceCap
+          ? Math.min(item.unitPrice, matched.maxItemPriceCap)
+          : item.unitPrice;
+
+        itemCoveredAmount += coveredUnitRate * alloc;
+        totalQuotaDeducted += alloc;
+        remainingQuantity -= alloc;
       }
+
+      const outOfPocket = gross - itemCoveredAmount;
+      packageDiscountTotal += itemCoveredAmount;
 
       return {
         productId: item.productId,
@@ -173,10 +244,12 @@ export const posEntitlementService = {
         quantity: item.quantity,
         unitPrice: item.unitPrice,
         grossAmount: gross,
-        coveredAmount: 0,
-        outOfPocketAmount: gross,
-        fullyCovered: false,
-        quotaDeducted: 0,
+        coveredAmount: itemCoveredAmount,
+        outOfPocketAmount: outOfPocket,
+        fullyCovered: outOfPocket === 0,
+        appliedPackageName: primaryPackageName,
+        appliedEntitlementId: primaryEntitlementId,
+        quotaDeducted: totalQuotaDeducted,
       };
     });
 
