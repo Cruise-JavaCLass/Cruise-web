@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   solasMusterService,
   type SolasMusterIncident,
@@ -16,16 +16,25 @@ export const BridgeMusterCommandConsole: React.FC = () => {
   const [broadcasting, setBroadcasting] = useState<boolean>(false);
   const [broadcastSuccess, setBroadcastSuccess] = useState<string | null>(null);
 
+  const fetchTokenRef = useRef(0);
+
   const fetchActiveMuster = async () => {
+    const token = ++fetchTokenRef.current;
     try {
       setLoading(true);
       setError(null);
       const incident = await solasMusterService.getActiveMuster();
-      setActiveMuster(incident);
+      if (token === fetchTokenRef.current) {
+        setActiveMuster(incident);
+      }
     } catch (err: any) {
-      setError(err?.message || 'Failed to fetch active muster incident');
+      if (token === fetchTokenRef.current) {
+        setError(err?.message || 'Failed to fetch active muster incident');
+      }
     } finally {
-      setLoading(false);
+      if (token === fetchTokenRef.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -44,6 +53,7 @@ export const BridgeMusterCommandConsole: React.FC = () => {
       setBroadcastSuccess(null);
       setError(null);
 
+      fetchTokenRef.current += 1;
       const incident = await solasMusterService.triggerEmergencyMuster({
         emergencyType,
         triggeredBy: 'Bridge Officer on Duty',
@@ -66,6 +76,7 @@ export const BridgeMusterCommandConsole: React.FC = () => {
     try {
       setBroadcasting(true);
       setError(null);
+      fetchTokenRef.current += 1;
       const incident = await solasMusterService.setAllClear(activeMuster.id);
       setActiveMuster(incident);
       setBroadcastSuccess('ALL-CLEAR SIGNAL TRANSMITTED. ALARMS DEACTIVATED.');

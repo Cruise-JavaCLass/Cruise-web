@@ -10,10 +10,12 @@ import { type SolasMusterIncident, solasMusterService } from '../../services/sol
 
 interface SolasEmergencyAlarmModalProps {
   passengerMusterStation?: string;
+  assignedLifeboat?: string;
 }
 
 export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> = ({
   passengerMusterStation,
+  assignedLifeboat,
 }) => {
   const [activeMuster, setActiveMuster] = useState<SolasMusterIncident | null>(null);
   const [acknowledgedCode, setAcknowledgedCode] = useState<string | null>(null);
@@ -21,10 +23,14 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
   const ackButtonRef = useRef<HTMLButtonElement>(null);
   const isVisible = !!activeMuster && acknowledgedCode !== activeMuster.incidentCode;
 
+  const pollIdRef = useRef(0);
+
   useEffect(() => {
     const checkActiveMuster = async () => {
+      const pollId = ++pollIdRef.current;
       try {
         const incident = await solasMusterService.getActiveMuster();
+        if (pollId !== pollIdRef.current) return;
         if (incident && (incident.status === 'ACTIVE_MUSTER' || incident.status === 'DRILL_IN_PROGRESS')) {
           setActiveMuster(incident);
         } else {
@@ -45,7 +51,17 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
     if (isVisible) {
       const previous = document.activeElement as HTMLElement | null;
       ackButtonRef.current?.focus();
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          ackButtonRef.current?.focus();
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+
       return () => {
+        window.removeEventListener('keydown', handleKeyDown);
         if (previous && typeof previous.focus === 'function') {
           previous.focus();
         }
@@ -109,11 +125,18 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
               </div>
 
               <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-700/50">
-                <span className="text-xs text-slate-400 block font-semibold">Trang Bị Bắt Buộc:</span>
-                <span className="text-sm font-bold text-emerald-400 mt-1 block">
-                  Áo phao cứu sinh (Trong tủ cabin) + Thẻ tàu RFID
+                <span className="text-xs text-slate-400 block font-semibold">Xuồng Cứu Sinh (Lifeboat):</span>
+                <span className="text-sm font-bold text-cyan-300 mt-1 block">
+                  {assignedLifeboat || 'Lifeboat #4 (Port Side)'}
                 </span>
               </div>
+            </div>
+
+            <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-700/50">
+              <span className="text-xs text-slate-400 block font-semibold">Trang Bị Bắt Buộc:</span>
+              <span className="text-sm font-bold text-emerald-400 mt-1 block">
+                Áo phao cứu sinh (Trong tủ cabin) + Thẻ tàu RFID
+              </span>
             </div>
 
             <ol className="list-decimal list-inside text-xs text-slate-300 space-y-1 pt-1 leading-relaxed">
