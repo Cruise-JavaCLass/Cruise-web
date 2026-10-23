@@ -75,8 +75,6 @@ export const VoyagePhaseControlCenter: React.FC = () => {
         ? 'PORT_VISIT'
         : v.currentPhase === 'PORT_VISIT'
         ? 'AT_SEA'
-        : v.currentPhase === 'DEBARKING'
-        ? 'CLOSED'
         : 'CLOSED';
     setTargetPhase(nextPhase);
     setTransitionReason(`Routine scheduled transition to ${nextPhase}`);
@@ -345,8 +343,9 @@ export const VoyagePhaseControlCenter: React.FC = () => {
                 </div>
               )}
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Target Next Phase</label>
+                <label htmlFor="transition-target-phase" className="block font-semibold text-slate-700 mb-1">Target Next Phase</label>
                 <select
+                  id="transition-target-phase"
                   value={targetPhase}
                   onChange={(e) => setTargetPhase(e.target.value as VoyageOperationalPhase)}
                   className="w-full p-2.5 border border-slate-300 rounded-xl focus:border-indigo-500 focus:outline-none font-bold"
@@ -361,8 +360,9 @@ export const VoyagePhaseControlCenter: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Current Port Name (If Port Visit / Embarking)</label>
+                <label htmlFor="transition-current-port" className="block font-semibold text-slate-700 mb-1">Current Port Name (If Port Visit / Embarking)</label>
                 <input
+                  id="transition-current-port"
                   type="text"
                   placeholder="e.g. Mykonos Port, Greece"
                   value={currentPortName}
@@ -372,8 +372,9 @@ export const VoyagePhaseControlCenter: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Transition Log Reason</label>
+                <label htmlFor="transition-reason" className="block font-semibold text-slate-700 mb-1">Transition Log Reason</label>
                 <textarea
+                  id="transition-reason"
                   rows={2}
                   required
                   value={transitionReason}
@@ -417,8 +418,9 @@ export const VoyagePhaseControlCenter: React.FC = () => {
                 </div>
               )}
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Voyage Number</label>
+                <label htmlFor="create-voyage-number" className="block font-semibold text-slate-700 mb-1">Voyage Number</label>
                 <input
+                  id="create-voyage-number"
                   type="text"
                   required
                   value={newVoyageNumber}
@@ -428,8 +430,9 @@ export const VoyagePhaseControlCenter: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Ship Identifier</label>
+                <label htmlFor="create-ship-id" className="block font-semibold text-slate-700 mb-1">Ship Identifier</label>
                 <input
+                  id="create-ship-id"
                   type="text"
                   required
                   value={newShipId}
@@ -439,8 +442,9 @@ export const VoyagePhaseControlCenter: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Itinerary Name</label>
+                <label htmlFor="create-itinerary-name" className="block font-semibold text-slate-700 mb-1">Itinerary Name</label>
                 <input
+                  id="create-itinerary-name"
                   type="text"
                   required
                   value={newItineraryName}

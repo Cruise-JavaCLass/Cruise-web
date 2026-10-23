@@ -168,14 +168,15 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
 
         {/* Form: Shift Master Timezone */}
         <form onSubmit={handleSyncSubmit} className="space-y-3 pt-2">
-          <label className="block font-semibold text-slate-700 flex items-center gap-1.5">
+          <div className="font-semibold text-slate-700 flex items-center gap-1.5">
             <Sliders className="w-4 h-4 text-indigo-600" /> Coordinated Port Timezone Override
-          </label>
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold text-slate-600 mb-1">Target Port Name</label>
+              <label htmlFor="sync-port-name" className="block text-[11px] font-semibold text-slate-600 mb-1">Target Port Name</label>
               <input
+                id="sync-port-name"
                 type="text"
                 required
                 value={portName}
@@ -184,8 +185,9 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-slate-600 mb-1">Standard IANA Timezone</label>
+              <label htmlFor="sync-timezone" className="block text-[11px] font-semibold text-slate-600 mb-1">Standard IANA Timezone</label>
               <select
+                id="sync-timezone"
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
                 className="w-full p-2 border border-slate-300 rounded-xl"
@@ -213,8 +215,9 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold text-slate-600 mb-1">Clock Offset Minutes (+/-)</label>
+              <label htmlFor="sync-clock-offset" className="block text-[11px] font-semibold text-slate-600 mb-1">Clock Offset Minutes (+/-)</label>
               <input
+                id="sync-clock-offset"
                 type="number"
                 step="30"
                 value={clockOffsetMinutes}
@@ -223,8 +226,9 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-slate-600 mb-1">Log Shift Reason</label>
+              <label htmlFor="sync-adjustment-reason" className="block text-[11px] font-semibold text-slate-600 mb-1">Log Shift Reason</label>
               <input
+                id="sync-adjustment-reason"
                 type="text"
                 value={adjustmentReason}
                 onChange={(e) => setAdjustmentReason(e.target.value)}
