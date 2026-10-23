@@ -39,8 +39,10 @@ export const BridgeMusterCommandConsole: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchActiveMuster();
-    const interval = setInterval(fetchActiveMuster, 8000);
+    void fetchActiveMuster();
+    const interval = setInterval(() => {
+      void fetchActiveMuster();
+    }, 8000);
     return () => clearInterval(interval);
   }, []);
 

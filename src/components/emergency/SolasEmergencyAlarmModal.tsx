@@ -43,7 +43,9 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
     };
 
     void checkActiveMuster();
-    const interval = setInterval(checkActiveMuster, 5000);
+    const interval = setInterval(() => {
+      void checkActiveMuster();
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
