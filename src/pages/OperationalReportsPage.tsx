@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { OperationalReportDashboard } from '../components/reports/OperationalReportDashboard';
 import { ExportJobTrackerDrawer } from '../components/reports/ExportJobTrackerDrawer';
 
@@ -14,11 +15,22 @@ export const OperationalReportsPage: React.FC = () => {
           setIsTrackerOpen(true);
         }}
       />
-      <ExportJobTrackerDrawer
-        isOpen={isTrackerOpen}
-        onClose={() => setIsTrackerOpen(false)}
-        triggerRefreshSignal={refreshSignal}
-      />
+      {typeof document !== 'undefined'
+        ? createPortal(
+            <ExportJobTrackerDrawer
+              isOpen={isTrackerOpen}
+              onClose={() => setIsTrackerOpen(false)}
+              triggerRefreshSignal={refreshSignal}
+            />,
+            document.body
+          )
+        : (
+            <ExportJobTrackerDrawer
+              isOpen={isTrackerOpen}
+              onClose={() => setIsTrackerOpen(false)}
+              triggerRefreshSignal={refreshSignal}
+            />
+          )}
     </div>
   );
 };
