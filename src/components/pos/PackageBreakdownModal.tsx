@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import type {
   EntitlementEvaluateResponse,
   GuestPackageEntitlement,
 } from '../../services/posEntitlementTypes';
+import { useModalFocusTrap } from './useModalFocusTrap';
 
 interface PackageBreakdownModalProps {
   isOpen: boolean;
@@ -20,58 +21,12 @@ export const PackageBreakdownModal: React.FC<PackageBreakdownModalProps> = ({
   onConfirmSplitPayment,
 }) => {
   const dialogRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLElement | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      triggerRef.current = document.activeElement as HTMLElement | null;
-      const timer = setTimeout(() => {
-        if (dialogRef.current) {
-          const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
-            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-          );
-          if (focusables.length > 0) {
-            focusables[0].focus();
-          }
-        }
-      }, 0);
-      return () => clearTimeout(timer);
-    } else if (triggerRef.current) {
-      triggerRef.current.focus();
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-        return;
-      }
-
-      if (e.key === 'Tab' && dialogRef.current) {
-        const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusables.length === 0) return;
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
-
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  useModalFocusTrap({
+    isOpen,
+    containerRef: dialogRef,
+    onClose,
+  });
 
   if (!isOpen || !evaluation) return null;
 
