@@ -1,4 +1,4 @@
-import { CheckCircle, Plus, Upload, X } from 'lucide-react';
+import { CheckCircle, Upload, X } from 'lucide-react';
 import React, { useState } from 'react';
 import {
   type BulkIngestResponse,
@@ -46,7 +46,7 @@ export const BulkBatchScannerModal: React.FC<BulkBatchScannerModalProps> = ({
         batchNumber,
         cardType,
         cardUids: uids,
-        notes,
+        notes: notes.trim() || undefined,
       });
 
       setResult(res);
@@ -142,6 +142,19 @@ export const BulkBatchScannerModal: React.FC<BulkBatchScannerModalProps> = ({
             <span className="text-[10px] text-slate-500 block mt-1">
               Accepts newline or comma-separated hexadecimal card UIDs.
             </span>
+          </div>
+
+          <div>
+            <label className="block text-slate-400 font-bold uppercase tracking-wider mb-1">
+              Notes (Optional)
+            </label>
+            <textarea
+              rows={2}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Optional batch ingestion notes..."
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white placeholder-slate-600 focus:ring-1 focus:ring-cyan-500"
+            />
           </div>
         </div>
 

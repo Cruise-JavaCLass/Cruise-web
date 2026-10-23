@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { RfidInventoryDashboard } from './RfidInventoryDashboard';
 import { BulkBatchScannerModal } from './BulkBatchScannerModal';
 import { LostCardQuarantineDrawer } from './LostCardQuarantineDrawer';
 import {
   rfidCardService,
-  RfidInventoryDashboardDto,
-  RfidCardInventoryDto,
+  type RfidInventoryDashboardDto,
+  type RfidCardInventoryDto,
 } from '../../services/rfidCardService';
 
 vi.mock('../../services/rfidCardService', () => ({

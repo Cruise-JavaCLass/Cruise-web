@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle, RefreshCw, ShieldAlert, X } from 'lucide-react';
+import { CheckCircle, ShieldAlert, X } from 'lucide-react';
 import React, { useState } from 'react';
 import {
   type BlacklistResponse,
@@ -91,10 +91,20 @@ export const LostCardQuarantineDrawer: React.FC<LostCardQuarantineDrawerProps> =
             <div className="p-4 bg-emerald-950/80 border border-emerald-500 rounded-xl space-y-1.5 text-xs text-emerald-200">
               <div className="font-bold flex items-center gap-1.5 text-sm">
                 <CheckCircle className="w-4 h-4 text-emerald-400" />
-                Card Quarantined & Broadcasted!
+                {result.posBlacklistBroadcasted
+                  ? 'Card Quarantined & Broadcasted!'
+                  : 'Card Quarantined - POS Broadcast Pending'}
               </div>
               <p>Blacklisted UID: <strong className="font-mono text-white">{result.cardUid}</strong></p>
-              <p>POS Network Broadcast: <span className="text-emerald-400 font-bold">100% PUSHED</span></p>
+              <p>
+                POS Network Broadcast:{' '}
+                {result.posBlacklistBroadcasted ? (
+                  <span className="text-emerald-400 font-bold">PUSHED</span>
+                ) : (
+                  <span className="text-amber-400 font-bold">NOT CONFIRMED</span>
+                )}
+              </p>
+              <p>{result.message}</p>
               {result.replacementCardUid && (
                 <p>New Paired UID: <strong className="font-mono text-cyan-300">{result.replacementCardUid}</strong></p>
               )}

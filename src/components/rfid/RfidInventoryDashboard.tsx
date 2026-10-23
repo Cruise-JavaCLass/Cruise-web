@@ -1,8 +1,5 @@
 import {
-  AlertOctagon,
-  CheckCircle,
   CreditCard,
-  Layers,
   PlusCircle,
   RefreshCw,
   Search,
