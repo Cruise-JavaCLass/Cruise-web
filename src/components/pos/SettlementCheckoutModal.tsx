@@ -42,8 +42,23 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
         })
         .then((data) => {
           if (!isCancelled) {
-            setQrData(data);
             setLoading(false);
+            const status = data.status || 'PENDING';
+            setPollingStatus(status);
+
+            if (status === 'PAID') {
+              setQrData(data);
+              if (!completedRefs.current.has(data.paymentReference)) {
+                completedRefs.current.add(data.paymentReference);
+                if (onPaymentSuccess) onPaymentSuccess();
+              }
+            } else if (status === 'FAILED' || status === 'EXPIRED' || status === 'CANCELLED') {
+              // Terminal failure: Do not leave a scannable QR
+              setQrData(null);
+            } else {
+              // PENDING / ACTIVE
+              setQrData(data);
+            }
           }
         })
         .catch((err: Error) => {
@@ -61,7 +76,7 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
     return () => {
       isCancelled = true;
     };
-  }, [isOpen, cabinNumber, amount]);
+  }, [isOpen, cabinNumber, amount, onPaymentSuccess]);
 
   // Polling for payment status
   useEffect(() => {
@@ -84,6 +99,9 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
                 onPaymentSuccess();
               }
             }
+          } else if (status === 'FAILED' || status === 'EXPIRED' || status === 'CANCELLED') {
+            // Dismiss scannable QR upon terminal failure
+            setQrData(null);
           }
         } catch {
           // ignore transient polling network errors
@@ -144,6 +162,30 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
             </div>
           )}
 
+          {/* Terminal status when no active QR */}
+          {!loading && (pollingStatus === 'FAILED' || pollingStatus === 'EXPIRED' || pollingStatus === 'CANCELLED') && (
+            <div className="pt-2 space-y-2">
+              {pollingStatus === 'FAILED' && (
+                <div className="rounded-xl bg-rose-50 p-4 text-xs text-rose-700 border border-rose-200 space-y-1">
+                  <p className="font-bold">❌ Giao dịch thanh toán thất bại!</p>
+                  <p className="text-[11px] text-rose-600">Vui lòng thử lại hoặc chọn phương thức thanh toán khác.</p>
+                </div>
+              )}
+              {pollingStatus === 'EXPIRED' && (
+                <div className="rounded-xl bg-amber-50 p-4 text-xs text-amber-700 border border-amber-200 space-y-1">
+                  <p className="font-bold">⏰ Mã VietQR đã hết hạn hiệu lực!</p>
+                  <p className="text-[11px] text-amber-600">Vui lòng đóng modal và tạo mã thanh toán mới.</p>
+                </div>
+              )}
+              {pollingStatus === 'CANCELLED' && (
+                <div className="rounded-xl bg-slate-50 p-4 text-xs text-slate-700 border border-slate-200 space-y-1">
+                  <p className="font-bold">⛔ Giao dịch đã bị hủy bỏ.</p>
+                  <p className="text-[11px] text-slate-600">Vui lòng liên hệ quầy thu ngân hoặc thử lại.</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {qrData && !loading && (
             <>
               <div className="rounded-xl bg-emerald-50 p-3 border border-emerald-100">
@@ -194,24 +236,6 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
                     ✓ Đã nhận thanh toán thành công! Folio đã được tất toán.
                   </span>
-                )}
-                {pollingStatus === 'FAILED' && (
-                  <div className="rounded-xl bg-rose-50 p-3 text-xs text-rose-700 border border-rose-200 space-y-1">
-                    <p className="font-bold">❌ Giao dịch thanh toán thất bại!</p>
-                    <p className="text-[11px] text-rose-600">Vui lòng thử lại hoặc chọn phương thức thanh toán khác.</p>
-                  </div>
-                )}
-                {pollingStatus === 'EXPIRED' && (
-                  <div className="rounded-xl bg-amber-50 p-3 text-xs text-amber-700 border border-amber-200 space-y-1">
-                    <p className="font-bold">⏰ Mã VietQR đã hết hạn hiệu lực!</p>
-                    <p className="text-[11px] text-amber-600">Vui lòng đóng modal và tạo mã thanh toán mới.</p>
-                  </div>
-                )}
-                {pollingStatus === 'CANCELLED' && (
-                  <div className="rounded-xl bg-slate-50 p-3 text-xs text-slate-700 border border-slate-200 space-y-1">
-                    <p className="font-bold">⛔ Giao dịch đã bị hủy bỏ.</p>
-                    <p className="text-[11px] text-slate-600">Vui lòng liên hệ quầy thu ngân hoặc thử lại.</p>
-                  </div>
                 )}
               </div>
             </>

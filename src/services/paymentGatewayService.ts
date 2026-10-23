@@ -10,7 +10,7 @@ import type {
 export const paymentGatewayService = {
   async generateVietQr(request: GenerateVietQrRequest): Promise<VietQrPaymentResponse> {
     const response = await apiClient.post<{ success: boolean; data: VietQrPaymentResponse }>(
-      '/api/pos/payments/vietqr/generate',
+      '/pos/payments/vietqr/generate',
       request
     );
     return response.data.data;
@@ -18,14 +18,14 @@ export const paymentGatewayService = {
 
   async getPaymentStatus(reference: string): Promise<PaymentGatewayStatus> {
     const response = await apiClient.get<{ success: boolean; data: PaymentGatewayStatus }>(
-      `/api/pos/payments/orders/${reference}/status`
+      `/pos/payments/orders/${reference}/status`
     );
     return response.data.data;
   },
 
   async simulateBankWebhook(payload: BankWebhookPayload): Promise<WebhookProcessingResult> {
     const response = await apiClient.post<{ success: boolean; data: WebhookProcessingResult }>(
-      '/api/pos/payments/webhook/bank-transfer',
+      '/pos/payments/webhook/bank-transfer',
       payload
     );
     return response.data.data;
