@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Layers,
-  RefreshCw,
   Trash2,
   X,
   AlertCircle,
   CheckCircle2,
   Clock,
   Send,
-  Eye,
   Database,
   Code,
 } from 'lucide-react';
@@ -228,12 +225,21 @@ export const PendingQueueInspectorModal: React.FC<PendingQueueInspectorModalProp
                         </span>
                         <button
                           type="button"
+                          disabled={tx.status === 'SYNCING'}
                           onClick={(e) => {
                             e.stopPropagation();
                             void handleRemoveItem(tx.id);
                           }}
-                          className="text-slate-500 hover:text-rose-400 p-1 cursor-pointer transition"
-                          title="Hủy giao dịch này khỏi hàng đợi"
+                          className={`p-1 transition ${
+                            tx.status === 'SYNCING'
+                              ? 'text-slate-700 cursor-not-allowed opacity-40'
+                              : 'text-slate-500 hover:text-rose-400 cursor-pointer'
+                          }`}
+                          title={
+                            tx.status === 'SYNCING'
+                              ? 'Giao dịch đang được đồng bộ, không thể hủy'
+                              : 'Hủy giao dịch này khỏi hàng đợi'
+                          }
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>

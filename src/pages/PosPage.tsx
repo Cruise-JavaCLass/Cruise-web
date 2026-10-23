@@ -284,6 +284,7 @@ export function PosPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <OfflineStatusBadge onOpenInspector={() => setIsQueueInspectorOpen(true)} />
           <button
             onClick={handleRunReconciliation}
             disabled={isRunningRecon}
@@ -794,6 +795,12 @@ export function PosPage() {
         isOpen={isReceiptOpen}
         onClose={() => setIsReceiptOpen(false)}
         transaction={selectedTx}
+      />
+
+      {/* Offline Queue Inspector Modal */}
+      <PendingQueueInspectorModal
+        isOpen={isQueueInspectorOpen}
+        onClose={() => setIsQueueInspectorOpen(false)}
       />
     </div>
   );

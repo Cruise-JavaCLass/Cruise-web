@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { transactionQueueEngine } from '../services/transactionQueueEngine';
 import { posService } from '../services/posService';
-import { posIndexedDb } from '../services/posIndexedDbStore';
 
 vi.mock('../services/posService');
 
