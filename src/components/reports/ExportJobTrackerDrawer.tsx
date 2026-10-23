@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useModalFocusTrap } from '../pos/useModalFocusTrap';
 import { 
   X, 
   Download, 
@@ -30,7 +31,6 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
 
   const fetchGenerationRef = useRef(0);
   const drawerRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const fetchJobs = async () => {
     const generation = ++fetchGenerationRef.current;
@@ -57,23 +57,11 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
     }
   }, [isOpen, triggerRefreshSignal]);
 
-  useEffect(() => {
-    if (isOpen) {
-      previousFocusRef.current = document.activeElement as HTMLElement | null;
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          onClose();
-        }
-      };
-      window.addEventListener('keydown', handleKeyDown);
-      return () => {
-        window.removeEventListener('keydown', handleKeyDown);
-        if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
-          previousFocusRef.current.focus();
-        }
-      };
-    }
-  }, [isOpen, onClose]);
+  useModalFocusTrap({
+    isOpen,
+    containerRef: drawerRef,
+    onClose,
+  });
 
   if (!isOpen) return null;
 
@@ -237,7 +225,7 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
                   )}
                 </div>
 
-                {job.status === 'COMPLETED' && (
+                {job.status === 'COMPLETED' && Boolean(job.downloadUrl) && (
                   <button
                     onClick={() => handleDownload(job)}
                     className="w-full py-1.5 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium text-xs rounded-lg flex items-center justify-center gap-1.5 transition-colors border border-indigo-200"

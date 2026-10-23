@@ -31,6 +31,7 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
     const generation = ++fetchGenerationRef.current;
     setIsLoading(true);
     setErrorMessage(null);
+    setReport(null);
     try {
       const data = await operationalReportService.getRevenueReport(query);
       if (generation !== fetchGenerationRef.current) return;
