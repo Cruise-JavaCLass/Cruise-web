@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Gift,
   CheckCircle,
@@ -23,19 +23,32 @@ export const ApologyVoucherCard: React.FC<ApologyVoucherCardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [claimResult, setClaimResult] = useState<ClaimObcVoucherResponse | null>(null);
 
+  useEffect(() => {
+    setClaimResult(null);
+    setError(null);
+  }, [voucher.id]);
+
   const handleClaim = async () => {
+    const activeId = voucher.id;
     try {
       setLoading(true);
       setError(null);
       const res = await serviceRecoveryService.claimVoucher(voucher.voucherCode);
+      if (voucher.id !== activeId) {
+        return;
+      }
       setClaimResult(res);
       if (onVoucherClaimed) {
         onVoucherClaimed(res);
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to claim voucher');
+      if (voucher.id === activeId) {
+        setError(err instanceof Error ? err.message : 'Failed to claim voucher');
+      }
     } finally {
-      setLoading(false);
+      if (voucher.id === activeId) {
+        setLoading(false);
+      }
     }
   };
 
