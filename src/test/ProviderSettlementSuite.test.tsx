@@ -95,8 +95,8 @@ describe('Provider Settlement Test Suite (KAN-337, KAN-338, KAN-339)', () => {
       expect(screen.getByText('Ba Na Hills Golden Bridge')).toBeInTheDocument();
     });
 
-    // Check KPI calculations: 2000 + 3600 = 5600
-    expect(screen.getByText('$5,600.00')).toBeInTheDocument();
+    // Check KPI calculations: 2000 + 3600 = 5600 USD
+    expect(screen.getByText('5,600.00 USD')).toBeInTheDocument();
   });
 
   it('renders locked ledger badge when settlement is APPROVED or PAID (KAN-338)', async () => {
@@ -119,17 +119,20 @@ describe('Provider Settlement Test Suite (KAN-337, KAN-338, KAN-339)', () => {
         onClose={handleClose}
         onSubmit={handleSubmit}
         settlementTitle="Phuket Emerald Island Tour"
+        currency="USD"
       />
     );
 
     expect(screen.getByText('Ghi Nhận Điều Chỉnh / Tranh Chấp Chi Phí')).toBeInTheDocument();
+    expect(screen.getByLabelText('Loại Điều Chỉnh')).toBeInTheDocument();
+    expect(screen.getByLabelText('Số Tiền (USD)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Mã Hóa Đơn / Chứng Từ Đối Soát')).toBeInTheDocument();
+    expect(screen.getByLabelText('Lý Do Giải Trình Chi Tiết *')).toBeInTheDocument();
 
-    const amountInput = screen.getByPlaceholderText('VD: 150.00');
+    const amountInput = screen.getByLabelText('Số Tiền (USD)');
     fireEvent.change(amountInput, { target: { value: '250' } });
 
-    const explanationInput = screen.getByPlaceholderText(
-      'Giải trình cụ thể sự cố, chênh lệch thực tế so với hợp đồng...'
-    );
+    const explanationInput = screen.getByLabelText('Lý Do Giải Trình Chi Tiết *');
     fireEvent.change(explanationInput, {
       target: { value: 'Hướng dẫn viên tới trễ 45 phút' },
     });

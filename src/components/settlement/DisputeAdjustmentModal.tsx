@@ -7,6 +7,7 @@ interface DisputeAdjustmentModalProps {
   onClose: () => void;
   onSubmit: (data: CreateAdjustmentRequest) => Promise<void>;
   settlementTitle: string;
+  currency?: string;
 }
 
 export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
@@ -14,6 +15,7 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
   onClose,
   onSubmit,
   settlementTitle,
+  currency = 'USD',
 }) => {
   const [adjustmentType, setAdjustmentType] = useState<AdjustmentType>('PENALTY_WEATHER_DELAY');
   const [amount, setAmount] = useState<number | ''>('');
@@ -91,8 +93,11 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block text-slate-300 mb-1 font-medium">Loại Điều Chỉnh</label>
+            <label htmlFor="adjustment-type" className="block text-slate-300 mb-1 font-medium">
+              Loại Điều Chỉnh
+            </label>
             <select
+              id="adjustment-type"
               value={adjustmentType}
               onChange={(e) => setAdjustmentType(e.target.value as AdjustmentType)}
               className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-cyan-500"
@@ -106,8 +111,11 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-slate-300 mb-1 font-medium">Số Tiền (USD)</label>
+            <label htmlFor="adjustment-amount" className="block text-slate-300 mb-1 font-medium">
+              Số Tiền ({currency})
+            </label>
             <input
+              id="adjustment-amount"
               type="number"
               step="0.01"
               min="0.01"
@@ -120,8 +128,11 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-slate-300 mb-1 font-medium">Mã Hóa Đơn / Chứng Từ Đối Soát</label>
+            <label htmlFor="invoice-reference" className="block text-slate-300 mb-1 font-medium">
+              Mã Hóa Đơn / Chứng Từ Đối Soát
+            </label>
             <input
+              id="invoice-reference"
               type="text"
               value={invoiceReference}
               onChange={(e) => setInvoiceReference(e.target.value)}
@@ -131,8 +142,11 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-slate-300 mb-1 font-medium">Lý Do Giải Trình Chi Tiết *</label>
+            <label htmlFor="adjustment-explanation" className="block text-slate-300 mb-1 font-medium">
+              Lý Do Giải Trình Chi Tiết *
+            </label>
             <textarea
+              id="adjustment-explanation"
               rows={3}
               value={explanation}
               onChange={(e) => setExplanation(e.target.value)}

@@ -25,34 +25,40 @@ export const ProviderSettlementDashboard: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [selectedSettlement, setSelectedSettlement] = useState<SettlementDetail | null>(null);
   const [isAdjustmentModalOpen, setIsAdjustmentModalOpen] = useState(false);
-  const activeRequestIdRef = useRef<number>(0);
+  const filterRef = useRef(statusFilter);
+  const requestIdRef = useRef(0);
 
-  const loadData = useCallback(async () => {
-    const currentRequestId = ++activeRequestIdRef.current;
+  useEffect(() => {
+    filterRef.current = statusFilter;
+  }, [statusFilter]);
+
+  const loadData = useCallback(async (filterOverride?: string) => {
+    const activeFilter = filterOverride ?? filterRef.current;
+    const currentRequestId = ++requestIdRef.current;
     try {
       setLoading(true);
       setError(null);
       const res = await fetchSettlements({
-        status: statusFilter === 'ALL' ? undefined : (statusFilter as SettlementStatus),
+        status: activeFilter === 'ALL' ? undefined : (activeFilter as SettlementStatus),
         size: 100,
       });
-      if (currentRequestId === activeRequestIdRef.current) {
+      if (currentRequestId === requestIdRef.current) {
         setSettlements(res.content || []);
       }
     } catch (err: unknown) {
-      if (currentRequestId === activeRequestIdRef.current) {
+      if (currentRequestId === requestIdRef.current) {
         setError(err instanceof Error ? err.message : 'Không thể tải danh sách quyết toán nhà cung cấp');
       }
     } finally {
-      if (currentRequestId === activeRequestIdRef.current) {
+      if (currentRequestId === requestIdRef.current) {
         setLoading(false);
       }
     }
-  }, [statusFilter]);
+  }, []);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    loadData(statusFilter);
+  }, [statusFilter, loadData]);
 
   const handleOpenAdjustment = (settlement: SettlementDetail) => {
     setSelectedSettlement(settlement);
@@ -98,10 +104,20 @@ export const ProviderSettlementDashboard: React.FC = () => {
     }
   };
 
-  // Metrics summary
-  const totalAmountSum = settlements.reduce((acc, s) => acc + s.totalAmount, 0);
+  // Metrics summary grouped by currency
+  const amountsByCurrency = settlements.reduce<Record<string, number>>((acc, s) => {
+    const curr = s.currency || 'USD';
+    acc[curr] = (acc[curr] || 0) + s.totalAmount;
+    return acc;
+  }, {});
+
+  const adjustmentsByCurrency = settlements.reduce<Record<string, number>>((acc, s) => {
+    const curr = s.currency || 'USD';
+    acc[curr] = (acc[curr] || 0) + s.adjustedAmount;
+    return acc;
+  }, {});
+
   const totalActualPax = settlements.reduce((acc, s) => acc + s.actualPax, 0);
-  const totalAdjustmentsSum = settlements.reduce((acc, s) => acc + s.adjustedAmount, 0);
   const pendingApprovals = settlements.filter((s) => s.status === 'PENDING_VERIFICATION').length;
 
   return (
@@ -136,7 +152,17 @@ export const ProviderSettlementDashboard: React.FC = () => {
             <DollarSign className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="text-xl font-bold font-mono text-white">
-            ${totalAmountSum.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            {Object.keys(amountsByCurrency).length > 0 ? (
+              <div className="flex flex-col gap-1">
+                {Object.entries(amountsByCurrency).map(([curr, amt]) => (
+                  <span key={curr}>
+                    {amt.toLocaleString('en-US', { minimumFractionDigits: 2 })} {curr}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              '0.00 USD'
+            )}
           </div>
           <div className="text-[10px] text-slate-500 mt-1 font-mono">
             {settlements.length} chuyến tour đã ghi nhận
@@ -161,14 +187,18 @@ export const ProviderSettlementDashboard: React.FC = () => {
             <span>Tổng Điều Chỉnh / Phạt</span>
             <AlertCircle className="w-4 h-4 text-amber-400" />
           </div>
-          <div
-            className={`text-xl font-bold font-mono ${
-              totalAdjustmentsSum < 0 ? 'text-rose-400' : 'text-emerald-400'
-            }`}
-          >
-            {totalAdjustmentsSum !== 0
-              ? `${totalAdjustmentsSum > 0 ? '+' : ''}$${totalAdjustmentsSum.toFixed(2)}`
-              : '$0.00'}
+          <div className="text-xl font-bold font-mono">
+            {Object.keys(adjustmentsByCurrency).length > 0 ? (
+              <div className="flex flex-col gap-1">
+                {Object.entries(adjustmentsByCurrency).map(([curr, amt]) => (
+                  <span key={curr} className={amt < 0 ? 'text-rose-400' : 'text-emerald-400'}>
+                    {amt !== 0 ? `${amt > 0 ? '+' : ''}${amt.toFixed(2)}` : '0.00'} {curr}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span className="text-emerald-400">0.00 USD</span>
+            )}
           </div>
           <div className="text-[10px] text-slate-500 mt-1 font-mono">
             Khấu trừ sự cố & phụ phí
@@ -242,6 +272,7 @@ export const ProviderSettlementDashboard: React.FC = () => {
           onClose={handleCloseAdjustment}
           onSubmit={handleSubmitAdjustment}
           settlementTitle={selectedSettlement.excursionTitle}
+          currency={selectedSettlement.currency}
         />
       )}
     </div>
