@@ -26,6 +26,7 @@ import { BoardingPassPage } from './pages/passenger/BoardingPassPage';
 import { TerminalEmbarkationPage } from './pages/TerminalEmbarkationPage';
 import { ProviderSettlementDashboard } from './pages/ProviderSettlementDashboard';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { VoyagePhaseControlCenter } from './components/voyage/VoyagePhaseControlCenter';
 
 export function App() {
   return (
@@ -39,6 +40,7 @@ export function App() {
         <Route path="ships" element={<ShipsPage />} />
         <Route path="ships/:id" element={<ShipDetailPage />} />
         <Route path="itinerary" element={<ItineraryPage />} />
+        <Route path="voyage" element={<VoyagePhaseControlCenter />} />
         <Route path="excursions" element={<ExcursionsPage />} />
         <Route path="excursions/:id" element={<ExcursionDetailPage />} />
         <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />
