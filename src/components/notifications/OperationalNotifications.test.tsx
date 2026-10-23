@@ -1,5 +1,4 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { OperationalBroadcastComposerModal } from './OperationalBroadcastComposerModal';
 import { UrgentOperationalBanner } from './UrgentOperationalBanner';
@@ -18,10 +17,18 @@ describe('Operational Notifications UI Tests (KAN-262 & KAN-438)', () => {
   });
 
   describe('OperationalBroadcastComposerModal', () => {
-    it('renders composer fields when open', () => {
+    it('renders composer fields when open and has accessible dialog semantics', () => {
       render(<OperationalBroadcastComposerModal isOpen={true} onClose={() => {}} />);
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('Phát Thông Báo Vận Hành & Khẩn Cấp Toàn Tàu')).toBeInTheDocument();
       expect(screen.getByPlaceholderText(/Cảnh báo thời tiết xấu/i)).toBeInTheDocument();
+    });
+
+    it('closes on Escape key press', () => {
+      const handleClose = vi.fn();
+      render(<OperationalBroadcastComposerModal isOpen={true} onClose={handleClose} />);
+      fireEvent.keyDown(window, { key: 'Escape' });
+      expect(handleClose).toHaveBeenCalled();
     });
 
     it('submits broadcast payload when form is submitted', async () => {
@@ -52,10 +59,37 @@ describe('Operational Notifications UI Tests (KAN-262 & KAN-438)', () => {
         expect(handleSuccess).toHaveBeenCalled();
       });
     });
+
+    it('does not display failure message if onBroadcastSuccess throws', async () => {
+      (operationalNotificationService.broadcastAlert as any).mockResolvedValue({
+        broadcastId: 'BC-123',
+        recipientCount: 50,
+      });
+
+      const failingCallback = vi.fn().mockImplementation(() => {
+        throw new Error('Callback crash');
+      });
+
+      render(<OperationalBroadcastComposerModal isOpen={true} onClose={() => {}} onBroadcastSuccess={failingCallback} />);
+
+      fireEvent.change(screen.getByPlaceholderText(/Cảnh báo thời tiết xấu/i), {
+        target: { value: 'Diễn tập an toàn' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(/Nhập nội dung thông báo cụ thể/i), {
+        target: { value: 'Tập trung tại Muster Station' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Phát Thông Báo Ngay/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Đã phát thông báo thành công/i)).toBeInTheDocument();
+        expect(screen.queryByText(/Có lỗi xảy ra/i)).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe('UrgentOperationalBanner', () => {
-    it('listens to SSE events and displays urgent banner', async () => {
+    it('listens to SSE events and displays urgent banner for CRITICAL with role="alert"', async () => {
       let listenerCallback: any = null;
       const mockEventSource = {
         addEventListener: vi.fn().mockImplementation((name, cb) => {
@@ -69,7 +103,7 @@ describe('Operational Notifications UI Tests (KAN-262 & KAN-438)', () => {
 
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 
-      // Trigger event
+      // Trigger critical event
       if (listenerCallback) {
         listenerCallback({
           data: JSON.stringify({
@@ -87,12 +121,53 @@ describe('Operational Notifications UI Tests (KAN-262 & KAN-438)', () => {
         expect(screen.getByRole('alert')).toBeInTheDocument();
         expect(screen.getByText('Khẩn Cấp Cứu Hộ')).toBeInTheDocument();
         expect(screen.getByText('Đã Nhận Tin')).toBeInTheDocument();
+        // Close X button must be hidden when requireAcknowledgment is true
+        expect(screen.queryByTitle('Đóng banner')).not.toBeInTheDocument();
       });
 
-      // Close banner
+      // Acknowledge banner
       fireEvent.click(screen.getByText('Đã Nhận Tin'));
       await waitFor(() => {
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      });
+    });
+
+    it('renders routine events with role="status" and allows dismissal via X', async () => {
+      let listenerCallback: any = null;
+      const mockEventSource = {
+        addEventListener: vi.fn().mockImplementation((name, cb) => {
+          if (name === 'OPERATIONAL_ALERT') listenerCallback = cb;
+        }),
+        close: vi.fn(),
+      };
+      (operationalNotificationService.createAlertEventSource as any).mockReturnValue(mockEventSource);
+
+      render(<UrgentOperationalBanner />);
+
+      // Trigger routine event
+      if (listenerCallback) {
+        listenerCallback({
+          data: JSON.stringify({
+            broadcastId: 'BC-2',
+            title: 'Tiệc Buffet Tối',
+            message: 'Nhà hàng mở cửa lúc 19:00',
+            category: 'DINING',
+            scope: 'ALL',
+            requireAcknowledgment: false,
+          }),
+        });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByRole('status')).toBeInTheDocument();
+        expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+        expect(screen.getByTitle('Đóng banner')).toBeInTheDocument();
+      });
+
+      // Close banner via X
+      fireEvent.click(screen.getByTitle('Đóng banner'));
+      await waitFor(() => {
+        expect(screen.queryByRole('status')).not.toBeInTheDocument();
       });
     });
   });

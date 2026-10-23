@@ -1,5 +1,5 @@
-import { AlertTriangle, BellRing, Check, Megaphone, Send, ShieldAlert, Volume2, X } from 'lucide-react';
-import React, { useState } from 'react';
+import { AlertTriangle, Check, Megaphone, Send, ShieldAlert, Volume2, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import {
   type NotificationCategory,
   type NotificationScope,
@@ -28,6 +28,17 @@ export const OperationalBroadcastComposerModal: React.FC<OperationalBroadcastCom
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isSubmitting) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isSubmitting, onClose]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,6 +52,12 @@ export const OperationalBroadcastComposerModal: React.FC<OperationalBroadcastCom
     setErrorMsg(null);
     setSuccessMsg(null);
 
+    if (scope === 'DECK' && (targetDeck === undefined || isNaN(targetDeck) || targetDeck < 1 || targetDeck > 18)) {
+      setErrorMsg('Vui lòng nhập số tầng hợp lệ từ 1 đến 18');
+      return;
+    }
+
+    let broadcastSuccessful = false;
     try {
       const res = await operationalNotificationService.broadcastAlert({
         title,
@@ -55,17 +72,25 @@ export const OperationalBroadcastComposerModal: React.FC<OperationalBroadcastCom
       setSuccessMsg(`Đã phát thông báo thành công mã ${res.broadcastId} tới ${res.recipientCount} hành khách/thuyền viên!`);
       setTitle('');
       setMessage('');
-      if (onBroadcastSuccess) onBroadcastSuccess();
+      broadcastSuccessful = true;
     } catch (err: any) {
       setErrorMsg(err?.message || 'Có lỗi xảy ra khi phát thông báo vận hành');
     } finally {
       setIsSubmitting(false);
     }
+
+    if (broadcastSuccessful && onBroadcastSuccess) {
+      try {
+        onBroadcastSuccess();
+      } catch (cbErr) {
+        console.error('Error in onBroadcastSuccess callback:', cbErr);
+      }
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-200 flex flex-col">
+      <div role="dialog" aria-modal="true" aria-labelledby="broadcast-composer-title" className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-200 flex flex-col">
         {/* Header */}
         <div className="bg-gradient-to-r from-amber-600 via-rose-600 to-red-700 px-6 py-4 flex items-center justify-between text-white">
           <div className="flex items-center gap-3">
@@ -73,7 +98,7 @@ export const OperationalBroadcastComposerModal: React.FC<OperationalBroadcastCom
               <Megaphone className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-lg leading-tight">Phát Thông Báo Vận Hành & Khẩn Cấp Toàn Tàu</h3>
+              <h3 id="broadcast-composer-title" className="font-bold text-lg leading-tight">Phát Thông Báo Vận Hành & Khẩn Cấp Toàn Tàu</h3>
               <p className="text-xs text-rose-100 opacity-90">Shipboard Operational Broadcast Dispatcher</p>
             </div>
           </div>
@@ -160,6 +185,7 @@ export const OperationalBroadcastComposerModal: React.FC<OperationalBroadcastCom
                 type="number"
                 min="1"
                 max="18"
+                required
                 value={targetDeck || ''}
                 onChange={(e) => setTargetDeck(e.target.value ? Number(e.target.value) : undefined)}
                 placeholder="VD: Tầng 4, 7, 9..."
