@@ -20,12 +20,17 @@ interface CruiseAreaPolicyManagerProps {
   shipId?: number;
 }
 
-export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = ({ shipId = 1 }) => {
+export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = ({ shipId: initialShipId = 1 }) => {
   const [activeTab, setActiveTab] = useState<'DECKS' | 'POLICIES'>('DECKS');
   const [zones, setZones] = useState<ShipDeckZone[]>([]);
   const [policies, setPolicies] = useState<SystemCancellationPolicy[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [shipId, setShipId] = useState<number>(initialShipId);
+
+  useEffect(() => {
+    setShipId(initialShipId);
+  }, [initialShipId]);
 
   // New Zone Form
   const [newZone, setNewZone] = useState<Partial<ShipDeckZone>>({
@@ -152,7 +157,21 @@ export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = (
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <label htmlFor="ship-select" className="text-xs font-semibold text-slate-500">Tàu:</label>
+            <select
+              id="ship-select"
+              value={shipId}
+              onChange={(e) => setShipId(Number(e.target.value))}
+              aria-label="Chọn du thuyền"
+              className="bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            >
+              <option value={1}>Tàu 1 (Halong Grand Pearl)</option>
+              <option value={2}>Tàu 2 (Emerald Princess)</option>
+              <option value={3}>Tàu 3 (Imperial Sapphire)</option>
+            </select>
+          </div>
           <button
             onClick={() => setActiveTab('DECKS')}
             className={`px-4 py-2 font-semibold rounded-xl text-sm transition-colors ${

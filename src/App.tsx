@@ -27,6 +27,14 @@ import { TerminalEmbarkationPage } from './pages/TerminalEmbarkationPage';
 import { ProviderSettlementDashboard } from './pages/ProviderSettlementDashboard';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { CruiseAreaPolicyManager } from './components/admin/CruiseAreaPolicyManager';
+import { useSearchParams } from 'react-router-dom';
+
+function CruiseAreaPolicyRoute() {
+  const [searchParams] = useSearchParams();
+  const shipIdParam = searchParams.get('shipId');
+  const shipId = shipIdParam ? Number(shipIdParam) : 1;
+  return <CruiseAreaPolicyManager shipId={shipId} />;
+}
 
 export function App() {
   return (
@@ -39,7 +47,7 @@ export function App() {
         <Route path="passenger/folio" element={<PassengerFolioPage />} />
         <Route path="ships" element={<ShipsPage />} />
         <Route path="ships/:id" element={<ShipDetailPage />} />
-        <Route path="admin/cruise-area-policies" element={<CruiseAreaPolicyManager />} />
+        <Route path="admin/cruise-area-policies" element={<CruiseAreaPolicyRoute />} />
         <Route path="itinerary" element={<ItineraryPage />} />
         <Route path="excursions" element={<ExcursionsPage />} />
         <Route path="excursions/:id" element={<ExcursionDetailPage />} />
