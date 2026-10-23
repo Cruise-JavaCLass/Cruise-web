@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { FeedbackCategory, SubmitPassengerReviewRequest } from '../../services/feedbackTypes';
 import { passengerReviewService } from '../../services/passengerReviewService';
 
@@ -20,7 +20,7 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
   passengerName,
   cabinNumber,
   defaultCategory = 'GENERAL_ONBOARD',
-  serviceOutlet = 'Main Lounge',
+  serviceOutlet,
   onSuccess,
 }) => {
   const [rating, setRating] = useState<number>(5);
@@ -29,6 +29,39 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
   const [comments, setComments] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const prevIsOpenRef = useRef<boolean>(isOpen);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isOpen && !prevIsOpenRef.current) {
+      setRating(5);
+      setHoverRating(0);
+      setCategory(defaultCategory);
+      setComments('');
+      setErrorMessage(null);
+    }
+    prevIsOpenRef.current = isOpen;
+  }, [isOpen, defaultCategory]);
+
+  useEffect(() => {
+    if (isOpen) {
+      previousFocusRef.current = document.activeElement as HTMLElement | null;
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
+          previousFocusRef.current.focus();
+        }
+      };
+    }
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -44,18 +77,29 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
       category,
       rating,
       comments: comments.trim(),
-      serviceOutlet,
+      ...(serviceOutlet ? { serviceOutlet } : {}),
     };
 
+    let submitSuccess = false;
     try {
       await passengerReviewService.submitReview(payload);
-      if (onSuccess) onSuccess();
-      onClose();
+      submitSuccess = true;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Không thể gửi đánh giá';
       setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);
+    }
+
+    if (submitSuccess) {
+      if (onSuccess) {
+        try {
+          onSuccess();
+        } catch (cbErr) {
+          console.error('Error in onSuccess callback:', cbErr);
+        }
+      }
+      onClose();
     }
   };
 
@@ -66,7 +110,10 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
       aria-modal="true"
       aria-labelledby="feedback-modal-title"
     >
-      <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
+      <div
+        ref={modalRef}
+        className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl transition-all"
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-4">
           <div className="flex items-center space-x-2">
@@ -136,10 +183,11 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
 
           {/* Service Category */}
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
+            <label htmlFor="star-rating-category-select" className="block text-xs font-semibold text-gray-600 mb-1">
               Phân loại dịch vụ
             </label>
             <select
+              id="star-rating-category-select"
               value={category}
               onChange={(e) => setCategory(e.target.value as FeedbackCategory)}
               className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
@@ -155,10 +203,11 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
 
           {/* Comments */}
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
+            <label htmlFor="star-rating-comments-textarea" className="block text-xs font-semibold text-gray-600 mb-1">
               Ý kiến đóng góp chi tiết (Tùy chọn)
             </label>
             <textarea
+              id="star-rating-comments-textarea"
               rows={3}
               value={comments}
               onChange={(e) => setComments(e.target.value)}

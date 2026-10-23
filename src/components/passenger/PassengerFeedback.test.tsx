@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
+
 import { StarRatingModal } from './StarRatingModal';
 import { FeedbackTriageDrawer } from '../admin/FeedbackTriageDrawer';
 import { passengerReviewService } from '../../services/passengerReviewService';
@@ -44,7 +44,7 @@ describe('StarRatingModal (KAN-266 & KAN-441)', () => {
     const starButtons = screen.getAllByRole('button', { name: /sao/ });
     fireEvent.click(starButtons[3]); // 4 stars
 
-    const commentInput = screen.getByPlaceholderText(/Chia sẻ thêm cảm nhận/);
+    const commentInput = screen.getByLabelText(/Ý kiến đóng góp chi tiết/);
     fireEvent.change(commentInput, { target: { value: 'Great dining experience!' } });
 
     const submitBtn = screen.getByRole('button', { name: 'Gửi Đánh Giá' });
@@ -60,6 +60,84 @@ describe('StarRatingModal (KAN-266 & KAN-441)', () => {
       );
       expect(onSuccess).toHaveBeenCalled();
       expect(onClose).toHaveBeenCalled();
+    });
+  });
+
+  it('resets draft state when reopened with a new session', () => {
+    const { rerender } = render(
+      <StarRatingModal
+        isOpen={true}
+        onClose={vi.fn()}
+        passengerId={101}
+        passengerName="Bob"
+        cabinNumber="101"
+      />
+    );
+
+    const commentInput = screen.getByLabelText(/Ý kiến đóng góp chi tiết/);
+    fireEvent.change(commentInput, { target: { value: 'Old comment' } });
+    expect((commentInput as HTMLTextAreaElement).value).toBe('Old comment');
+
+    // Close modal
+    rerender(
+      <StarRatingModal
+        isOpen={false}
+        onClose={vi.fn()}
+        passengerId={101}
+        passengerName="Bob"
+        cabinNumber="101"
+      />
+    );
+
+    // Reopen modal
+    rerender(
+      <StarRatingModal
+        isOpen={true}
+        onClose={vi.fn()}
+        passengerId={101}
+        passengerName="Bob"
+        cabinNumber="101"
+      />
+    );
+
+    const reloadedInput = screen.getByLabelText(/Ý kiến đóng góp chi tiết/);
+    expect((reloadedInput as HTMLTextAreaElement).value).toBe('');
+  });
+
+  it('does not display submission failure if onSuccess throws', async () => {
+    const failingOnSuccess = vi.fn().mockImplementation(() => {
+      throw new Error('Callback crash');
+    });
+    vi.spyOn(passengerReviewService, 'submitReview').mockResolvedValue({
+      id: 2,
+      passengerId: 101,
+      passengerName: 'Bob',
+      cabinNumber: '101',
+      category: 'GENERAL_ONBOARD',
+      rating: 5,
+      sentiment: 'POSITIVE',
+      status: 'NEW',
+      isLowRatingAlert: false,
+      createdAt: new Date().toISOString(),
+    });
+
+    render(
+      <StarRatingModal
+        isOpen={true}
+        onClose={vi.fn()}
+        passengerId={101}
+        passengerName="Bob"
+        cabinNumber="101"
+        onSuccess={failingOnSuccess}
+      />
+    );
+
+    const submitBtn = screen.getByRole('button', { name: 'Gửi Đánh Giá' });
+    expect(() => fireEvent.click(submitBtn)).not.toThrow();
+
+    await waitFor(() => {
+      expect(passengerReviewService.submitReview).toHaveBeenCalled();
+      expect(screen.queryByText('Không thể gửi đánh giá')).not.toBeInTheDocument();
     });
   });
 
@@ -124,11 +202,46 @@ describe('FeedbackTriageDrawer (KAN-440 & KAN-441)', () => {
       expect(passengerReviewService.triageReview).toHaveBeenCalledWith(
         99,
         expect.objectContaining({
+          status: 'ESCALATED',
           resolvedBy: 'GuestRelationsManager',
         })
       );
       expect(onTriageSuccess).toHaveBeenCalled();
       expect(onClose).toHaveBeenCalled();
     });
+  });
+
+  it('resets triage fields when review prop changes', () => {
+    const { rerender } = render(
+      <FeedbackTriageDrawer
+        isOpen={true}
+        onClose={vi.fn()}
+        review={mockReview}
+      />
+    );
+
+    const notesTextarea = screen.getByLabelText(/Ghi chú xử lý/);
+    fireEvent.change(notesTextarea, { target: { value: 'Custom draft note' } });
+    expect((notesTextarea as HTMLTextAreaElement).value).toBe('Custom draft note');
+
+    const nextReview: PassengerServiceReviewResponse = {
+      ...mockReview,
+      id: 100,
+      adminNotes: 'Existing notes on second review',
+      status: 'NEW',
+    };
+
+    rerender(
+      <FeedbackTriageDrawer
+        isOpen={true}
+        onClose={vi.fn()}
+        review={nextReview}
+      />
+    );
+
+    const updatedTextarea = screen.getByLabelText(/Ghi chú xử lý/);
+    expect((updatedTextarea as HTMLTextAreaElement).value).toBe('Existing notes on second review');
+    const statusSelect = screen.getByLabelText(/Trạng thái xử lý/);
+    expect((statusSelect as HTMLSelectElement).value).toBe('NEW');
   });
 });
