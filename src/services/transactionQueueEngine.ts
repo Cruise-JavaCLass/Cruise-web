@@ -35,7 +35,7 @@ class TransactionQueueEngine {
     let nextSeq = (this.sequenceCounter || 0) + 1;
     try {
       const storedSeq = localStorage.getItem(STORAGE_KEY_SEQ);
-      const parsedStored = storedSeq ? parseInt(storedSeq, 10) : 0;
+      const parsedStored = storedSeq ? Number.parseInt(storedSeq, 10) : 0;
       if (Number.isFinite(parsedStored) && parsedStored >= nextSeq) {
         nextSeq = parsedStored + 1;
       }
@@ -173,7 +173,7 @@ class TransactionQueueEngine {
         try {
           const storedSeq = localStorage.getItem(STORAGE_KEY_SEQ);
           if (storedSeq) {
-            const parsedSeq = parseInt(storedSeq, 10);
+            const parsedSeq = Number.parseInt(storedSeq, 10);
             if (Number.isFinite(parsedSeq) && parsedSeq > this.sequenceCounter) {
               this.sequenceCounter = parsedSeq;
             }

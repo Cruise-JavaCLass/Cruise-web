@@ -50,6 +50,8 @@ function toError(errorCandidate: unknown, fallbackMessage: string): Error {
   return new Error(fallbackMessage);
 }
 
+let fallbackIdCounter = 0;
+
 export function generateSecureId(prefix: string): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return `${prefix}-${crypto.randomUUID()}`;
@@ -58,7 +60,10 @@ export function generateSecureId(prefix: string): string {
   if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
     crypto.getRandomValues(bytes);
   } else {
-    for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+    const counterVal = ++fallbackIdCounter;
+    for (let i = 0; i < bytes.length; i++) {
+      bytes[i] = (Date.now() + counterVal + i * 31) & 0xff;
+    }
   }
   const hex = Array.from(bytes)
     .map((b) => b.toString(16).padStart(2, '0'))
