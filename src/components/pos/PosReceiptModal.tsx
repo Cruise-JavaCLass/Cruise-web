@@ -1,14 +1,22 @@
 import React from 'react';
 import type { PosTransaction } from '../../services/posService';
-import { CheckCircle2, Printer, X } from 'lucide-react';
+import { CheckCircle2, Printer, X, ShieldCheck } from 'lucide-react';
 
 interface PosReceiptModalProps {
   isOpen: boolean;
   onClose: () => void;
   transaction: PosTransaction | null;
+  signatureBase64?: string;
+  signerName?: string;
 }
 
-export const PosReceiptModal: React.FC<PosReceiptModalProps> = ({ isOpen, onClose, transaction }) => {
+export const PosReceiptModal: React.FC<PosReceiptModalProps> = ({
+  isOpen,
+  onClose,
+  transaction,
+  signatureBase64,
+  signerName,
+}) => {
   if (!isOpen || !transaction) return null;
 
   return (
@@ -44,10 +52,10 @@ export const PosReceiptModal: React.FC<PosReceiptModalProps> = ({ isOpen, onClos
                 <span className="text-slate-400">Phòng / Cabin:</span>
                 <span className="font-semibold text-white">{transaction.cabinNumber}</span>
               </div>
-              {transaction.guestName && (
+              {(signerName || transaction.guestName) && (
                 <div className="flex justify-between">
                   <span className="text-slate-400">Hành khách:</span>
-                  <span className="font-semibold text-white">{transaction.guestName}</span>
+                  <span className="font-semibold text-white">{signerName || transaction.guestName}</span>
                 </div>
               )}
               <div className="flex justify-between">
@@ -103,6 +111,26 @@ export const PosReceiptModal: React.FC<PosReceiptModalProps> = ({ isOpen, onClos
               <span className="text-emerald-400">${transaction.totalAmount?.toFixed(2)} {transaction.currency}</span>
             </div>
           </div>
+
+          {/* Signature E-Archival Display */}
+          {signatureBase64 && (
+            <div className="pt-3 border-t border-dashed border-slate-800 space-y-1.5 text-xs">
+              <div className="flex items-center gap-1.5 text-cyan-400 font-semibold mb-1">
+                <ShieldCheck className="w-4 h-4" />
+                <span>Chữ Ký Điện Tử Đã Lưu Trữ (Verified Digital Signature):</span>
+              </div>
+              <div className="bg-slate-950 p-2 rounded-xl border border-slate-800 flex flex-col items-center">
+                <img
+                  src={signatureBase64}
+                  alt="E-Signature"
+                  className="max-h-20 object-contain rounded bg-slate-950"
+                />
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Đã xác thực bởi khách: {signerName || transaction.guestName}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
