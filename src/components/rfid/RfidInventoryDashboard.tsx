@@ -6,7 +6,7 @@ import {
   ShieldAlert,
   SlidersHorizontal,
 } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   type RfidCardInventoryDto,
   type RfidCardStatus,
@@ -29,6 +29,7 @@ export const RfidInventoryDashboard: React.FC<RfidInventoryDashboardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const searchSeq = useRef(0);
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -46,15 +47,17 @@ export const RfidInventoryDashboard: React.FC<RfidInventoryDashboardProps> = ({
 
   const searchInventory = useCallback(async (query: string, status: string) => {
     if (typeof rfidCardService.getCards === 'function') {
+      const seq = ++searchSeq.current;
       try {
         const res = await rfidCardService.getCards({
           search: query || undefined,
           status: status === 'ALL' ? undefined : (status as RfidCardStatus),
         });
-        setInventoryCards(res.content);
+        if (seq === searchSeq.current) setInventoryCards(res.content);
         return;
       } catch {
         // Fall back to recentCards on endpoint error
+        if (seq === searchSeq.current) setInventoryCards(null);
       }
     }
   }, []);
@@ -97,7 +100,7 @@ export const RfidInventoryDashboard: React.FC<RfidInventoryDashboardProps> = ({
 
         <div className="flex items-center gap-2.5">
           <button
-            onClick={() => void fetchDashboard()}
+            onClick={() => void Promise.all([fetchDashboard(), searchInventory(searchTerm, statusFilter)])}
             disabled={loading}
             className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded-xl border border-slate-700 transition"
           >
