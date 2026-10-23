@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from 'react';
+import { useEffect, useLayoutEffect, useRef, type RefObject } from 'react';
 
 const FOCUSABLE_ELEMENTS =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -10,19 +10,20 @@ export function useFocusTrap(
 ): void {
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (!isOpen) return;
 
     previousFocusRef.current = document.activeElement as HTMLElement | null;
 
-    const timer = setTimeout(() => {
-      const focusables = containerRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_ELEMENTS);
-      if (focusables && focusables.length > 0) {
-        focusables[0].focus();
-      }
-    }, 50);
+    const initialFocusables = containerRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_ELEMENTS);
+    if (initialFocusables && initialFocusables.length > 0) {
+      initialFocusables[0].focus();
+    }
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -40,6 +41,16 @@ export function useFocusTrap(
         const first = focusables[0];
         const last = focusables[focusables.length - 1];
 
+        if (!containerRef.current.contains(document.activeElement)) {
+          e.preventDefault();
+          if (e.shiftKey) {
+            last.focus();
+          } else {
+            first.focus();
+          }
+          return;
+        }
+
         if (e.shiftKey) {
           if (document.activeElement === first) {
             e.preventDefault();
@@ -56,7 +67,6 @@ export function useFocusTrap(
 
     window.addEventListener('keydown', handleKeyDown);
     return () => {
-      clearTimeout(timer);
       window.removeEventListener('keydown', handleKeyDown);
       if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
         previousFocusRef.current.focus();
