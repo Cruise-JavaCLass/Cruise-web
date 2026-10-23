@@ -127,7 +127,7 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
               <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-700/50">
                 <span className="text-xs text-slate-400 block font-semibold">Xuồng Cứu Sinh (Lifeboat):</span>
                 <span className="text-sm font-bold text-cyan-300 mt-1 block">
-                  {assignedLifeboat || 'Lifeboat #4 (Port Side)'}
+                  {assignedLifeboat || 'Theo hướng dẫn tại trạm tập trung'}
                 </span>
               </div>
             </div>
