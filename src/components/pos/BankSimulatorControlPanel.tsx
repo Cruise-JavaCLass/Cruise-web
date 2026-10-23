@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { paymentGatewayService } from '../../services/paymentGatewayService';
 
 interface BankSimulatorControlPanelProps {
@@ -16,6 +16,12 @@ export const BankSimulatorControlPanel: React.FC<BankSimulatorControlPanelProps>
   const [amount, setAmount] = useState<number>(defaultAmount);
   const [isTriggering, setIsTriggering] = useState(false);
   const [resultMessage, setResultMessage] = useState<string | null>(null);
+
+  // Synchronize fields when parent switches payment reference or default amount
+  useEffect(() => {
+    setPaymentRef(currentPaymentRef);
+    setAmount(defaultAmount);
+  }, [currentPaymentRef, defaultAmount]);
 
   const handleTriggerWebhook = async (status: 'SUCCESS' | 'FAILED') => {
     if (!paymentRef.trim()) {

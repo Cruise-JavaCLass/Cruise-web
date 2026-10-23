@@ -1,4 +1,4 @@
-import api from './api';
+import { apiClient } from './api';
 import type {
   GenerateVietQrRequest,
   VietQrPaymentResponse,
@@ -9,7 +9,7 @@ import type {
 
 export const paymentGatewayService = {
   async generateVietQr(request: GenerateVietQrRequest): Promise<VietQrPaymentResponse> {
-    const response = await api.post<{ success: boolean; data: VietQrPaymentResponse }>(
+    const response = await apiClient.post<{ success: boolean; data: VietQrPaymentResponse }>(
       '/api/pos/payments/vietqr/generate',
       request
     );
@@ -17,14 +17,14 @@ export const paymentGatewayService = {
   },
 
   async getPaymentStatus(reference: string): Promise<PaymentGatewayStatus> {
-    const response = await api.get<{ success: boolean; data: PaymentGatewayStatus }>(
+    const response = await apiClient.get<{ success: boolean; data: PaymentGatewayStatus }>(
       `/api/pos/payments/orders/${reference}/status`
     );
     return response.data.data;
   },
 
   async simulateBankWebhook(payload: BankWebhookPayload): Promise<WebhookProcessingResult> {
-    const response = await api.post<{ success: boolean; data: WebhookProcessingResult }>(
+    const response = await apiClient.post<{ success: boolean; data: WebhookProcessingResult }>(
       '/api/pos/payments/webhook/bank-transfer',
       payload
     );

@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { SettlementCheckoutModal } from './SettlementCheckoutModal';
 import { BankSimulatorControlPanel } from './BankSimulatorControlPanel';
 import { paymentGatewayService } from '../../services/paymentGatewayService';

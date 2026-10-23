@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { VietQrPaymentResponse } from '../../services/paymentGatewayTypes';
 import { paymentGatewayService } from '../../services/paymentGatewayService';
 
@@ -22,12 +22,16 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
   const [error, setError] = useState<string | null>(null);
   const [pollingStatus, setPollingStatus] = useState<string>('PENDING');
 
+  // Track completed payment references so onPaymentSuccess is called at most once per reference
+  const completedRefs = useRef<Set<string>>(new Set());
+
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let isCancelled = false;
 
     if (isOpen && cabinNumber && amount > 0) {
       setLoading(true);
       setError(null);
+      setQrData(null); // Clear previous QR immediately on change
       setPollingStatus('PENDING');
 
       paymentGatewayService
@@ -37,30 +41,49 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
           description: `FOLIO SETTLEMENT ${cabinNumber}`,
         })
         .then((data) => {
-          setQrData(data);
-          setLoading(false);
+          if (!isCancelled) {
+            setQrData(data);
+            setLoading(false);
+          }
         })
         .catch((err: Error) => {
-          setError(err.message || 'Không thể tạo mã VietQR');
-          setLoading(false);
+          if (!isCancelled) {
+            setError(err.message || 'Không thể tạo mã VietQR');
+            setLoading(false);
+          }
         });
+    } else if (!isOpen) {
+      setQrData(null);
+      setError(null);
+      setLoading(false);
     }
 
     return () => {
-      if (timer) clearInterval(timer);
+      isCancelled = true;
     };
   }, [isOpen, cabinNumber, amount]);
 
   // Polling for payment status
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (qrData && pollingStatus === 'PENDING') {
+    let interval: ReturnType<typeof setInterval> | undefined;
+    let isPollingActive = true;
+
+    if (isOpen && qrData && pollingStatus === 'PENDING') {
+      const currentRef = qrData.paymentReference;
+
       const checkStatus = async () => {
         try {
-          const status = await paymentGatewayService.getPaymentStatus(qrData.paymentReference);
+          const status = await paymentGatewayService.getPaymentStatus(currentRef);
+          if (!isPollingActive) return;
+
           setPollingStatus(status);
           if (status === 'PAID') {
-            if (onPaymentSuccess) onPaymentSuccess();
+            if (!completedRefs.current.has(currentRef)) {
+              completedRefs.current.add(currentRef);
+              if (onPaymentSuccess) {
+                onPaymentSuccess();
+              }
+            }
           }
         } catch {
           // ignore transient polling network errors
@@ -71,10 +94,14 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
       void checkStatus();
       interval = setInterval(checkStatus, 2000);
     }
+
     return () => {
-      if (interval) clearInterval(interval);
+      isPollingActive = false;
+      if (interval) {
+        clearInterval(interval);
+      }
     };
-  }, [qrData, pollingStatus, onPaymentSuccess]);
+  }, [isOpen, qrData, pollingStatus, onPaymentSuccess]);
 
   if (!isOpen) return null;
 
@@ -124,7 +151,7 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
                   Cabin {cabinNumber} • Số tiền cần thanh toán
                 </span>
                 <div className="text-2xl font-black text-emerald-800">
-                  {amount.toLocaleString('vi-VN')} đ
+                  {(qrData.amount ?? amount).toLocaleString('vi-VN')} {qrData.currency || 'đ'}
                 </div>
               </div>
 
@@ -168,6 +195,24 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
                     ✓ Đã nhận thanh toán thành công! Folio đã được tất toán.
                   </span>
                 )}
+                {pollingStatus === 'FAILED' && (
+                  <div className="rounded-xl bg-rose-50 p-3 text-xs text-rose-700 border border-rose-200 space-y-1">
+                    <p className="font-bold">❌ Giao dịch thanh toán thất bại!</p>
+                    <p className="text-[11px] text-rose-600">Vui lòng thử lại hoặc chọn phương thức thanh toán khác.</p>
+                  </div>
+                )}
+                {pollingStatus === 'EXPIRED' && (
+                  <div className="rounded-xl bg-amber-50 p-3 text-xs text-amber-700 border border-amber-200 space-y-1">
+                    <p className="font-bold">⏰ Mã VietQR đã hết hạn hiệu lực!</p>
+                    <p className="text-[11px] text-amber-600">Vui lòng đóng modal và tạo mã thanh toán mới.</p>
+                  </div>
+                )}
+                {pollingStatus === 'CANCELLED' && (
+                  <div className="rounded-xl bg-slate-50 p-3 text-xs text-slate-700 border border-slate-200 space-y-1">
+                    <p className="font-bold">⛔ Giao dịch đã bị hủy bỏ.</p>
+                    <p className="text-[11px] text-slate-600">Vui lòng liên hệ quầy thu ngân hoặc thử lại.</p>
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -178,7 +223,7 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition"
+            className="rounded-xl bg-gray-200 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-300 transition"
           >
             Đóng
           </button>
