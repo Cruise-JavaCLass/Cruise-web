@@ -78,9 +78,13 @@ export const GuestRelationsCaseDrawer: React.FC<GuestRelationsCaseDrawerProps> =
       };
       const voucher = await serviceRecoveryService.issueVoucher(caseItem.id, req);
       setIssuedVoucher(voucher);
-      const updated = await serviceRecoveryService.getCase(caseItem.id);
-      onCaseUpdated(updated);
-      setSuccessMsg(`$${creditAmount} OBC Voucher issued successfully! Code: ${voucher.voucherCode}`);
+      setSuccessMsg(`${creditAmount} OBC Voucher issued successfully! Code: ${voucher.voucherCode}`);
+      try {
+        const updated = await serviceRecoveryService.getCase(caseItem.id);
+        onCaseUpdated(updated);
+      } catch {
+        setError('Voucher issued, but the case could not be refreshed. Use Refresh before issuing another voucher.');
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to issue compensation');
     } finally {
