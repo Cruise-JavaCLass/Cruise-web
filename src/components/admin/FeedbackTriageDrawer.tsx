@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import type {
   PassengerServiceReviewResponse,
   FeedbackStatus,
@@ -26,7 +27,6 @@ export const FeedbackTriageDrawer: React.FC<FeedbackTriageDrawerProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const drawerRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   // Synchronize triage fields when review opens or changes
   useEffect(() => {
@@ -43,63 +43,7 @@ export const FeedbackTriageDrawer: React.FC<FeedbackTriageDrawerProps> = ({
     }
   }, [review?.id, isOpen]);
 
-  // Focus trap and keyboard navigation
-  useEffect(() => {
-    if (isOpen && review) {
-      previousFocusRef.current = document.activeElement as HTMLElement | null;
-
-      // Focus first focusable element
-      const timer = setTimeout(() => {
-        const focusables = drawerRef.current?.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusables && focusables.length > 0) {
-          focusables[0].focus();
-        }
-      }, 50);
-
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          onClose();
-          return;
-        }
-
-        if (e.key === 'Tab') {
-          if (!drawerRef.current) return;
-          const focusables = Array.from(
-            drawerRef.current.querySelectorAll<HTMLElement>(
-              'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-            )
-          );
-          if (focusables.length === 0) return;
-
-          const first = focusables[0];
-          const last = focusables[focusables.length - 1];
-
-          if (e.shiftKey) {
-            if (document.activeElement === first) {
-              e.preventDefault();
-              last.focus();
-            }
-          } else {
-            if (document.activeElement === last) {
-              e.preventDefault();
-              first.focus();
-            }
-          }
-        }
-      };
-
-      window.addEventListener('keydown', handleKeyDown);
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener('keydown', handleKeyDown);
-        if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
-          previousFocusRef.current.focus();
-        }
-      };
-    }
-  }, [isOpen, review, onClose]);
+  useFocusTrap(isOpen && Boolean(review), drawerRef, onClose);
 
   if (!isOpen || !review) return null;
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import type { FeedbackCategory, SubmitPassengerReviewRequest } from '../../services/feedbackTypes';
 import { passengerReviewService } from '../../services/passengerReviewService';
 
@@ -32,7 +33,6 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
 
   const prevIsOpenRef = useRef<boolean>(isOpen);
   const modalRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (isOpen && !prevIsOpenRef.current) {
@@ -45,62 +45,7 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
     prevIsOpenRef.current = isOpen;
   }, [isOpen, defaultCategory]);
 
-  useEffect(() => {
-    if (isOpen) {
-      previousFocusRef.current = document.activeElement as HTMLElement | null;
-
-      // Focus first focusable element inside the modal
-      const timer = setTimeout(() => {
-        const focusables = modalRef.current?.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusables && focusables.length > 0) {
-          focusables[0].focus();
-        }
-      }, 50);
-
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          onClose();
-          return;
-        }
-
-        if (e.key === 'Tab' && modalRef.current) {
-          const focusables = Array.from(
-            modalRef.current.querySelectorAll<HTMLElement>(
-              'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-            )
-          );
-          if (focusables.length === 0) return;
-
-          const first = focusables[0];
-          const last = focusables[focusables.length - 1];
-
-          if (e.shiftKey) {
-            if (document.activeElement === first) {
-              e.preventDefault();
-              last.focus();
-            }
-          } else {
-            if (document.activeElement === last) {
-              e.preventDefault();
-              first.focus();
-            }
-          }
-        }
-      };
-
-      window.addEventListener('keydown', handleKeyDown);
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener('keydown', handleKeyDown);
-        if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
-          previousFocusRef.current.focus();
-        }
-      };
-    }
-  }, [isOpen, onClose]);
+  useFocusTrap(isOpen, modalRef, onClose);
 
   if (!isOpen) return null;
 
@@ -191,9 +136,9 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
 
           {/* Star Rating Selector */}
           <div className="text-center space-y-2">
-            <label className="block text-sm font-semibold text-gray-700">
+            <div className="block text-sm font-semibold text-gray-700">
               Mức độ hài lòng của quý khách
-            </label>
+            </div>
             <div className="flex justify-center items-center gap-2">
               {[1, 2, 3, 4, 5].map((star) => {
                 const active = (hoverRating || rating) >= star;
