@@ -26,6 +26,7 @@ import { BoardingPassPage } from './pages/passenger/BoardingPassPage';
 import { TerminalEmbarkationPage } from './pages/TerminalEmbarkationPage';
 import { ProviderSettlementDashboard } from './pages/ProviderSettlementDashboard';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { CruiseAreaPolicyManager } from './components/admin/CruiseAreaPolicyManager';
 
 export function App() {
   return (
@@ -38,6 +39,7 @@ export function App() {
         <Route path="passenger/folio" element={<PassengerFolioPage />} />
         <Route path="ships" element={<ShipsPage />} />
         <Route path="ships/:id" element={<ShipDetailPage />} />
+        <Route path="admin/cruise-area-policies" element={<CruiseAreaPolicyManager />} />
         <Route path="itinerary" element={<ItineraryPage />} />
         <Route path="excursions" element={<ExcursionsPage />} />
         <Route path="excursions/:id" element={<ExcursionDetailPage />} />
