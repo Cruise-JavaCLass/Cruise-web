@@ -7,7 +7,6 @@ import {
   Lock,
   Divide,
   AlertCircle,
-  ShieldCheck,
   UserCheck,
 } from 'lucide-react';
 import {
@@ -120,7 +119,7 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
 
     return rows.map((r, idx) => {
       if (!r.isSelected) {
-        return { ...r, amount: 0, error: undefined };
+        return { ...r, amount: 0, error: undefined, signatureBase64: undefined };
       }
       let amt = share;
       if (idx === lastSelectedIdx) {
@@ -128,7 +127,13 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
       } else {
         sum += share;
       }
-      return { ...r, amount: amt, error: undefined };
+      const shouldClearSignature = r.amount !== amt;
+      return {
+        ...r,
+        amount: amt,
+        error: undefined,
+        signatureBase64: shouldClearSignature ? undefined : r.signatureBase64,
+      };
     });
   };
 
@@ -150,10 +155,16 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
   };
 
   const handleCustomAmountChange = (index: number, val: number) => {
-    const safeVal = Math.max(0, val);
-    const updated = splitRows.map((r, idx) =>
-      idx === index ? { ...r, amount: safeVal } : r
-    );
+    const safeVal = Math.round(Math.max(0, val) * 100) / 100;
+    const updated = splitRows.map((r, idx) => {
+      if (idx !== index) return r;
+      const shouldClearSignature = r.amount !== safeVal;
+      return {
+        ...r,
+        amount: safeVal,
+        signatureBase64: shouldClearSignature ? undefined : r.signatureBase64,
+      };
+    });
     setSplitRows(updated);
   };
 

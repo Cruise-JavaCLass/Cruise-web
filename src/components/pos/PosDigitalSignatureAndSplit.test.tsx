@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { PosDigitalSignaturePad } from './PosDigitalSignaturePad';
 import { CabinBillSplittingWizard } from './CabinBillSplittingWizard';
 import { cabinBillingService } from '../../services/cabinBillingService';

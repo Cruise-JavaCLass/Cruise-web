@@ -186,6 +186,8 @@ export const PosRegister: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [completedTx, setCompletedTx] = useState<PosTransaction | null>(null);
+  const [completedSignatureBase64, setCompletedSignatureBase64] = useState<string | undefined>(undefined);
+  const [completedSignerName, setCompletedSignerName] = useState<string | undefined>(undefined);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [isSplitWizardOpen, setIsSplitWizardOpen] = useState(false);
@@ -398,6 +400,7 @@ export const PosRegister: React.FC = () => {
       ];
     });
 
+    setCapturedSignatureBase64(undefined);
     setScanNotification(`Đã thêm: ${product.name}`);
     setTimeout(() => setScanNotification(null), 2000);
   };
@@ -493,6 +496,7 @@ export const PosRegister: React.FC = () => {
   // Cart operations
   const updateQuantity = (cartId: string, delta: number) => {
     idempotencyKeyRef.current = null;
+    setCapturedSignatureBase64(undefined);
     setCart((prev) =>
       prev
         .map((i) => (i.cartId === cartId ? { ...i, quantity: i.quantity + delta } : i))
@@ -502,11 +506,13 @@ export const PosRegister: React.FC = () => {
 
   const removeFromCart = (cartId: string) => {
     idempotencyKeyRef.current = null;
+    setCapturedSignatureBase64(undefined);
     setCart((prev) => prev.filter((i) => i.cartId !== cartId));
   };
 
   const clearCart = () => {
     idempotencyKeyRef.current = null;
+    setCapturedSignatureBase64(undefined);
     setCart([]);
   };
 
@@ -653,23 +659,33 @@ export const PosRegister: React.FC = () => {
       };
 
       const result = await posService.createTransaction(payload, idempotencyKeyRef.current);
+      let archivedSignature: string | undefined = undefined;
+      let signerDisplayName: string | undefined = undefined;
+
       if (capturedSignatureBase64 && result.transactionUuid && activeFolio?.cabinNumber) {
+        signerDisplayName =
+          (activeFolio as unknown as { guestName?: string })?.guestName ||
+          activeFolio?.primaryGuestName ||
+          'Valued Guest';
         try {
           await cabinBillingService.archiveSignature({
             transactionUuid: result.transactionUuid,
             transactionId: result.id,
             cabinNumber: activeFolio.cabinNumber,
             passengerId: activeFolio.passengerId,
-            signerName: (activeFolio as unknown as { guestName?: string })?.guestName || activeFolio?.primaryGuestName || 'Valued Guest',
+            signerName: signerDisplayName,
             signatureImageBase64: capturedSignatureBase64,
             capturedBy: cashierId,
             amount: result.totalAmount,
           });
+          archivedSignature = capturedSignatureBase64;
         } catch (sigErr) {
           console.warn('Could not archive signature:', sigErr);
         }
       }
       setCompletedTx(result);
+      setCompletedSignatureBase64(archivedSignature);
+      setCompletedSignerName(archivedSignature ? signerDisplayName : undefined);
       setIsReceiptOpen(true);
       setCapturedSignatureBase64(undefined);
       clearCart();
@@ -1015,6 +1031,7 @@ export const PosRegister: React.FC = () => {
                 setCabinInput(e.target.value.toUpperCase());
                 setFolioAccount(null);
                 setFolioError(null);
+                setCapturedSignatureBase64(undefined);
               }}
               placeholder="Nhập số Cabin (vd: CABIN-7012)"
               className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -1283,9 +1300,56 @@ export const PosRegister: React.FC = () => {
         <PosReceiptModal
           isOpen={isReceiptOpen}
           transaction={completedTx}
+          signatureBase64={completedSignatureBase64}
+          signerName={completedSignerName}
           onClose={() => setIsReceiptOpen(false)}
         />
       )}
+
+      {/* Digital Signature Pad Modal */}
+      <PosDigitalSignaturePad
+        isOpen={isSignatureModalOpen}
+        onClose={() => setIsSignatureModalOpen(false)}
+        signerName={
+          (folioAccount as unknown as { guestName?: string })?.guestName ||
+          folioAccount?.primaryGuestName ||
+          'Valued Guest'
+        }
+        cabinNumber={folioAccount?.cabinNumber || cabinInput || 'CABIN-GUEST'}
+        totalAmount={cartCalculations.grandTotal}
+        onConfirm={(signatureBase64) => {
+          setCapturedSignatureBase64(signatureBase64);
+          setIsSignatureModalOpen(false);
+        }}
+      />
+
+      {/* Cabin Bill Splitting Wizard Modal */}
+      <CabinBillSplittingWizard
+        isOpen={isSplitWizardOpen}
+        onClose={() => setIsSplitWizardOpen(false)}
+        cabinNumber={folioAccount?.cabinNumber || cabinInput || ''}
+        stationId={stationId}
+        cashierId={cashierId}
+        totalAmount={cartCalculations.grandTotal}
+        items={cart.map((i) => ({
+          itemCode: i.product.sku,
+          itemName: i.product.name,
+          category: i.product.categoryName || 'GENERAL',
+          quantity: i.quantity,
+          unitPrice: i.unitPrice,
+        }))}
+        onSuccess={(result) => {
+          setIsSplitWizardOpen(false);
+          setScanNotification(
+            `Đã chia hóa đơn thành công thành ${result.splitCount} phần (${result.splits.map((s) => s.guestName).join(', ')})`
+          );
+          setTimeout(() => setScanNotification(null), 4000);
+          clearCart();
+          if (paymentMethod === 'CABIN_FOLIO' && folioAccount) {
+            void handleLookupFolio();
+          }
+        }}
+      />
     </div>
   );
 };
