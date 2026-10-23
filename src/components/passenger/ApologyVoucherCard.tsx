@@ -105,7 +105,11 @@ export const ApologyVoucherCard: React.FC<ApologyVoucherCardProps> = ({
       ) : (
         <button
           onClick={handleClaim}
-          disabled={loading || voucher.status === 'EXPIRED'}
+          disabled={
+            loading ||
+            !['ISSUED', 'ACCEPTED'].includes(voucher.status) ||
+            new Date(voucher.expiresAt).getTime() < Date.now()
+          }
           className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
         >
           <Sparkles className="w-4 h-4" />

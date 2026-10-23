@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   LifeBuoy,
   Plus,
@@ -31,17 +31,20 @@ export const ServiceRecoveryConsole: React.FC = () => {
   const [selectedCase, setSelectedCase] = useState<ServiceRecoveryCase | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  const requestSeq = useRef(0);
+
   // New Case Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [passengerId] = useState<number>(101);
-  const [passengerName, setPassengerName] = useState<string>('Alexander Wright');
-  const [cabinNumber, setCabinNumber] = useState<string>('CABIN-7012');
+  const [passengerId, setPassengerId] = useState<number | ''>('');
+  const [passengerName, setPassengerName] = useState<string>('');
+  const [cabinNumber, setCabinNumber] = useState<string>('');
   const [rootCause, setRootCause] = useState<ServiceRecoveryRootCause>('STATEROOM_CABIN_NOISE');
   const [severity, setSeverity] = useState<ServiceRecoverySeverity>('HIGH');
   const [complaintSummary, setComplaintSummary] = useState<string>('');
   const [complaintDetails, setComplaintDetails] = useState<string>('');
 
   const fetchCases = useCallback(async () => {
+    const seq = ++requestSeq.current;
     try {
       setLoading(true);
       setError(null);
@@ -50,11 +53,13 @@ export const ServiceRecoveryConsole: React.FC = () => {
         severity: (severityFilter || undefined) as ServiceRecoverySeverity,
         search: searchTerm || undefined,
       });
-      setCases(res.content || []);
+      if (seq === requestSeq.current) setCases(res.content || []);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch recovery cases');
+      if (seq === requestSeq.current) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch recovery cases');
+      }
     } finally {
-      setLoading(false);
+      if (seq === requestSeq.current) setLoading(false);
     }
   }, [statusFilter, severityFilter, searchTerm]);
 
@@ -67,7 +72,7 @@ export const ServiceRecoveryConsole: React.FC = () => {
     try {
       setLoading(true);
       await serviceRecoveryService.createCase({
-        passengerId,
+        passengerId: Number(passengerId) || 101,
         passengerName,
         cabinNumber,
         rootCause,
@@ -250,6 +255,7 @@ export const ServiceRecoveryConsole: React.FC = () => {
 
       {/* Drawer */}
       <GuestRelationsCaseDrawer
+        key={selectedCase?.id ?? 'none'}
         isOpen={isDrawerOpen}
         onClose={() => {
           setIsDrawerOpen(false);
@@ -270,12 +276,24 @@ export const ServiceRecoveryConsole: React.FC = () => {
             <p className="text-xs text-slate-500 mb-4">Record guest complaint to trigger SLA timers and escalation workflows.</p>
 
             <form onSubmit={handleCreateCase} className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Passenger ID</label>
+                  <input
+                    type="number"
+                    required
+                    placeholder="e.g. 101"
+                    value={passengerId}
+                    onChange={(e) => setPassengerId(e.target.value ? Number(e.target.value) : '')}
+                    className="w-full p-2 border border-slate-300 rounded-xl"
+                  />
+                </div>
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Cabin Number</label>
                   <input
                     type="text"
                     required
+                    placeholder="e.g. CABIN-7012"
                     value={cabinNumber}
                     onChange={(e) => setCabinNumber(e.target.value)}
                     className="w-full p-2 border border-slate-300 rounded-xl"
@@ -286,6 +304,7 @@ export const ServiceRecoveryConsole: React.FC = () => {
                   <input
                     type="text"
                     required
+                    placeholder="e.g. Alexander Wright"
                     value={passengerName}
                     onChange={(e) => setPassengerName(e.target.value)}
                     className="w-full p-2 border border-slate-300 rounded-xl"
