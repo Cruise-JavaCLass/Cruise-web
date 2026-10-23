@@ -8,7 +8,7 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   type OperationsKpiSummary,
   type OperationsLiveRadar,
@@ -19,27 +19,53 @@ export const OperationsDashboard: React.FC = () => {
   const [kpis, setKpis] = useState<OperationsKpiSummary | null>(null);
   const [radar, setRadar] = useState<OperationsLiveRadar | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [kpiError, setKpiError] = useState<string | null>(null);
+  const [radarError, setRadarError] = useState<string | null>(null);
+  const [showAllActivities, setShowAllActivities] = useState(false);
+  const [showAllExcursions, setShowAllExcursions] = useState(false);
+
+  const requestIdRef = useRef(0);
 
   const fetchData = async () => {
+    const requestId = ++requestIdRef.current;
     setLoading(true);
-    setError(null);
+    setKpiError(null);
+    setRadarError(null);
     try {
-      const [kpiRes, radarRes] = await Promise.all([
+      const [kpiResult, radarResult] = await Promise.allSettled([
         operationsDashboardService.getOperationsKpis(),
         operationsDashboardService.getLiveOperationsRadar(),
       ]);
-      setKpis(kpiRes);
-      setRadar(radarRes);
-    } catch (err: any) {
-      setError(err?.message || 'Không thể tải dữ liệu chỉ số vận hành');
+
+      if (requestId !== requestIdRef.current) return;
+
+      if (kpiResult.status === 'fulfilled') {
+        setKpis(kpiResult.value);
+      } else {
+        setKpiError(kpiResult.reason?.message || 'Không thể tải chỉ số KPI vận hành');
+      }
+
+      if (radarResult.status === 'fulfilled') {
+        setRadar(radarResult.value);
+      } else {
+        setRadarError(radarResult.reason?.message || 'Không thể tải dữ liệu radar hoạt động');
+      }
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
     void fetchData();
+    const interval = setInterval(() => {
+      void fetchData();
+    }, 30000);
+    return () => {
+      requestIdRef.current += 1;
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -66,9 +92,14 @@ export const OperationsDashboard: React.FC = () => {
         </button>
       </div>
 
-      {error && (
+      {kpiError && (
         <div role="alert" className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">
-          {error}
+          {kpiError}
+        </div>
+      )}
+      {radarError && (
+        <div role="alert" className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">
+          {radarError}
         </div>
       )}
 
@@ -104,7 +135,7 @@ export const OperationsDashboard: React.FC = () => {
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Hoạt Động Hôm Nay</p>
               <h3 className="text-2xl font-black text-slate-800 mt-1">
-                {kpis?.totalActivitiesActive || 0}
+                {kpis !== null ? kpis.totalActivitiesActive : '--'}
               </h3>
               <p className="text-xs text-slate-500 mt-1">
                 {kpis ? `${kpis.totalActivityRegistrations} lượt đăng ký tham gia` : ''}
@@ -126,7 +157,7 @@ export const OperationsDashboard: React.FC = () => {
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Tour Khởi Hành Hôm Nay</p>
               <h3 className="text-2xl font-black text-slate-800 mt-1">
-                {kpis?.departingExcursionsToday || 0}
+                {kpis !== null ? kpis.departingExcursionsToday : '--'}
               </h3>
               <p className="text-xs text-slate-500 mt-1">
                 {kpis ? `${kpis.totalExcursionBookings} vé tour đã xuất` : ''}
@@ -137,7 +168,7 @@ export const OperationsDashboard: React.FC = () => {
             </div>
           </div>
           <div className="mt-4 text-xs text-slate-500">
-            Tổng cộng {kpis?.totalShoreExcursions || 0} tour trong hải trình
+            {kpis !== null ? `Tổng cộng ${kpis.totalShoreExcursions} tour trong hải trình` : '--'}
           </div>
         </div>
 
@@ -155,7 +186,7 @@ export const OperationsDashboard: React.FC = () => {
                 <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
               </h3>
               <p className="text-xs text-slate-500 mt-1">
-                Dựa trên {kpis?.totalFeedbackSubmitted || 0} phản hồi
+                {kpis !== null ? `Dựa trên ${kpis.totalFeedbackSubmitted} phản hồi` : ''}
               </p>
             </div>
             <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
@@ -184,7 +215,7 @@ export const OperationsDashboard: React.FC = () => {
 
           <div className="space-y-3">
             {radar?.activityRadar && radar.activityRadar.length > 0 ? (
-              radar.activityRadar.slice(0, 5).map((act) => (
+              (showAllActivities ? radar.activityRadar : radar.activityRadar.slice(0, 5)).map((act) => (
                 <div key={act.activityId} className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1.5">
                   <div className="flex justify-between items-center text-sm font-semibold text-slate-800">
                     <span className="truncate max-w-[250px]">{act.title}</span>
@@ -216,6 +247,14 @@ export const OperationsDashboard: React.FC = () => {
             ) : (
               <p className="text-xs text-slate-400 py-4 text-center">Chưa có dữ liệu radar hoạt động</p>
             )}
+            {radar?.activityRadar && radar.activityRadar.length > 5 && (
+              <button
+                onClick={() => setShowAllActivities(!showAllActivities)}
+                className="w-full py-2 text-xs text-indigo-600 font-bold hover:bg-indigo-50 rounded-lg transition-colors border border-indigo-100"
+              >
+                {showAllActivities ? 'Thu gọn danh sách (Hiện 5 hoạt động đầu)' : `Xem toàn bộ radar (${radar.activityRadar.length} hoạt động)`}
+              </button>
+            )}
           </div>
         </div>
 
@@ -233,7 +272,7 @@ export const OperationsDashboard: React.FC = () => {
 
           <div className="space-y-3">
             {radar?.excursionRadar && radar.excursionRadar.length > 0 ? (
-              radar.excursionRadar.slice(0, 5).map((exc) => (
+              (showAllExcursions ? radar.excursionRadar : radar.excursionRadar.slice(0, 5)).map((exc) => (
                 <div key={exc.excursionId} className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1.5">
                   <div className="flex justify-between items-center text-sm font-semibold text-slate-800">
                     <span className="truncate max-w-[250px]">{exc.title}</span>
@@ -249,6 +288,14 @@ export const OperationsDashboard: React.FC = () => {
               ))
             ) : (
               <p className="text-xs text-slate-400 py-4 text-center">Không có tour nào sắp rời tàu</p>
+            )}
+            {radar?.excursionRadar && radar.excursionRadar.length > 5 && (
+              <button
+                onClick={() => setShowAllExcursions(!showAllExcursions)}
+                className="w-full py-2 text-xs text-amber-600 font-bold hover:bg-amber-50 rounded-lg transition-colors border border-amber-100"
+              >
+                {showAllExcursions ? 'Thu gọn danh sách (Hiện 5 tour đầu)' : `Xem toàn bộ radar (${radar.excursionRadar.length} tour bờ)`}
+              </button>
             )}
           </div>
         </div>
