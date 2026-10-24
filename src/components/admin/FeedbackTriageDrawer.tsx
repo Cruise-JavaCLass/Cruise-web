@@ -25,11 +25,14 @@ export const FeedbackTriageDrawer: React.FC<FeedbackTriageDrawerProps> = ({
   const [resolvedBy, setResolvedBy] = useState<string>(review?.resolvedBy || 'GuestRelationsManager');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const triageSessionRef = useRef(0);
 
   const drawerRef = useRef<HTMLDivElement>(null);
 
   // Synchronize triage fields when review opens or changes
   useEffect(() => {
+    triageSessionRef.current += 1;
+    setIsSubmitting(false);
     if (review) {
       setStatus(review.status || 'UNDER_REVIEW');
       setAdminNotes(review.adminNotes || '');
@@ -48,6 +51,7 @@ export const FeedbackTriageDrawer: React.FC<FeedbackTriageDrawerProps> = ({
   if (!isOpen || !review) return null;
 
   const handleSaveTriage = async () => {
+    const session = triageSessionRef.current;
     setIsSubmitting(true);
     setErrorMessage(null);
 
@@ -62,12 +66,16 @@ export const FeedbackTriageDrawer: React.FC<FeedbackTriageDrawerProps> = ({
       updatedResult = await passengerReviewService.triageReview(review.id, payload);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Lỗi khi cập nhật trạng thái';
-      setErrorMessage(msg);
+      if (session === triageSessionRef.current) {
+        setErrorMessage(msg);
+      }
     } finally {
-      setIsSubmitting(false);
+      if (session === triageSessionRef.current) {
+        setIsSubmitting(false);
+      }
     }
 
-    if (updatedResult) {
+    if (updatedResult && session === triageSessionRef.current) {
       if (onTriageSuccess) {
         try {
           onTriageSuccess(updatedResult);

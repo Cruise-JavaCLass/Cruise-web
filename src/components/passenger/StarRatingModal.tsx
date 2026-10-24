@@ -32,15 +32,20 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const prevIsOpenRef = useRef<boolean>(isOpen);
+  const sessionRef = useRef(0);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen && !prevIsOpenRef.current) {
+      sessionRef.current += 1;
       setRating(5);
       setHoverRating(0);
       setCategory(defaultCategory);
       setComments('');
       setErrorMessage(null);
+      setIsSubmitting(false);
+    } else if (!isOpen && prevIsOpenRef.current) {
+      sessionRef.current += 1;
     }
     prevIsOpenRef.current = isOpen;
   }, [isOpen, defaultCategory]);
@@ -51,6 +56,7 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const session = sessionRef.current;
     setIsSubmitting(true);
     setErrorMessage(null);
 
@@ -70,12 +76,16 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
       submitSuccess = true;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Không thể gửi đánh giá';
-      setErrorMessage(msg);
+      if (session === sessionRef.current) {
+        setErrorMessage(msg);
+      }
     } finally {
-      setIsSubmitting(false);
+      if (session === sessionRef.current) {
+        setIsSubmitting(false);
+      }
     }
 
-    if (submitSuccess) {
+    if (submitSuccess && session === sessionRef.current) {
       if (onSuccess) {
         try {
           onSuccess();

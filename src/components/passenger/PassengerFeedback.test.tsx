@@ -104,6 +104,64 @@ describe('StarRatingModal (KAN-266 & KAN-441)', () => {
     expect((reloadedInput as HTMLTextAreaElement).value).toBe('');
   });
 
+  it('invalidates stale submission rejection when reopened in a new session', async () => {
+    let rejectPromise: ((err: Error) => void) | null = null;
+    vi.spyOn(passengerReviewService, 'submitReview').mockImplementation(
+      () =>
+        new Promise((_, reject) => {
+          rejectPromise = reject;
+        })
+    );
+
+    const { rerender } = render(
+      <StarRatingModal
+        isOpen={true}
+        onClose={vi.fn()}
+        passengerId={101}
+        passengerName="Bob"
+        cabinNumber="101"
+      />
+    );
+
+    const submitBtn = screen.getByRole('button', { name: 'Gửi Đánh Giá' });
+    fireEvent.click(submitBtn);
+
+    // Modal closes while request is in flight
+    rerender(
+      <StarRatingModal
+        isOpen={false}
+        onClose={vi.fn()}
+        passengerId={101}
+        passengerName="Bob"
+        cabinNumber="101"
+      />
+    );
+
+    // Reopen in a new session
+    rerender(
+      <StarRatingModal
+        isOpen={true}
+        onClose={vi.fn()}
+        passengerId={101}
+        passengerName="Bob"
+        cabinNumber="101"
+      />
+    );
+
+    // Now previous submission rejects
+    if (rejectPromise) {
+      (rejectPromise as (err: Error) => void)(new Error('Late network failure'));
+    }
+
+    await waitFor(() => {
+      // Error message should NOT be shown in the new session
+      expect(screen.queryByText('Late network failure')).not.toBeInTheDocument();
+      // Submit button should be enabled
+      const newSubmitBtn = screen.getByRole('button', { name: 'Gửi Đánh Giá' });
+      expect(newSubmitBtn).not.toBeDisabled();
+    });
+  });
+
   it('does not display submission failure if onSuccess throws', async () => {
     const failingOnSuccess = vi.fn().mockImplementation(() => {
       throw new Error('Callback crash');
@@ -247,5 +305,61 @@ describe('FeedbackTriageDrawer (KAN-440 & KAN-441)', () => {
     expect((updatedTextarea as HTMLTextAreaElement).value).toBe('Existing notes on second review');
     const statusSelect = screen.getByLabelText(/Trạng thái xử lý/);
     expect((statusSelect as HTMLSelectElement).value).toBe('NEW');
+  });
+
+  it('ignores stale triage completion when review selection changes during pending request', async () => {
+    let resolvePromise: ((val: PassengerServiceReviewResponse) => void) | null = null;
+    vi.spyOn(passengerReviewService, 'triageReview').mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolvePromise = resolve;
+        })
+    );
+
+    const onTriageSuccess = vi.fn();
+    const onClose = vi.fn();
+
+    const { rerender } = render(
+      <FeedbackTriageDrawer
+        isOpen={true}
+        onClose={onClose}
+        review={mockReview}
+        onTriageSuccess={onTriageSuccess}
+      />
+    );
+
+    const saveBtn = screen.getByRole('button', { name: 'Lưu Kết Quả Xử Lý' });
+    fireEvent.click(saveBtn);
+
+    // Switch to another review while pending
+    const secondReview: PassengerServiceReviewResponse = {
+      ...mockReview,
+      id: 200,
+      passengerName: 'Jim Halpert',
+      status: 'NEW',
+    };
+
+    rerender(
+      <FeedbackTriageDrawer
+        isOpen={true}
+        onClose={onClose}
+        review={secondReview}
+        onTriageSuccess={onTriageSuccess}
+      />
+    );
+
+    // Previous request resolves
+    if (resolvePromise) {
+      (resolvePromise as (val: PassengerServiceReviewResponse) => void)({
+        ...mockReview,
+        status: 'RESOLVED',
+      });
+    }
+
+    await waitFor(() => {
+      // onTriageSuccess and onClose should NOT be called for stale review 99
+      expect(onTriageSuccess).not.toHaveBeenCalled();
+      expect(onClose).not.toHaveBeenCalled();
+    });
   });
 });

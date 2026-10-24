@@ -15,7 +15,7 @@ export function useFocusTrap(
     onCloseRef.current = onClose;
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!isOpen) return;
 
     previousFocusRef.current = document.activeElement as HTMLElement | null;
@@ -24,6 +24,16 @@ export function useFocusTrap(
     if (initialFocusables && initialFocusables.length > 0) {
       initialFocusables[0].focus();
     }
+
+    return () => {
+      if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
+        previousFocusRef.current.focus();
+      }
+    };
+  }, [isOpen, containerRef]);
+
+  useEffect(() => {
+    if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -68,9 +78,6 @@ export function useFocusTrap(
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
-        previousFocusRef.current.focus();
-      }
     };
   }, [isOpen, containerRef]);
 }
