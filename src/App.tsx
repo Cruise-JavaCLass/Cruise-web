@@ -26,6 +26,7 @@ import { BoardingPassPage } from './pages/passenger/BoardingPassPage';
 import { TerminalEmbarkationPage } from './pages/TerminalEmbarkationPage';
 import { ProviderSettlementDashboard } from './pages/ProviderSettlementDashboard';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { OperationalReportsPage } from './pages/OperationalReportsPage';
 
 export function App() {
   return (
@@ -58,6 +59,7 @@ export function App() {
         <Route path="passengers" element={<PassengersPage />} />
         <Route path="embarkation" element={<TerminalEmbarkationPage />} />
         <Route path="billing/settlement" element={<SettlementPage />} />
+        <Route path="reports/operational" element={<OperationalReportsPage />} />
         <Route path="provider-settlement" element={<ProviderSettlementDashboard />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
