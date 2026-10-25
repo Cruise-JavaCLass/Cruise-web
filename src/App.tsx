@@ -35,6 +35,7 @@ function CruiseAreaPolicyRoute() {
   const shipId = shipIdParam ? Number(shipIdParam) : 1;
   return <CruiseAreaPolicyManager shipId={shipId} />;
 }
+import { OperationalReportsPage } from './pages/OperationalReportsPage';
 
 export function App() {
   return (
@@ -68,6 +69,7 @@ export function App() {
         <Route path="passengers" element={<PassengersPage />} />
         <Route path="embarkation" element={<TerminalEmbarkationPage />} />
         <Route path="billing/settlement" element={<SettlementPage />} />
+        <Route path="reports/operational" element={<OperationalReportsPage />} />
         <Route path="provider-settlement" element={<ProviderSettlementDashboard />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

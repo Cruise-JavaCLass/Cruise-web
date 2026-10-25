@@ -76,6 +76,7 @@ export function MainLayout() {
     { to: '/passengers', label: 'Hành khách & Check-in', icon: Users },
     { to: '/embarkation', label: 'Cảng Đón Khách (Terminal)', icon: Ship },
     { to: '/billing/settlement', label: 'Tất toán & Hoá đơn', icon: Receipt },
+    { to: '/reports/operational', label: 'Báo Cáo Doanh Thu (Audit)', icon: Receipt },
   ];
 
   return (
