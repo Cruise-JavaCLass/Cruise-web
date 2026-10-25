@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { App } from './App';
+import { authService } from './services/authService';
 
 // Mock backend API to prevent async interval timer in tests
 vi.mock('./services/api', () => ({
@@ -16,7 +17,19 @@ vi.mock('./services/api', () => ({
 }));
 
 describe('App Routing Integration Tests', () => {
-  it('renders DashboardPage by default at root "/" route', async () => {
+  beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+    // Default to authenticated crew session for admin integration tests
+    authService.setSession('mock-crew-token', {
+      id: 1,
+      username: 'admin',
+      fullName: 'Huy Trần Gia',
+      role: 'SYSTEM_ADMIN',
+    });
+  });
+
+  it('renders DashboardPage by default at root "/" route for authenticated crew', async () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <App />
@@ -149,6 +162,38 @@ describe('App Routing Integration Tests', () => {
       expect(screen.getByText('GRAND PEARL')).toBeInTheDocument();
       expect(screen.getByText('Guest Experience Portal')).toBeInTheDocument();
       expect(screen.queryByText('CRUISE MANAGER')).not.toBeInTheDocument();
+    });
+  });
+
+  it('redirects unauthenticated users to "/login" when attempting to access protected admin route "/ships"', async () => {
+    localStorage.clear();
+    sessionStorage.clear();
+
+    render(
+      <MemoryRouter initialEntries={['/ships']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('CRUISE MANAGER')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Đăng nhập Vận Hành/i })).toBeInTheDocument();
+      // Protected content must not render
+      expect(screen.queryByRole('heading', { level: 2, name: /Quản Lý Đội Tàu Du Lịch/i })).not.toBeInTheDocument();
+    });
+  });
+
+  it('renders LoginPage directly when navigating to "/login"', async () => {
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('CRUISE MANAGER')).toBeInTheDocument();
+      expect(screen.getByText(/FLEET OPERATIONS & CREW CONSOLE/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Đăng nhập Vận Hành/i })).toBeInTheDocument();
     });
   });
 });

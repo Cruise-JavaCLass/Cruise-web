@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, Outlet, Link } from 'react-router-dom';
+import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom';
 import {
   Compass,
   Ship,
@@ -15,14 +15,24 @@ import {
   Server,
   Navigation,
   Receipt,
+  LogOut,
 } from 'lucide-react';
 import { checkBackendHealth, getBackendInfo } from '../services/api';
 import type { SystemHealth, SystemInfo } from '../services/api';
+import { authService } from '../services/authService';
 
 export function MainLayout() {
+  const navigate = useNavigate();
   const [backendHealth, setBackendHealth] = useState<SystemHealth | null>(null);
   const [backendInfo, setBackendInfo] = useState<SystemInfo | null>(null);
   const [isCheckingBackend, setIsCheckingBackend] = useState<boolean>(false);
+
+  const currentUser = authService.getCurrentUser() || {
+    id: 1,
+    username: 'admin',
+    fullName: 'Huy Trần Gia',
+    role: 'SYSTEM_ADMIN' as const,
+  };
 
   const fetchStatus = async () => {
     setIsCheckingBackend(true);
@@ -37,6 +47,11 @@ export function MainLayout() {
     const interval = setInterval(fetchStatus, 15000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleLogout = async () => {
+    await authService.logout();
+    navigate('/login', { replace: true });
+  };
 
   const navItems = [
     { to: '/', label: 'Dashboard Tổng quan', icon: Compass },
@@ -175,13 +190,22 @@ export function MainLayout() {
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-cyan-400 rounded-full" />
             </button>
             <div className="flex items-center gap-2.5 pl-2 border-l border-white/5">
-              <div className="w-8 h-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center font-display italic text-sm text-white">
-                HT
+              <div className="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center font-display text-xs font-bold text-cyan-300">
+                {currentUser.fullName ? currentUser.fullName.slice(0, 2).toUpperCase() : 'HT'}
               </div>
               <div className="text-left hidden sm:block">
-                <p className="text-xs font-medium text-slate-200 leading-tight">Huy Trần Gia</p>
-                <p className="text-[10px] font-mono text-slate-500">Fleet Director</p>
+                <p className="text-xs font-medium text-slate-200 leading-tight">{currentUser.fullName}</p>
+                <p className="text-[10px] font-mono text-cyan-400">{currentUser.role}</p>
               </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="p-1.5 ml-1 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                title="Đăng xuất thủy thủ đoàn"
+                aria-label="Đăng xuất"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </header>

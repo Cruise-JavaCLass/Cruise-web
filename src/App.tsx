@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { MainLayout } from './layouts/MainLayout';
 import { PassengerLayout } from './layouts/PassengerLayout';
+import { AdminAuthGuard } from './components/auth/AdminAuthGuard';
+import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ActivitiesPage } from './pages/ActivitiesPage';
 import { ExcursionsPage } from './pages/ExcursionsPage';
@@ -51,33 +53,38 @@ export function App() {
         <Route path="passenger" element={<Navigate to="/passenger-home" replace />} />
       </Route>
 
-      {/* Maritime Operations & Administrative Fleet Console */}
-      <Route path="/" element={<MainLayout />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="ships" element={<ShipsPage />} />
-        <Route path="ships/:id" element={<ShipDetailPage />} />
-        <Route path="admin/cruise-area-policies" element={<CruiseAreaPolicyRoute />} />
-        <Route path="itinerary" element={<ItineraryPage />} />
-        <Route path="excursions" element={<ExcursionsPage />} />
-        <Route path="excursions/:id" element={<ExcursionDetailPage />} />
-        <Route path="excursion-dispatcher" element={<ExcursionDispatcherDashboard />} />
-        <Route path="excursions/:id/roster" element={<ExcursionRosterPage />} />
-        <Route path="excursions/roster" element={<ExcursionRosterPage />} />
-        <Route path="excursion-attendance" element={<ExcursionAttendancePage />} />
-        <Route path="excursion-analytics" element={<ExcursionAnalyticsDashboard />} />
-        <Route path="activities" element={<ActivitiesPage />} />
-        <Route path="activities/:id" element={<ActivityDetailPage />} />
-        <Route path="activities/:id/attendance" element={<ActivityAttendancePage />} />
-        <Route path="activity-attendance" element={<ActivityAttendancePage />} />
-        <Route path="activities/:id/roster" element={<ActivityRosterPage />} />
-        <Route path="activity-roster" element={<ActivityRosterPage />} />
-        <Route path="pos" element={<PosPage />} />
-        <Route path="passengers" element={<PassengersPage />} />
-        <Route path="embarkation" element={<TerminalEmbarkationPage />} />
-        <Route path="billing/settlement" element={<SettlementPage />} />
-        <Route path="reports/operational" element={<OperationalReportsPage />} />
-        <Route path="provider-settlement" element={<ProviderSettlementDashboard />} />
-        <Route path="*" element={<NotFoundPage />} />
+      {/* Crew & Admin Authentication */}
+      <Route path="login" element={<LoginPage />} />
+
+      {/* Protected Maritime Operations & Administrative Fleet Console */}
+      <Route element={<AdminAuthGuard />}>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="ships" element={<ShipsPage />} />
+          <Route path="ships/:id" element={<ShipDetailPage />} />
+          <Route path="admin/cruise-area-policies" element={<CruiseAreaPolicyRoute />} />
+          <Route path="itinerary" element={<ItineraryPage />} />
+          <Route path="excursions" element={<ExcursionsPage />} />
+          <Route path="excursions/:id" element={<ExcursionDetailPage />} />
+          <Route path="excursion-dispatcher" element={<ExcursionDispatcherDashboard />} />
+          <Route path="excursions/:id/roster" element={<ExcursionRosterPage />} />
+          <Route path="excursions/roster" element={<ExcursionRosterPage />} />
+          <Route path="excursion-attendance" element={<ExcursionAttendancePage />} />
+          <Route path="excursion-analytics" element={<ExcursionAnalyticsDashboard />} />
+          <Route path="activities" element={<ActivitiesPage />} />
+          <Route path="activities/:id" element={<ActivityDetailPage />} />
+          <Route path="activities/:id/attendance" element={<ActivityAttendancePage />} />
+          <Route path="activity-attendance" element={<ActivityAttendancePage />} />
+          <Route path="activities/:id/roster" element={<ActivityRosterPage />} />
+          <Route path="activity-roster" element={<ActivityRosterPage />} />
+          <Route path="pos" element={<PosPage />} />
+          <Route path="passengers" element={<PassengersPage />} />
+          <Route path="embarkation" element={<TerminalEmbarkationPage />} />
+          <Route path="billing/settlement" element={<SettlementPage />} />
+          <Route path="reports/operational" element={<OperationalReportsPage />} />
+          <Route path="provider-settlement" element={<ProviderSettlementDashboard />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
       </Route>
     </Routes>
   );
