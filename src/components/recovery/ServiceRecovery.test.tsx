@@ -55,7 +55,7 @@ const mockVoucher: ServiceRecoveryObcVoucher = {
   apologyLetterBody: 'We regret the disruption experienced during your sea voyage.',
   authorizedBy: 'DIRECTOR_MARCUS',
   issuedAt: '2026-10-22T08:30:00Z',
-  expiresAt: '2026-10-25T08:30:00Z',
+  expiresAt: '2028-10-25T08:30:00Z',
   createdAt: '2026-10-22T08:30:00Z',
 };
 
@@ -200,6 +200,23 @@ describe('Real-time Service Recovery & OBC Compensation UI (KAN-453, KAN-454, KA
       // Callback should NOT be called because voucher changed
       expect(onClaimed).not.toHaveBeenCalled();
       expect(screen.queryByText('TX-STALE-VOUCHER-A')).not.toBeInTheDocument();
+    });
+    it('disables claim button when voucher is expired or in non-claimable status', () => {
+      const expiredVoucher: ServiceRecoveryObcVoucher = {
+        ...mockVoucher,
+        expiresAt: '2020-01-01T00:00:00Z',
+      };
+      const { rerender } = render(<ApologyVoucherCard voucher={expiredVoucher} />);
+      const expiredBtn = screen.getByRole('button', { name: /Accept Apology & Claim/i });
+      expect(expiredBtn).toBeDisabled();
+
+      const revokedVoucher: ServiceRecoveryObcVoucher = {
+        ...mockVoucher,
+        status: 'REVOKED' as any,
+      };
+      rerender(<ApologyVoucherCard voucher={revokedVoucher} />);
+      const revokedBtn = screen.getByRole('button', { name: /Accept Apology & Claim/i });
+      expect(revokedBtn).toBeDisabled();
     });
   });
 });
