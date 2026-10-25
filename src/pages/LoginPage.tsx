@@ -53,38 +53,34 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#02050e] text-slate-100 flex flex-col justify-center items-center p-4 relative overflow-hidden noise-overlay">
-      {/* Subtle ambient lighting */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
-
+    <div className="min-h-screen bg-[#F7F5F0] text-[#171717] flex flex-col justify-center items-center p-4 relative overflow-hidden dark:bg-slate-900 dark:text-white">
       {/* Top back to guest portal */}
       <div className="w-full max-w-md mb-4 flex items-center justify-between">
         <Link
           to="/passenger-home"
-          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-cyan-300 transition-colors"
+          className="inline-flex items-center gap-1.5 border-2 border-[#171717] bg-white px-3 py-1 text-xs font-black uppercase text-black shadow-[2px_2px_0px_#171717] hover:bg-[#E7E4DC] transition-all active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-800 dark:text-white"
         >
           <ArrowLeft className="w-4 h-4" /> Về Cổng Khách Hàng (Guest Portal)
         </Link>
-        <span className="text-[10px] font-mono text-cyan-400/80 uppercase tracking-widest bg-cyan-950/40 border border-cyan-500/20 px-2.5 py-0.5 rounded-full">
+        <span className="border border-[#171717] bg-[#D9FF43] text-black font-black uppercase px-2.5 py-0.5 text-[10px] tracking-wider shadow-[1px_1px_0px_#171717]">
           Maritime Security
         </span>
       </div>
 
-      {/* Login Card */}
-      <div className="w-full max-w-md bg-[#050b1a]/90 backdrop-blur-2xl border border-cyan-500/20 rounded-3xl p-6 sm:p-8 shadow-2xl relative z-10">
+      {/* Login Card - Neo-Brutalist Masterpiece */}
+      <div className="w-full max-w-md border-4 border-[#171717] bg-white p-6 sm:p-8 shadow-[8px_8px_0px_#171717] relative z-10 dark:bg-slate-800">
         {/* Header & Brand */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500/20 via-blue-500/10 to-transparent border border-cyan-400/30 shadow-lg shadow-cyan-500/10 mb-3">
-            <Ship className="w-7 h-7 text-cyan-400" />
+          <div className="inline-flex items-center justify-center w-14 h-14 border-2 border-[#171717] bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717] mb-3">
+            <Ship className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold font-serif tracking-wider text-white">
+          <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-black dark:text-white">
             CRUISE MANAGER
           </h1>
-          <p className="text-xs text-cyan-400 font-mono tracking-widest mt-0.5">
+          <p className="text-xs font-mono font-black text-[#3155E7] uppercase tracking-widest mt-1 dark:text-[#D9FF43]">
             FLEET OPERATIONS & CREW CONSOLE
           </p>
-          <p className="text-xs text-slate-400 mt-2">
+          <p className="text-xs font-medium text-neutral-600 mt-2 dark:text-neutral-400">
             Đăng nhập bằng tài khoản Thủy thủ đoàn hoặc Quản trị viên để truy cập bảng điều khiển vận hành.
           </p>
         </div>
@@ -93,9 +89,9 @@ export const LoginPage: React.FC = () => {
         {errorMessage && (
           <div
             role="alert"
-            className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2.5"
+            className="mb-5 p-3.5 border-2 border-[#171717] bg-[#DC2626] text-white text-xs font-bold flex items-center gap-2.5 shadow-[3px_3px_0px_#171717]"
           >
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-white shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -103,11 +99,11 @@ export const LoginPage: React.FC = () => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="username-input" className="block text-xs font-mono text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label htmlFor="username-input" className="block text-xs font-black uppercase tracking-wider text-black mb-1.5 dark:text-neutral-300">
               Tên đăng nhập / Mã định danh
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
                 <User className="w-4 h-4" />
               </div>
               <input
@@ -117,18 +113,18 @@ export const LoginPage: React.FC = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Ví dụ: admin hoặc ops.manager"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 hover:border-cyan-500/30 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 text-sm text-white placeholder-slate-500 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 border-2 border-[#171717] bg-[#F7F5F0] text-xs font-bold text-black placeholder-neutral-500 shadow-[2px_2px_0px_#171717] transition-all focus:bg-white focus:outline-none dark:bg-slate-900 dark:text-white"
                 disabled={isLoading}
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="password-input" className="block text-xs font-mono text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label htmlFor="password-input" className="block text-xs font-black uppercase tracking-wider text-black mb-1.5 dark:text-neutral-300">
               Mật khẩu xác thực
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
                 <Lock className="w-4 h-4" />
               </div>
               <input
@@ -138,13 +134,13 @@ export const LoginPage: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 hover:border-cyan-500/30 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 text-sm text-white placeholder-slate-500 transition-all"
+                className="w-full pl-10 pr-10 py-2.5 border-2 border-[#171717] bg-[#F7F5F0] text-xs font-bold text-black placeholder-neutral-500 shadow-[2px_2px_0px_#171717] transition-all focus:bg-white focus:outline-none dark:bg-slate-900 dark:text-white"
                 disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 transition-colors"
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-500 hover:text-black transition-colors dark:hover:text-white"
                 aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiển thị mật khẩu'}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -155,7 +151,7 @@ export const LoginPage: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 disabled:opacity-50 mt-2 cursor-pointer"
+            className="w-full py-3 px-4 border-2 border-[#171717] bg-[#171717] hover:bg-[#3155E7] text-white text-xs font-black uppercase tracking-wider shadow-[4px_4px_0px_#3155E7] transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2 cursor-pointer active:translate-x-[2px] active:translate-y-[2px]"
           >
             {isLoading ? (
               <span>Đang xác thực...</span>
@@ -169,30 +165,30 @@ export const LoginPage: React.FC = () => {
         </form>
 
         {/* Quick Demo Credentials Assistant */}
-        <div className="mt-6 pt-5 border-t border-white/5">
-          <p className="text-[11px] font-mono text-slate-400 flex items-center gap-1.5 mb-2.5">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="mt-6 pt-5 border-t-2 border-[#171717] dark:border-slate-700">
+          <p className="text-[11px] font-mono font-bold uppercase text-neutral-600 flex items-center gap-1.5 mb-2.5 dark:text-neutral-400">
+            <Sparkles className="w-3.5 h-3.5 text-[#3155E7] dark:text-[#D9FF43]" />
             Tài khoản kiểm thử nhanh (Demo Crew Roles):
           </p>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => handleQuickFill('admin', 'admin123')}
-              className="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.03] hover:bg-cyan-500/10 border border-white/10 hover:border-cyan-500/30 text-slate-300 hover:text-cyan-300 transition-all font-mono"
+              className="text-[11px] px-3 py-1 border-2 border-[#171717] bg-[#F7F5F0] hover:bg-[#E7E4DC] text-black font-black uppercase shadow-[2px_2px_0px_#171717] transition-all active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-700 dark:text-white"
             >
               Admin Toàn Quyền
             </button>
             <button
               type="button"
               onClick={() => handleQuickFill('ops.manager', 'ops123')}
-              className="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.03] hover:bg-cyan-500/10 border border-white/10 hover:border-cyan-500/30 text-slate-300 hover:text-cyan-300 transition-all font-mono"
+              className="text-[11px] px-3 py-1 border-2 border-[#171717] bg-[#F7F5F0] hover:bg-[#E7E4DC] text-black font-black uppercase shadow-[2px_2px_0px_#171717] transition-all active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-700 dark:text-white"
             >
               Ops Manager
             </button>
             <button
               type="button"
               onClick={() => handleQuickFill('coordinator', 'coord123')}
-              className="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.03] hover:bg-cyan-500/10 border border-white/10 hover:border-cyan-500/30 text-slate-300 hover:text-cyan-300 transition-all font-mono"
+              className="text-[11px] px-3 py-1 border-2 border-[#171717] bg-[#F7F5F0] hover:bg-[#E7E4DC] text-black font-black uppercase shadow-[2px_2px_0px_#171717] transition-all active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-700 dark:text-white"
             >
               Điều Phối Viên
             </button>
@@ -200,8 +196,8 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* Security Footer Notice */}
-        <div className="mt-5 text-center text-[10px] text-slate-500 font-mono flex items-center justify-center gap-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400/80" />
+        <div className="mt-5 text-center text-[10px] text-neutral-600 font-mono font-bold uppercase flex items-center justify-center gap-1.5 dark:text-neutral-400">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
           <span>Hệ thống bảo vệ an ninh hàng hải quốc tế SOLAS</span>
         </div>
       </div>

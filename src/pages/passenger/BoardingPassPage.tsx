@@ -44,17 +44,17 @@ export const BoardingPassPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-slate-100 p-4 md:p-8 flex flex-col justify-center items-center">
-      <div className="w-full max-w-md mb-4 flex items-center justify-between">
+    <div className="min-h-screen bg-[#F7F5F0] text-[#171717] p-4 md:p-8 flex flex-col justify-center items-center dark:bg-slate-900 dark:text-white">
+      <div className="w-full max-w-md mb-6 flex items-center justify-between">
         <Link
           to="/passenger-home"
-          className="inline-flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 transition"
+          className="inline-flex items-center gap-1.5 border-2 border-[#171717] bg-white px-3.5 py-1.5 text-xs font-black uppercase text-black shadow-[2px_2px_0px_#171717] hover:bg-[#E7E4DC] transition active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-800 dark:text-white"
         >
           <ArrowLeft className="w-4 h-4" /> Quay lại Trang Chủ
         </Link>
         <button
           onClick={() => { void fetchProfile(); }}
-          className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200 transition"
+          className="inline-flex items-center gap-1 border-2 border-[#171717] bg-white px-3.5 py-1.5 text-xs font-black uppercase text-black shadow-[2px_2px_0px_#171717] hover:bg-[#E7E4DC] transition active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-800 dark:text-white"
         >
           <RefreshCw className="w-3.5 h-3.5" /> Làm mới
         </button>
@@ -62,14 +62,14 @@ export const BoardingPassPage: React.FC = () => {
 
       {loading && (
         <div className="flex flex-col items-center justify-center p-12">
-          <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin mb-3" />
-          <p className="text-sm text-slate-400">Đang tạo thẻ lên tàu kỹ thuật số...</p>
+          <RefreshCw className="w-8 h-8 text-[#3155E7] animate-spin mb-3" />
+          <p className="text-sm font-bold uppercase tracking-wider text-neutral-500">Đang tạo thẻ lên tàu kỹ thuật số...</p>
         </div>
       )}
 
       {error && !loading && (
-        <div className="max-w-md w-full p-4 rounded-xl bg-rose-950/30 border border-rose-500/40 text-rose-300 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 shrink-0" />
+        <div className="max-w-md w-full p-4 border-2 border-[#171717] bg-rose-100 text-rose-800 shadow-[4px_4px_0px_#171717] flex items-center gap-3 font-bold">
+          <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
           <p className="text-xs">{error}</p>
         </div>
       )}

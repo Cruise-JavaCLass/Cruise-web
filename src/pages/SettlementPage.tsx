@@ -201,24 +201,26 @@ export const SettlementPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-[10px] font-mono uppercase tracking-widest text-cyan-400">
-          KAN-241 • Bill Settlement
-        </p>
-        <h1 className="text-2xl font-bold text-white mt-1">Tất toán &amp; Hoá đơn</h1>
-        <p className="text-sm text-slate-400 mt-1">
+      {/* Header — Editorial Broadside */}
+      <div className="neo-card bg-white p-6 shadow-[6px_6px_0px_#171717]">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="neo-badge bg-[#3155E7] text-white">BILL SETTLEMENT & INVOICING</span>
+          <span className="text-[10px] font-mono text-[#171717]/60 font-bold">• FOLIO AUDIT & PDF RELEASE</span>
+        </div>
+        <h1 className="text-xl sm:text-2xl font-display font-black text-[#171717] uppercase tracking-tight">Tất toán &amp; Hoá đơn</h1>
+        <p className="text-xs sm:text-sm font-mono text-[#171717]/70 mt-1">
           Tra cứu folio theo cabin, kiểm tra khiếu nại và phát hành hoá đơn PDF.
         </p>
       </div>
 
       <form
         onSubmit={handleLoad}
-        className="bg-white/[0.02] border border-white/10 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-end gap-3"
+        className="neo-card bg-white p-5 flex flex-col sm:flex-row sm:items-end gap-3 shadow-[4px_4px_0px_#171717]"
       >
         <div className="flex-1">
           <label
             htmlFor="cabin-number"
-            className="block text-[11px] font-mono uppercase tracking-widest text-slate-400 mb-1.5"
+            className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[#171717] mb-1.5"
           >
             Số cabin
           </label>
@@ -228,13 +230,13 @@ export const SettlementPage: React.FC = () => {
             value={cabinInput}
             onChange={(event) => setCabinInput(event.target.value)}
             placeholder="CABIN-7012"
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-200 font-mono focus:outline-none focus:border-cyan-500/60"
+            className="neo-input w-full text-xs font-mono font-bold bg-[#F7F5F0]"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 text-slate-950 font-semibold text-sm hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+          className="neo-btn neo-btn-primary py-2.5 px-5 text-xs flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSearch className="w-4 h-4" />}
           Tải folio
@@ -244,9 +246,9 @@ export const SettlementPage: React.FC = () => {
       {successMessage && (
         <div
           role="status"
-          className="flex items-start gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-4 text-emerald-300 text-sm"
+          className="flex items-start gap-2 bg-[#D9FF43] border-2 border-[#171717] shadow-[3px_3px_0px_#171717] p-4 text-[#171717] text-xs font-mono font-bold"
         >
-          <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5 text-emerald-400" />
+          <CheckCircle2 className="w-5 h-5 shrink-0 text-[#171717]" />
           <span>{successMessage}</span>
         </div>
       )}
@@ -254,9 +256,9 @@ export const SettlementPage: React.FC = () => {
       {disputeNotice && (
         <div
           role="alert"
-          className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-amber-300 text-sm"
+          className="flex items-start gap-2 bg-amber-300 border-2 border-[#171717] shadow-[3px_3px_0px_#171717] p-4 text-[#171717] text-xs font-mono font-bold"
         >
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-amber-400" />
+          <AlertCircle className="w-5 h-5 shrink-0 text-[#171717]" />
           <span>{disputeNotice}</span>
         </div>
       )}
@@ -277,7 +279,7 @@ export const SettlementPage: React.FC = () => {
             currency={preview.currency}
           />
 
-          <div className="flex items-center justify-end gap-3">
+          <div className="flex items-center justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={() => {
@@ -286,7 +288,7 @@ export const SettlementPage: React.FC = () => {
                 }
               }}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-sm hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              className="neo-btn neo-btn-secondary py-2.5 px-4 text-xs flex items-center gap-2 disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               Làm mới
@@ -295,7 +297,7 @@ export const SettlementPage: React.FC = () => {
               type="button"
               onClick={handleOpenModal}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-semibold text-sm hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              className="neo-btn neo-btn-acid py-2.5 px-5 text-xs flex items-center gap-2 disabled:opacity-50"
             >
               <Receipt className="w-4 h-4" />
               Tất toán
@@ -321,3 +323,4 @@ export const SettlementPage: React.FC = () => {
     </div>
   );
 };
+export default SettlementPage;

@@ -4,18 +4,18 @@ import { Compass, Home } from 'lucide-react';
 export function NotFoundPage() {
   return (
     <div className="min-h-[60vh] flex items-center justify-center text-center p-6">
-      <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl">
-        <div className="w-14 h-14 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <Compass className="w-7 h-7" />
+      <div className="max-w-md w-full border-4 border-[#171717] bg-white p-8 shadow-[8px_8px_0px_#171717] dark:bg-slate-800">
+        <div className="w-16 h-16 border-2 border-[#171717] bg-[#D9FF43] text-black flex items-center justify-center mx-auto mb-4 shadow-[3px_3px_0px_#171717]">
+          <Compass className="w-8 h-8" />
         </div>
-        <h2 className="text-3xl font-extrabold text-white mb-2">404</h2>
-        <p className="text-base font-semibold text-slate-300 mb-2">Trang không tồn tại</p>
-        <p className="text-xs text-slate-400 mb-6">
+        <h2 className="text-4xl font-black uppercase text-[#171717] mb-1 tracking-tight dark:text-white">404</h2>
+        <p className="text-sm font-black uppercase tracking-wider text-[#3155E7] mb-2 dark:text-[#D9FF43]">Trang không tồn tại</p>
+        <p className="text-xs font-medium text-neutral-600 mb-6 dark:text-neutral-400">
           Hải trình của bạn có vẻ đã đi chệch hướng. Vui lòng quay trở lại bảng điều khiển trung tâm.
         </p>
         <Link
           to="/"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 transition-all"
+          className="inline-flex items-center gap-2 px-6 py-2.5 border-2 border-[#171717] bg-[#171717] hover:bg-[#3155E7] text-white text-xs font-black uppercase tracking-wider shadow-[3px_3px_0px_#171717] transition-all active:translate-x-[1px] active:translate-y-[1px]"
         >
           <Home className="w-4 h-4" /> Về Trang Chủ
         </Link>

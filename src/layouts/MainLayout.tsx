@@ -16,6 +16,7 @@ import {
   Navigation,
   Receipt,
   LogOut,
+  ArrowUpRight,
 } from 'lucide-react';
 import { checkBackendHealth, getBackendInfo } from '../services/api';
 import type { SystemHealth, SystemInfo } from '../services/api';
@@ -54,49 +55,59 @@ export function MainLayout() {
   };
 
   const navItems = [
-    { to: '/', label: 'Dashboard Tổng quan', icon: Compass },
-    { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship },
-    { to: '/admin/cruise-area-policies', label: 'Quản lý Khu vực & Chính sách', icon: Ship },
-    { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin },
-    { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation },
-    { to: '/excursion-attendance', label: 'Điểm Danh Tour Bờ', icon: Users },
-    { to: '/activities', label: 'Hoạt động & Excursion', icon: Activity },
-    { to: '/pos', label: 'POS & Chi tiêu Onboard', icon: CreditCard },
-    { to: '/passengers', label: 'Hành khách & Check-in', icon: Users },
-    { to: '/embarkation', label: 'Cảng Đón Khách (Terminal)', icon: Ship },
-    { to: '/billing/settlement', label: 'Tất toán & Hoá đơn', icon: Receipt },
-    { to: '/reports/operational', label: 'Báo Cáo Doanh Thu (Audit)', icon: Receipt },
+    { to: '/', label: 'Dashboard Tổng quan', icon: Compass, code: '01' },
+    { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship, code: '02' },
+    { to: '/admin/cruise-area-policies', label: 'Khu vực & Chính sách', icon: Ship, code: '03' },
+    { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin, code: '04' },
+    { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation, code: '05' },
+    { to: '/excursion-attendance', label: 'Điểm Danh Tour Bờ', icon: Users, code: '06' },
+    { to: '/activities', label: 'Hoạt động & Excursion', icon: Activity, code: '07' },
+    { to: '/pos', label: 'POS & Chi tiêu Onboard', icon: CreditCard, code: '08' },
+    { to: '/passengers', label: 'Hành khách & Check-in', icon: Users, code: '09' },
+    { to: '/embarkation', label: 'Cảng Đón Khách (Terminal)', icon: Ship, code: '10' },
+    { to: '/billing/settlement', label: 'Tất toán & Hoá đơn', icon: Receipt, code: '11' },
+    { to: '/reports/operational', label: 'Báo Cáo Doanh Thu (Audit)', icon: Receipt, code: '12' },
   ];
 
   return (
-    <div className="min-h-screen bg-[#000000] text-slate-100 flex flex-col md:flex-row noise-overlay antialiased selection:bg-cyan-500/25 selection:text-cyan-200">
-      {/* Reference Architectural Sidebar */}
-      <aside className="w-full md:w-64 bg-[#030303] backdrop-blur-2xl border-r border-white/5 p-5 flex flex-col justify-between shrink-0 shadow-2xl z-30">
+    <div className="min-h-screen bg-[#F7F5F0] text-[#171717] flex flex-col md:flex-row editorial-grid antialiased selection:bg-[#D9FF43] selection:text-[#171717]">
+      {/* Editorial Architectural Neo-Brutalist Sidebar */}
+      <aside className="w-full md:w-68 bg-[#FFFFFF] border-r-2 border-[#171717] p-4 sm:p-5 flex flex-col justify-between shrink-0 shadow-[4px_0px_0px_#171717] z-30">
         <div>
-          {/* Brand & Identity — Reference Style */}
-          <div className="flex items-center gap-3 mb-8 px-1">
-            <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner group">
-              <span className="font-serif italic text-xl text-white font-semibold group-hover:scale-110 transition-transform">C</span>
+          {/* Brand & Editorial Stamp */}
+          <div className="flex items-center gap-3 mb-6 p-2 border-2 border-[#171717] bg-[#E7E4DC] shadow-[2px_2px_0px_#171717]">
+            <div className="w-10 h-10 bg-[#171717] text-[#D9FF43] border border-[#171717] flex items-center justify-center font-serif text-2xl font-black italic shadow-inner">
+              C
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-display font-bold text-sm tracking-widest text-white leading-none uppercase">CRUISE MANAGER</span>
+                <span className="font-display font-black text-sm tracking-tighter text-[#171717] leading-none uppercase">
+                  CRUISE MANAGER
+                </span>
               </div>
-              <p className="text-[10px] font-mono text-cyan-400 font-medium tracking-widest mt-1">MARITIME COMPUTE</p>
+              <p className="text-[10px] font-mono font-bold text-[#3155E7] tracking-wider mt-0.5 uppercase">
+                MARITIME COMPUTE
+              </p>
             </div>
           </div>
 
-          {/* Active Ship Status Widget */}
-          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3 mb-6 relative overflow-hidden group">
-            <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
-              <span className="flex items-center gap-1.5 text-slate-200 font-medium text-xs">
-                <Ship className="w-3.5 h-3.5 text-cyan-400" /> Grand Pearl Voyager
+          {/* Active Ship Indicator Card */}
+          <div className="bg-[#FFFFFF] border-2 border-[#171717] p-3 mb-5 shadow-[3px_3px_0px_#171717]">
+            <div className="flex items-center justify-between text-xs mb-1">
+              <span className="flex items-center gap-1.5 text-[#171717] font-bold text-xs uppercase font-display">
+                <Ship className="w-3.5 h-3.5 text-[#3155E7]" /> Grand Pearl Voyager
               </span>
-              <span className="text-[9px] font-mono bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-1.5 py-0.5 rounded tracking-wide uppercase">
+              <span className="neo-badge bg-[#D9FF43] text-[#171717]">
                 Sailing
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 font-mono">Route: Hạ Long — Đà Nẵng — Phú Quốc</p>
+            <p className="text-[10px] text-[#171717]/70 font-mono font-medium">Hạ Long — Đà Nẵng — Phú Quốc</p>
+          </div>
+
+          {/* Navigation Section Title */}
+          <div className="flex items-center justify-between text-[10px] font-mono font-bold uppercase tracking-widest text-[#171717]/60 px-1 mb-2">
+            <span>Navigation Index</span>
+            <span>[12]</span>
           </div>
 
           {/* Navigation Links */}
@@ -108,99 +119,103 @@ export function MainLayout() {
                   key={item.to}
                   to={item.to}
                   className={({ isActive }) =>
-                    `w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs tracking-wide transition-all ${
+                    `w-full flex items-center justify-between px-3 py-2 text-xs font-mono transition-all ${
                       isActive
-                        ? 'bg-white/10 text-white font-medium border border-white/15 shadow-sm'
-                        : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                        ? 'bg-[#D9FF43] text-[#171717] font-black border-2 border-[#171717] shadow-[2.5px_2.5px_0px_#171717] translate-x-1'
+                        : 'text-[#171717] hover:bg-[#E7E4DC] hover:translate-x-0.5 border-2 border-transparent font-bold'
                     }`
                   }
                 >
-                  <Icon className="w-4 h-4 shrink-0 opacity-80" />
-                  <span>{item.label}</span>
+                  <div className="flex items-center gap-2.5 truncate">
+                    <Icon className="w-4 h-4 shrink-0 text-[#171717]" />
+                    <span className="truncate">{item.label}</span>
+                  </div>
+                  <span className="text-[9px] font-mono opacity-50 shrink-0 ml-1">{item.code}</span>
                 </NavLink>
               );
             })}
           </nav>
         </div>
 
-        {/* Backend Connectivity Status */}
-        <div className="mt-6 pt-5 border-t border-white/5 text-xs">
+        {/* Backend Gateway Monitor */}
+        <div className="mt-6 pt-4 border-t-2 border-[#171717] text-xs">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-slate-400 flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider">
-              <Server className="w-3 h-3 text-slate-400" /> Backend Gateway
+            <span className="text-[#171717] flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider">
+              <Server className="w-3 h-3 text-[#3155E7]" /> Backend Gateway
             </span>
             <button
               onClick={fetchStatus}
               disabled={isCheckingBackend}
-              className="text-slate-400 hover:text-cyan-400 transition-colors p-1 cursor-pointer"
+              className="p-1 border border-[#171717] bg-[#E7E4DC] hover:bg-[#D9FF43] shadow-[1px_1px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5 transition-colors cursor-pointer"
               title="Ping Backend"
             >
-              <RefreshCw className={`w-3 h-3 ${isCheckingBackend ? 'animate-spin text-cyan-400' : ''}`} />
+              <RefreshCw className={`w-3 h-3 text-[#171717] ${isCheckingBackend ? 'animate-spin' : ''}`} />
             </button>
           </div>
           <div
-            className={`flex items-center gap-2 p-2.5 rounded-xl border text-[11px] font-mono ${
+            className={`flex items-center gap-2 p-2 border-2 border-[#171717] text-[10px] font-mono font-bold shadow-[2px_2px_0px_#171717] ${
               backendHealth
-                ? 'bg-emerald-950/20 border-emerald-800/40 text-emerald-300'
-                : 'bg-rose-950/20 border-rose-800/40 text-rose-300'
+                ? 'bg-[#10B981]/20 text-[#171717]'
+                : 'bg-[#DC2626]/20 text-[#171717]'
             }`}
           >
             {backendHealth ? (
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#059669] shrink-0" />
             ) : (
-              <XCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+              <XCircle className="w-3.5 h-3.5 text-[#DC2626] shrink-0" />
             )}
             <span className="truncate">
               {backendHealth ? `Online (Port 8080 - ${backendHealth.status})` : 'Offline (localhost:8080)'}
             </span>
           </div>
           {backendInfo && (
-            <p className="text-[10px] text-cyan-400/80 mt-1.5 text-center truncate font-mono">
+            <p className="text-[9px] text-[#3155E7] mt-1 text-center truncate font-mono font-bold">
               {backendInfo.projectName} ({backendInfo.version})
             </p>
           )}
-          <p className="text-[10px] text-slate-600 mt-1 text-center font-mono">v0-architecture • 2026.1</p>
+          <p className="text-[9px] text-[#171717]/50 mt-1 text-center font-mono font-semibold">EDITION 2026.1 • PRO-SYS</p>
         </div>
       </aside>
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-h-screen overflow-y-auto relative">
-        {/* Top Navbar */}
-        <header className="h-16 border-b border-white/5 bg-[#0a0c13]/60 backdrop-blur-2xl px-6 flex items-center justify-between sticky top-0 z-20">
+        {/* Top Editorial Navbar */}
+        <header className="h-16 border-b-2 border-[#171717] bg-[#FFFFFF] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-20 shadow-[0_3px_0px_#171717]">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono bg-white/[0.04] text-slate-300 border border-white/10 px-3 py-1 rounded-full flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-              Autonomous Cruise Operations
+            <span className="neo-badge bg-[#E7E4DC] text-[#171717] flex items-center gap-1.5">
+              <span className="w-2 h-2 bg-[#3155E7] border border-[#171717]"></span>
+              FLEET TELEMETRY ACTIVE
             </span>
           </div>
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link
               to="/passenger-home"
-              className="hidden md:flex items-center gap-1.5 text-xs font-mono text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-3 py-1.5 rounded-xl transition-all"
+              className="neo-btn neo-btn-acid text-[11px] py-1.5 px-3 flex items-center gap-1"
               title="Mở Cổng Trải Nghiệm Khách Hàng"
             >
-              <span>Cổng Khách Hàng ↗</span>
+              <span>Cổng Khách Hàng</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
-            <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-slate-400 bg-white/[0.03] px-3 py-1.5 rounded-xl border border-white/5">
-              <Clock className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Time: 19:35 (UTC)</span>
+            <div className="hidden sm:flex items-center gap-2 text-xs font-mono font-bold text-[#171717] bg-[#E7E4DC] px-3 py-1.5 border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
+              <Clock className="w-3.5 h-3.5 text-[#3155E7]" />
+              <span>19:35 UTC</span>
             </div>
-            <button className="relative p-2 text-slate-400 hover:text-white transition-colors bg-white/[0.03] hover:bg-white/[0.06] rounded-xl border border-white/5">
+            <button className="p-2 text-[#171717] bg-white hover:bg-[#E7E4DC] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5 relative cursor-pointer">
               <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-cyan-400 rounded-full" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-[#DC2626] border border-[#171717]" />
             </button>
-            <div className="flex items-center gap-2.5 pl-2 border-l border-white/5">
-              <div className="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center font-display text-xs font-bold text-cyan-300">
+            <div className="flex items-center gap-2.5 pl-2 border-l-2 border-[#171717]">
+              <div className="w-8 h-8 bg-[#3155E7] text-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center font-display text-xs font-black">
                 {currentUser.fullName ? currentUser.fullName.slice(0, 2).toUpperCase() : 'HT'}
               </div>
               <div className="text-left hidden sm:block">
-                <p className="text-xs font-medium text-slate-200 leading-tight">{currentUser.fullName}</p>
-                <p className="text-[10px] font-mono text-cyan-400">{currentUser.role}</p>
+                <p className="text-xs font-black text-[#171717] leading-tight font-display">{currentUser.fullName}</p>
+                <p className="text-[10px] font-mono font-bold text-[#3155E7] uppercase">{currentUser.role}</p>
               </div>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="p-1.5 ml-1 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 border-2 border-[#171717] bg-white hover:bg-[#DC2626] hover:text-white shadow-[2px_2px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5 transition-colors cursor-pointer"
                 title="Đăng xuất thủy thủ đoàn"
                 aria-label="Đăng xuất"
               >
@@ -218,3 +233,5 @@ export function MainLayout() {
     </div>
   );
 }
+
+export default MainLayout;

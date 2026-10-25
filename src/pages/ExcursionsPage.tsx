@@ -139,31 +139,35 @@ export function ExcursionsPage() {
   const occupancyRate = totalCapacity > 0 ? Math.round((totalBooked / totalCapacity) * 100) : 0;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-[#030303]/80 backdrop-blur-xl border border-cyan-500/40 text-cyan-300 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs animate-in fade-in slide-in-from-top-4 duration-200">
-          <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
-          <span className="font-medium">{toastMessage}</span>
+        <div className="fixed top-20 right-6 z-50 bg-[#10B981]/20 border-2 border-[#171717] text-[#171717] px-4 py-3 shadow-[4px_4px_0px_#171717] flex items-center gap-2.5 text-xs font-mono font-bold animate-in fade-in slide-in-from-top-4 duration-200">
+          <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header — Editorial Broadside */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-[#171717]">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2.5">
-            <Compass className="w-5 h-5 text-cyan-400" /> Quản Lý Tour Trên Bờ (Shore Excursion)
+          <div className="flex items-center gap-2 mb-1">
+            <span className="neo-badge bg-[#3155E7] text-white">SHORE EXCURSIONS</span>
+            <span className="text-[10px] font-mono text-[#171717]/60 font-bold">• PORT DISPATCH</span>
+          </div>
+          <h2 className="text-2xl font-display font-black text-[#171717] flex items-center gap-2.5 uppercase tracking-tight">
+            <Compass className="w-6 h-6 text-[#3155E7]" /> Quản Lý Tour Trên Bờ (Shore Excursion)
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs font-mono text-[#171717]/70 mt-1">
             Điều phối điểm dừng • Giám sát giờ All-Aboard • Phân bổ xe và hướng dẫn viên địa phương
           </p>
         </div>
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center bg-[#030303]/60 backdrop-blur-xl p-0.5 rounded-xl border border-white/10">
+          <div className="flex items-center bg-[#E7E4DC] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] p-0.5">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-lg text-xs transition-colors ${
-                viewMode === 'grid' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-white'
+              className={`p-1.5 text-xs font-mono font-bold transition-all ${
+                viewMode === 'grid' ? 'bg-[#171717] text-[#D9FF43]' : 'text-[#171717] hover:bg-white'
               }`}
               title="Xem dạng thẻ"
             >
@@ -171,8 +175,8 @@ export function ExcursionsPage() {
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`p-1.5 rounded-lg text-xs transition-colors ${
-                viewMode === 'table' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-white'
+              className={`p-1.5 text-xs font-mono font-bold transition-all ${
+                viewMode === 'table' ? 'bg-[#171717] text-[#D9FF43]' : 'text-[#171717] hover:bg-white'
               }`}
               title="Xem dạng bảng"
             >
@@ -181,21 +185,21 @@ export function ExcursionsPage() {
           </div>
           <button
             onClick={() => void loadExcursionList()}
-            className="p-2 bg-[#030303]/60 hover:bg-white/[0.06] backdrop-blur-xl text-slate-300 border border-white/10 rounded-xl text-xs font-medium transition-colors"
+            className="p-2 bg-white hover:bg-[#E7E4DC] text-[#171717] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5 transition-colors cursor-pointer"
             title="Làm mới"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
           <button
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 transition-all"
+            className="neo-btn neo-btn-acid flex items-center gap-2"
           >
             <Plus className="w-4 h-4" /> Tạo Excursion Mới
           </button>
         </div>
       </div>
 
-      {/* KPI Cards — Translucent Frosted Glass */}
+      {/* KPI Cards */}
       <ExcursionStatusCards
         totalCount={totalCount}
         inProgressCount={inProgressCount}
@@ -206,18 +210,18 @@ export function ExcursionsPage() {
       />
 
       {/* Filter Toolbar */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 space-y-3.5 backdrop-blur-sm">
+      <div className="neo-card p-4 space-y-3.5">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
           {/* Select Tour */}
           <div>
-            <label htmlFor="filter-excursion-tour" className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+            <label htmlFor="filter-excursion-tour" className="block text-[10px] font-mono font-bold text-[#171717]/70 uppercase tracking-wider mb-1">
               Tour Du Thuyền
             </label>
             <select
               id="filter-excursion-tour"
               value={selectedTourId}
               onChange={(e) => setSelectedTourId(e.target.value === 'ALL' ? 'ALL' : Number(e.target.value))}
-              className="w-full px-3 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+              className="neo-input w-full px-3 py-2 text-xs font-mono font-bold uppercase"
             >
               <option value="ALL">Tất cả hải trình</option>
               {INITIAL_TOURS.map((t) => (
@@ -230,14 +234,14 @@ export function ExcursionsPage() {
 
           {/* Select Port */}
           <div>
-            <label htmlFor="filter-excursion-port" className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+            <label htmlFor="filter-excursion-port" className="block text-[10px] font-mono font-bold text-[#171717]/70 uppercase tracking-wider mb-1">
               Cảng Dừng (Port of Call)
             </label>
             <select
               id="filter-excursion-port"
               value={selectedPortId}
               onChange={(e) => setSelectedPortId(e.target.value === 'ALL' ? 'ALL' : Number(e.target.value))}
-              className="w-full px-3 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+              className="neo-input w-full px-3 py-2 text-xs font-mono font-bold uppercase"
             >
               <option value="ALL">Tất cả cảng đến</option>
               {INITIAL_PORTS.map((p) => (
@@ -250,14 +254,14 @@ export function ExcursionsPage() {
 
           {/* Select Status */}
           <div>
-            <label htmlFor="filter-excursion-status" className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+            <label htmlFor="filter-excursion-status" className="block text-[10px] font-mono font-bold text-[#171717]/70 uppercase tracking-wider mb-1">
               Trạng Thái
             </label>
             <select
               id="filter-excursion-status"
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+              className="neo-input w-full px-3 py-2 text-xs font-mono font-bold uppercase"
             >
               <option value="ALL">Tất cả trạng thái</option>
               <option value="SCHEDULED">Lên lịch (SCHEDULED)</option>
@@ -270,18 +274,18 @@ export function ExcursionsPage() {
 
           {/* Search Keyword */}
           <div className="lg:col-span-2">
-            <label htmlFor="filter-excursion-keyword" className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+            <label htmlFor="filter-excursion-keyword" className="block text-[10px] font-mono font-bold text-[#171717]/70 uppercase tracking-wider mb-1">
               Tìm Kiếm Tên, Mã Tour, Đối Tác
             </label>
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#171717]/60 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 id="filter-excursion-keyword"
                 type="text"
                 placeholder="Nhập tên excursion, địa danh, xe đưa đón..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500 placeholder-slate-500"
+                className="neo-input w-full pl-9 pr-3 py-2 text-xs font-mono"
               />
             </div>
           </div>
@@ -289,15 +293,15 @@ export function ExcursionsPage() {
 
         {/* Category Pills */}
         <div className="pt-2 flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider shrink-0 flex items-center gap-1">
-            <Filter className="w-3 h-3 text-cyan-400" /> Thể loại:
+          <span className="text-[10px] font-mono font-bold text-[#171717]/70 uppercase tracking-wider shrink-0 flex items-center gap-1">
+            <Filter className="w-3.5 h-3.5 text-[#3155E7]" /> Thể loại:
           </span>
           <button
             onClick={() => setSelectedCategory('ALL')}
-            className={`px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-colors ${
+            className={`border-2 border-[#171717] px-3 py-1 text-xs font-mono font-bold uppercase shrink-0 transition-all cursor-pointer ${
               selectedCategory === 'ALL'
-                ? 'bg-cyan-600 text-white shadow-sm'
-                : 'bg-slate-800 text-slate-400 hover:text-white'
+                ? 'bg-[#171717] text-[#D9FF43] shadow-[2px_2px_0px_#171717]'
+                : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
             }`}
           >
             Tất cả
@@ -306,10 +310,10 @@ export function ExcursionsPage() {
             <button
               key={catKey}
               onClick={() => setSelectedCategory(catKey)}
-              className={`px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-colors ${
+              className={`border-2 border-[#171717] px-3 py-1 text-xs font-mono font-bold uppercase shrink-0 transition-all cursor-pointer ${
                 selectedCategory === catKey
-                  ? 'bg-cyan-600 text-white shadow-sm'
-                  : 'bg-slate-800 text-slate-400 hover:text-white'
+                  ? 'bg-[#171717] text-[#D9FF43] shadow-[2px_2px_0px_#171717]'
+                  : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
               }`}
             >
               {catLabel}
@@ -320,23 +324,23 @@ export function ExcursionsPage() {
 
       {/* Main Content: Grid View or Table View */}
       {excursions.length === 0 ? (
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-12 text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-slate-800 mx-auto flex items-center justify-center text-slate-500">
+        <div className="neo-card p-12 text-center space-y-3 border-2 border-dashed border-[#171717]">
+          <div className="w-12 h-12 bg-[#E7E4DC] border-2 border-[#171717] mx-auto flex items-center justify-center text-[#171717]">
             <Compass className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-semibold text-white">Không tìm thấy tour trên bờ nào</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+          <h3 className="text-base font-display font-black text-[#171717] uppercase">Không tìm thấy tour trên bờ nào</h3>
+          <p className="text-xs font-mono text-[#171717]/70 max-w-sm mx-auto">
             Không có excursion nào khớp với tiêu chí tìm kiếm của bạn. Hãy thử thay đổi bộ lọc hoặc tạo tour mới.
           </p>
           <button
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-semibold transition-colors mt-2"
+            className="neo-btn neo-btn-primary mt-2"
           >
-            <Plus className="w-4 h-4" /> Tạo Excursion Đầu Tiên
+            <Plus className="w-4 h-4 mr-2" /> Tạo Excursion Đầu Tiên
           </button>
         </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {excursions.map((exc) => {
             const statusConfig = EXCURSION_STATUS_MAP[exc.status];
             const diffConfig = EXCURSION_DIFFICULTY_LABELS[exc.difficulty];
@@ -345,46 +349,45 @@ export function ExcursionsPage() {
             return (
               <div
                 key={exc.id}
-                className="bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden shadow-lg hover:border-slate-700 transition-all flex flex-col justify-between group"
+                className="neo-card-interactive flex flex-col justify-between overflow-hidden"
               >
                 <div>
                   {/* Card Header & Cover */}
-                  <div className="relative h-44 w-full bg-slate-950 overflow-hidden">
+                  <div className="relative h-44 w-full bg-[#E7E4DC] overflow-hidden border-b-2 border-[#171717]">
                     {exc.imageUrl ? (
                       <img
                         src={exc.imageUrl}
                         alt={exc.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-tr from-slate-900 to-cyan-950/60 text-slate-600">
+                      <div className="w-full h-full flex items-center justify-center bg-[#E7E4DC] text-[#171717]/30">
                         <Compass className="w-12 h-12" />
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-slate-900/40" />
 
                     {/* Status & Category Badges */}
                     <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 items-center">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border backdrop-blur-md ${statusConfig.cls}`}>
+                      <span className={`neo-badge bg-white text-[#171717]`}>
                         {statusConfig.label}
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-900/80 text-cyan-300 border border-cyan-500/30 backdrop-blur-md">
+                      <span className="neo-badge bg-[#E7E4DC] text-[#3155E7]">
                         {EXCURSION_CATEGORY_LABELS[exc.category]}
                       </span>
                     </div>
 
                     <div className="absolute top-3 right-3">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium border backdrop-blur-md ${diffConfig.color}`}>
+                      <span className="neo-badge bg-[#D9FF43] text-[#171717]">
                         {diffConfig.label}
                       </span>
                     </div>
 
                     {/* Port & Code banner */}
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-slate-200">
-                      <span className="flex items-center gap-1.5 font-medium bg-slate-900/90 px-2.5 py-1 rounded-lg backdrop-blur-md border border-slate-800">
-                        <MapPin className="w-3.5 h-3.5 text-cyan-400" /> {exc.portCity} ({exc.portName})
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs font-mono font-bold">
+                      <span className="flex items-center gap-1.5 bg-white text-[#171717] px-2.5 py-1 border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
+                        <MapPin className="w-3.5 h-3.5 text-[#3155E7]" /> {exc.portCity} ({exc.portName})
                       </span>
-                      <span className="font-mono text-[11px] bg-slate-900/90 px-2 py-1 rounded-lg border border-slate-800 text-slate-400">
+                      <span className="bg-[#171717] text-white px-2 py-1 border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
                         {exc.code}
                       </span>
                     </div>
@@ -395,46 +398,46 @@ export function ExcursionsPage() {
                     <div>
                       <Link
                         to={`/excursions/${exc.id}`}
-                        className="font-bold text-base text-white hover:text-cyan-400 transition-colors line-clamp-1"
+                        className="font-display font-black text-lg text-[#171717] hover:text-[#3155E7] transition-colors line-clamp-1 uppercase tracking-tight"
                       >
                         {exc.title}
                       </Link>
-                      <p className="text-xs text-slate-400 line-clamp-2 mt-1">
+                      <p className="text-xs font-mono text-[#171717]/70 line-clamp-2 mt-1">
                         {exc.description || 'Chưa có thông tin mô tả chi tiết cho tour trên bờ này.'}
                       </p>
                     </div>
 
                     {/* Operational Time Strip */}
-                    <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 space-y-2">
-                      <div className="flex items-center justify-between text-[11px] text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 text-cyan-400" /> Ngày: <strong>{exc.excursionDate}</strong>
+                    <div className="bg-[#E7E4DC] p-3 border-2 border-[#171717] shadow-[2px_2px_0px_#171717] space-y-2 font-mono">
+                      <div className="flex items-center justify-between text-[11px] text-[#171717]">
+                        <span className="flex items-center gap-1 font-bold">
+                          <Clock className="w-3.5 h-3.5 text-[#3155E7]" /> Ngày: <strong>{exc.excursionDate}</strong>
                         </span>
-                        <span className="text-rose-400 font-semibold flex items-center gap-1">
+                        <span className="text-[#DC2626] font-black flex items-center gap-1 uppercase">
                           All-Aboard: {exc.allAboardTime}
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-1 text-center text-[10px] text-slate-300 pt-1 border-t border-slate-700/40">
+                      <div className="grid grid-cols-3 gap-1 text-center text-[10px] pt-1 border-t-2 border-[#171717]/20">
                         <div>
-                          <span className="text-slate-500 block">Tập trung</span>
+                          <span className="text-[#171717]/60 block font-bold">Tập trung</span>
                           <strong>{exc.meetingTime}</strong>
                         </div>
                         <div>
-                          <span className="text-slate-500 block">Khởi hành</span>
+                          <span className="text-[#171717]/60 block font-bold">Khởi hành</span>
                           <strong>{exc.departureTime}</strong>
                         </div>
                         <div>
-                          <span className="text-amber-400 block">Về tàu</span>
-                          <strong className="text-amber-300">{exc.returnToShipTime}</strong>
+                          <span className="text-[#D97706] block font-bold">Về tàu</span>
+                          <strong className="text-[#D97706]">{exc.returnToShipTime}</strong>
                         </div>
                       </div>
                     </div>
 
                     {/* Warning if delayed */}
                     {exc.status === 'DELAYED' && exc.delayReason && (
-                      <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/40 flex items-start gap-2 text-[11px] text-amber-300">
-                        <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400 mt-0.5" />
+                      <div className="p-2.5 bg-[#F59E0B]/20 border-2 border-[#171717] flex items-start gap-2 text-[11px] font-mono font-bold text-[#171717] shadow-[2px_2px_0px_#171717]">
+                        <AlertTriangle className="w-4 h-4 shrink-0 text-[#D97706] mt-0.5" />
                         <div>
                           <strong>Cảnh báo trễ giờ:</strong> {exc.delayReason}
                         </div>
@@ -442,35 +445,35 @@ export function ExcursionsPage() {
                     )}
 
                     {/* Operator & Guide */}
-                    <div className="flex items-center justify-between text-xs text-slate-400 pt-1">
+                    <div className="flex items-center justify-between text-xs font-mono text-[#171717]/80 pt-1">
                       <div className="flex items-center gap-1.5 truncate">
-                        <Building2 className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                        <span className="truncate">{exc.operatorName}</span>
+                        <Building2 className="w-3.5 h-3.5 text-[#3155E7] shrink-0" />
+                        <span className="truncate font-bold">{exc.operatorName}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 shrink-0 text-slate-300">
-                        <Bus className="w-3.5 h-3.5 text-cyan-400" />
+                      <div className="flex items-center gap-1.5 shrink-0 text-[#171717] font-bold">
+                        <Bus className="w-3.5 h-3.5 text-[#3155E7]" />
                         <span>{exc.busNumber || 'Xe riêng'}</span>
                       </div>
                     </div>
 
                     {/* Capacity Progress Bar */}
-                    <div className="space-y-1.5">
+                    <div className="space-y-1.5 font-mono">
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-slate-400 flex items-center gap-1">
-                          <Users className="w-3.5 h-3.5 text-slate-500" /> Đã đặt:
+                        <span className="text-[#171717]/70 flex items-center gap-1 font-bold">
+                          <Users className="w-3.5 h-3.5 text-[#3155E7]" /> Đã đặt:
                         </span>
-                        <span className="font-semibold text-white">
+                        <span className="font-black text-[#171717]">
                           {exc.bookedCount} / {exc.maxCapacity} khách ({percentFilled}%)
                         </span>
                       </div>
-                      <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                      <div className="w-full bg-[#E7E4DC] border-2 border-[#171717] h-2.5 overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-300 ${
+                          className={`h-full transition-all duration-300 ${
                             percentFilled >= 90
-                              ? 'bg-rose-500'
+                              ? 'bg-[#DC2626]'
                               : percentFilled >= 70
-                              ? 'bg-cyan-500'
-                              : 'bg-emerald-500'
+                              ? 'bg-[#3155E7]'
+                              : 'bg-[#10B981]'
                           }`}
                           style={{ width: `${percentFilled}%` }}
                         />
@@ -478,16 +481,16 @@ export function ExcursionsPage() {
                     </div>
 
                     {/* Price and Package Badge */}
-                    <div className="flex items-center justify-between pt-1 border-t border-slate-800">
+                    <div className="flex items-center justify-between pt-2 border-t-2 border-[#171717]">
                       <div>
                         {exc.isIncluded ? (
-                          <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                          <span className="neo-badge bg-[#10B981] text-[#171717]">
                             Đã bao gồm trong giá vé
                           </span>
                         ) : (
-                          <div className="flex items-center gap-1">
-                            <span className="text-[11px] text-slate-400">Giá vé:</span>
-                            <span className="text-sm font-bold text-cyan-400">
+                          <div className="flex items-center gap-1 font-mono">
+                            <span className="text-[11px] text-[#171717]/70 font-bold">Giá vé:</span>
+                            <span className="text-base font-display font-black text-[#171717]">
                               {exc.price.toLocaleString('vi-VN')} {exc.currency}
                             </span>
                           </div>
@@ -498,25 +501,25 @@ export function ExcursionsPage() {
                 </div>
 
                 {/* Card Actions Footer */}
-                <div className="px-5 py-3.5 bg-slate-800/40 border-t border-slate-800 flex items-center justify-between gap-2">
+                <div className="px-5 py-3.5 bg-[#E7E4DC] border-t-2 border-[#171717] flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => handleOpenBookingModal(exc)}
-                      className="px-2.5 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-medium transition-all flex items-center gap-1 shadow-sm"
+                      className="neo-btn neo-btn-acid text-[11px] py-1 px-2.5 flex items-center gap-1"
                       title="Đặt vé tour trên bờ"
                     >
                       <Ticket className="w-3.5 h-3.5" /> Đặt Tour
                     </button>
                     <button
                       onClick={() => handleOpenManifestModal(exc)}
-                      className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-xl text-xs font-medium transition-colors flex items-center gap-1"
+                      className="neo-btn neo-btn-secondary text-[11px] py-1 px-2.5 flex items-center gap-1"
                       title="Xem danh sách đoàn & xe đưa đón"
                     >
-                      <Users className="w-3.5 h-3.5" /> Đoàn & Xe
+                      <Users className="w-3.5 h-3.5 text-[#3155E7]" /> Đoàn & Xe
                     </button>
                     <button
                       onClick={() => handleOpenStatusModal(exc)}
-                      className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition-colors"
+                      className="neo-btn neo-btn-secondary text-[11px] py-1 px-2"
                       title="Đổi trạng thái"
                     >
                       Trạng thái
@@ -526,21 +529,21 @@ export function ExcursionsPage() {
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => handleOpenEditModal(exc)}
-                      className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                      className="p-1.5 bg-white border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] hover:bg-[#D9FF43] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                       title="Chỉnh sửa tour"
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
+                      <Edit2 className="w-3.5 h-3.5 text-[#171717]" />
                     </button>
                     <button
                       onClick={() => handleDeleteExcursion(exc.id, exc.title)}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                      className="p-1.5 bg-white border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] hover:bg-[#DC2626] hover:text-white active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                       title="Xóa tour"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                     <Link
                       to={`/excursions/${exc.id}`}
-                      className="p-1.5 bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-400 rounded-lg transition-colors"
+                      className="p-1.5 bg-[#3155E7] text-white border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] hover:bg-[#2040c0] active:translate-x-0.5 active:translate-y-0.5 transition-all"
                       title="Xem chi tiết"
                     >
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -553,10 +556,10 @@ export function ExcursionsPage() {
         </div>
       ) : (
         /* Table View */
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+        <div className="neo-card overflow-hidden shadow-[4px_4px_0px_#171717] bg-white">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-800/80 text-slate-400 uppercase tracking-wider text-[11px] border-b border-slate-700">
+            <table className="w-full text-left text-xs text-[#171717]">
+              <thead className="bg-[#E7E4DC] text-[#171717] uppercase tracking-wider text-[10px] font-mono font-black border-b-2 border-[#171717]">
                 <tr>
                   <th className="py-3 px-4">Tour Trên Bờ</th>
                   <th className="py-3 px-4">Điểm Dừng / Cảng</th>
@@ -568,60 +571,60 @@ export function ExcursionsPage() {
                   <th className="py-3 px-4 text-right">Thao Tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800 text-slate-300">
+              <tbody className="divide-y-2 divide-[#171717]/10 font-mono">
                 {excursions.map((exc) => {
                   const statusConfig = EXCURSION_STATUS_MAP[exc.status];
                   return (
-                    <tr key={exc.id} className="hover:bg-slate-800/40 transition-colors">
+                    <tr key={exc.id} className="hover:bg-[#D9FF43]/10 transition-colors">
                       <td className="py-3 px-4">
                         <Link
                           to={`/excursions/${exc.id}`}
-                          className="font-bold text-white hover:text-cyan-400 transition-colors block"
+                          className="font-display font-black text-sm text-[#171717] hover:text-[#3155E7] transition-colors block uppercase"
                         >
                           {exc.title}
                         </Link>
-                        <span className="font-mono text-[10px] text-slate-400 block">{exc.code}</span>
+                        <span className="font-mono text-[10px] font-bold text-[#3155E7] block">{exc.code}</span>
                       </td>
                       <td className="py-3 px-4">
-                        <span className="font-medium text-slate-200 block">{exc.portCity}</span>
-                        <span className="text-[10px] text-slate-500">{exc.portName}</span>
+                        <span className="font-bold text-[#171717] block">{exc.portCity}</span>
+                        <span className="text-[10px] text-[#171717]/60">{exc.portName}</span>
                       </td>
                       <td className="py-3 px-4">
                         <div className="text-[11px]">
-                          <span className="text-slate-400 block">Ngày: {exc.excursionDate}</span>
-                          <span className="text-cyan-300">
+                          <span className="text-[#171717]/70 block">Ngày: {exc.excursionDate}</span>
+                          <span className="text-[#3155E7] font-bold">
                             {exc.departureTime} → {exc.returnToShipTime}
                           </span>
-                          <span className="text-[10px] text-rose-400 block font-medium">
+                          <span className="text-[10px] text-[#DC2626] block font-black uppercase">
                             All-Aboard: {exc.allAboardTime}
                           </span>
                         </div>
                       </td>
                       <td className="py-3 px-4">
-                        <span className="font-medium text-slate-200 block">{exc.operatorName}</span>
-                        <span className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
-                          <Bus className="w-3 h-3 text-cyan-400" /> {exc.busNumber || 'Xe du lịch'}
+                        <span className="font-bold text-[#171717] block">{exc.operatorName}</span>
+                        <span className="text-[10px] text-[#171717]/60 flex items-center gap-1 mt-0.5">
+                          <Bus className="w-3 h-3 text-[#3155E7]" /> {exc.busNumber || 'Xe du lịch'}
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <span className="font-semibold text-white">
+                        <span className="font-black text-[#171717]">
                           {exc.bookedCount} / {exc.maxCapacity}
                         </span>
-                        <span className="text-[10px] text-slate-400 block">
+                        <span className="text-[10px] text-[#171717]/60 block">
                           ({Math.round((exc.bookedCount / exc.maxCapacity) * 100)}%)
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         {exc.isIncluded ? (
-                          <span className="text-emerald-400 font-medium">Bao gồm</span>
+                          <span className="neo-badge bg-[#10B981] text-[#171717]">Bao gồm</span>
                         ) : (
-                          <span className="text-cyan-400 font-bold">
+                          <span className="text-[#171717] font-black">
                             {exc.price.toLocaleString('vi-VN')} đ
                           </span>
                         )}
                       </td>
                       <td className="py-3 px-4">
-                        <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold border ${statusConfig.cls}`}>
+                        <span className="neo-badge bg-white text-[#171717]">
                           {statusConfig.label}
                         </span>
                       </td>
@@ -629,39 +632,46 @@ export function ExcursionsPage() {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => handleOpenBookingModal(exc)}
-                            className="p-1.5 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                            className="p-1.5 bg-white border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] hover:bg-[#D9FF43] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                             title="Đặt vé tour"
                           >
-                            <Ticket className="w-3.5 h-3.5" />
+                            <Ticket className="w-3.5 h-3.5 text-[#3155E7]" />
                           </button>
                           <button
                             onClick={() => handleOpenManifestModal(exc)}
-                            className="p-1.5 text-slate-400 hover:text-cyan-300 hover:bg-slate-800 rounded-lg transition-colors"
+                            className="p-1.5 bg-white border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] hover:bg-[#D9FF43] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                             title="Xem đoàn & xe"
                           >
                             <Users className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleOpenStatusModal(exc)}
-                            className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                            className="p-1.5 bg-white border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] hover:bg-[#D9FF43] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                             title="Đổi trạng thái"
                           >
                             <RefreshCw className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleOpenEditModal(exc)}
-                            className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                            title="Sửa tour"
+                            className="p-1.5 bg-white border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] hover:bg-[#D9FF43] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                            title="Chỉnh sửa tour"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteExcursion(exc.id, exc.title)}
-                            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                            className="p-1.5 bg-white border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] hover:bg-[#DC2626] hover:text-white active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                             title="Xóa tour"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
+                          <Link
+                            to={`/excursions/${exc.id}`}
+                            className="p-1.5 bg-[#3155E7] text-white border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] hover:bg-[#2040c0] active:translate-x-0.5 active:translate-y-0.5 transition-all"
+                            title="Xem chi tiết"
+                          >
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </Link>
                         </div>
                       </td>
                     </tr>
@@ -738,3 +748,5 @@ export function ExcursionsPage() {
     </div>
   );
 }
+
+export default ExcursionsPage;

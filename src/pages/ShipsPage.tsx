@@ -98,35 +98,39 @@ export function ShipsPage() {
   const getStatusBadge = (status: ShipStatus) => {
     switch (status) {
       case 'ACTIVE':
-        return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+        return 'bg-[#10B981] text-[#171717] border-[#171717]';
       case 'ON_VOYAGE':
-        return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
+        return 'bg-[#3155E7] text-white border-[#171717]';
       case 'DOCKED':
-        return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+        return 'bg-[#D9FF43] text-[#171717] border-[#171717]';
       case 'UNDER_MAINTENANCE':
-        return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+        return 'bg-[#F59E0B] text-[#171717] border-[#171717]';
       case 'INACTIVE':
       default:
-        return 'bg-slate-800 text-slate-400 border-slate-700';
+        return 'bg-[#E7E4DC] text-[#171717] border-[#171717]';
     }
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Top Header — Editorial Broadside */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-[#171717]">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <ShipIcon className="w-5 h-5 text-cyan-400" /> Quản Lý Đội Tàu Du Lịch (Cruise Ships)
+          <div className="flex items-center gap-2 mb-1">
+            <span className="neo-badge bg-[#3155E7] text-white">FLEET MANAGEMENT</span>
+            <span className="text-[10px] font-mono text-[#171717]/60 font-bold">• MARITIME ASSETS</span>
+          </div>
+          <h2 className="text-2xl font-display font-black text-[#171717] flex items-center gap-2 uppercase tracking-tight">
+            <ShipIcon className="w-6 h-6 text-[#3155E7]" /> Quản Lý Đội Tàu Du Lịch (Cruise Ships)
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs font-mono text-[#171717]/70 mt-1">
             Bộ phận Điều phối & Quản trị Hệ thống • Thiết lập danh mục tàu, sức chứa, buồng phòng và trạng thái khai thác
           </p>
         </div>
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/25 transition-all self-start sm:self-auto"
+          className="neo-btn neo-btn-acid flex items-center gap-2 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" /> Thêm Tàu Mới
         </button>
@@ -134,43 +138,43 @@ export function ShipsPage() {
 
       {/* Notification Toast */}
       {notification && (
-        <div className="p-3 bg-emerald-950/60 backdrop-blur-xl border border-emerald-800/60 rounded-xl flex items-center gap-2 text-emerald-300 text-xs transition-all">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="p-3 bg-[#10B981]/20 border-2 border-[#171717] shadow-[3px_3px_0px_#171717] flex items-center gap-2 text-[#171717] text-xs font-mono font-bold transition-all">
+          <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
           <span>{notification}</span>
         </div>
       )}
 
-      {/* Metrics Cards — Translucent Glass */}
+      {/* Metrics Cards — Neo-Brutalist Blocks */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-xl hover:border-cyan-500/30 transition-all">
-          <span className="text-xs text-slate-400 font-mono">Tổng số tàu</span>
-          <p className="text-2xl font-display text-white mt-1">{ships.length}</p>
+        <div className="neo-card p-4">
+          <span className="text-[10px] text-[#171717]/70 font-mono font-bold uppercase tracking-wider">Tổng số tàu</span>
+          <p className="text-3xl font-display font-black text-[#171717] mt-1">{ships.length}</p>
         </div>
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-xl hover:border-cyan-500/30 transition-all">
-          <span className="text-xs text-slate-400 font-mono">Đang hoạt động / Biển</span>
-          <p className="text-2xl font-display text-emerald-400 mt-1">
+        <div className="neo-card p-4">
+          <span className="text-[10px] text-[#171717]/70 font-mono font-bold uppercase tracking-wider">Đang hoạt động / Biển</span>
+          <p className="text-3xl font-display font-black text-[#059669] mt-1">
             {ships.filter((s) => s.status === 'ACTIVE' || s.status === 'ON_VOYAGE').length}
           </p>
         </div>
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-xl hover:border-cyan-500/30 transition-all">
-          <span className="text-xs text-slate-400 font-mono">Đang neo đậu cảng</span>
-          <p className="text-2xl font-display text-blue-400 mt-1">
+        <div className="neo-card p-4">
+          <span className="text-[10px] text-[#171717]/70 font-mono font-bold uppercase tracking-wider">Đang neo đậu cảng</span>
+          <p className="text-3xl font-display font-black text-[#3155E7] mt-1">
             {ships.filter((s) => s.status === 'DOCKED').length}
           </p>
         </div>
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-xl hover:border-cyan-500/30 transition-all">
-          <span className="text-xs text-slate-400 font-mono">Bảo dưỡng kỹ thuật</span>
-          <p className="text-2xl font-display text-amber-400 mt-1">
+        <div className="neo-card p-4">
+          <span className="text-[10px] text-[#171717]/70 font-mono font-bold uppercase tracking-wider">Bảo dưỡng kỹ thuật</span>
+          <p className="text-3xl font-display font-black text-[#D97706] mt-1">
             {ships.filter((s) => s.status === 'UNDER_MAINTENANCE').length}
           </p>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden p-4 shadow-xl">
+      <div className="neo-card p-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+          <div className="relative w-full sm:w-80">
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#171717]/60" />
             <input
               type="text"
               role="searchbox"
@@ -178,17 +182,17 @@ export function ShipsPage() {
               placeholder="Tìm theo tên tàu, mã hiệu, hãng..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 w-full"
+              className="neo-input pl-9 pr-4 py-2 w-full text-xs font-mono"
             />
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
+            <Filter className="w-4 h-4 text-[#171717]" />
             <select
               aria-label="Lọc theo trạng thái"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-cyan-500 w-full sm:w-48"
+              className="neo-input px-3 py-2 text-xs font-mono font-bold uppercase w-full sm:w-56"
             >
               <option value="ALL">Tất cả trạng thái</option>
               <option value="ACTIVE">ACTIVE</option>
@@ -201,9 +205,9 @@ export function ShipsPage() {
         </div>
 
         {/* Ships Table */}
-        <div className="mt-4 overflow-x-auto border-t border-slate-800">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-800/40 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+        <div className="mt-4 overflow-x-auto border-2 border-[#171717] bg-white shadow-[2px_2px_0px_#171717]">
+          <table className="w-full text-left text-xs text-[#171717]">
+            <thead className="bg-[#E7E4DC] text-[#171717] uppercase text-[10px] font-mono font-black tracking-wider border-b-2 border-[#171717]">
               <tr>
                 <th className="p-3.5">Du thuyền & Mã hiệu</th>
                 <th className="p-3.5">Hãng khai thác</th>
@@ -214,41 +218,41 @@ export function ShipsPage() {
                 <th className="p-3.5 text-right">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y-2 divide-[#171717]/10">
               {filteredShips.length > 0 ? (
                 filteredShips.map((ship) => (
-                  <tr key={ship.id} className="hover:bg-slate-800/30 transition-colors">
+                  <tr key={ship.id} className="hover:bg-[#D9FF43]/10 transition-colors">
                     <td className="p-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700/60 flex items-center justify-center shrink-0">
-                          <ShipIcon className="w-4 h-4 text-cyan-400" />
+                        <div className="w-9 h-9 bg-[#E7E4DC] border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] flex items-center justify-center shrink-0">
+                          <ShipIcon className="w-4 h-4 text-[#3155E7]" />
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-100">{ship.name}</p>
-                          <span className="text-[11px] font-mono text-cyan-400">{ship.code}</span>
+                          <p className="font-display font-black text-sm text-[#171717]">{ship.name}</p>
+                          <span className="text-[10px] font-mono font-bold text-[#3155E7]">{ship.code}</span>
                         </div>
                       </div>
                     </td>
-                    <td className="p-3.5 text-slate-300">{ship.operator}</td>
+                    <td className="p-3.5 font-medium">{ship.operator}</td>
                     <td className="p-3.5">
-                      <div className="flex items-center gap-1.5 text-slate-200">
-                        <Users className="w-3.5 h-3.5 text-cyan-400" />
-                        <span>{ship.capacity.toLocaleString()} khách</span>
-                        <span className="text-slate-500">/</span>
-                        <span className="text-slate-400">{ship.crewCapacity} đoàn</span>
+                      <div className="flex items-center gap-1.5 font-mono text-xs">
+                        <Users className="w-3.5 h-3.5 text-[#3155E7]" />
+                        <span className="font-bold">{ship.capacity.toLocaleString()} khách</span>
+                        <span className="text-[#171717]/40">/</span>
+                        <span className="text-[#171717]/70">{ship.crewCapacity} đoàn</span>
                       </div>
                     </td>
                     <td className="p-3.5">
-                      <div className="flex items-center gap-1.5 text-slate-200">
-                        <Anchor className="w-3.5 h-3.5 text-indigo-400" />
-                        <span>{ship.totalCabins} cabin</span>
-                        <span className="text-slate-500">•</span>
-                        <span className="text-slate-400">{ship.totalDecks} tầng</span>
+                      <div className="flex items-center gap-1.5 font-mono text-xs">
+                        <Anchor className="w-3.5 h-3.5 text-[#171717]" />
+                        <span className="font-bold">{ship.totalCabins} cabin</span>
+                        <span className="text-[#171717]/40">•</span>
+                        <span className="text-[#171717]/70">{ship.totalDecks} tầng</span>
                       </div>
                     </td>
-                    <td className="p-3.5 text-slate-300">
-                      <div className="flex items-center gap-1">
-                        <Compass className="w-3 h-3 text-slate-400" />
+                    <td className="p-3.5">
+                      <div className="flex items-center gap-1 font-mono text-xs">
+                        <Compass className="w-3.5 h-3.5 text-[#171717]/60" />
                         <span>
                           {ship.lengthMeters ? `${ship.lengthMeters}m` : 'N/A'} ×{' '}
                           {ship.beamMeters ? `${ship.beamMeters}m` : 'N/A'}
@@ -257,9 +261,7 @@ export function ShipsPage() {
                     </td>
                     <td className="p-3.5">
                       <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getStatusBadge(
-                          ship.status
-                        )}`}
+                        className={`neo-badge ${getStatusBadge(ship.status)}`}
                       >
                         {ship.status}
                       </span>
@@ -269,7 +271,7 @@ export function ShipsPage() {
                         <Link
                           to={`/ships/${ship.id}`}
                           aria-label={`Xem chi tiết ${ship.name}`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-700/40 border border-slate-700/50 transition-all"
+                          className="neo-btn neo-btn-secondary text-[10px] py-1 px-2.5 flex items-center gap-1"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>Xem</span>
@@ -277,7 +279,7 @@ export function ShipsPage() {
                         <button
                           onClick={() => handleOpenEdit(ship)}
                           aria-label={`Chỉnh sửa ${ship.name}`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-cyan-400 hover:text-white hover:bg-cyan-600/20 border border-cyan-500/30 transition-all"
+                          className="neo-btn neo-btn-primary text-[10px] py-1 px-2.5 flex items-center gap-1"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                           <span>Sửa</span>
@@ -288,7 +290,7 @@ export function ShipsPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-slate-500">
+                  <td colSpan={7} className="p-8 text-center text-[#171717]/60 font-mono text-xs">
                     Không tìm thấy tàu du lịch nào phù hợp với điều kiện tìm kiếm.
                   </td>
                 </tr>
@@ -309,3 +311,5 @@ export function ShipsPage() {
     </div>
   );
 }
+
+export default ShipsPage;

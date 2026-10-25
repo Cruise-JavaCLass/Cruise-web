@@ -14,18 +14,18 @@ interface EmptyStateProps {
 export function EmptyState({ icon: Icon, title, description, action }: EmptyStateProps) {
   const ActionIcon = action?.icon;
   return (
-    <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl border border-dashed border-slate-800 bg-slate-900/30">
-      <div className="w-14 h-14 rounded-2xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-400 mb-4 shadow-inner">
-        <Icon className="w-6 h-6 text-slate-400" />
+    <div className="flex flex-col items-center justify-center p-12 text-center rounded-sm border-2 border-dashed border-[#171717] bg-white shadow-[4px_4px_0px_#171717]">
+      <div className="w-14 h-14 rounded-sm bg-[#D9FF43] border-2 border-[#171717] flex items-center justify-center text-[#171717] mb-4 shadow-[2px_2px_0px_#171717]">
+        <Icon className="w-6 h-6 text-[#171717]" />
       </div>
-      <h3 className="text-base font-semibold text-slate-200 mb-1.5">{title}</h3>
-      <p className="text-xs text-slate-400 max-w-sm mb-6 leading-relaxed">{description}</p>
+      <h3 className="text-base font-black uppercase tracking-tight text-[#171717] mb-1.5 font-display">{title}</h3>
+      <p className="text-xs text-[#171717]/70 font-mono max-w-sm mb-6 leading-relaxed">{description}</p>
       {action && (
         <button
           onClick={action.onClick}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 transition-all cursor-pointer"
+          className="neo-btn neo-btn-primary"
         >
-          {ActionIcon && <ActionIcon className="w-4 h-4" />}
+          {ActionIcon && <ActionIcon className="w-4 h-4 mr-2" />}
           <span>{action.label}</span>
         </button>
       )}

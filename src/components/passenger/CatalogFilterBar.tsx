@@ -56,17 +56,17 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
   };
 
   return (
-    <div className="mb-8 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-800">
+    <div className="mb-8 border-2 border-[#171717] bg-white p-5 shadow-[4px_4px_0px_#171717] dark:bg-slate-800">
       {/* Search Input & Reset */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
           <input
             type="text"
             value={filters.keyword || ''}
             onChange={handleKeywordChange}
             placeholder="Tìm kiếm theo tên hoạt động, tour trên bờ, địa điểm, cảng..."
-            className="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pl-10 pr-4 text-sm text-slate-800 placeholder-slate-400 transition-colors focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-900/50 dark:text-white dark:focus:border-indigo-400"
+            className="w-full border-2 border-[#171717] bg-[#F7F5F0] py-2.5 pl-10 pr-4 text-xs font-bold text-[#171717] placeholder-neutral-500 shadow-[2px_2px_0px_#171717] transition-colors focus:bg-white focus:outline-none dark:border-white dark:bg-slate-900 dark:text-white"
           />
         </div>
 
@@ -74,7 +74,7 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
           <button
             type="button"
             onClick={handleResetFilters}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-semibold text-rose-600 transition-all hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-900/20 dark:text-rose-400"
+            className="inline-flex items-center gap-1.5 border-2 border-[#171717] bg-[#DC2626] px-3.5 py-2 text-xs font-black uppercase tracking-wider text-white shadow-[2px_2px_0px_#171717] transition-all hover:bg-rose-700 active:translate-x-[1px] active:translate-y-[1px]"
           >
             <X className="h-3.5 w-3.5" />
             Xóa bộ lọc
@@ -83,16 +83,16 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
       </div>
 
       {/* Filter Tabs */}
-      <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-4 dark:border-slate-700/60">
+      <div className="mt-4 flex flex-wrap items-center gap-3 border-t-2 border-[#171717] pt-4 dark:border-slate-700">
         {/* Type Filter */}
-        <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-900">
+        <div className="flex items-center gap-1 border-2 border-[#171717] bg-[#E7E4DC] p-1 shadow-[2px_2px_0px_#171717] dark:bg-slate-900">
           <button
             type="button"
             onClick={() => handleTypeSelect(undefined)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+            className={`px-3 py-1 text-xs font-black uppercase transition-all ${
               filters.itemType === undefined
-                ? 'bg-white text-indigo-600 shadow-sm dark:bg-slate-800 dark:text-indigo-400'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                ? 'border border-[#171717] bg-white text-black shadow-[1px_1px_0px_#171717] dark:bg-slate-800 dark:text-white'
+                : 'text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white'
             }`}
           >
             Tất cả loại hình
@@ -100,10 +100,10 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
           <button
             type="button"
             onClick={() => handleTypeSelect('ONBOARD_ACTIVITY')}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-black uppercase transition-all ${
               filters.itemType === 'ONBOARD_ACTIVITY'
-                ? 'bg-white text-indigo-600 shadow-sm dark:bg-slate-800 dark:text-indigo-400'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                ? 'border border-[#171717] bg-white text-black shadow-[1px_1px_0px_#171717] dark:bg-slate-800 dark:text-white'
+                : 'text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white'
             }`}
           >
             <Ship className="h-3 w-3" /> Trên tàu
@@ -111,10 +111,10 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
           <button
             type="button"
             onClick={() => handleTypeSelect('SHORE_EXCURSION')}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-black uppercase transition-all ${
               filters.itemType === 'SHORE_EXCURSION'
-                ? 'bg-white text-indigo-600 shadow-sm dark:bg-slate-800 dark:text-indigo-400'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                ? 'border border-[#171717] bg-white text-black shadow-[1px_1px_0px_#171717] dark:bg-slate-800 dark:text-white'
+                : 'text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white'
             }`}
           >
             <Compass className="h-3 w-3" /> Tour trên bờ
@@ -122,14 +122,14 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
         </div>
 
         {/* Pricing Filter */}
-        <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-900">
+        <div className="flex items-center gap-1 border-2 border-[#171717] bg-[#E7E4DC] p-1 shadow-[2px_2px_0px_#171717] dark:bg-slate-900">
           <button
             type="button"
             onClick={() => handleIncludedSelect(undefined)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+            className={`px-3 py-1 text-xs font-black uppercase transition-all ${
               filters.isIncluded === undefined
-                ? 'bg-white text-indigo-600 shadow-sm dark:bg-slate-800 dark:text-indigo-400'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                ? 'border border-[#171717] bg-white text-black shadow-[1px_1px_0px_#171717] dark:bg-slate-800 dark:text-white'
+                : 'text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white'
             }`}
           >
             Tất cả giá
@@ -137,10 +137,10 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
           <button
             type="button"
             onClick={() => handleIncludedSelect(true)}
-            className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-black uppercase transition-all ${
               filters.isIncluded === true
-                ? 'bg-white text-emerald-600 shadow-sm dark:bg-slate-800 dark:text-emerald-400'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                ? 'border border-[#171717] bg-[#D9FF43] text-black shadow-[1px_1px_0px_#171717]'
+                : 'text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white'
             }`}
           >
             <CheckCircle2 className="h-3 w-3" /> Đã bao gồm
@@ -148,10 +148,10 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
           <button
             type="button"
             onClick={() => handleIncludedSelect(false)}
-            className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-black uppercase transition-all ${
               filters.isIncluded === false
-                ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-800 dark:text-blue-400'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                ? 'border border-[#171717] bg-[#3155E7] text-white shadow-[1px_1px_0px_#171717]'
+                : 'text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white'
             }`}
           >
             <DollarSign className="h-3 w-3" /> Trả phí thêm
@@ -159,15 +159,15 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
         </div>
 
         {/* Port Filter */}
-        <div className="flex items-center gap-1.5">
-          <label htmlFor="port-filter-select" className="text-xs font-medium text-slate-500 dark:text-slate-400">
+        <div className="flex items-center gap-2">
+          <label htmlFor="port-filter-select" className="text-xs font-black uppercase tracking-wider text-[#171717] dark:text-neutral-300">
             Cảng ghé:
           </label>
           <select
             id="port-filter-select"
             value={filters.portId || ''}
             onChange={handlePortSelect}
-            className="rounded-lg border border-slate-200 bg-slate-50 py-1.5 px-2 text-xs font-semibold text-slate-700 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+            className="border-2 border-[#171717] bg-[#F7F5F0] py-1.5 px-2.5 text-xs font-bold text-black shadow-[2px_2px_0px_#171717] focus:outline-none dark:border-white dark:bg-slate-900 dark:text-white"
           >
             <option value="">Tất cả cảng</option>
             {ports.map(port => (
@@ -180,16 +180,16 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
 
         {/* Day Number Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto py-1">
-          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Lịch trình:</span>
+          <span className="text-xs font-black uppercase tracking-wider text-[#171717] dark:text-neutral-300">Lịch trình:</span>
           {[1, 2, 3, 4, 5].map(day => (
             <button
               key={day}
               type="button"
               onClick={() => handleDaySelect(filters.dayNumber === day ? undefined : day)}
-              className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+              className={`border-2 border-[#171717] px-2.5 py-1 text-xs font-black uppercase tracking-wider transition-all active:translate-x-[1px] active:translate-y-[1px] ${
                 filters.dayNumber === day
-                  ? 'bg-indigo-600 text-white shadow dark:bg-indigo-500'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300'
+                  ? 'bg-[#3155E7] text-white shadow-[2px_2px_0px_#171717]'
+                  : 'bg-white text-black shadow-[2px_2px_0px_#171717] hover:bg-[#E7E4DC] dark:bg-slate-700 dark:text-white'
               }`}
             >
               Ngày {day}

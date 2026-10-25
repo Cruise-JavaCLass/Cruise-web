@@ -19,62 +19,62 @@ export const ExcursionStatusCards: React.FC<ExcursionStatusCardsProps> = ({
   totalCapacity = 0,
 }) => {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5" data-testid="excursion-status-kpi-cards">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" data-testid="excursion-status-kpi-cards">
       {/* Total Excursions */}
-      <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-cyan-500/30 transition-all">
+      <div className="neo-card p-4 flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Tổng Chuyến Tour</p>
-          <h3 className="text-2xl font-display text-white mt-1">{totalCount} Tour</h3>
-          <p className="text-[10px] text-cyan-400 mt-0.5">Theo các điểm cập cảng</p>
+          <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#171717]/60">Tổng Chuyến Tour</p>
+          <h3 className="text-3xl font-display font-black text-[#171717] mt-1">{totalCount} Tour</h3>
+          <p className="text-[10px] font-mono text-[#3155E7] font-bold mt-0.5">Theo các điểm cập cảng</p>
         </div>
-        <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-          <Compass className="w-5 h-5" />
+        <div className="w-10 h-10 bg-[#E7E4DC] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center text-[#171717]">
+          <Compass className="w-5 h-5 text-[#3155E7]" />
         </div>
       </div>
 
       {/* In Progress */}
-      <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-blue-500/30 transition-all">
+      <div className="neo-card p-4 flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Đang Khởi Hành</p>
-          <h3 className="text-2xl font-display text-blue-400 mt-1">{inProgressCount} Đoàn</h3>
-          <p className="text-[10px] text-slate-400 mt-0.5">Khách đang ở trên bờ</p>
+          <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#171717]/60">Đang Khởi Hành</p>
+          <h3 className="text-3xl font-display font-black text-[#3155E7] mt-1">{inProgressCount} Đoàn</h3>
+          <p className="text-[10px] font-mono text-[#171717]/70 font-semibold mt-0.5">Khách đang ở trên bờ</p>
         </div>
-        <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+        <div className="w-10 h-10 bg-[#3155E7] text-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center">
           <Bus className="w-5 h-5" />
         </div>
       </div>
 
       {/* Delayed Alert */}
       <div
-        className={`border rounded-2xl p-4 flex items-center justify-between backdrop-blur-xl shadow-xl transition-all ${
+        className={`neo-card p-4 flex items-center justify-between ${
           delayedCount > 0
-            ? 'bg-amber-950/40 border-amber-500/40'
-            : 'bg-[#030303]/60 border-white/10 hover:border-amber-500/30'
+            ? 'bg-[#F59E0B]/20 border-2 border-[#171717]'
+            : 'bg-white'
         }`}
       >
         <div>
-          <p className="text-[11px] font-mono text-amber-400 uppercase tracking-wider">Cảnh Báo Trễ Giờ</p>
-          <h3 className="text-2xl font-display text-amber-300 mt-1">{delayedCount} Chuyến</h3>
-          <p className="text-[10px] text-amber-400/80 mt-0.5">
+          <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D97706]">Cảnh Báo Trễ Giờ</p>
+          <h3 className="text-3xl font-display font-black text-[#D97706] mt-1">{delayedCount} Chuyến</h3>
+          <p className="text-[10px] font-mono text-[#171717]/70 font-semibold mt-0.5">
             {delayedCount > 0 ? 'Cần hỗ trợ đưa khách về tàu' : 'Lịch trình đúng kế hoạch'}
           </p>
         </div>
-        <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-          <AlertTriangle className="w-5 h-5" />
+        <div className="w-10 h-10 bg-[#D9FF43] text-[#171717] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center">
+          <AlertTriangle className="w-5 h-5 text-[#D97706]" />
         </div>
       </div>
 
       {/* Occupancy Rate */}
-      <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-emerald-500/30 transition-all">
+      <div className="neo-card p-4 flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Lấp Đầy Chỗ</p>
-          <h3 className="text-2xl font-display text-emerald-400 mt-1">{occupancyRate}%</h3>
-          <p className="text-[10px] text-slate-400 mt-0.5">
+          <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#171717]/60">Lấp Đầy Chỗ</p>
+          <h3 className="text-3xl font-display font-black text-[#059669] mt-1">{occupancyRate}%</h3>
+          <p className="text-[10px] font-mono text-[#171717]/70 font-semibold mt-0.5">
             {totalBooked} / {totalCapacity} chỗ đã đặt
           </p>
         </div>
-        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-          <Users className="w-5 h-5" />
+        <div className="w-10 h-10 bg-[#10B981] text-[#171717] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center">
+          <Users className="w-5 h-5 text-[#171717]" />
         </div>
       </div>
     </div>

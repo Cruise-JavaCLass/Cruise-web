@@ -14,6 +14,7 @@ import {
   Trash2,
   RefreshCw,
   Search,
+  Compass,
 } from 'lucide-react';
 import {
   type ShoreExcursion,
@@ -104,21 +105,26 @@ export function ExcursionDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-20 text-slate-400">
-        <RefreshCw className="w-6 h-6 animate-spin text-cyan-400 mr-3" />
-        <span>Đang tải thông tin tour trên bờ...</span>
+      <div className="flex flex-col items-center justify-center min-h-[50vh] text-[#171717] space-y-4">
+        <div className="w-12 h-12 bg-[#D9FF43] border-2 border-[#171717] shadow-[4px_4px_0px_#171717] flex items-center justify-center">
+          <RefreshCw className="w-6 h-6 text-[#171717] animate-spin" />
+        </div>
+        <span className="text-xs font-mono font-bold uppercase tracking-wider">Đang tải thông tin tour trên bờ...</span>
       </div>
     );
   }
 
   if (!excursion) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center space-y-4">
-        <h3 className="text-base font-bold text-white">Không tìm thấy thông tin tour trên bờ</h3>
-        <p className="text-xs text-slate-400">Tour có thể đã bị xóa hoặc đường dẫn không đúng.</p>
+      <div className="neo-card p-12 text-center space-y-4 bg-white max-w-lg mx-auto mt-8">
+        <div className="w-16 h-16 mx-auto mb-2 bg-[#E7E4DC] border-2 border-[#171717] shadow-[4px_4px_0px_#171717] flex items-center justify-center">
+          <Compass className="w-8 h-8 text-[#DC2626]" />
+        </div>
+        <h3 className="text-xl font-display font-black text-[#171717] uppercase">Không tìm thấy thông tin tour trên bờ</h3>
+        <p className="text-xs font-mono text-[#171717]/70">Tour có thể đã bị xóa hoặc đường dẫn không đúng.</p>
         <Link
           to="/excursions"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold"
+          className="neo-btn neo-btn-secondary inline-flex items-center gap-2 mt-4"
         >
           <ArrowLeft className="w-4 h-4" /> Quay lại danh sách
         </Link>
@@ -147,54 +153,54 @@ export function ExcursionDetailPage() {
     <div className="space-y-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-slate-900 border border-cyan-500/40 text-cyan-300 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs animate-in fade-in slide-in-from-top-4 duration-200">
-          <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
-          <span className="font-medium">{toastMessage}</span>
+        <div className="fixed top-20 right-6 z-50 bg-[#171717] border-2 border-[#D9FF43] text-white px-5 py-3 shadow-[4px_4px_0px_#171717] flex items-center gap-3 text-xs animate-in fade-in slide-in-from-top-4 duration-200">
+          <CheckCircle2 className="w-4 h-4 text-[#D9FF43] shrink-0" />
+          <span className="font-mono font-bold">{toastMessage}</span>
         </div>
       )}
 
-      {/* Top Breadcrumb & Action bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Top Breadcrumb & Action bar — Editorial Broadside */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-[#171717]">
         <div className="flex items-center gap-3">
           <Link
             to="/excursions"
-            className="p-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors"
+            className="w-10 h-10 bg-white hover:bg-[#E7E4DC] text-[#171717] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center transition-all active:translate-x-0.5 active:translate-y-0.5"
             title="Quay lại danh sách"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">Tour Trên Bờ</span>
-              <span className="text-slate-600">/</span>
-              <span className="font-mono text-xs text-cyan-400">{excursion.code}</span>
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-[10px] font-mono font-bold text-[#171717]/60 uppercase">Tour Trên Bờ</span>
+              <span className="text-[#171717]/40">/</span>
+              <span className="font-mono text-[10px] font-black text-[#3155E7] uppercase">{excursion.code}</span>
             </div>
-            <h2 className="text-xl font-bold text-white mt-0.5">{excursion.title}</h2>
+            <h2 className="text-xl sm:text-2xl font-display font-black text-[#171717] uppercase tracking-tight">{excursion.title}</h2>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setIsManifestModalOpen(true)}
-            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
+            className="neo-btn neo-btn-acid py-1.5 px-3 text-xs flex items-center gap-1.5"
           >
             <Users className="w-3.5 h-3.5" /> Đoàn & Xe
           </button>
           <button
             onClick={() => setIsStatusModalOpen(true)}
-            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
+            className="neo-btn neo-btn-secondary py-1.5 px-3 text-xs flex items-center gap-1.5"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-cyan-400" /> Đổi Trạng Thái
+            <RefreshCw className="w-3.5 h-3.5 text-[#3155E7]" /> Đổi Trạng Thái
           </button>
           <button
             onClick={() => setIsEditModalOpen(true)}
-            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
+            className="neo-btn neo-btn-secondary py-1.5 px-3 text-xs flex items-center gap-1.5"
           >
-            <Edit2 className="w-3.5 h-3.5 text-amber-400" /> Chỉnh Sửa
+            <Edit2 className="w-3.5 h-3.5 text-amber-600" /> Chỉnh Sửa
           </button>
           <button
             onClick={handleDelete}
-            className="p-2 bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl transition-colors"
+            className="w-8 h-8 bg-white hover:bg-[#DC2626] hover:text-white text-[#DC2626] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center transition-all active:translate-x-0.5 active:translate-y-0.5"
             title="Xóa tour"
           >
             <Trash2 className="w-4 h-4" />
@@ -204,15 +210,15 @@ export function ExcursionDetailPage() {
 
       {/* Status Alert Banner if DELAYED */}
       {excursion.status === 'DELAYED' && (
-        <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/50 flex items-start gap-3 text-xs text-amber-200">
-          <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+        <div className="p-4 bg-[#F7F5F0] border-2 border-[#DC2626] shadow-[4px_4px_0px_#DC2626] flex items-start gap-3 text-xs text-[#DC2626]">
+          <AlertTriangle className="w-5 h-5 text-[#DC2626] shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <h4 className="font-bold text-amber-300">CẢNH BÁO: CHUYẾN TOUR ĐANG BỊ TRỄ GIỜ</h4>
-            <p>
+            <h4 className="font-display font-black text-[#DC2626] uppercase text-sm">CẢNH BÁO: CHUYẾN TOUR ĐANG BỊ TRỄ GIỜ</h4>
+            <p className="font-mono text-[#171717]">
               Lý do ghi nhận:{' '}
-              <strong>{excursion.delayReason || 'Đang chờ hướng dẫn viên cập nhật tình trạng giao thông.'}</strong>
+              <strong className="text-[#DC2626]">{excursion.delayReason || 'Xe trung chuyển bị kẹt do thời tiết mưa lớn cục bộ'}</strong>
             </p>
-            <p className="text-[11px] text-amber-400">
+            <p className="text-[11px] font-mono text-[#171717]/70">
               Bộ phận hải trình và trưởng tàu đã nhận được cảnh báo để điều phối phao tiêu cập cảng an toàn.
             </p>
           </div>
@@ -223,31 +229,31 @@ export function ExcursionDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Main Info & Operational Timeline */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Main Card */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
-              <div className="flex items-center gap-2">
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusConfig.cls}`}>
+          {/* Main Card — Neo-Brutalist White Block */}
+          <div className="neo-card bg-white p-6 space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#171717] pb-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="neo-badge bg-[#171717] text-white">
                   {statusConfig.label}
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-cyan-300 border border-cyan-500/30">
+                <span className="neo-badge bg-[#E7E4DC] text-[#171717]">
                   {EXCURSION_CATEGORY_LABELS[excursion.category]}
                 </span>
-                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${diffConfig.color}`}>
+                <span className="neo-badge bg-[#D9FF43] text-[#171717]">
                   Độ khó: {diffConfig.label}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                <MapPin className="w-4 h-4 text-cyan-400" />
+              <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-[#171717]">
+                <MapPin className="w-4 h-4 text-[#3155E7]" />
                 <span>{excursion.portName} ({excursion.portCity})</span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <h4 className="text-[11px] font-mono font-bold text-[#171717]/70 uppercase tracking-wider">
                 Mô tả chương trình tham quan
               </h4>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs sm:text-sm font-sans text-[#171717]/80 leading-relaxed">
                 {excursion.description || 'Chưa có thông tin mô tả chi tiết cho tour trên bờ này.'}
               </p>
             </div>
@@ -263,32 +269,32 @@ export function ExcursionDetailPage() {
           </div>
 
           {/* Passenger Manifest Table */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="neo-card bg-white p-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-[#171717]">
               <div>
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Users className="w-4 h-4 text-cyan-400" /> Danh Sách Hành Khách Đi Theo Đoàn
+                <h3 className="text-base font-display font-black text-[#171717] uppercase flex items-center gap-2">
+                  <Users className="w-5 h-5 text-[#3155E7]" /> Danh Sách Hành Khách Đi Theo Đoàn
                 </h3>
-                <p className="text-xs text-slate-400">
-                  Đã về tàu an toàn: {returnedSafeCount} / {passengers.length} hành khách
+                <p className="text-xs font-mono text-[#171717]/70 mt-0.5">
+                  Đã về tàu an toàn: <strong className="text-[#3155E7]">{returnedSafeCount}</strong> / {passengers.length} hành khách
                 </p>
               </div>
 
-              <div className="relative w-full sm:w-60">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <div className="relative w-full sm:w-64">
+                <Search className="w-3.5 h-3.5 text-[#171717]/60 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Lọc tên, cabin..."
                   value={passengerSearch}
                   onChange={(e) => setPassengerSearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="neo-input w-full pl-8 py-1.5 text-xs bg-[#F7F5F0]"
                 />
               </div>
             </div>
 
-            <div className="overflow-x-auto border border-slate-800 rounded-xl">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-800/80 text-slate-400 uppercase tracking-wider text-[11px]">
+            <div className="overflow-x-auto border-2 border-[#171717]">
+              <table className="w-full text-left text-xs font-mono">
+                <thead className="bg-[#E7E4DC] text-[#171717] uppercase font-bold text-[10px] border-b-2 border-[#171717]">
                   <tr>
                     <th className="py-2.5 px-3">Hành Khách</th>
                     <th className="py-2.5 px-3">Cabin</th>
@@ -298,28 +304,28 @@ export function ExcursionDetailPage() {
                     <th className="py-2.5 px-3 text-right">Hành Động</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                <tbody className="divide-y-2 divide-[#171717] bg-white text-[#171717]">
                   {filteredPassengers.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="py-2.5 px-3 font-semibold text-white">
+                    <tr key={p.id} className="hover:bg-[#F7F5F0] transition-colors">
+                      <td className="py-2.5 px-3 font-bold text-[#171717]">
                         {p.passengerName}
                         {p.specialRequirements && (
-                          <span className="block text-[10px] text-amber-400 font-normal">
+                          <span className="block text-[10px] text-amber-700 font-normal">
                             {p.specialRequirements}
                           </span>
                         )}
                       </td>
-                      <td className="py-2.5 px-3 text-cyan-400">{p.cabinNumber}</td>
+                      <td className="py-2.5 px-3 text-[#3155E7] font-bold">{p.cabinNumber}</td>
                       <td className="py-2.5 px-3">{p.busNumber}</td>
-                      <td className="py-2.5 px-3 text-slate-400">{p.emergencyPhone}</td>
+                      <td className="py-2.5 px-3 text-[#171717]/70">{p.emergencyPhone}</td>
                       <td className="py-2.5 px-3">
                         <span
-                          className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                          className={`inline-flex px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-[#171717] ${
                             p.status === 'RETURNED_SAFE'
-                              ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'
+                              ? 'bg-[#D9FF43] text-[#171717]'
                               : p.status === 'ON_TOUR'
-                              ? 'bg-blue-500/10 text-blue-300 border-blue-500/20'
-                              : 'bg-slate-500/10 text-slate-300 border-slate-500/20'
+                              ? 'bg-[#3155E7] text-white'
+                              : 'bg-[#E7E4DC] text-[#171717]'
                           }`}
                         >
                           {p.status === 'RETURNED_SAFE'
@@ -332,7 +338,7 @@ export function ExcursionDetailPage() {
                       <td className="py-2.5 px-3 text-right">
                         <button
                           onClick={() => handleTogglePassengerStatus(p.id)}
-                          className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded text-[10px] font-medium transition-colors"
+                          className="px-2 py-1 bg-white hover:bg-[#E7E4DC] text-[#171717] border border-[#171717] shadow-[1px_1px_0px_#171717] text-[10px] font-mono font-bold uppercase active:translate-x-0.5 active:translate-y-0.5"
                         >
                           Cập nhật
                         </button>
@@ -348,56 +354,56 @@ export function ExcursionDetailPage() {
         {/* Right Col: Logistics & Partner Card */}
         <div className="space-y-6">
           {/* Partner & Logistics Info */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-4">
-            <h3 className="text-xs font-semibold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-800 pb-2">
-              <Building2 className="w-4 h-4" /> Đối Tác & Điều Phối Phương Tiện
+          <div className="neo-card bg-white p-6 space-y-4">
+            <h3 className="text-xs font-mono font-bold text-[#171717] uppercase tracking-wider flex items-center gap-1.5 border-b-2 border-[#171717] pb-2">
+              <Building2 className="w-4 h-4 text-[#3155E7]" /> Đối Tác & Điều Phối Phương Tiện
             </h3>
 
-            <div className="space-y-3 text-xs">
+            <div className="space-y-3 text-xs font-mono">
               <div>
-                <span className="text-slate-400 block text-[11px]">Đơn vị điều hành địa phương:</span>
-                <span className="font-semibold text-white">{excursion.operatorName}</span>
+                <span className="text-[#171717]/60 block text-[10px] font-bold uppercase">Đơn vị điều hành địa phương:</span>
+                <span className="font-bold text-[#171717] text-sm">{excursion.operatorName}</span>
                 {excursion.operatorContact && (
-                  <span className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                    <Phone className="w-3 h-3 text-cyan-400" /> {excursion.operatorContact}
+                  <span className="text-[11px] text-[#171717]/70 flex items-center gap-1 mt-0.5">
+                    <Phone className="w-3 h-3 text-[#3155E7]" /> {excursion.operatorContact}
                   </span>
                 )}
               </div>
 
-              <div className="pt-2 border-t border-slate-800">
-                <span className="text-slate-400 block text-[11px]">Hướng dẫn viên phụ trách:</span>
-                <span className="font-semibold text-cyan-300">{excursion.guideName || 'Chưa gán'}</span>
+              <div className="pt-2 border-t border-[#171717]/20">
+                <span className="text-[#171717]/60 block text-[10px] font-bold uppercase">Hướng dẫn viên phụ trách:</span>
+                <span className="font-bold text-[#3155E7]">{excursion.guideName || 'Chưa gán'}</span>
                 {excursion.guidePhone && (
-                  <span className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                    <Phone className="w-3 h-3 text-slate-500" /> {excursion.guidePhone}
+                  <span className="text-[11px] text-[#171717]/70 flex items-center gap-1 mt-0.5">
+                    <Phone className="w-3 h-3 text-[#171717]/40" /> {excursion.guidePhone}
                   </span>
                 )}
               </div>
 
-              <div className="pt-2 border-t border-slate-800">
-                <span className="text-slate-400 block text-[11px]">Phương tiện đưa đón:</span>
-                <span className="font-semibold text-white flex items-center gap-1 mt-0.5">
-                  <Bus className="w-3.5 h-3.5 text-cyan-400" /> {excursion.busNumber || 'Xe hợp đồng'}
+              <div className="pt-2 border-t border-[#171717]/20">
+                <span className="text-[#171717]/60 block text-[10px] font-bold uppercase">Phương tiện đưa đón:</span>
+                <span className="font-bold text-[#171717] flex items-center gap-1 mt-0.5">
+                  <Bus className="w-3.5 h-3.5 text-[#3155E7]" /> {excursion.busNumber || 'Xe hợp đồng'}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Pricing & Capacity Stats */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-4">
-            <h3 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-800 pb-2">
-              <DollarSign className="w-4 h-4" /> Chi Phí & Doanh Thu Dự Kiến
+          <div className="neo-card bg-white p-6 space-y-4">
+            <h3 className="text-xs font-mono font-bold text-[#171717] uppercase tracking-wider flex items-center gap-1.5 border-b-2 border-[#171717] pb-2">
+              <DollarSign className="w-4 h-4 text-[#3155E7]" /> Chi Phí & Doanh Thu Dự Kiến
             </h3>
 
-            <div className="space-y-3 text-xs">
+            <div className="space-y-3 text-xs font-mono">
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Hình thức tham gia:</span>
+                <span className="text-[#171717]/70">Hình thức tham gia:</span>
                 {excursion.isIncluded ? (
-                  <span className="text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded">
+                  <span className="text-[#171717] font-bold bg-[#D9FF43] border border-[#171717] px-2 py-0.5">
                     Bao gồm trong vé
                   </span>
                 ) : (
-                  <span className="text-cyan-400 font-semibold bg-cyan-500/10 px-2 py-0.5 rounded">
+                  <span className="text-white font-bold bg-[#3155E7] border border-[#171717] px-2 py-0.5">
                     Phụ thu dịch vụ
                   </span>
                 )}
@@ -405,24 +411,24 @@ export function ExcursionDetailPage() {
 
               {!excursion.isIncluded && (
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">Đơn giá vé:</span>
-                  <span className="font-bold text-white">
+                  <span className="text-[#171717]/70">Đơn giá vé:</span>
+                  <span className="font-bold text-[#171717]">
                     {excursion.price.toLocaleString('vi-VN')} {excursion.currency}
                   </span>
                 </div>
               )}
 
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Số lượng đã đặt:</span>
-                <span className="font-semibold text-white">
+                <span className="text-[#171717]/70">Số lượng đã đặt:</span>
+                <span className="font-bold text-[#171717]">
                   {excursion.bookedCount} / {excursion.maxCapacity} khách
                 </span>
               </div>
 
               {!excursion.isIncluded && (
-                <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-400">Doanh thu dự kiến:</span>
-                  <span className="font-bold text-emerald-400 text-sm">
+                <div className="pt-2 border-t-2 border-[#171717] flex items-center justify-between">
+                  <span className="text-[#171717]/70 font-bold uppercase">Doanh thu dự kiến:</span>
+                  <span className="font-display font-black text-[#171717] text-base">
                     {(excursion.price * excursion.bookedCount).toLocaleString('vi-VN')} {excursion.currency}
                   </span>
                 </div>
@@ -481,3 +487,4 @@ export function ExcursionDetailPage() {
     </div>
   );
 }
+export default ExcursionDetailPage;

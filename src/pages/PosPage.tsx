@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   FileQuestion,
   DollarSign,
+  Layers,
 } from 'lucide-react';
 import {
   posService,
@@ -26,7 +27,6 @@ import { ManagerVoidRefundModal } from '../components/pos/ManagerVoidRefundModal
 import { ShiftSummaryModal } from '../components/pos/ShiftSummaryModal';
 import { PosReceiptModal } from '../components/pos/PosReceiptModal';
 import { PosCatalogManagement } from '../components/pos/PosCatalogManagement';
-import { Layers } from 'lucide-react';
 import {
   reconciliationService,
   type ReconciliationSummaryMetrics,
@@ -234,31 +234,31 @@ export function PosPage() {
     switch (status) {
       case 'COMPLETED':
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-[#171717] bg-[#D9FF43] text-[#171717]">
             Hoàn Tất
           </span>
         );
       case 'VOIDED':
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-[#171717] bg-[#DC2626] text-white">
             Đã Hủy (Void)
           </span>
         );
       case 'PARTIALLY_REFUNDED':
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-[#171717] bg-amber-400 text-[#171717]">
             Hoàn Một Phần
           </span>
         );
       case 'FULLY_REFUNDED':
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-[#171717] bg-[#3155E7] text-white">
             Hoàn Toàn Phần
           </span>
         );
       default:
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400">
+          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-[#171717] bg-[#E7E4DC] text-[#171717]">
             {status}
           </span>
         );
@@ -266,19 +266,19 @@ export function PosPage() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+    <div className="space-y-6">
+      {/* Top Header — Editorial Cash Register Broadside */}
+      <div className="neo-card bg-white p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[6px_6px_0px_#171717]">
         <div>
           <div className="flex items-center gap-3">
-            <h2 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2.5">
-              <CreditCard className="w-6 h-6 text-amber-400" /> Hệ Thống POS & Tài Khoản Phi Tiền Mặt
+            <h2 className="text-xl sm:text-2xl font-display font-black text-[#171717] flex items-center gap-2.5 uppercase tracking-tight">
+              <CreditCard className="w-6 h-6 text-[#3155E7]" /> Hệ Thống POS & Tài Khoản Phi Tiền Mặt
             </h2>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <CheckCircle2 className="w-3 h-3" /> Đã kết nối máy chủ
+            <span className="neo-badge bg-[#D9FF43] text-[#171717] flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3 text-[#171717]" /> Đã kết nối máy chủ
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm font-mono text-[#171717]/70 mt-1">
             Giao dịch không tiền mặt (Cashless Folio) • Đối soát POS & Folio tự động • Hủy trong ca & Giải quyết khiếu nại
           </p>
         </div>
@@ -288,7 +288,7 @@ export function PosPage() {
           <button
             onClick={handleRunReconciliation}
             disabled={isRunningRecon}
-            className="inline-flex items-center justify-center gap-2 px-3.5 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 transition-all cursor-pointer"
+            className="neo-btn neo-btn-primary py-2 px-3 text-xs flex items-center gap-1.5 disabled:opacity-50"
           >
             <Scale className={`w-4 h-4 ${isRunningRecon ? 'animate-spin' : ''}`} />
             {isRunningRecon ? 'Đang đối soát...' : 'Chạy Đối Soát Ngay'}
@@ -298,15 +298,15 @@ export function PosPage() {
             onClick={() => setIsShiftModalOpen(true)}
             disabled={!activeShiftId || isLoadingShift}
             title={!activeShiftId ? 'Chưa có ca làm việc đang mở' : 'Xem báo cáo ca'}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+            className="neo-btn neo-btn-acid py-2 px-3 text-xs flex items-center gap-1.5 disabled:opacity-50"
           >
-            <FileText className="w-4 h-4 text-amber-400" /> Báo Cáo Ca (X/Z Report)
+            <FileText className="w-4 h-4" /> Báo Cáo Ca (X/Z Report)
           </button>
 
           <button
             onClick={handleSyncOffline}
             disabled={isSyncing}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-amber-600/20 transition-all cursor-pointer"
+            className="neo-btn neo-btn-secondary py-2 px-3 text-xs flex items-center gap-1.5 disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Đang kiểm tra...' : 'Kiểm Tra Kết Nối'}
@@ -316,29 +316,29 @@ export function PosPage() {
 
       {syncMessage && (
         <div
-          className={`p-3 rounded-xl text-xs flex items-center gap-2 animate-in fade-in ${
+          className={`p-4 border-2 border-[#171717] shadow-[3px_3px_0px_#171717] text-xs font-mono font-bold flex items-center gap-2 ${
             syncMessage.isError
-              ? 'bg-rose-500/10 border border-rose-500/30 text-rose-400'
-              : 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'
+              ? 'bg-[#DC2626] text-white'
+              : 'bg-[#D9FF43] text-[#171717]'
           }`}
         >
           {syncMessage.isError ? (
-            <AlertCircle className="w-4 h-4 shrink-0" />
+            <AlertCircle className="w-4 h-4 shrink-0 text-[#D9FF43]" />
           ) : (
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-[#171717]" />
           )}
           <span>{syncMessage.text}</span>
         </div>
       )}
 
-      {/* Navigation Tabs */}
-      <div className="flex flex-wrap border-b border-slate-800">
+      {/* Navigation Tabs — Neo-Brutalist Strip */}
+      <div className="flex flex-wrap gap-2 pb-2 border-b-2 border-[#171717]">
         <button
           onClick={() => setActiveTab('REGISTER')}
-          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
             activeTab === 'REGISTER'
-              ? 'border-amber-500 text-amber-400'
-              : 'border-transparent text-slate-400 hover:text-white'
+              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
+              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
           }`}
         >
           <ShoppingCart className="w-4 h-4" />
@@ -348,10 +348,10 @@ export function PosPage() {
 
         <button
           onClick={() => setActiveTab('LEDGER')}
-          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
             activeTab === 'LEDGER'
-              ? 'border-amber-500 text-amber-400'
-              : 'border-transparent text-slate-400 hover:text-white'
+              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
+              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
           }`}
         >
           <ListFilter className="w-4 h-4" /> Sổ Cái Giao Dịch & Quản Lý (Ledger)
@@ -359,10 +359,10 @@ export function PosPage() {
 
         <button
           onClick={() => setActiveTab('CATALOG')}
-          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
             activeTab === 'CATALOG'
-              ? 'border-amber-500 text-amber-400'
-              : 'border-transparent text-slate-400 hover:text-white'
+              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
+              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
           }`}
         >
           <Layers className="w-4 h-4" /> Quản Lý Danh Mục & Giá (Catalog)
@@ -370,16 +370,16 @@ export function PosPage() {
 
         <button
           onClick={() => setActiveTab('RECONCILIATION')}
-          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
             activeTab === 'RECONCILIATION'
-              ? 'border-cyan-500 text-cyan-400'
-              : 'border-transparent text-slate-400 hover:text-white'
+              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
+              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
           }`}
         >
           <Scale className="w-4 h-4" />
           Trung Tâm Đối Soát (Reconciliation)
           {discrepancies.length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-500 text-white">
+            <span className="px-1.5 py-0.2 border border-[#171717] text-[10px] bg-[#DC2626] text-white font-bold">
               {discrepancies.length}
             </span>
           )}
@@ -387,26 +387,27 @@ export function PosPage() {
 
         <button
           onClick={() => setActiveTab('DISPUTES')}
-          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
             activeTab === 'DISPUTES'
-              ? 'border-amber-600 text-amber-400'
-              : 'border-transparent text-slate-400 hover:text-white'
+              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
+              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
           }`}
         >
           <FileQuestion className="w-4 h-4" />
           Hồ Sơ Khiếu Nại Chi Phí (Disputes)
           {disputes.filter((d) => d.status === 'SUBMITTED').length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-400 text-slate-950 font-black">
+            <span className="px-1.5 py-0.2 border border-[#171717] text-[10px] bg-[#D9FF43] text-[#171717] font-black">
               {disputes.filter((d) => d.status === 'SUBMITTED').length}
             </span>
           )}
         </button>
+
         <button
           onClick={() => setActiveTab('SYNC')}
-          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
             activeTab === 'SYNC'
-              ? 'border-orange-500 text-orange-400'
-              : 'border-transparent text-slate-400 hover:text-white'
+              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
+              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
           }`}
         >
           <RefreshCw className="w-4 h-4" />
@@ -414,73 +415,73 @@ export function PosPage() {
         </button>
       </div>
 
-      {/* KPI Stats Bar */}
+      {/* KPI Stats Bar — Neo-Brutalist Financial Cards */}
       {metrics && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs font-medium uppercase tracking-wider">Doanh thu đã đối soát</span>
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="neo-card bg-white p-5">
+            <div className="flex items-center justify-between text-[#171717]/70 mb-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider">Doanh thu đã đối soát</span>
+              <div className="w-8 h-8 bg-[#D9FF43] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center text-[#171717]">
                 <DollarSign className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-xl font-bold text-white">
+            <p className="text-2xl font-display font-black text-[#171717]">
               ${metrics.totalReconciledAmount.toLocaleString()} USD
             </p>
-            <span className="text-[11px] text-emerald-400 mt-1 block">Khớp 100% giữa POS & Folio</span>
+            <span className="text-[10px] font-mono font-bold text-[#3155E7] mt-1 block">Khớp 100% giữa POS & Folio</span>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs font-medium uppercase tracking-wider">Tỷ lệ sai lệch</span>
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-                <Scale className="w-4 h-4" />
+          <div className="neo-card bg-white p-5">
+            <div className="flex items-center justify-between text-[#171717]/70 mb-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider">Tỷ lệ sai lệch</span>
+              <div className="w-8 h-8 bg-[#E7E4DC] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center text-[#171717]">
+                <Scale className="w-4 h-4 text-[#3155E7]" />
               </div>
             </div>
-            <p className="text-xl font-bold text-cyan-400">
+            <p className="text-2xl font-display font-black text-[#3155E7]">
               {metrics.discrepancyRatePercent}%
             </p>
-            <span className="text-[11px] text-slate-400 mt-1 block">Ngưỡng cảnh báo: 0.5%</span>
+            <span className="text-[10px] font-mono text-[#171717]/60 mt-1 block">Ngưỡng cảnh báo: 0.5%</span>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs font-medium uppercase tracking-wider">Sai lệch cần xử lý</span>
-              <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-                <AlertTriangle className="w-4 h-4" />
+          <div className="neo-card bg-white p-5">
+            <div className="flex items-center justify-between text-[#171717]/70 mb-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider">Sai lệch cần xử lý</span>
+              <div className="w-8 h-8 bg-[#DC2626] text-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center">
+                <AlertTriangle className="w-4 h-4 text-[#D9FF43]" />
               </div>
             </div>
-            <p className="text-xl font-bold text-rose-400">
+            <p className="text-2xl font-display font-black text-[#DC2626]">
               {metrics.pendingDiscrepanciesCount} Bản ghi
             </p>
-            <span className="text-[11px] text-slate-400 mt-1 block">Chênh lệch ${metrics.totalVarianceAmount} USD</span>
+            <span className="text-[10px] font-mono text-[#171717]/70 mt-1 block">Chênh lệch ${metrics.totalVarianceAmount} USD</span>
           </div>
 
-          <div className="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs font-medium uppercase tracking-wider">Khiếu nại đang chờ</span>
-              <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+          <div className="neo-card bg-white p-5">
+            <div className="flex items-center justify-between text-[#171717]/70 mb-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider">Khiếu nại đang chờ</span>
+              <div className="w-8 h-8 bg-[#171717] text-[#D9FF43] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center">
                 <FileQuestion className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-xl font-bold text-amber-400">
+            <p className="text-2xl font-display font-black text-[#171717]">
               {metrics.openDisputesCount} Hồ sơ
             </p>
-            <span className="text-[11px] text-amber-300 mt-1 block font-medium">Đang tranh chấp: ${metrics.totalDisputedAmount} USD</span>
+            <span className="text-[10px] font-mono text-[#171717]/70 mt-1 block font-bold">Đang tranh chấp: ${metrics.totalDisputedAmount} USD</span>
           </div>
         </div>
       )}
 
       {/* Emergency Alert Banner if Active */}
       {metrics?.criticalAlertActive && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center justify-between gap-3">
+        <div className="p-4 bg-[#DC2626] border-2 border-[#171717] shadow-[4px_4px_0px_#171717] text-white text-xs font-mono font-bold flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <ShieldAlert className="w-5 h-5 shrink-0" />
-            <span className="font-semibold">{metrics.alertMessage}</span>
+            <ShieldAlert className="w-5 h-5 shrink-0 text-[#D9FF43]" />
+            <span>{metrics.alertMessage}</span>
           </div>
           <button
             onClick={() => setActiveTab('RECONCILIATION')}
-            className="px-3 py-1.5 rounded-xl bg-rose-500 text-white font-bold text-[11px] hover:bg-rose-600 transition-colors cursor-pointer"
+            className="px-3 py-1.5 bg-[#D9FF43] text-[#171717] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] font-bold text-[11px] uppercase transition-all active:translate-x-0.5 active:translate-y-0.5"
           >
             Xử lý ngay
           </button>
@@ -494,14 +495,14 @@ export function PosPage() {
       {activeTab === 'LEDGER' && (
         <div className="space-y-4">
           {ledgerError && (
-            <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center justify-between">
+            <div className="p-4 bg-[#DC2626] border-2 border-[#171717] shadow-[3px_3px_0px_#171717] text-white text-xs font-mono font-bold flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
+                <AlertCircle className="w-4 h-4 shrink-0 text-[#D9FF43]" />
                 <span>{ledgerError}</span>
               </div>
               <button
                 onClick={loadTransactions}
-                className="px-3 py-1 bg-rose-600/30 hover:bg-rose-600/50 text-rose-200 rounded-lg font-semibold cursor-pointer"
+                className="px-3 py-1 bg-white text-[#171717] border border-[#171717] font-bold uppercase"
               >
                 Thử lại
               </button>
@@ -509,24 +510,24 @@ export function PosPage() {
           )}
 
           {/* Filters Bar */}
-          <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row gap-3 justify-between items-center">
+          <div className="neo-card bg-white p-4 flex flex-col md:flex-row gap-3 justify-between items-center">
             <div className="relative w-full md:w-80">
-              <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+              <Search className="w-4 h-4 text-[#171717]/60 absolute left-3 top-2.5 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Tìm mã UUID, số cabin, tên khách..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                className="neo-input w-full pl-9 pr-3 py-2 text-xs bg-[#F7F5F0]"
               />
             </div>
 
-            <div className="flex gap-2 w-full md:w-auto">
+            <div className="flex flex-wrap gap-2 w-full md:w-auto">
               {/* Status Filter */}
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+                className="neo-input font-mono font-bold text-xs bg-[#F7F5F0] py-2 px-3"
               >
                 <option value="ALL">Mọi trạng thái</option>
                 <option value="COMPLETED">Hoàn tất</option>
@@ -539,7 +540,7 @@ export function PosPage() {
               <select
                 value={methodFilter}
                 onChange={(e) => setMethodFilter(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+                className="neo-input font-mono font-bold text-xs bg-[#F7F5F0] py-2 px-3"
               >
                 <option value="ALL">Mọi phương thức</option>
                 <option value="CABIN_FOLIO">Tài Khoản Phòng</option>
@@ -550,7 +551,7 @@ export function PosPage() {
               <button
                 onClick={loadTransactions}
                 disabled={isLoadingLedger}
-                className="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-colors cursor-pointer"
+                className="w-9 h-9 bg-white hover:bg-[#E7E4DC] text-[#171717] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center transition-all active:translate-x-0.5 active:translate-y-0.5"
                 title="Tải lại sổ cái"
               >
                 <RefreshCw className={`w-4 h-4 ${isLoadingLedger ? 'animate-spin' : ''}`} />
@@ -559,10 +560,10 @@ export function PosPage() {
           </div>
 
           {/* Transactions Table */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+          <div className="neo-card bg-white overflow-hidden shadow-[6px_6px_0px_#171717]">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <table className="w-full text-left text-xs font-mono">
+                <thead className="bg-[#E7E4DC] text-[10px] uppercase font-bold text-[#171717] border-b-2 border-[#171717]">
                   <tr>
                     <th className="px-4 py-3">Mã Giao Dịch</th>
                     <th className="px-4 py-3">Phòng / Khách Hàng</th>
@@ -574,43 +575,43 @@ export function PosPage() {
                     <th className="px-4 py-3 text-right">Thao Tác</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y-2 divide-[#171717] bg-white text-[#171717]">
                   {filteredTransactions.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center py-10 text-slate-500">
+                      <td colSpan={8} className="text-center py-10 text-[#171717]/60 font-bold">
                         {isLoadingLedger ? 'Đang tải dữ liệu...' : 'Không tìm thấy giao dịch nào.'}
                       </td>
                     </tr>
                   ) : (
                     filteredTransactions.map((tx) => (
-                      <tr key={tx.id} className="hover:bg-slate-800/40 transition-colors">
+                      <tr key={tx.id} className="hover:bg-[#F7F5F0] transition-colors">
                         <td className="px-4 py-3">
-                          <p className="font-mono font-bold text-white">{tx.transactionUuid}</p>
-                          <p className="text-[10px] text-slate-500">
+                          <p className="font-mono font-bold text-[#3155E7]">{tx.transactionUuid}</p>
+                          <p className="text-[10px] text-[#171717]/60">
                             {tx.createdAt ? new Date(tx.createdAt).toLocaleString('vi-VN') : 'N/A'} • {tx.stationId}
                           </p>
                         </td>
                         <td className="px-4 py-3">
-                          <p className="font-semibold text-white">{tx.guestName || 'Khách Vãng Lai'}</p>
-                          <p className="text-[11px] text-amber-400 font-mono">{tx.cabinNumber || 'N/A'}</p>
+                          <p className="font-bold text-[#171717]">{tx.guestName || 'Khách Vãng Lai'}</p>
+                          <p className="text-[11px] text-[#171717]/70 font-mono font-semibold">{tx.cabinNumber || 'N/A'}</p>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="font-mono text-slate-300">{tx.paymentMethod}</span>
+                          <span className="font-mono font-semibold">{tx.paymentMethod}</span>
                         </td>
                         <td className="px-4 py-3">{getStatusBadge(tx.status)}</td>
-                        <td className="px-4 py-3 text-right font-extrabold text-white font-mono">
+                        <td className="px-4 py-3 text-right font-black text-sm text-[#171717]">
                           ${tx.totalAmount.toFixed(2)}
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-rose-400">
+                        <td className="px-4 py-3 text-right font-bold text-[#DC2626]">
                           {tx.refundedAmount > 0 ? `-$${tx.refundedAmount.toFixed(2)}` : '-'}
                         </td>
                         <td className="px-4 py-3 text-center">
                           {tx.settled ? (
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                            <span className="text-[10px] px-2 py-0.5 border border-[#171717] bg-[#E7E4DC] font-bold">
                               Đã Chốt
                             </span>
                           ) : (
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <span className="text-[10px] px-2 py-0.5 border border-[#171717] bg-[#D9FF43] text-[#171717] font-bold">
                               Chưa Chốt
                             </span>
                           )}
@@ -619,7 +620,7 @@ export function PosPage() {
                           {/* Receipt button */}
                           <button
                             onClick={() => handleOpenReceipt(tx)}
-                            className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+                            className="p-1.5 bg-white hover:bg-[#E7E4DC] text-[#171717] border border-[#171717] shadow-[1px_1px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5"
                             title="Xem hóa đơn điện tử"
                           >
                             <Eye className="w-4 h-4" />
@@ -629,7 +630,7 @@ export function PosPage() {
                           {tx.status === 'COMPLETED' && !tx.settled && (
                             <button
                               onClick={() => handleOpenVoid(tx)}
-                              className="px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 hover:text-rose-300 border border-rose-500/30 rounded-lg text-[11px] font-bold transition-all cursor-pointer"
+                              className="px-2.5 py-1 bg-[#DC2626] text-white border border-[#171717] shadow-[1px_1px_0px_#171717] text-[10px] font-mono font-bold uppercase active:translate-x-0.5 active:translate-y-0.5"
                             >
                               Hủy (Void)
                             </button>
@@ -640,7 +641,7 @@ export function PosPage() {
                             (tx.remainingRefundableAmount ?? tx.totalAmount - (tx.refundedAmount || 0)) > 0 && (
                               <button
                                 onClick={() => handleOpenRefund(tx)}
-                                className="px-2.5 py-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 hover:text-amber-300 border border-amber-500/30 rounded-lg text-[11px] font-bold transition-all cursor-pointer"
+                                className="px-2.5 py-1 bg-[#D9FF43] text-[#171717] border border-[#171717] shadow-[1px_1px_0px_#171717] text-[10px] font-mono font-bold uppercase active:translate-x-0.5 active:translate-y-0.5"
                               >
                                 Hoàn Tiền
                               </button>
@@ -661,72 +662,72 @@ export function PosPage() {
       {/* TAB 3: RECONCILIATION DASHBOARD & DISCREPANCY LIST */}
       {activeTab === 'RECONCILIATION' && (
         <div className="space-y-6">
-          <div className="bg-[#030303]/60 border border-white/10 rounded-3xl overflow-hidden shadow-sm">
-            <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between">
+          <div className="neo-card bg-white overflow-hidden shadow-[6px_6px_0px_#171717]">
+            <div className="p-5 border-b-2 border-[#171717] flex items-center justify-between bg-[#E7E4DC]">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Scale className="w-5 h-5 text-cyan-400" /> Bảng Sai Lệch Đối Soát Giao Dịch (Discrepancy Inspector)
+                <h3 className="text-base font-display font-black text-[#171717] uppercase flex items-center gap-2">
+                  <Scale className="w-5 h-5 text-[#3155E7]" /> Bảng Sai Lệch Đối Soát Giao Dịch (Discrepancy Inspector)
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs font-mono text-[#171717]/70 mt-0.5">
                   Phát hiện sai lệch giữa bản ghi POS và Sổ cái Cabin Folio
                 </p>
               </div>
 
-              <span className="text-xs text-slate-400">
+              <span className="text-xs font-mono font-bold text-[#171717]">
                 {discrepancies.length} Bản ghi cần tra soát
               </span>
             </div>
 
             {loadError ? (
               <div className="p-12 text-center space-y-3">
-                <div className="text-rose-400 text-xs flex items-center justify-center gap-2">
+                <div className="text-[#DC2626] text-xs font-mono font-bold flex items-center justify-center gap-2">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span>{loadError}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => void loadReconciliationData()}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 transition-all cursor-pointer"
+                  className="neo-btn neo-btn-secondary inline-flex items-center gap-1.5"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   Thử lại
                 </button>
               </div>
             ) : discrepancies.length === 0 ? (
-              <div className="p-12 text-center text-slate-400 text-xs">
+              <div className="p-12 text-center text-[#171717]/70 font-mono text-xs">
                 Không phát hiện sai lệch nào. Toàn bộ giao dịch POS và Folio đã khớp hoàn hảo!
               </div>
             ) : (
-              <div className="divide-y divide-white/5">
+              <div className="divide-y-2 divide-[#171717]">
                 {discrepancies.map((d) => (
                   <div
                     key={d.id}
-                    className="p-4 sm:p-5 hover:bg-white/[0.02] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    className="p-5 hover:bg-[#F7F5F0] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2.5">
-                        <span className="text-xs font-mono font-bold text-cyan-400">
+                        <span className="text-xs font-mono font-bold text-[#3155E7]">
                           {d.transactionId || 'N/A'}
                         </span>
-                        <span className="text-xs font-semibold text-white">{d.cabinNumber}</span>
-                        <span className="text-xs text-slate-400">({d.passengerName || 'Khách'})</span>
+                        <span className="text-xs font-bold text-[#171717]">{d.cabinNumber}</span>
+                        <span className="text-xs text-[#171717]/60">({d.passengerName || 'Khách'})</span>
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          className={`px-2 py-0.5 text-[10px] font-mono font-bold border border-[#171717] ${
                             d.discrepancyType === 'AMOUNT_MISMATCH'
-                              ? 'bg-amber-500/10 text-amber-300 border border-amber-500/30'
+                              ? 'bg-amber-300 text-[#171717]'
                               : d.discrepancyType === 'DUPLICATE_SUSPECT'
-                              ? 'bg-rose-500/10 text-rose-300 border border-rose-500/30'
-                              : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/30'
+                              ? 'bg-[#DC2626] text-white'
+                              : 'bg-[#3155E7] text-white'
                           }`}
                         >
                           {d.discrepancyType}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-4 text-xs text-slate-300 pt-0.5">
-                        <span>POS: <strong className="font-mono text-amber-400">${d.posAmount || 0}</strong></span>
-                        <span>Folio: <strong className="font-mono text-emerald-400">${d.folioAmount || 0}</strong></span>
-                        <span>Chênh lệch: <strong className="font-mono text-rose-400">${d.variance}</strong></span>
+                      <div className="flex items-center gap-4 text-xs font-mono text-[#171717] pt-0.5">
+                        <span>POS: <strong className="font-bold text-amber-700">${d.posAmount || 0}</strong></span>
+                        <span>Folio: <strong className="font-bold text-[#3155E7]">${d.folioAmount || 0}</strong></span>
+                        <span>Chênh lệch: <strong className="font-bold text-[#DC2626]">${d.variance}</strong></span>
                       </div>
                     </div>
 
@@ -736,9 +737,9 @@ export function PosPage() {
                           setSelectedDiscrepancy(d);
                           setIsInspectorOpen(true);
                         }}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-500/40 transition-all cursor-pointer"
+                        className="neo-btn neo-btn-primary py-1.5 px-3 text-xs inline-flex items-center gap-1.5"
                       >
-                        <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                        <Eye className="w-3.5 h-3.5" />
                         Soi Đối Soát
                       </button>
                     </div>
