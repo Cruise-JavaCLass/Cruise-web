@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, Outlet, useLocation, Link } from 'react-router-dom';
+import { NavLink, Outlet, Link } from 'react-router-dom';
 import {
   Compass,
   Ship,
@@ -38,40 +38,14 @@ export function MainLayout() {
     return () => clearInterval(interval);
   }, []);
 
-  const location = useLocation();
-
-  const getRouteBackground = () => {
-    switch (location.pathname) {
-      case '/ships':
-        return '/images/isolated.jpg';
-      case '/itinerary':
-        return '/images/bridge.png';
-      case '/excursions':
-        return 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2812%29-ng3RrNnsPMJ5CrtOjcPTmhHg01W11q.png';
-      case '/activities':
-        return '/images/permissions.jpg';
-      case '/pos':
-        return '/images/whale.png';
-      case '/passengers':
-        return 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2813%29-OQ2DiR3ElVsUg8kTvTL1kC5A3Q6maM.png';
-      default:
-        return null;
-    }
-  };
-
-  const currentBgImage = getRouteBackground();
-
   const navItems = [
     { to: '/', label: 'Dashboard Tổng quan', icon: Compass },
-
-
     { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship },
     { to: '/admin/cruise-area-policies', label: 'Quản lý Khu vực & Chính sách', icon: Ship },
     { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin },
     { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation },
     { to: '/excursion-attendance', label: 'Điểm Danh Tour Bờ', icon: Users },
     { to: '/activities', label: 'Hoạt động & Excursion', icon: Activity },
-
     { to: '/pos', label: 'POS & Chi tiêu Onboard', icon: CreditCard },
     { to: '/passengers', label: 'Hành khách & Check-in', icon: Users },
     { to: '/embarkation', label: 'Cảng Đón Khách (Terminal)', icon: Ship },
@@ -211,21 +185,6 @@ export function MainLayout() {
             </div>
           </div>
         </header>
-
-        {/* Dynamic Route Background Artwork Layer */}
-        {currentBgImage && (
-          <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden ml-0 md:ml-64">
-            <img
-              src={currentBgImage}
-              alt=""
-              aria-hidden="true"
-              className="w-full h-full object-cover object-center opacity-25 filter contrast-125 transition-opacity duration-700"
-            />
-            {/* Dark vignette gradient overlay to maintain high contrast text */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/60" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-black/80" />
-          </div>
-        )}
 
         {/* Dynamic Route Content */}
         <div className="relative z-10 p-4 sm:p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full flex-1">

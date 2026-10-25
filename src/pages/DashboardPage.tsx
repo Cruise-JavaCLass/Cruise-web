@@ -15,51 +15,34 @@ import { BlurWord } from '../components/common/BlurWord';
 export function DashboardPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Hero Section — Inspired by Reference Project Hero */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#000000] border border-white/10 p-6 sm:p-10 lg:p-12 shadow-2xl min-h-[380px] flex flex-col justify-between">
-        {/* Subtle grid lines from reference */}
-        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-20">
+      {/* Hero Section — Clean Dark Enterprise Architecture Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#070e1e] via-[#02050c] to-[#040815] border border-cyan-500/20 p-6 sm:p-10 lg:p-12 shadow-2xl min-h-[380px] flex flex-col justify-between">
+        {/* Subtle technical grid pattern */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-15">
           {[...Array(6)].map((_, i) => (
             <div
               key={`h-${i}`}
-              className="absolute h-px bg-white/10"
+              className="absolute h-px bg-cyan-400/20"
               style={{ top: `${16.6 * (i + 1)}%`, left: 0, right: 0 }}
             />
           ))}
           {[...Array(8)].map((_, i) => (
             <div
               key={`v-${i}`}
-              className="absolute w-px bg-white/10"
+              className="absolute w-px bg-cyan-400/20"
               style={{ left: `${12.5 * (i + 1)}%`, top: 0, bottom: 0 }}
             />
           ))}
         </div>
 
-        {/* Background video loop from reference project — exact reference hero implementation */}
-        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            tabIndex={-1}
-            disableRemotePlayback
-            className="w-full h-full object-cover object-center opacity-80"
-          >
-            <source
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bg-hero-0BnFGdr81Ifnj3WbBZoNt1KE4D5DMT.mp4"
-              type="video/mp4"
-            />
-          </video>
-          {/* Subtle gradient overlays to ensure text readability on the left */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/70" />
-        </div>
+        {/* Subtle ambient lighting accents */}
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-2xl">
           {/* Eyebrow */}
-          <div className="inline-flex items-center gap-3 text-xs font-mono text-white/50 mb-4">
-            <span className="w-8 h-px bg-white/30" />
+          <div className="inline-flex items-center gap-3 text-xs font-mono text-slate-400 mb-4">
+            <span className="w-8 h-px bg-cyan-400/50" />
             <span>Frontend Client v1.0.0</span>
             <span>• Autonomous AI agents for luxury cruise management</span>
           </div>
@@ -75,14 +58,14 @@ export function DashboardPage() {
             <BlurWord words={['orchestrate', 'navigate', 'elevate', 'synchronize']} />
           </h1>
 
-          <p className="text-slate-300/80 text-xs sm:text-sm max-w-xl leading-relaxed mb-8 font-normal">
+          <p className="text-slate-300/85 text-xs sm:text-sm max-w-xl leading-relaxed mb-8 font-normal">
             Hệ thống quản lý dịch vụ và hoạt động du thuyền thế hệ mới. Tự động hóa lịch trình hải trình, giám sát tour trên bờ, phân bổ xe đưa đón và đối soát POS phi tiền mặt ngoại tuyến.
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
             <Link
               to="/excursions"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black hover:bg-slate-100 rounded-full text-xs font-semibold tracking-tight shadow-lg transition-all"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-full text-xs font-semibold tracking-tight shadow-lg shadow-cyan-500/20 transition-all"
             >
               <Compass className="w-4 h-4" /> Khám Phá Shore Excursions
             </Link>
@@ -95,40 +78,34 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Stats Row at bottom of Hero (from reference hero-section) */}
-        <div className="relative z-10 pt-8 mt-6 border-t border-white/5 grid grid-cols-3 gap-6 max-w-xl">
+        {/* Stats Row at bottom of Hero */}
+        <div className="relative z-10 pt-8 mt-6 border-t border-white/10 grid grid-cols-3 gap-6 max-w-xl">
           <div>
             <span className="text-2xl sm:text-3xl font-display text-white block">2,450</span>
-            <span className="text-[11px] font-mono text-white/40 block mt-0.5">passengers onboard</span>
+            <span className="text-[11px] font-mono text-slate-400 block mt-0.5">passengers onboard</span>
           </div>
           <div>
             <span className="text-2xl sm:text-3xl font-display text-white block">99.7%</span>
-            <span className="text-[11px] font-mono text-white/40 block mt-0.5">on-time all-aboard</span>
+            <span className="text-[11px] font-mono text-slate-400 block mt-0.5">on-time all-aboard</span>
           </div>
           <div>
             <span className="text-2xl sm:text-3xl font-display text-white block">&lt;45ms</span>
-            <span className="text-[11px] font-mono text-white/40 block mt-0.5">pos sync latency</span>
+            <span className="text-[11px] font-mono text-slate-400 block mt-0.5">pos sync latency</span>
           </div>
         </div>
       </div>
 
-      {/* Quick Metrics Cards - each with its own unique distinct image */}
+      {/* Quick Metrics Cards — Clean Professional Dark Enterprise Aesthetic */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Hành khách trên tàu - Isolated Sandbox / Capsule */}
-        <div className="relative overflow-hidden bg-[#030303]/65 backdrop-blur-xl border border-white/10 hover:border-cyan-500/40 p-5 rounded-2xl transition-all shadow-xl group">
-          <div className="absolute right-0 top-0 bottom-0 w-3/5 opacity-30 pointer-events-none overflow-hidden group-hover:opacity-45 transition-opacity">
-            <img
-              src="/images/isolated.jpg"
-              alt=""
-              aria-hidden="true"
-              className="w-full h-full object-cover object-center filter contrast-125"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#030303] via-[#030303]/70 to-transparent" />
-          </div>
+        {/* Card 1: Hành khách trên tàu */}
+        <div className="relative overflow-hidden bg-[#050b18]/80 backdrop-blur-xl border border-white/10 hover:border-cyan-500/40 p-5 rounded-2xl transition-all shadow-xl group">
+          <div className="absolute top-0 right-0 w-28 h-28 bg-cyan-500/5 rounded-full blur-xl pointer-events-none" />
           <div className="relative z-10">
             <div className="flex items-center justify-between text-slate-400 mb-3">
               <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Hành khách trên tàu</span>
-              <Users className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+              <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                <Users className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+              </div>
             </div>
             <p className="text-2xl sm:text-3xl font-display font-normal text-white">
               2,450 <span className="text-xs font-mono text-slate-400">/ 2,800</span>
@@ -139,21 +116,15 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Card 2: Hoạt động hôm nay - Permissions Sphere */}
-        <div className="relative overflow-hidden bg-[#030303]/65 backdrop-blur-xl border border-white/10 hover:border-cyan-500/40 p-5 rounded-2xl transition-all shadow-xl group">
-          <div className="absolute right-0 top-0 bottom-0 w-3/5 opacity-30 pointer-events-none overflow-hidden group-hover:opacity-45 transition-opacity">
-            <img
-              src="/images/permissions.jpg"
-              alt=""
-              aria-hidden="true"
-              className="w-full h-full object-cover object-center filter contrast-125"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#030303] via-[#030303]/70 to-transparent" />
-          </div>
+        {/* Card 2: Hoạt động hôm nay */}
+        <div className="relative overflow-hidden bg-[#050b18]/80 backdrop-blur-xl border border-white/10 hover:border-blue-500/40 p-5 rounded-2xl transition-all shadow-xl group">
+          <div className="absolute top-0 right-0 w-28 h-28 bg-blue-500/5 rounded-full blur-xl pointer-events-none" />
           <div className="relative z-10">
             <div className="flex items-center justify-between text-slate-400 mb-3">
               <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Hoạt động hôm nay</span>
-              <Calendar className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
+              <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                <Calendar className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
+              </div>
             </div>
             <p className="text-2xl sm:text-3xl font-display font-normal text-white">18 Sự kiện</p>
             <div className="mt-2.5 text-[11px] font-mono text-cyan-300">
@@ -162,21 +133,15 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Card 3: Doanh thu POS - Encrypted Vault */}
-        <div className="relative overflow-hidden bg-[#030303]/65 backdrop-blur-xl border border-white/10 hover:border-cyan-500/40 p-5 rounded-2xl transition-all shadow-xl group">
-          <div className="absolute right-0 top-0 bottom-0 w-3/5 opacity-30 pointer-events-none overflow-hidden group-hover:opacity-45 transition-opacity">
-            <img
-              src="/images/encrypted.jpg"
-              alt=""
-              aria-hidden="true"
-              className="w-full h-full object-cover object-center filter contrast-125"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#030303] via-[#030303]/70 to-transparent" />
-          </div>
+        {/* Card 3: Doanh thu POS */}
+        <div className="relative overflow-hidden bg-[#050b18]/80 backdrop-blur-xl border border-white/10 hover:border-amber-500/40 p-5 rounded-2xl transition-all shadow-xl group">
+          <div className="absolute top-0 right-0 w-28 h-28 bg-amber-500/5 rounded-full blur-xl pointer-events-none" />
           <div className="relative z-10">
             <div className="flex items-center justify-between text-slate-400 mb-3">
               <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Doanh thu POS hôm nay</span>
-              <DollarSign className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+              <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                <DollarSign className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+              </div>
             </div>
             <p className="text-2xl sm:text-3xl font-display font-normal text-white">
               $42,850 <span className="text-xs font-mono text-slate-400">USD</span>
@@ -187,21 +152,15 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Card 4: An toàn & Tập trung - Shield & Audit */}
-        <div className="relative overflow-hidden bg-[#030303]/65 backdrop-blur-xl border border-white/10 hover:border-cyan-500/40 p-5 rounded-2xl transition-all shadow-xl group">
-          <div className="absolute right-0 top-0 bottom-0 w-3/5 opacity-30 pointer-events-none overflow-hidden group-hover:opacity-45 transition-opacity">
-            <img
-              src="/images/audit.jpg"
-              alt=""
-              aria-hidden="true"
-              className="w-full h-full object-cover object-center filter contrast-125"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#030303] via-[#030303]/70 to-transparent" />
-          </div>
+        {/* Card 4: An toàn & Tập trung */}
+        <div className="relative overflow-hidden bg-[#050b18]/80 backdrop-blur-xl border border-white/10 hover:border-emerald-500/40 p-5 rounded-2xl transition-all shadow-xl group">
+          <div className="absolute top-0 right-0 w-28 h-28 bg-emerald-500/5 rounded-full blur-xl pointer-events-none" />
           <div className="relative z-10">
             <div className="flex items-center justify-between text-slate-400 mb-3">
               <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">An toàn & Tập trung</span>
-              <ShieldCheck className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+              </div>
             </div>
             <p className="text-2xl sm:text-3xl font-display font-normal text-emerald-400">100% Onboard</p>
             <div className="mt-2.5 text-[11px] font-mono text-slate-400">
@@ -214,18 +173,7 @@ export function DashboardPage() {
       {/* Module Details Showcase */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Itinerary Preview */}
-        <div className="relative overflow-hidden bg-[#030303]/65 backdrop-blur-xl border border-white/10 rounded-2xl p-6 lg:col-span-2 shadow-xl">
-          {/* Subtle bridge background artwork */}
-          <div className="absolute right-0 top-0 bottom-0 w-2/5 opacity-20 pointer-events-none overflow-hidden">
-            <img
-              src="/images/bridge.png"
-              alt=""
-              aria-hidden="true"
-              className="w-full h-full object-cover object-right filter grayscale contrast-125"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#030303] via-[#030303]/70 to-transparent" />
-          </div>
-
+        <div className="relative overflow-hidden bg-[#050b18]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 lg:col-span-2 shadow-xl">
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-5">
               <div>
@@ -274,22 +222,12 @@ export function DashboardPage() {
         </div>
 
         {/* Offline POS & QR Check-in preview */}
-        <div className="relative overflow-hidden bg-[#030303] border border-white/10 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
-          {/* Subtle whale artwork background */}
-          <div className="absolute right-0 bottom-0 w-3/4 opacity-10 pointer-events-none">
-            <img
-              src="/images/whale.png"
-              alt=""
-              aria-hidden="true"
-              className="w-full h-auto object-contain object-bottom-right"
-            />
-          </div>
-
+        <div className="relative overflow-hidden bg-[#050b18]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
           <div className="relative z-10">
             <h3 className="font-bold text-base text-slate-100 flex items-center gap-2 mb-3">
               <QrCode className="w-4 h-4 text-amber-400" /> POS & Offline Sync
             </h3>
-            <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-3.5 mb-4 text-xs text-amber-200/90 leading-relaxed font-mono">
+            <div className="bg-amber-500/10 border border-amber-500/25 rounded-xl p-3.5 mb-4 text-xs text-amber-200/90 leading-relaxed font-mono">
               <p className="font-semibold text-amber-300 mb-1">Mô hình ngoại tuyến (Offline Ready):</p>
               Thiết bị POS & tablet ghi nhận giao dịch chi tiêu không dùng tiền mặt qua Cruise Card / QR / RFID khi tàu mất sóng và tự động sync khi có mạng.
             </div>
@@ -309,7 +247,7 @@ export function DashboardPage() {
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
+          <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
             <span className="font-mono text-[11px]">Frontend: React 19 + Vite</span>
             <Link to="/pos" className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors">
               Mở POS <ChevronRight className="w-3.5 h-3.5" />
