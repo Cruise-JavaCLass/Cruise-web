@@ -4,23 +4,23 @@
   :root {
     --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-    --font-display: 'Plus Jakarta Sans', 'Instrument Sans', sans-serif;
+    --font-display: 'Plus Jakarta Sans', 'Space Grotesk', sans-serif;
+    --font-retro: 'Space Grotesk', 'Plus Jakarta Sans', monospace;
     --font-serif: 'Instrument Serif', Georgia, serif;
 
-    /* Editorial / Neo-Brutalist Palette Tokens */
-    --bg-warm: #F7F5F0;
-    --ink: #171717;
-    --cobalt: #3155E7;
-    --acid: #D9FF43;
-    --neutral-muted: #E7E4DC;
+    /* Editorial / Soft Modern Default Tokens */
+    --bg-warm: #F6F7F9;
+    --ink: #20242C;
+    --cobalt: #5277D9;
+    --neutral-muted: #E5E7EB;
     --danger-red: #DC2626;
 
-    --background: #F7F5F0;
-    --foreground: #171717;
+    --background: #F6F7F9;
+    --foreground: #20242C;
     --card: #FFFFFF;
-    --card-foreground: #171717;
-    --border: #171717;
-    --border-hover: #3155E7;
+    --card-foreground: #20242C;
+    --border: #E5E7EB;
+    --border-hover: #5277D9;
   }
 
   body {
@@ -35,226 +35,207 @@
   }
 
   ::selection {
-    background-color: #D9FF43;
-    color: #171717;
+    background-color: #5277D9;
+    color: #FFFFFF;
   }
 
-  /* Neo-brutalist tactile scrollbars */
+  /* Tactile scrollbars */
   ::-webkit-scrollbar {
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #E7E4DC;
-    border-left: 1px solid #171717;
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #171717;
-    border: 1px solid #171717;
+    background: #CBD5E1;
+    border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3155E7;
+    background: #94A3B8;
   }
 }
 
-/* Reference & Editorial Typography Classes */
-.font-display {
-  font-family: var(--font-display);
-  letter-spacing: -0.025em;
-}
-.font-serif {
-  font-family: var(--font-serif);
-}
-.font-mono {
-  font-family: var(--font-mono);
-  letter-spacing: -0.01em;
+/* =========================================================================
+   Scope A: Soft Editorial / Modern SaaS (Admin Dashboard)
+   ========================================================================= */
+[data-theme="admin-editorial"] {
+  --bg-app: #F6F7F9;
+  --bg-surface: #FFFFFF;
+  --bg-surface-muted: #F1F3F7;
+  --text-primary: #20242C;
+  --text-secondary: #687080;
+  --border-subtle: #E5E7EB;
+  --accent-primary: #5277D9;
+  --accent-surface: #EEF2FF;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
 }
 
-/* Neo-Brutalist Core UI Utilities */
-.neo-card {
+[data-theme="admin-editorial"] ::selection {
+  background-color: #5277D9;
+  color: #FFFFFF;
+}
+
+/* Soft Editorial UI Card Utilities */
+.editorial-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.editorial-card-interactive:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+}
+
+.editorial-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  background-color: #5277D9;
+  color: #FFFFFF;
+  transition: background-color 0.15s ease;
+}
+.editorial-btn-primary:hover {
+  background-color: #4364C2;
+}
+
+/* =========================================================================
+   Scope B: Retro-Futurism / Maritime Terminal (Passenger Portal)
+   ========================================================================= */
+[data-theme="passenger-retro"] {
+  --bg-app: #070B16;
+  --bg-secondary: #10182A;
+  --bg-surface: #151F33;
+  --text-primary: #F4F4F0;
+  --text-secondary: #A7B4C9;
+  --accent-cyan: #42E8F5;
+  --accent-blue: #4169FF;
+  --accent-amber: #FFBD59;
+  --border-hud: rgba(66, 232, 245, 0.22);
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+}
+
+[data-theme="passenger-retro"] ::selection {
+  background-color: #42E8F5;
+  color: #070B16;
+}
+
+[data-theme="passenger-retro"] ::-webkit-scrollbar-track {
+  background: #070B16;
+}
+[data-theme="passenger-retro"] ::-webkit-scrollbar-thumb {
+  background: rgba(66, 232, 245, 0.3);
+  border-radius: 4px;
+}
+[data-theme="passenger-retro"] ::-webkit-scrollbar-thumb:hover {
+  background: #42E8F5;
+}
+
+/* Retro-Futuristic HUD Utilities */
+.hud-grid {
+  background-image: 
+    linear-gradient(to right, rgba(66, 232, 245, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(66, 232, 245, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.hud-panel {
+  background-color: #151F33;
+  border: 1px solid rgba(66, 232, 245, 0.22);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px 0 rgba(7, 11, 22, 0.6);
+}
+
+.hud-panel-glow {
+  box-shadow: 0 0 15px 0 rgba(66, 232, 245, 0.15);
+}
+
+/* Backward compatibility for neo-card and ref-card */
+.neo-card, .ref-card {
   background-color: #ffffff;
-  border: 2px solid #171717;
-  box-shadow: 4px 4px 0px 0px #171717;
-  border-radius: 2px;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
-
 .neo-card-sm {
   background-color: #ffffff;
-  border: 2px solid #171717;
-  box-shadow: 2px 2px 0px 0px #171717;
-  border-radius: 2px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
-
 .neo-card-interactive {
   background-color: #ffffff;
-  border: 2px solid #171717;
-  box-shadow: 4px 4px 0px 0px #171717;
-  border-radius: 2px;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 .neo-card-interactive:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #171717;
-}
-
-.neo-card-cobalt {
-  background-color: #ffffff;
-  border: 2px solid #171717;
-  box-shadow: 4px 4px 0px 0px #3155E7;
-  border-radius: 2px;
-}
-
-.neo-card-acid {
-  background-color: #D9FF43;
-  color: #171717;
-  border: 2px solid #171717;
-  box-shadow: 4px 4px 0px 0px #171717;
-  border-radius: 2px;
-}
-
-.neo-card-muted {
-  background-color: #E7E4DC;
-  border: 2px solid #171717;
-  box-shadow: 4px 4px 0px 0px #171717;
-  border-radius: 2px;
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
 }
 
 .neo-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  padding: 0.5rem 1rem;
-  border: 2px solid #171717;
-  box-shadow: 3px 3px 0px 0px #171717;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
-.neo-btn:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0px 0px #171717;
-}
-.neo-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 0px 0px 0px 0px #171717;
-}
-
 .neo-btn-primary {
-  background-color: #171717;
-  color: #F7F5F0;
-  box-shadow: 3px 3px 0px 0px #3155E7;
+  background-color: #5277D9;
+  color: #ffffff;
+  border: 1px solid #5277D9;
 }
 .neo-btn-primary:hover {
-  background-color: #3155E7;
-  color: #ffffff;
-  box-shadow: 4px 4px 0px 0px #171717;
+  background-color: #4364C2;
 }
-
-.neo-btn-acid {
-  background-color: #D9FF43;
-  color: #171717;
-}
-.neo-btn-acid:hover {
-  background-color: #c9f425;
-}
-
 .neo-btn-secondary {
   background-color: #ffffff;
-  color: #171717;
+  color: #20242C;
+  border: 1px solid #E5E7EB;
 }
 .neo-btn-secondary:hover {
-  background-color: #E7E4DC;
+  background-color: #F1F3F7;
 }
-
 .neo-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 0.6875rem;
-  letter-spacing: 0.05em;
   padding: 0.15rem 0.5rem;
-  border: 1.5px solid #171717;
-  box-shadow: 1.5px 1.5px 0px 0px #171717;
-  border-radius: 1px;
+  border-radius: 6px;
+  border: 1px solid #E5E7EB;
 }
-
 .neo-input {
   background-color: #ffffff;
-  color: #171717;
-  border: 2px solid #171717;
-  box-shadow: 2px 2px 0px 0px #171717;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  color: #20242C;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 0.875rem;
   padding: 0.5rem 0.75rem;
-  transition: box-shadow 0.1s ease, border-color 0.1s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .neo-input:focus {
   outline: none;
-  border-color: #3155E7;
-  box-shadow: 4px 4px 0px 0px #3155E7;
-}
-
-/* Editorial Newspaper Grid Background Pattern */
-.editorial-grid {
-  background-image: 
-    linear-gradient(to right, rgba(23, 23, 23, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(23, 23, 23, 0.06) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-
-.editorial-divider {
-  height: 2px;
-  background-color: #171717;
-  width: 100%;
-}
-
-/* Backward compatibility for ref-card and ref-kpi mapped to Neo-Brutalist tokens */
-.ref-card {
-  background-color: #ffffff;
-  color: #171717;
-  border: 2px solid #171717;
-  box-shadow: 4px 4px 0px 0px #171717;
-  border-radius: 2px;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-.ref-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #171717;
-}
-
-.ref-kpi {
-  background-color: #ffffff;
-  color: #171717;
-  border: 2px solid #171717;
-  box-shadow: 3px 3px 0px 0px #171717;
-  border-radius: 2px;
-}
-
-/* Kinetic Gradient Word (Refined for Editorial High Contrast) */
-.word-gradient {
-  background: linear-gradient(
-    135deg,
-    #3155E7 0%,
-    #171717 40%,
-    #3155E7 70%,
-    #D9FF43 100%
-  );
-  background-size: 250% 250%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 4s ease infinite;
-}
-
-@keyframes gradient-shift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  border-color: #5277D9;
+  box-shadow: 0 0 0 2px rgba(82, 119, 217, 0.2);
 }

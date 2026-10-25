@@ -234,31 +234,31 @@ export function PosPage() {
     switch (status) {
       case 'COMPLETED':
         return (
-          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-[#171717] bg-[#D9FF43] text-[#171717]">
+          <span className="px-2 py-0.5 text-xs font-semibold rounded-[6px] bg-emerald-50 text-emerald-700 border border-emerald-200/60">
             Hoàn Tất
           </span>
         );
       case 'VOIDED':
         return (
-          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-[#171717] bg-[#DC2626] text-white">
+          <span className="px-2 py-0.5 text-xs font-semibold rounded-[6px] bg-rose-50 text-rose-700 border border-rose-200/60">
             Đã Hủy (Void)
           </span>
         );
       case 'PARTIALLY_REFUNDED':
         return (
-          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-[#171717] bg-amber-400 text-[#171717]">
+          <span className="px-2 py-0.5 text-xs font-semibold rounded-[6px] bg-amber-50 text-amber-700 border border-amber-200/60">
             Hoàn Một Phần
           </span>
         );
       case 'FULLY_REFUNDED':
         return (
-          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-[#171717] bg-[#3155E7] text-white">
+          <span className="px-2 py-0.5 text-xs font-semibold rounded-[6px] bg-indigo-50 text-indigo-700 border border-indigo-200/60">
             Hoàn Toàn Phần
           </span>
         );
       default:
         return (
-          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase border border-[#171717] bg-[#E7E4DC] text-[#171717]">
+          <span className="px-2 py-0.5 text-xs font-semibold rounded-[6px] bg-gray-100 text-gray-700 border border-gray-200/60">
             {status}
           </span>
         );
@@ -267,18 +267,18 @@ export function PosPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top Header — Editorial Cash Register Broadside */}
-      <div className="neo-card bg-white p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[6px_6px_0px_#171717]">
+      {/* Top Header — Soft Editorial Broadside */}
+      <div className="bg-white border border-[#E5E7EB] rounded-[16px] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
         <div>
           <div className="flex items-center gap-3">
-            <h2 className="text-xl sm:text-2xl font-display font-black text-[#171717] flex items-center gap-2.5 uppercase tracking-tight">
-              <CreditCard className="w-6 h-6 text-[#3155E7]" /> Hệ Thống POS & Tài Khoản Phi Tiền Mặt
+            <h2 className="text-xl sm:text-2xl font-bold text-[#20242C] flex items-center gap-2.5 tracking-tight">
+              <CreditCard className="w-6 h-6 text-[#5277D9]" /> Hệ Thống POS & Tài Khoản Phi Tiền Mặt
             </h2>
-            <span className="neo-badge bg-[#D9FF43] text-[#171717] flex items-center gap-1">
-              <CheckCircle2 className="w-3 h-3 text-[#171717]" /> Đã kết nối máy chủ
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-[6px] text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Đã kết nối máy chủ
             </span>
           </div>
-          <p className="text-xs sm:text-sm font-mono text-[#171717]/70 mt-1">
+          <p className="text-xs sm:text-sm text-[#687080] mt-1">
             Giao dịch không tiền mặt (Cashless Folio) • Đối soát POS & Folio tự động • Hủy trong ca & Giải quyết khiếu nại
           </p>
         </div>
@@ -288,7 +288,7 @@ export function PosPage() {
           <button
             onClick={handleRunReconciliation}
             disabled={isRunningRecon}
-            className="neo-btn neo-btn-primary py-2 px-3 text-xs flex items-center gap-1.5 disabled:opacity-50"
+            className="px-3.5 py-2 text-xs font-semibold bg-[#5277D9] hover:bg-[#4364BE] text-white rounded-[10px] shadow-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
           >
             <Scale className={`w-4 h-4 ${isRunningRecon ? 'animate-spin' : ''}`} />
             {isRunningRecon ? 'Đang đối soát...' : 'Chạy Đối Soát Ngay'}
@@ -298,7 +298,7 @@ export function PosPage() {
             onClick={() => setIsShiftModalOpen(true)}
             disabled={!activeShiftId || isLoadingShift}
             title={!activeShiftId ? 'Chưa có ca làm việc đang mở' : 'Xem báo cáo ca'}
-            className="neo-btn neo-btn-acid py-2 px-3 text-xs flex items-center gap-1.5 disabled:opacity-50"
+            className="px-3.5 py-2 text-xs font-medium bg-[#EEF2FF] text-[#5277D9] hover:bg-[#E0E7FF] border border-[#5277D9]/20 rounded-[10px] flex items-center gap-1.5 transition-colors disabled:opacity-50"
           >
             <FileText className="w-4 h-4" /> Báo Cáo Ca (X/Z Report)
           </button>
@@ -306,7 +306,7 @@ export function PosPage() {
           <button
             onClick={handleSyncOffline}
             disabled={isSyncing}
-            className="neo-btn neo-btn-secondary py-2 px-3 text-xs flex items-center gap-1.5 disabled:opacity-50"
+            className="px-3.5 py-2 text-xs font-medium bg-white border border-[#E5E7EB] hover:bg-[#F9FAFB] text-[#20242C] rounded-[10px] flex items-center gap-1.5 transition-colors shadow-xs disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Đang kiểm tra...' : 'Kiểm Tra Kết Nối'}
@@ -316,29 +316,29 @@ export function PosPage() {
 
       {syncMessage && (
         <div
-          className={`p-4 border-2 border-[#171717] shadow-[3px_3px_0px_#171717] text-xs font-mono font-bold flex items-center gap-2 ${
+          className={`p-4 border rounded-[10px] text-xs font-medium flex items-center gap-2 ${
             syncMessage.isError
-              ? 'bg-[#DC2626] text-white'
-              : 'bg-[#D9FF43] text-[#171717]'
+              ? 'bg-rose-50 border-rose-200 text-rose-800'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-800'
           }`}
         >
           {syncMessage.isError ? (
-            <AlertCircle className="w-4 h-4 shrink-0 text-[#D9FF43]" />
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
           ) : (
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-[#171717]" />
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
           )}
           <span>{syncMessage.text}</span>
         </div>
       )}
 
-      {/* Navigation Tabs — Neo-Brutalist Strip */}
-      <div className="flex flex-wrap gap-2 pb-2 border-b-2 border-[#171717]">
+      {/* Navigation Tabs — Soft Editorial Strip */}
+      <div className="flex flex-wrap gap-2 pb-2 border-b border-[#E5E7EB]">
         <button
           onClick={() => setActiveTab('REGISTER')}
-          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-[10px] transition-colors flex items-center gap-2 ${
             activeTab === 'REGISTER'
-              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
-              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
+              ? 'bg-[#5277D9] text-white shadow-xs'
+              : 'bg-white text-[#687080] hover:text-[#20242C] border border-[#E5E7EB] hover:bg-[#F9FAFB]'
           }`}
         >
           <ShoppingCart className="w-4 h-4" />
@@ -348,10 +348,10 @@ export function PosPage() {
 
         <button
           onClick={() => setActiveTab('LEDGER')}
-          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-[10px] transition-colors flex items-center gap-2 ${
             activeTab === 'LEDGER'
-              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
-              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
+              ? 'bg-[#5277D9] text-white shadow-xs'
+              : 'bg-white text-[#687080] hover:text-[#20242C] border border-[#E5E7EB] hover:bg-[#F9FAFB]'
           }`}
         >
           <ListFilter className="w-4 h-4" /> Sổ Cái Giao Dịch & Quản Lý (Ledger)
@@ -359,10 +359,10 @@ export function PosPage() {
 
         <button
           onClick={() => setActiveTab('CATALOG')}
-          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-[10px] transition-colors flex items-center gap-2 ${
             activeTab === 'CATALOG'
-              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
-              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
+              ? 'bg-[#5277D9] text-white shadow-xs'
+              : 'bg-white text-[#687080] hover:text-[#20242C] border border-[#E5E7EB] hover:bg-[#F9FAFB]'
           }`}
         >
           <Layers className="w-4 h-4" /> Quản Lý Danh Mục & Giá (Catalog)
@@ -370,16 +370,16 @@ export function PosPage() {
 
         <button
           onClick={() => setActiveTab('RECONCILIATION')}
-          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-[10px] transition-colors flex items-center gap-2 ${
             activeTab === 'RECONCILIATION'
-              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
-              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
+              ? 'bg-[#5277D9] text-white shadow-xs'
+              : 'bg-white text-[#687080] hover:text-[#20242C] border border-[#E5E7EB] hover:bg-[#F9FAFB]'
           }`}
         >
           <Scale className="w-4 h-4" />
           Trung Tâm Đối Soát (Reconciliation)
           {discrepancies.length > 0 && (
-            <span className="px-1.5 py-0.2 border border-[#171717] text-[10px] bg-[#DC2626] text-white font-bold">
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-500 text-white font-bold">
               {discrepancies.length}
             </span>
           )}
@@ -387,16 +387,16 @@ export function PosPage() {
 
         <button
           onClick={() => setActiveTab('DISPUTES')}
-          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-[10px] transition-colors flex items-center gap-2 ${
             activeTab === 'DISPUTES'
-              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
-              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
+              ? 'bg-[#5277D9] text-white shadow-xs'
+              : 'bg-white text-[#687080] hover:text-[#20242C] border border-[#E5E7EB] hover:bg-[#F9FAFB]'
           }`}
         >
           <FileQuestion className="w-4 h-4" />
           Hồ Sơ Khiếu Nại Chi Phí (Disputes)
           {disputes.filter((d) => d.status === 'SUBMITTED').length > 0 && (
-            <span className="px-1.5 py-0.2 border border-[#171717] text-[10px] bg-[#D9FF43] text-[#171717] font-black">
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-white font-bold">
               {disputes.filter((d) => d.status === 'SUBMITTED').length}
             </span>
           )}
@@ -404,10 +404,10 @@ export function PosPage() {
 
         <button
           onClick={() => setActiveTab('SYNC')}
-          className={`px-4 py-2.5 text-xs font-mono font-bold border-2 border-[#171717] transition-all flex items-center gap-2 active:translate-x-0.5 active:translate-y-0.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-[10px] transition-colors flex items-center gap-2 ${
             activeTab === 'SYNC'
-              ? 'bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717]'
-              : 'bg-white text-[#171717] hover:bg-[#E7E4DC]'
+              ? 'bg-[#5277D9] text-white shadow-xs'
+              : 'bg-white text-[#687080] hover:text-[#20242C] border border-[#E5E7EB] hover:bg-[#F9FAFB]'
           }`}
         >
           <RefreshCw className="w-4 h-4" />

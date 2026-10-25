@@ -3,6 +3,7 @@ import { Ticket, Bus, Calendar, Clock, MapPin, AlertCircle, X, ShieldAlert, Chec
 import { fetchMyExcursionBookings, cancelExcursionBooking } from '../services/excursionService';
 import { resolvePassengerId } from '../services/passengerIdentity';
 import type { PassengerExcursionBooking } from '../services/excursionService';
+import { MaritimeLottie } from '../components/common/MaritimeLottie';
 
 export const PassengerExcursionPassPage: React.FC = () => {
   const cancelReasonSelectId = useId();
@@ -71,33 +72,36 @@ export const PassengerExcursionPassPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-12 text-cyan-400 gap-3">
-        <RefreshCw className="w-6 h-6 animate-spin" />
+      <div className="flex items-center justify-center p-12 text-[#42E8F5] gap-3 font-mono text-xs">
+        <RefreshCw className="w-6 h-6 animate-spin text-[#42E8F5]" />
         <span>Đang tải thông tin vé điện tử của bạn...</span>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6 text-[#171717] max-w-5xl mx-auto dark:text-white">
+    <div
+      data-theme="passenger-retro"
+      className="p-4 sm:p-6 space-y-6 text-[#F4F4F0] max-w-5xl mx-auto font-sans"
+    >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-[#171717] pb-5 dark:border-slate-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#42E8F5]/20 pb-5">
         <div>
-          <span className="border border-[#171717] bg-[#D9FF43] px-2.5 py-0.5 text-xs font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#171717]">
+          <span className="rounded bg-[#4169FF]/20 border border-[#42E8F5]/40 px-2.5 py-0.5 text-xs font-mono font-bold uppercase tracking-wider text-[#42E8F5]">
             PASSENGER PORTAL // BOARDING
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black uppercase text-[#171717] mt-2 flex items-center gap-2.5 dark:text-white">
-            <Ticket className="w-6 h-6 text-[#3155E7] dark:text-[#D9FF43]" />
+          <h1 className="text-2xl sm:text-3xl font-display font-black uppercase text-[#F4F4F0] mt-2 flex items-center gap-2.5">
+            <Ticket className="w-6 h-6 text-[#42E8F5]" />
             Vé Tour Bờ & Thẻ Lên Xe (Excursion Boarding Pass)
           </h1>
-          <p className="text-xs font-bold text-neutral-600 mt-1 dark:text-neutral-400">
+          <p className="text-xs font-mono text-[#A7B4C9] mt-1">
             Xem mã vé điện tử, phân xe bus và chủ động quản lý hủy vé theo quy định cảng tàu.
           </p>
         </div>
 
         <button
           onClick={loadData}
-          className="self-start md:self-auto px-4 py-2 border-2 border-[#171717] bg-white hover:bg-[#E7E4DC] text-black text-xs font-black uppercase shadow-[2px_2px_0px_#171717] flex items-center gap-2 transition-all active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-800 dark:text-white"
+          className="self-start md:self-auto px-4 py-2 rounded-lg border border-[#42E8F5]/30 bg-[#151F33] hover:bg-[#10182A] text-[#42E8F5] text-xs font-mono font-bold uppercase flex items-center gap-2 transition-all cursor-pointer"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           Làm Mới
@@ -105,25 +109,25 @@ export const PassengerExcursionPassPage: React.FC = () => {
       </div>
 
       {cancelSuccessMsg && (
-        <div className="p-3 border-2 border-[#171717] bg-emerald-100 shadow-[3px_3px_0px_#171717] flex items-center gap-2 text-emerald-800 text-xs font-black">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-700" />
+        <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/50 flex items-center gap-2.5 text-emerald-300 text-xs font-mono">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
           <span>{cancelSuccessMsg}</span>
         </div>
       )}
 
       {error && (
-        <div className="p-3 border-2 border-[#171717] bg-rose-100 shadow-[3px_3px_0px_#171717] flex items-center gap-2 text-rose-800 text-xs font-black">
-          <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+        <div className="p-3.5 rounded-xl bg-rose-950/60 border border-rose-500/50 flex items-center gap-2.5 text-rose-300 text-xs font-mono">
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Ticket Pass List */}
       {bookings.length === 0 ? (
-        <div className="border-2 border-[#171717] bg-white p-12 text-center space-y-3 shadow-[6px_6px_0px_#171717] dark:bg-slate-800">
-          <Ticket className="w-12 h-12 text-neutral-400 mx-auto" />
-          <h3 className="text-lg font-black uppercase text-black dark:text-white">Quý khách chưa đặt tour bờ nào</h3>
-          <p className="text-xs font-medium text-neutral-600 max-w-md mx-auto dark:text-neutral-400">
+        <div className="bg-[#151F33] border border-[#42E8F5]/30 rounded-2xl p-12 text-center space-y-4 shadow-xl">
+          <MaritimeLottie variant="ship" className="w-20 h-20 mx-auto" title="Du thuyền" />
+          <h3 className="text-lg font-display font-black uppercase text-[#F4F4F0]">Quý khách chưa đặt tour bờ nào</h3>
+          <p className="text-xs font-mono text-[#A7B4C9] max-w-md mx-auto">
             Khám phá các hành trình tham quan đặc sắc tại danh mục Tour Trên Bờ để đăng ký cùng gia đình.
           </p>
         </div>
@@ -132,69 +136,69 @@ export const PassengerExcursionPassPage: React.FC = () => {
           {bookings.map((booking) => (
             <div
               key={booking.bookingId}
-              className="border-3 border-[#171717] bg-white overflow-hidden shadow-[6px_6px_0px_#171717] relative flex flex-col justify-between dark:bg-slate-800"
+              className="bg-[#151F33] border border-[#42E8F5]/30 rounded-2xl overflow-hidden shadow-xl relative flex flex-col justify-between"
             >
               {/* Ticket Top Ribbon */}
-              <div className="bg-[#171717] p-4 border-b-2 border-black flex items-center justify-between text-white">
+              <div className="bg-[#10182A] p-4 border-b border-[#42E8F5]/20 flex items-center justify-between text-white">
                 <div>
-                  <span className="text-[10px] font-mono font-black text-[#D9FF43] uppercase tracking-widest block">
+                  <span className="text-[10px] font-mono font-bold text-[#42E8F5] uppercase tracking-widest block">
                     BOARDING PASS
                   </span>
-                  <h3 className="text-base font-black uppercase text-white line-clamp-1">{booking.excursionTitle}</h3>
+                  <h3 className="text-base font-bold text-[#F4F4F0] line-clamp-1">{booking.excursionTitle}</h3>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-mono font-bold text-neutral-400 block uppercase">TICKET CODE</span>
-                  <span className="text-xs font-mono font-black text-[#D9FF43]">{booking.ticketCode}</span>
+                  <span className="text-[10px] font-mono text-[#A7B4C9] block uppercase">TICKET CODE</span>
+                  <span className="text-xs font-mono font-bold text-[#FFBD59]">{booking.ticketCode}</span>
                 </div>
               </div>
 
               {/* Ticket Body */}
-              <div className="p-5 space-y-4 text-xs font-bold">
-                <div className="grid grid-cols-2 gap-3 pb-3 border-b-2 border-dashed border-[#171717]/20">
+              <div className="p-5 space-y-4 text-xs">
+                <div className="grid grid-cols-2 gap-3 pb-3 border-b border-[#42E8F5]/15 font-mono">
                   <div>
-                    <span className="text-neutral-500 text-[10px] uppercase block">Hành khách:</span>
-                    <span className="text-black font-black dark:text-white">{booking.passengerName}</span>
+                    <span className="text-[#A7B4C9] text-[10px] uppercase block">Hành khách:</span>
+                    <span className="text-[#F4F4F0] font-bold">{booking.passengerName}</span>
                   </div>
                   <div>
-                    <span className="text-neutral-500 text-[10px] uppercase block">Số Cabin:</span>
-                    <span className="text-[#3155E7] font-mono font-black dark:text-[#D9FF43]">{booking.cabinNumber}</span>
+                    <span className="text-[#A7B4C9] text-[10px] uppercase block">Số Cabin:</span>
+                    <span className="text-[#42E8F5] font-mono font-bold">{booking.cabinNumber}</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 pb-3 border-b-2 border-dashed border-[#171717]/20">
+                <div className="grid grid-cols-2 gap-3 pb-3 border-b border-[#42E8F5]/15 font-mono">
                   <div className="flex items-center gap-2">
-                    <Bus className="w-4 h-4 text-amber-600 shrink-0" />
+                    <Bus className="w-4 h-4 text-[#FFBD59] shrink-0" />
                     <div>
-                      <span className="text-neutral-500 text-[10px] uppercase block">Xe vận chuyển:</span>
-                      <span className="text-black font-black dark:text-white">{booking.busNumber || 'Đang xếp xe'}</span>
+                      <span className="text-[#A7B4C9] text-[10px] uppercase block">Xe vận chuyển:</span>
+                      <span className="text-[#F4F4F0] font-bold">{booking.busNumber || 'Đang xếp xe'}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <MapPin className="w-4 h-4 text-[#42E8F5] shrink-0" />
                     <div>
-                      <span className="text-neutral-500 text-[10px] uppercase block">Cảng đến:</span>
-                      <span className="text-black font-black dark:text-white">{booking.portName}</span>
+                      <span className="text-[#A7B4C9] text-[10px] uppercase block">Cảng đến:</span>
+                      <span className="text-[#F4F4F0] font-bold">{booking.portName}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 border-2 border-[#171717] bg-[#F7F5F0] p-3 text-center shadow-[2px_2px_0px_#171717] dark:bg-slate-900">
+                <div className="grid grid-cols-3 gap-2 bg-[#10182A] border border-[#42E8F5]/20 rounded-xl p-3 text-center">
                   <div>
-                    <span className="text-[10px] font-black uppercase text-neutral-500 block">Tập trung</span>
-                    <span className="text-black font-mono font-black flex items-center justify-center gap-1 mt-0.5 dark:text-white">
-                      <Clock className="w-3 h-3 text-[#3155E7]" />
+                    <span className="text-[10px] font-mono uppercase text-[#A7B4C9] block">Tập trung</span>
+                    <span className="text-[#F4F4F0] font-mono font-bold flex items-center justify-center gap-1 mt-0.5">
+                      <Clock className="w-3 h-3 text-[#42E8F5]" />
                       {booking.gatheringTime}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[10px] font-black uppercase text-neutral-500 block">Khởi hành</span>
-                    <span className="text-black font-mono font-black mt-0.5 block dark:text-white">
+                    <span className="text-[10px] font-mono uppercase text-[#A7B4C9] block">Khởi hành</span>
+                    <span className="text-[#F4F4F0] font-mono font-bold mt-0.5 block">
                       {booking.departureTime}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[10px] font-black uppercase text-neutral-500 block">Về tàu</span>
-                    <span className="text-rose-600 font-mono font-black mt-0.5 block dark:text-rose-400">
+                    <span className="text-[10px] font-mono uppercase text-[#A7B4C9] block">Về tàu</span>
+                    <span className="text-rose-400 font-mono font-bold mt-0.5 block">
                       {booking.returnToShipTime}
                     </span>
                   </div>
@@ -202,14 +206,14 @@ export const PassengerExcursionPassPage: React.FC = () => {
 
                 <div className="flex items-center justify-between pt-1">
                   <div>
-                    <span className="text-neutral-500 text-[10px] uppercase block">Cước phí vé:</span>
-                    <span className="text-sm font-black text-black dark:text-white">
+                    <span className="text-[#A7B4C9] text-[10px] font-mono uppercase block">Cước phí vé:</span>
+                    <span className="text-sm font-mono font-bold text-[#F4F4F0]">
                       {booking.isIncluded ? 'MIỄN PHÍ' : formatCurrency(booking.chargedAmount ?? 0, booking.currency || 'USD')}
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-neutral-500 text-[10px] uppercase block">Trạng thái:</span>
-                    <span className="border border-black bg-[#E7E4DC] px-2 py-0.5 text-[10px] font-black uppercase text-black shadow-[1px_1px_0px_#171717]">
+                    <span className="text-[#A7B4C9] text-[10px] font-mono uppercase block">Trạng thái:</span>
+                    <span className="rounded bg-[#10182A] border border-[#42E8F5]/30 px-2 py-0.5 text-[10px] font-mono font-bold uppercase text-[#42E8F5]">
                       {booking.status}
                     </span>
                   </div>
@@ -217,15 +221,15 @@ export const PassengerExcursionPassPage: React.FC = () => {
               </div>
 
               {/* Ticket Footer Action */}
-              <div className="p-4 border-t-2 border-[#171717] bg-[#E7E4DC] flex items-center justify-between dark:bg-slate-900">
-                <span className="text-[11px] font-black uppercase text-neutral-700 flex items-center gap-1.5 dark:text-neutral-300">
-                  <Calendar className="w-3.5 h-3.5 text-black dark:text-white" />
+              <div className="p-4 border-t border-[#42E8F5]/20 bg-[#10182A] flex items-center justify-between">
+                <span className="text-[11px] font-mono text-[#A7B4C9] flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-[#42E8F5]" />
                   Ngày đi: {booking.excursionDate}
                 </span>
 
                 <button
                   onClick={() => setCancelModalBooking(booking)}
-                  className="px-3.5 py-1.5 border-2 border-[#171717] bg-[#DC2626] text-white text-xs font-black uppercase shadow-[2px_2px_0px_#171717] hover:bg-rose-700 transition-all active:translate-x-[1px] active:translate-y-[1px]"
+                  className="px-3.5 py-1.5 rounded-lg bg-rose-900/60 hover:bg-rose-800 text-rose-200 border border-rose-500/40 text-xs font-mono font-bold uppercase transition-all cursor-pointer"
                 >
                   Hủy Vé Tour
                 </button>
@@ -237,40 +241,40 @@ export const PassengerExcursionPassPage: React.FC = () => {
 
       {/* Cancellation Modal */}
       {cancelModalBooking && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in" role="dialog" aria-modal="true">
-          <div className="border-4 border-[#171717] bg-[#F7F5F0] w-full max-w-md p-6 shadow-[8px_8px_0px_#171717] relative text-[#171717] dark:bg-slate-900 dark:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in" role="dialog" aria-modal="true">
+          <div className="bg-[#151F33] border border-[#42E8F5]/30 rounded-2xl w-full max-w-md p-6 shadow-2xl relative text-[#F4F4F0]">
             <button
               onClick={() => setCancelModalBooking(null)}
-              className="absolute top-4 right-4 border border-black bg-white p-1 text-black hover:bg-neutral-200 transition-colors shadow-[1px_1px_0px_#171717] dark:bg-slate-800 dark:text-white"
+              className="absolute top-4 right-4 rounded-lg bg-[#10182A] p-1.5 text-[#A7B4C9] hover:text-white transition-colors cursor-pointer"
               aria-label="Đóng"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 border-2 border-[#171717] bg-rose-200 flex items-center justify-center text-rose-700 shadow-[2px_2px_0px_#171717]">
+              <div className="w-10 h-10 rounded-xl bg-rose-950/60 border border-rose-500/50 flex items-center justify-center text-rose-400">
                 <ShieldAlert className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-black uppercase text-black dark:text-white">Xác Nhận Hủy Vé Tour Bờ</h3>
-                <p className="text-xs font-mono font-bold text-neutral-500">Vé: {cancelModalBooking.ticketCode}</p>
+                <h3 className="text-base font-display font-black uppercase text-[#F4F4F0]">Xác Nhận Hủy Vé Tour Bờ</h3>
+                <p className="text-xs font-mono text-[#A7B4C9]">Vé: {cancelModalBooking.ticketCode}</p>
               </div>
             </div>
 
-            <p className="text-xs font-bold leading-relaxed mb-4 border-2 border-[#171717] bg-white p-3 shadow-[2px_2px_0px_#171717] dark:bg-slate-800">
+            <p className="text-xs font-mono leading-relaxed mb-4 bg-[#10182A] border border-[#42E8F5]/20 rounded-xl p-3 text-[#A7B4C9]">
               Hệ thống sẽ tính toán hoàn tiền tự động theo thời điểm hủy so với giờ tàu cập bến (Port Cut-off Policy):
-              <br />• <strong>Trước 24h:</strong> Hoàn 100% tiền vào Cabin Folio.
-              <br />• <strong>Từ 12-24h:</strong> Phạt 50% chi phí.
-              <br />• <strong>Dưới 12h:</strong> Phạt 100% (Trừ trường hợp thời tiết bão hủy cảng).
+              <br />• <strong className="text-[#F4F4F0]">Trước 24h:</strong> Hoàn 100% tiền vào Cabin Folio.
+              <br />• <strong className="text-[#FFBD59]">Từ 12-24h:</strong> Phạt 50% chi phí.
+              <br />• <strong className="text-rose-400">Dưới 12h:</strong> Phạt 100% (Trừ trường hợp thời tiết bão hủy cảng).
             </p>
 
             <div className="mb-4">
-              <label htmlFor={cancelReasonSelectId} className="block text-xs font-black uppercase mb-1">Lý do hủy vé:</label>
+              <label htmlFor={cancelReasonSelectId} className="block text-xs font-mono uppercase text-[#A7B4C9] mb-1.5">Lý do hủy vé:</label>
               <select
                 id={cancelReasonSelectId}
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
-                className="w-full px-3 py-2 border-2 border-[#171717] bg-white text-xs font-bold text-black shadow-[2px_2px_0px_#171717] focus:outline-none dark:bg-slate-800 dark:text-white"
+                className="w-full px-3 py-2.5 rounded-lg border border-[#42E8F5]/30 bg-[#10182A] text-xs font-mono text-[#F4F4F0] focus:outline-none focus:border-[#42E8F5] cursor-pointer"
               >
                 <option value="Thay đổi lịch trình cá nhân">Thay đổi lịch trình cá nhân</option>
                 <option value="Sức khỏe không đảm bảo">Sức khỏe không đảm bảo</option>
@@ -282,7 +286,7 @@ export const PassengerExcursionPassPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setCancelModalBooking(null)}
-                className="flex-1 py-2 border-2 border-[#171717] bg-white text-black text-xs font-black uppercase shadow-[2px_2px_0px_#171717] hover:bg-[#E7E4DC] transition-all active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-800 dark:text-white"
+                className="flex-1 py-2.5 rounded-lg bg-[#10182A] hover:bg-[#0c1221] text-[#A7B4C9] border border-[#42E8F5]/20 text-xs font-mono font-bold uppercase transition-all cursor-pointer"
               >
                 Giữ Lại Vé
               </button>
@@ -290,7 +294,7 @@ export const PassengerExcursionPassPage: React.FC = () => {
                 type="button"
                 onClick={handleConfirmCancel}
                 disabled={cancellingId !== null}
-                className="flex-1 py-2 border-2 border-[#171717] bg-[#DC2626] text-white text-xs font-black uppercase shadow-[2px_2px_0px_#171717] hover:bg-rose-700 transition-all active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-mono font-bold uppercase transition-all shadow-lg shadow-rose-600/30 disabled:opacity-50 cursor-pointer"
               >
                 {cancellingId !== null ? 'Đang Hủy...' : 'Xác Nhận Hủy'}
               </button>
@@ -301,3 +305,5 @@ export const PassengerExcursionPassPage: React.FC = () => {
     </div>
   );
 };
+
+export default PassengerExcursionPassPage;

@@ -40,23 +40,23 @@ import { TourStopsModal } from '../components/tours/TourStopsModal';
 const STATUS_BADGES: Record<TourStatus, { label: string; cls: string }> = {
   DRAFT: {
     label: 'Bản nháp',
-    cls: 'bg-[#E7E4DC] text-[#171717]',
+    cls: 'bg-gray-100 text-gray-700 border border-gray-200/70',
   },
   PUBLISHED: {
     label: 'Mở bán',
-    cls: 'bg-[#10B981] text-[#171717]',
+    cls: 'bg-emerald-50 text-emerald-700 border border-emerald-200/70',
   },
   IN_PROGRESS: {
     label: 'Đang hành trình',
-    cls: 'bg-[#3155E7] text-white',
+    cls: 'bg-indigo-50 text-indigo-700 border border-indigo-200/70',
   },
   COMPLETED: {
     label: 'Hoàn thành',
-    cls: 'bg-[#D9FF43] text-[#171717]',
+    cls: 'bg-sky-50 text-sky-700 border border-sky-200/70',
   },
   CANCELLED: {
     label: 'Đã hủy',
-    cls: 'bg-[#DC2626] text-white',
+    cls: 'bg-rose-50 text-rose-700 border border-rose-200/70',
   },
 };
 
@@ -182,14 +182,14 @@ export function ItineraryPage() {
   if (selectedDailyTour) {
     return (
       <div className="space-y-6 animate-in fade-in duration-300">
-        <div className="flex items-center justify-between pb-4 border-b-2 border-[#171717]">
+        <div className="flex items-center justify-between pb-4 border-b border-[#E5E7EB]">
           <button
             onClick={() => setSelectedDailyTour(null)}
-            className="neo-btn neo-btn-secondary flex items-center gap-2"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-[#E5E7EB] hover:bg-[#F9FAFB] text-[#20242C] text-xs font-semibold rounded-[10px] shadow-xs transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> Quay Lại Danh Sách Hải Trình
           </button>
-          <span className="neo-badge bg-[#D9FF43] text-[#171717]">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-[6px] text-xs font-semibold bg-[#EEF2FF] text-[#5277D9] border border-[#5277D9]/20">
             Giao diện Lịch Trình Hàng Ngày (Daily Itinerary)
           </span>
         </div>
@@ -202,87 +202,89 @@ export function ItineraryPage() {
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Toast Notification */}
       {notification && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-[#10B981]/20 border-2 border-[#171717] text-[#171717] font-mono font-bold px-4 py-3 shadow-[4px_4px_0px_#171717] text-xs">
-          <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium px-4 py-3 rounded-[10px] shadow-sm text-xs">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{notification}</span>
         </div>
       )}
 
-      {/* Header — Editorial Broadside */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-[#171717]">
+      {/* Header — Soft Editorial */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E5E7EB]">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="neo-badge bg-[#3155E7] text-white">VOYAGE MANAGEMENT</span>
-            <span className="text-[10px] font-mono text-[#171717]/60 font-bold">• MULTI-DAY ITINERARY</span>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-[6px] text-[10px] font-bold bg-[#EEF2FF] text-[#5277D9] border border-[#5277D9]/20 tracking-wider">
+              VOYAGE MANAGEMENT
+            </span>
+            <span className="text-[11px] font-medium text-[#687080]">• MULTI-DAY ITINERARY</span>
           </div>
-          <h2 className="text-2xl font-display font-black text-[#171717] flex items-center gap-2 uppercase tracking-tight">
-            <Compass className="w-6 h-6 text-[#3155E7]" /> Quản Lý Tour Du Lịch Du Thuyền (Cruise Tour)
+          <h2 className="text-2xl font-bold text-[#20242C] flex items-center gap-2.5 tracking-tight">
+            <Compass className="w-6 h-6 text-[#5277D9]" /> Quản Lý Tour Du Lịch Du Thuyền (Cruise Tour)
           </h2>
-          <p className="text-xs font-mono text-[#171717]/70 mt-1">
+          <p className="text-xs text-[#687080] mt-1">
             Điều phối hải trình • Quản lý tour nhiều ngày, tàu phân bổ, sức chứa và trạng thái hoạt động
           </p>
         </div>
         <button
           onClick={handleCreateOpen}
-          className="neo-btn neo-btn-acid flex items-center gap-2 self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#5277D9] hover:bg-[#4364BE] text-white text-xs font-semibold rounded-[10px] shadow-xs transition-colors self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" /> Tạo Hải Trình Mới
         </button>
       </div>
 
-      {/* Stats Cards — Neo-Brutalist Blocks */}
+      {/* Stats Cards — Soft Editorial Blocks */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="neo-card p-4 flex items-center justify-between">
+        <div className="bg-white border border-[#E5E7EB] rounded-[14px] p-4.5 shadow-xs flex items-center justify-between">
           <div>
-            <span className="text-[10px] text-[#171717]/70 font-mono font-bold uppercase tracking-wider">Tổng tour đang quản lý</span>
-            <p className="text-3xl font-display font-black text-[#171717] mt-1">{totalActiveTours}</p>
+            <span className="text-[11px] font-medium text-[#687080] uppercase tracking-wider">Tổng tour đang quản lý</span>
+            <p className="text-2xl font-bold tabular-nums text-[#20242C] mt-1">{totalActiveTours}</p>
           </div>
-          <div className="w-10 h-10 bg-[#E7E4DC] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center text-[#171717]">
-            <Compass className="w-5 h-5 text-[#3155E7]" />
+          <div className="w-10 h-10 bg-[#EEF2FF] rounded-[10px] flex items-center justify-center text-[#5277D9]">
+            <Compass className="w-5 h-5 text-[#5277D9]" />
           </div>
         </div>
-        <div className="neo-card p-4 flex items-center justify-between">
+        <div className="bg-white border border-[#E5E7EB] rounded-[14px] p-4.5 shadow-xs flex items-center justify-between">
           <div>
-            <span className="text-[10px] text-[#171717]/70 font-mono font-bold uppercase tracking-wider">Tour đang hành trình</span>
-            <p className="text-3xl font-display font-black text-[#3155E7] mt-1">{inProgressTours}</p>
+            <span className="text-[11px] font-medium text-[#687080] uppercase tracking-wider">Tour đang hành trình</span>
+            <p className="text-2xl font-bold tabular-nums text-[#5277D9] mt-1">{inProgressTours}</p>
           </div>
-          <div className="w-10 h-10 bg-[#3155E7] text-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center">
+          <div className="w-10 h-10 bg-indigo-50 rounded-[10px] flex items-center justify-center text-indigo-600">
             <Ship className="w-5 h-5" />
           </div>
         </div>
-        <div className="neo-card p-4 flex items-center justify-between">
+        <div className="bg-white border border-[#E5E7EB] rounded-[14px] p-4.5 shadow-xs flex items-center justify-between">
           <div>
-            <span className="text-[10px] text-[#171717]/70 font-mono font-bold uppercase tracking-wider">Tour đang mở bán</span>
-            <p className="text-3xl font-display font-black text-[#059669] mt-1">{publishedTours}</p>
+            <span className="text-[11px] font-medium text-[#687080] uppercase tracking-wider">Tour đang mở bán</span>
+            <p className="text-2xl font-bold tabular-nums text-emerald-600 mt-1">{publishedTours}</p>
           </div>
-          <div className="w-10 h-10 bg-[#D9FF43] text-[#171717] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center">
+          <div className="w-10 h-10 bg-emerald-50 rounded-[10px] flex items-center justify-center text-emerald-600">
             <Tag className="w-5 h-5" />
           </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="neo-card p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="bg-white border border-[#E5E7EB] rounded-[14px] p-4 shadow-xs flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 text-[#171717]/60 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#687080] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Tìm theo tên tour, mã, cảng, tàu..."
-            className="neo-input w-full pl-9 pr-4 py-2 text-xs font-mono"
+            className="w-full pl-9 pr-4 py-2 text-xs bg-[#F9FAFB] hover:bg-white focus:bg-white border border-[#E5E7EB] rounded-[10px] text-[#20242C] focus:ring-2 focus:ring-[#5277D9]/20 focus:border-[#5277D9] transition-all"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-[#171717]" />
+            <Filter className="w-4 h-4 text-[#687080]" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               aria-label="Lọc theo trạng thái"
-              className="neo-input px-3 py-1.5 text-xs font-mono font-bold uppercase"
+              className="px-3 py-1.5 text-xs font-semibold bg-[#F9FAFB] hover:bg-white border border-[#E5E7EB] rounded-[10px] text-[#20242C] focus:ring-2 focus:ring-[#5277D9]/20 focus:border-[#5277D9]"
             >
               <option value="ALL">Tất cả trạng thái</option>
               <option value="DRAFT">Bản nháp</option>
@@ -298,7 +300,7 @@ export function ItineraryPage() {
             value={shipFilter}
             onChange={(e) => setShipFilter(e.target.value)}
             aria-label="Lọc theo tàu"
-            className="neo-input px-3 py-1.5 text-xs font-mono font-bold uppercase"
+            className="px-3 py-1.5 text-xs font-semibold bg-[#F9FAFB] hover:bg-white border border-[#E5E7EB] rounded-[10px] text-[#20242C] focus:ring-2 focus:ring-[#5277D9]/20 focus:border-[#5277D9]"
           >
             <option value="ALL">Tất cả tàu</option>
             {ships.map((s) => (
@@ -312,10 +314,10 @@ export function ItineraryPage() {
 
       {/* Tour Cards Grid */}
       {filteredTours.length === 0 ? (
-        <div className="neo-card p-12 text-center border-2 border-dashed border-[#171717]">
-          <Compass className="w-12 h-12 text-[#171717]/40 mx-auto mb-3" />
-          <h3 className="text-base font-display font-black text-[#171717] uppercase">Không tìm thấy tour du lịch nào</h3>
-          <p className="text-xs font-mono text-[#171717]/70 mt-1 max-w-md mx-auto">
+        <div className="bg-white border border-dashed border-[#E5E7EB] rounded-[16px] p-12 text-center">
+          <Compass className="w-12 h-12 text-[#687080]/40 mx-auto mb-3" />
+          <h3 className="text-base font-bold text-[#20242C]">Không tìm thấy tour du lịch nào</h3>
+          <p className="text-xs text-[#687080] mt-1 max-w-md mx-auto">
             Không có tour nào phù hợp với bộ lọc tìm kiếm hiện tại. Hãy thử thay đổi từ khóa hoặc bộ lọc trạng thái.
           </p>
         </div>
@@ -326,33 +328,33 @@ export function ItineraryPage() {
             return (
               <div
                 key={tour.id}
-                className="neo-card-interactive flex flex-col justify-between overflow-hidden"
+                className="bg-white border border-[#E5E7EB] rounded-[16px] shadow-xs hover:shadow-sm transition-all flex flex-col justify-between overflow-hidden group"
               >
                 <div>
                   {/* Image header if available */}
                   {tour.imageUrl ? (
-                    <div className="h-40 w-full overflow-hidden relative border-b-2 border-[#171717]">
+                    <div className="h-40 w-full overflow-hidden relative border-b border-[#E5E7EB]">
                       <img
                         src={tour.imageUrl}
                         alt={tour.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="absolute top-3 right-3">
-                        <span className={`neo-badge ${badge.cls}`}>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-[6px] text-xs font-semibold ${badge.cls}`}>
                           {badge.label}
                         </span>
                       </div>
-                      <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-xs font-mono font-bold bg-white text-[#171717] px-2.5 py-1 border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
-                        <Clock className="w-3.5 h-3.5 text-[#3155E7]" />
+                      <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-xs font-medium bg-white/95 backdrop-blur-xs text-[#20242C] px-2.5 py-1 rounded-[6px] border border-[#E5E7EB] shadow-xs">
+                        <Clock className="w-3.5 h-3.5 text-[#5277D9]" />
                         <span>
                           {tour.durationDays}N{tour.durationNights}Đ
                         </span>
                       </div>
                     </div>
                   ) : (
-                    <div className="p-3 border-b-2 border-[#171717] flex items-center justify-between bg-[#E7E4DC]">
-                      <span className="text-xs font-mono font-black text-[#3155E7] uppercase tracking-wider">{tour.code}</span>
-                      <span className={`neo-badge ${badge.cls}`}>
+                    <div className="p-3.5 border-b border-[#E5E7EB] flex items-center justify-between bg-[#F9FAFB]">
+                      <span className="text-xs font-mono font-semibold text-[#5277D9] tracking-wider">{tour.code}</span>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-[6px] text-xs font-semibold ${badge.cls}`}>
                         {badge.label}
                       </span>
                     </div>
@@ -360,44 +362,44 @@ export function ItineraryPage() {
 
                   <div className="p-5 space-y-3">
                     <div>
-                      <span className="text-[10px] text-[#3155E7] font-mono font-black uppercase">{tour.code}</span>
-                      <h3 className="font-display font-black text-base text-[#171717] line-clamp-2 mt-0.5 uppercase tracking-tight">{tour.name}</h3>
+                      <span className="text-[11px] text-[#5277D9] font-mono font-semibold">{tour.code}</span>
+                      <h3 className="font-bold text-base text-[#20242C] line-clamp-2 mt-0.5 tracking-tight">{tour.name}</h3>
                     </div>
 
                     {/* Ship allocation */}
-                    <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#171717] bg-[#E7E4DC] p-2.5 border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717]">
-                      <Ship className="w-4 h-4 text-[#3155E7] shrink-0" />
+                    <div className="flex items-center gap-2 text-xs font-medium text-[#20242C] bg-[#F9FAFB] p-2.5 rounded-[8px] border border-[#E5E7EB]">
+                      <Ship className="w-4 h-4 text-[#5277D9] shrink-0" />
                       <span className="truncate">
                         {tour.shipName ? `${tour.shipName} (${tour.shipCode})` : 'Chưa gán tàu du lịch'}
                       </span>
                     </div>
 
                     {/* Ports & Duration */}
-                    <div className="space-y-1.5 text-xs font-mono text-[#171717]/80">
+                    <div className="space-y-1.5 text-xs text-[#687080]">
                       <p className="flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-[#3155E7] shrink-0" />
+                        <MapPin className="w-3.5 h-3.5 text-[#5277D9] shrink-0" />
                         <span className="truncate">Xuất phát: {tour.departurePort}</span>
                       </p>
                       <p className="flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-[#171717] shrink-0" />
+                        <MapPin className="w-3.5 h-3.5 text-[#687080] shrink-0" />
                         <span className="truncate">Đích đến: {tour.destinationPort}</span>
                       </p>
                       <p className="flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5 text-[#171717] shrink-0" />
+                        <Calendar className="w-3.5 h-3.5 text-[#687080] shrink-0" />
                         <span>
                           {tour.startDate} → {tour.endDate}
                         </span>
                       </p>
                       <p className="flex items-center gap-2">
-                        <Users className="w-3.5 h-3.5 text-[#D97706] shrink-0" />
+                        <Users className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                         <span>Sức chứa: {tour.maxCapacity.toLocaleString()} hành khách</span>
                       </p>
                     </div>
 
                     {/* Cancellation reason warning */}
                     {tour.status === 'CANCELLED' && tour.cancellationReason && (
-                      <div className="p-2.5 bg-[#DC2626]/20 border-2 border-[#171717] text-[#171717] text-[11px] font-mono font-bold flex items-start gap-1.5 shadow-[2px_2px_0px_#171717]">
-                        <AlertTriangle className="w-3.5 h-3.5 text-[#DC2626] shrink-0 mt-0.5" />
+                      <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-medium rounded-[8px] flex items-start gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
                         <span>Lý do hủy: {tour.cancellationReason}</span>
                       </div>
                     )}
@@ -405,10 +407,10 @@ export function ItineraryPage() {
                 </div>
 
                 {/* Footer and Actions */}
-                <div className="p-4 pt-3 border-t-2 border-[#171717] bg-[#E7E4DC] flex items-center justify-between gap-2">
+                <div className="p-4 pt-3 border-t border-[#E5E7EB] bg-[#F9FAFB] flex items-center justify-between gap-2">
                   <div>
-                    <span className="text-[10px] font-mono font-bold text-[#171717]/60 block uppercase">Giá cơ bản</span>
-                    <span className="text-xs font-display font-black text-[#171717]">
+                    <span className="text-[10px] font-medium text-[#687080] block uppercase">Giá cơ bản</span>
+                    <span className="text-xs font-bold tabular-nums text-[#20242C]">
                       {tour.basePrice.toLocaleString()} {tour.currency}
                     </span>
                   </div>
@@ -416,7 +418,7 @@ export function ItineraryPage() {
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => setSelectedDailyTour(tour)}
-                      className="p-1.5 bg-white hover:bg-[#D9FF43] text-[#171717] border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                      className="p-1.5 bg-white hover:bg-[#EEF2FF] text-[#20242C] hover:text-[#5277D9] border border-[#E5E7EB] rounded-[8px] transition-colors shadow-xs"
                       title="Xem lịch trình hàng ngày"
                       aria-label="Xem lịch trình hàng ngày"
                     >
@@ -427,28 +429,28 @@ export function ItineraryPage() {
                         setStopsTour(tour);
                         setIsStopsModalOpen(true);
                       }}
-                      className="p-1.5 bg-white hover:bg-[#D9FF43] text-[#171717] border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                      className="p-1.5 bg-white hover:bg-[#EEF2FF] text-[#20242C] hover:text-[#5277D9] border border-[#E5E7EB] rounded-[8px] transition-colors shadow-xs"
                       title="Quản lý điểm dừng hải trình"
                     >
                       <Anchor className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleStatusModalOpen(tour)}
-                      className="p-1.5 bg-white hover:bg-[#D9FF43] text-[#171717] border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                      className="p-1.5 bg-white hover:bg-[#EEF2FF] text-[#20242C] hover:text-[#5277D9] border border-[#E5E7EB] rounded-[8px] transition-colors shadow-xs"
                       title="Chuyển trạng thái tour"
                     >
-                      <ArrowRightCircle className="w-4 h-4 text-[#3155E7]" />
+                      <ArrowRightCircle className="w-4 h-4 text-[#5277D9]" />
                     </button>
                     <button
                       onClick={() => handleEditOpen(tour)}
-                      className="p-1.5 bg-white hover:bg-[#D9FF43] text-[#171717] border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                      className="p-1.5 bg-white hover:bg-[#EEF2FF] text-[#20242C] hover:text-[#5277D9] border border-[#E5E7EB] rounded-[8px] transition-colors shadow-xs"
                       title="Chỉnh sửa tour"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setIsDeleting(tour)}
-                      className="p-1.5 bg-white hover:bg-[#DC2626] hover:text-white text-[#171717] border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                      className="p-1.5 bg-white hover:bg-rose-50 hover:text-rose-600 text-[#20242C] border border-[#E5E7EB] rounded-[8px] transition-colors shadow-xs"
                       title="Xóa tour"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -491,25 +493,25 @@ export function ItineraryPage() {
       {/* Delete Confirmation Modal */}
       {isDeleting && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#171717]/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
           role="dialog"
           aria-modal="true"
         >
-          <div className="neo-card bg-white p-6 max-w-sm w-full text-[#171717] shadow-[6px_6px_0px_#171717]">
-            <h3 className="text-base font-display font-black text-[#171717] uppercase mb-2">Xác Nhận Xóa Tour</h3>
-            <p className="text-xs font-mono text-[#171717]/80 mb-5">
-              Bạn có chắc chắn muốn xóa tour <span className="font-bold text-[#171717]">{isDeleting.name}</span> ({isDeleting.code}) không? Thao tác này không thể hoàn tác.
+          <div className="bg-white rounded-[16px] border border-[#E5E7EB] p-6 max-w-sm w-full text-[#20242C] shadow-xl">
+            <h3 className="text-base font-bold text-[#20242C] mb-2">Xác Nhận Xóa Tour</h3>
+            <p className="text-xs text-[#687080] mb-5 leading-relaxed">
+              Bạn có chắc chắn muốn xóa tour <span className="font-semibold text-[#20242C]">{isDeleting.name}</span> ({isDeleting.code}) không? Thao tác này không thể hoàn tác.
             </p>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setIsDeleting(null)}
-                className="neo-btn neo-btn-secondary text-xs"
+                className="px-3.5 py-2 text-xs font-medium text-[#20242C] bg-white border border-[#E5E7EB] rounded-[8px] hover:bg-[#F9FAFB] transition-colors"
               >
                 Hủy
               </button>
               <button
                 onClick={handleDeleteConfirm}
-                className="neo-btn bg-[#DC2626] text-white hover:bg-[#b91c1c] text-xs shadow-[3px_3px_0px_#171717]"
+                className="px-3.5 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-[8px] shadow-xs transition-colors"
               >
                 Xóa Tour
               </button>

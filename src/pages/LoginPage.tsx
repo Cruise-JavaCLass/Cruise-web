@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
   Ship,
-  ShieldCheck,
   Lock,
   User,
-  ArrowRight,
   AlertCircle,
   Eye,
   EyeOff,
@@ -53,34 +51,37 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] text-[#171717] flex flex-col justify-center items-center p-4 relative overflow-hidden dark:bg-slate-900 dark:text-white">
+    <div
+      data-theme="admin-editorial"
+      className="min-h-screen bg-[#F6F7F9] text-[#20242C] flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans"
+    >
       {/* Top back to guest portal */}
       <div className="w-full max-w-md mb-4 flex items-center justify-between">
         <Link
           to="/passenger-home"
-          className="inline-flex items-center gap-1.5 border-2 border-[#171717] bg-white px-3 py-1 text-xs font-black uppercase text-black shadow-[2px_2px_0px_#171717] hover:bg-[#E7E4DC] transition-all active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-800 dark:text-white"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] border border-[#E5E7EB] bg-white text-xs font-medium text-[#20242C] shadow-xs hover:bg-[#F1F3F7] transition-all"
         >
-          <ArrowLeft className="w-4 h-4" /> Về Cổng Khách Hàng (Guest Portal)
+          <ArrowLeft className="w-4 h-4 text-[#5277D9]" /> Về Cổng Khách Hàng (Guest Portal)
         </Link>
-        <span className="border border-[#171717] bg-[#D9FF43] text-black font-black uppercase px-2.5 py-0.5 text-[10px] tracking-wider shadow-[1px_1px_0px_#171717]">
+        <span className="text-[10px] font-mono font-medium px-2.5 py-0.5 rounded-[6px] bg-[#EEF2FF] text-[#5277D9] border border-[#5277D9]/20">
           Maritime Security
         </span>
       </div>
 
-      {/* Login Card - Neo-Brutalist Masterpiece */}
-      <div className="w-full max-w-md border-4 border-[#171717] bg-white p-6 sm:p-8 shadow-[8px_8px_0px_#171717] relative z-10 dark:bg-slate-800">
+      {/* Login Card - Soft Editorial Modern SaaS */}
+      <div className="w-full max-w-md border border-[#E5E7EB] bg-white p-6 sm:p-8 rounded-[18px] shadow-sm relative z-10">
         {/* Header & Brand */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 border-2 border-[#171717] bg-[#3155E7] text-white shadow-[3px_3px_0px_#171717] mb-3">
-            <Ship className="w-7 h-7 text-white" />
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-[12px] bg-[#EEF2FF] text-[#5277D9] border border-[#5277D9]/20 shadow-xs mb-3">
+            <Ship className="w-6 h-6 text-[#5277D9]" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-black dark:text-white">
+          <h1 className="text-2xl font-bold tracking-tight text-[#20242C] uppercase font-display">
             CRUISE MANAGER
           </h1>
-          <p className="text-xs font-mono font-black text-[#3155E7] uppercase tracking-widest mt-1 dark:text-[#D9FF43]">
+          <p className="text-xs font-mono font-semibold text-[#5277D9] uppercase tracking-wider mt-1">
             FLEET OPERATIONS & CREW CONSOLE
           </p>
-          <p className="text-xs font-medium text-neutral-600 mt-2 dark:text-neutral-400">
+          <p className="text-xs text-[#687080] mt-2">
             Đăng nhập bằng tài khoản Thủy thủ đoàn hoặc Quản trị viên để truy cập bảng điều khiển vận hành.
           </p>
         </div>
@@ -89,9 +90,9 @@ export const LoginPage: React.FC = () => {
         {errorMessage && (
           <div
             role="alert"
-            className="mb-5 p-3.5 border-2 border-[#171717] bg-[#DC2626] text-white text-xs font-bold flex items-center gap-2.5 shadow-[3px_3px_0px_#171717]"
+            className="mb-5 p-3 rounded-[10px] border border-rose-200 bg-rose-50 text-rose-800 text-xs font-medium flex items-center gap-2.5"
           >
-            <AlertCircle className="w-4 h-4 text-white shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -99,11 +100,11 @@ export const LoginPage: React.FC = () => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="username-input" className="block text-xs font-black uppercase tracking-wider text-black mb-1.5 dark:text-neutral-300">
+            <label htmlFor="username-input" className="block text-xs font-semibold uppercase tracking-wider text-[#20242C] mb-1.5">
               Tên đăng nhập / Mã định danh
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#687080]">
                 <User className="w-4 h-4" />
               </div>
               <input
@@ -113,18 +114,18 @@ export const LoginPage: React.FC = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Ví dụ: admin hoặc ops.manager"
-                className="w-full pl-10 pr-4 py-2.5 border-2 border-[#171717] bg-[#F7F5F0] text-xs font-bold text-black placeholder-neutral-500 shadow-[2px_2px_0px_#171717] transition-all focus:bg-white focus:outline-none dark:bg-slate-900 dark:text-white"
+                className="w-full pl-10 pr-4 py-2.5 border border-[#E5E7EB] bg-[#F1F3F7] rounded-[10px] text-xs font-medium text-[#20242C] placeholder-[#687080]/70 shadow-xs transition-all focus:bg-white focus:border-[#5277D9] focus:outline-none"
                 disabled={isLoading}
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="password-input" className="block text-xs font-black uppercase tracking-wider text-black mb-1.5 dark:text-neutral-300">
+            <label htmlFor="password-input" className="block text-xs font-semibold uppercase tracking-wider text-[#20242C] mb-1.5">
               Mật khẩu xác thực
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#687080]">
                 <Lock className="w-4 h-4" />
               </div>
               <input
@@ -134,13 +135,13 @@ export const LoginPage: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-10 py-2.5 border-2 border-[#171717] bg-[#F7F5F0] text-xs font-bold text-black placeholder-neutral-500 shadow-[2px_2px_0px_#171717] transition-all focus:bg-white focus:outline-none dark:bg-slate-900 dark:text-white"
+                className="w-full pl-10 pr-10 py-2.5 border border-[#E5E7EB] bg-[#F1F3F7] rounded-[10px] text-xs font-medium text-[#20242C] placeholder-[#687080]/70 shadow-xs transition-all focus:bg-white focus:border-[#5277D9] focus:outline-none"
                 disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-500 hover:text-black transition-colors dark:hover:text-white"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#687080] hover:text-[#20242C] transition-colors"
                 aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiển thị mật khẩu'}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -151,56 +152,45 @@ export const LoginPage: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 px-4 border-2 border-[#171717] bg-[#171717] hover:bg-[#3155E7] text-white text-xs font-black uppercase tracking-wider shadow-[4px_4px_0px_#3155E7] transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2 cursor-pointer active:translate-x-[2px] active:translate-y-[2px]"
+            className="w-full py-2.5 px-4 rounded-[10px] bg-[#5277D9] hover:bg-[#4364C2] text-white text-xs font-semibold uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shadow-xs"
           >
-            {isLoading ? (
-              <span>Đang xác thực...</span>
-            ) : (
-              <>
-                <span>Đăng nhập Vận Hành</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
+            {isLoading ? 'Đang xác thực...' : 'Đăng nhập Vận Hành'}
           </button>
         </form>
 
-        {/* Quick Demo Credentials Assistant */}
-        <div className="mt-6 pt-5 border-t-2 border-[#171717] dark:border-slate-700">
-          <p className="text-[11px] font-mono font-bold uppercase text-neutral-600 flex items-center gap-1.5 mb-2.5 dark:text-neutral-400">
-            <Sparkles className="w-3.5 h-3.5 text-[#3155E7] dark:text-[#D9FF43]" />
-            Tài khoản kiểm thử nhanh (Demo Crew Roles):
-          </p>
-          <div className="flex flex-wrap gap-2">
+        {/* Demo Fast Logins Section */}
+        <div className="mt-6 pt-5 border-t border-[#E5E7EB]">
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#687080] mb-2.5 uppercase">
+            <Sparkles className="w-3.5 h-3.5 text-[#5277D9]" />
+            <span>Tài khoản Demo Thủy Thủ Đoàn:</span>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
               onClick={() => handleQuickFill('admin', 'admin123')}
-              className="text-[11px] px-3 py-1 border-2 border-[#171717] bg-[#F7F5F0] hover:bg-[#E7E4DC] text-black font-black uppercase shadow-[2px_2px_0px_#171717] transition-all active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-700 dark:text-white"
+              className="p-2 text-[11px] rounded-[8px] border border-[#E5E7EB] bg-[#F1F3F7] hover:bg-[#EEF2FF] hover:border-[#5277D9]/40 hover:text-[#5277D9] text-[#20242C] font-semibold transition-all cursor-pointer truncate"
             >
               Admin Toàn Quyền
             </button>
             <button
               type="button"
               onClick={() => handleQuickFill('ops.manager', 'ops123')}
-              className="text-[11px] px-3 py-1 border-2 border-[#171717] bg-[#F7F5F0] hover:bg-[#E7E4DC] text-black font-black uppercase shadow-[2px_2px_0px_#171717] transition-all active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-700 dark:text-white"
+              className="p-2 text-[11px] rounded-[8px] border border-[#E5E7EB] bg-[#F1F3F7] hover:bg-[#EEF2FF] hover:border-[#5277D9]/40 hover:text-[#5277D9] text-[#20242C] font-semibold transition-all cursor-pointer truncate"
             >
               Ops Manager
             </button>
             <button
               type="button"
               onClick={() => handleQuickFill('coordinator', 'coord123')}
-              className="text-[11px] px-3 py-1 border-2 border-[#171717] bg-[#F7F5F0] hover:bg-[#E7E4DC] text-black font-black uppercase shadow-[2px_2px_0px_#171717] transition-all active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-700 dark:text-white"
+              className="p-2 text-[11px] rounded-[8px] border border-[#E5E7EB] bg-[#F1F3F7] hover:bg-[#EEF2FF] hover:border-[#5277D9]/40 hover:text-[#5277D9] text-[#20242C] font-semibold transition-all cursor-pointer truncate"
             >
               Điều Phối Viên
             </button>
           </div>
         </div>
-
-        {/* Security Footer Notice */}
-        <div className="mt-5 text-center text-[10px] text-neutral-600 font-mono font-bold uppercase flex items-center justify-center gap-1.5 dark:text-neutral-400">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Hệ thống bảo vệ an ninh hàng hải quốc tế SOLAS</span>
-        </div>
       </div>
     </div>
   );
 };
+
+export default LoginPage;

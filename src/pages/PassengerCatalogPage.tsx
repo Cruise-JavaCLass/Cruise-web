@@ -78,27 +78,32 @@ export const PassengerCatalogPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] py-8 px-4 dark:bg-slate-900 sm:px-6 lg:px-8">
+    <div
+      data-theme="passenger-retro"
+      className="min-h-screen bg-[#070B16] py-8 px-4 text-[#F4F4F0] font-sans sm:px-6 lg:px-8 bg-[linear-gradient(to_right,rgba(66,232,245,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(66,232,245,0.03)_1px,transparent_1px)] bg-[size:32px_32px]"
+    >
       <div className="mx-auto max-w-7xl">
-        {/* Header Hero - Neo Brutalist Editorial */}
-        <div className="mb-8 border-2 border-[#171717] bg-[#171717] p-6 sm:p-8 text-white shadow-[6px_6px_0px_#3155E7]">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        {/* Header Hero - Retro-Futuristic Terminal Expedition Header */}
+        <div className="mb-8 rounded-2xl border border-[#42E8F5]/30 bg-[#151F33] p-6 sm:p-8 text-white shadow-[0_4px_24px_rgba(7,11,22,0.8)] relative overflow-hidden">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between relative z-10">
             <div>
-              <div className="inline-flex items-center gap-2 border border-[#D9FF43] bg-[#D9FF43] px-3 py-0.5 text-xs font-black uppercase tracking-wider text-black">
-                <Sparkles className="h-3.5 w-3.5 text-black" />
+              <div className="inline-flex items-center gap-2 rounded-md border border-[#42E8F5]/40 bg-[#4169FF]/20 px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#42E8F5]">
+                <Sparkles className="h-3.5 w-3.5 text-[#42E8F5]" />
                 <span>EXPEDITIONS & EXPERIENCES</span>
               </div>
-              <h1 className="mt-3 text-3xl font-black tracking-tight uppercase sm:text-4xl md:text-5xl">
+              <h1 className="mt-3 text-3xl font-display font-black tracking-wide uppercase sm:text-4xl md:text-5xl text-[#F4F4F0]">
                 Duyệt Hoạt Động & Tour Bờ
               </h1>
-              <p className="mt-2 text-sm text-neutral-300 sm:text-base max-w-2xl font-medium">
+              <p className="mt-2 text-xs sm:text-sm text-[#A7B4C9] max-w-2xl font-mono leading-relaxed">
                 Khám phá trọn vẹn lịch trình các show diễn nghệ thuật, lớp học trải nghiệm trên tàu và các tour khám phá thắng cảnh độc đáo tại mỗi cảng dừng.
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="border-2 border-white bg-white/10 p-4 text-center shadow-[4px_4px_0px_#D9FF43]">
-                <span className="block text-3xl font-black text-[#D9FF43]">{items.length}</span>
-                <span className="text-xs font-bold uppercase tracking-wider text-neutral-200">Hoạt động khả dụng</span>
+              <div className="rounded-xl border border-[#42E8F5]/30 bg-[#10182A] p-4 text-center shadow-lg min-w-[130px]">
+                <span className="block text-3xl font-mono font-bold text-[#FFBD59] tabular-nums">{items.length}</span>
+                <span className="text-[10px] font-mono font-medium uppercase tracking-wider text-[#A7B4C9]">
+                  Hoạt động khả dụng
+                </span>
               </div>
             </div>
           </div>
@@ -106,8 +111,8 @@ export const PassengerCatalogPage: React.FC = () => {
 
         {/* Fallback Demo Mode Notification */}
         {isFallbackData && (
-          <div className="mb-6 flex items-center gap-3 border-2 border-[#171717] bg-amber-300 p-4 text-xs font-bold text-black shadow-[3px_3px_0px_#171717]">
-            <AlertTriangle className="h-5 w-5 shrink-0 text-black" />
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-amber-500/40 bg-amber-950/40 p-4 text-xs font-mono text-[#FFBD59]">
+            <AlertTriangle className="h-5 w-5 shrink-0 text-[#FFBD59]" />
             <span>
               <strong>CHẾ ĐỘ XEM TRƯỚC (DEMO MODE):</strong> Dữ liệu đang được hiển thị từ danh mục mô phỏng mẫu do chưa kết nối được máy chủ gateway trực tiếp.
             </span>
@@ -123,17 +128,17 @@ export const PassengerCatalogPage: React.FC = () => {
             {[...Array(8)].map((_, i) => (
               <div
                 key={i}
-                className="h-72 animate-pulse border-2 border-[#171717] bg-white p-5 shadow-[4px_4px_0px_#171717] dark:bg-slate-800"
+                className="h-72 animate-pulse rounded-2xl border border-[#42E8F5]/20 bg-[#151F33] p-5 shadow-lg"
               />
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="border-2 border-[#171717] bg-white p-12 text-center shadow-[6px_6px_0px_#171717] dark:bg-slate-800">
-            <Compass className="mx-auto h-12 w-12 text-[#171717] dark:text-neutral-400" />
-            <h3 className="mt-4 text-xl font-black uppercase text-[#171717] dark:text-white">
+          <div className="rounded-2xl border border-[#42E8F5]/30 bg-[#151F33] p-12 text-center shadow-xl">
+            <Compass className="mx-auto h-12 w-12 text-[#42E8F5]" />
+            <h3 className="mt-4 text-xl font-display font-black uppercase text-[#F4F4F0]">
               Không tìm thấy hoạt động nào phù hợp
             </h3>
-            <p className="mt-1 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+            <p className="mt-1 text-xs font-mono text-[#A7B4C9]">
               Vui lòng thử điều chỉnh lại bộ lọc tìm kiếm hoặc từ khóa tra cứu của bạn.
             </p>
           </div>
@@ -156,18 +161,18 @@ export const PassengerCatalogPage: React.FC = () => {
                   type="button"
                   onClick={() => handlePageChange((filters.page || 0) - 1)}
                   disabled={(filters.page || 0) === 0}
-                  className="inline-flex items-center gap-1 border-2 border-[#171717] bg-white px-4 py-2 text-xs font-black uppercase tracking-wider text-[#171717] shadow-[2px_2px_0px_#171717] transition-all hover:bg-[#E7E4DC] disabled:opacity-40 active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-800 dark:text-white"
+                  className="inline-flex items-center gap-1 rounded-lg border border-[#42E8F5]/30 bg-[#151F33] px-4 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-[#42E8F5] transition-all hover:bg-[#10182A] disabled:opacity-30 cursor-pointer"
                 >
                   <ChevronLeft className="h-4 w-4" /> Trang trước
                 </button>
-                <span className="border-2 border-[#171717] bg-[#D9FF43] px-3.5 py-1.5 text-xs font-black uppercase tracking-wider text-[#171717] shadow-[2px_2px_0px_#171717]">
+                <span className="rounded-lg border border-[#42E8F5]/40 bg-[#10182A] px-3.5 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-[#FFBD59]">
                   Trang {(filters.page || 0) + 1} / {totalPages}
                 </span>
                 <button
                   type="button"
                   onClick={() => handlePageChange((filters.page || 0) + 1)}
                   disabled={(filters.page || 0) >= totalPages - 1}
-                  className="inline-flex items-center gap-1 border-2 border-[#171717] bg-white px-4 py-2 text-xs font-black uppercase tracking-wider text-[#171717] shadow-[2px_2px_0px_#171717] transition-all hover:bg-[#E7E4DC] disabled:opacity-40 active:translate-x-[1px] active:translate-y-[1px] dark:bg-slate-800 dark:text-white"
+                  className="inline-flex items-center gap-1 rounded-lg border border-[#42E8F5]/30 bg-[#151F33] px-4 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-[#42E8F5] transition-all hover:bg-[#10182A] disabled:opacity-30 cursor-pointer"
                 >
                   Trang sau <ChevronRight className="h-4 w-4" />
                 </button>
@@ -187,3 +192,5 @@ export const PassengerCatalogPage: React.FC = () => {
     </div>
   );
 };
+
+export default PassengerCatalogPage;

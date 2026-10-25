@@ -65,49 +65,53 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-gray-100">
-        <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
+      <div className="bg-[#151F33] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#42E8F5]/30 text-[#F4F4F0] relative overflow-hidden">
+        <div className="flex justify-between items-center mb-4 pb-3 border-b border-[#42E8F5]/20">
           <div>
-            <h3 className="text-lg font-bold text-gray-900">Khiếu nại giao dịch</h3>
-            <p className="text-xs text-gray-500 font-mono mt-0.5">{transaction.transactionUuid}</p>
+            <h3 className="text-lg font-display font-black text-[#F4F4F0] uppercase tracking-wide">
+              Khiếu nại giao dịch
+            </h3>
+            <p className="text-xs text-[#42E8F5] font-mono mt-0.5">{transaction.transactionUuid}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition"
+            className="text-[#A7B4C9] hover:text-[#F4F4F0] p-1.5 rounded-lg hover:bg-[#10182A] transition cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg">
+          <div className="mb-4 p-3 bg-rose-950/60 border border-rose-500/50 text-rose-300 text-xs font-mono rounded-xl">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="bg-gray-50 rounded-lg p-3 text-xs space-y-1 text-gray-600">
+          <div className="bg-[#10182A] rounded-xl p-3 text-xs space-y-1.5 font-mono text-[#A7B4C9] border border-[#42E8F5]/15">
             <div className="flex justify-between">
               <span>Địa điểm:</span>
-              <span className="font-medium text-gray-800">{transaction.locationCounter}</span>
+              <span className="font-semibold text-[#F4F4F0]">{transaction.locationCounter}</span>
             </div>
             <div className="flex justify-between">
               <span>Thời gian:</span>
-              <span>{new Date(transaction.time).toLocaleString('vi-VN')}</span>
+              <span className="text-[#F4F4F0]">{new Date(transaction.time).toLocaleString('vi-VN')}</span>
             </div>
             <div className="flex justify-between">
               <span>Tổng hoá đơn gốc:</span>
-              <span className="font-semibold text-gray-900">${transaction.amount.toFixed(2)}</span>
+              <span className="font-bold text-[#FFBD59] tabular-nums">${transaction.amount.toFixed(2)}</span>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">Lý do khiếu nại</label>
+            <label className="block text-xs font-mono font-semibold uppercase text-[#A7B4C9] mb-1.5">
+              Lý do khiếu nại
+            </label>
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value as DisputePayload['reason'])}
-              className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full text-xs font-mono border border-[#42E8F5]/30 rounded-lg px-3 py-2.5 bg-[#10182A] text-[#F4F4F0] focus:ring-1 focus:ring-[#42E8F5] focus:border-[#42E8F5] outline-none cursor-pointer"
             >
               <option value="INCORRECT_AMOUNT">Số tiền không chính xác (Tính sai đơn giá / sai món)</option>
               <option value="DUPLICATE_BILLING">Giao dịch bị trùng lặp (Quẹt 2 lần)</option>
@@ -117,43 +121,47 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">Số tiền khiếu nại ($)</label>
+            <label className="block text-xs font-mono font-semibold uppercase text-[#A7B4C9] mb-1.5">
+              Số tiền khiếu nại ($)
+            </label>
             <input
               type="number"
               step="0.01"
               value={disputeAmount}
               onChange={(e) => setDisputeAmount(e.target.value)}
-              className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full text-xs font-mono border border-[#42E8F5]/30 rounded-lg px-3 py-2.5 bg-[#10182A] text-[#F4F4F0] focus:ring-1 focus:ring-[#42E8F5] focus:border-[#42E8F5] outline-none"
               placeholder="Nhập số tiền yêu cầu hoàn / điều chỉnh"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">Mô tả chi tiết sự việc</label>
+            <label className="block text-xs font-mono font-semibold uppercase text-[#A7B4C9] mb-1.5">
+              Mô tả chi tiết sự việc
+            </label>
             <textarea
               rows={3}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+              className="w-full text-xs font-mono border border-[#42E8F5]/30 rounded-lg px-3 py-2.5 bg-[#10182A] text-[#F4F4F0] focus:ring-1 focus:ring-[#42E8F5] focus:border-[#42E8F5] outline-none resize-none"
               placeholder="Cung cấp lý do cụ thể để bộ phận Lễ tân & Kế toán kiểm tra..."
               required
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+          <div className="flex justify-end gap-2.5 pt-3 border-t border-[#42E8F5]/15">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition"
+              className="px-4 py-2 text-xs font-mono text-[#A7B4C9] hover:text-[#F4F4F0] hover:bg-[#10182A] rounded-lg transition cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition disabled:opacity-50 flex items-center gap-1.5"
+              className="px-4 py-2 text-xs font-mono font-bold uppercase bg-[#4169FF] hover:bg-[#3458db] text-white rounded-lg shadow-lg shadow-[#4169FF]/25 transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
             >
               {submitting ? 'Đang gửi...' : 'Gửi khiếu nại đến Lễ tân'}
             </button>
@@ -163,3 +171,5 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
     </div>
   );
 };
+
+export default DisputeModal;

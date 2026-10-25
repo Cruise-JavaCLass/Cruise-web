@@ -16,6 +16,7 @@ import {
   Clock,
   ShieldCheck,
   ArrowRight,
+  Radio,
 } from 'lucide-react';
 import { resolvePassengerId } from '../services/passengerIdentity';
 
@@ -70,34 +71,44 @@ export function PassengerLayout() {
   const passengerId = resolvePassengerId() ?? 1;
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] text-[#171717] flex flex-col editorial-grid antialiased selection:bg-[#D9FF43] selection:text-[#171717]">
-      {/* Editorial Neo-Brutalism Guest Header */}
-      <header className="sticky top-0 z-40 bg-[#FFFFFF] border-b-2 border-[#171717] shadow-[0_4px_0px_#171717]">
+    <div
+      data-theme="passenger-retro"
+      className="min-h-screen bg-[#070B16] text-[#F4F4F0] flex flex-col antialiased selection:bg-[#42E8F5] selection:text-[#070B16] bg-[linear-gradient(to_right,rgba(66,232,245,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(66,232,245,0.03)_1px,transparent_1px)] bg-[size:32px_32px]"
+    >
+      {/* Retro-Futuristic Maritime Terminal Header */}
+      <header className="sticky top-0 z-40 bg-[#10182A]/90 backdrop-blur-md border-b border-[#42E8F5]/20 shadow-[0_4px_20px_rgba(7,11,22,0.8)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-18 sm:h-20">
             {/* Resort Brand & Ship Name */}
             <Link
               to="/passenger-home"
-              className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3155E7] p-1"
+              className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#42E8F5] p-1"
             >
-              <div className="w-10 h-10 sm:w-11 sm:h-11 bg-[#171717] text-[#D9FF43] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-none transition-all">
-                <Ship className="w-5 h-5" />
+              <div className="w-10 h-10 sm:w-11 sm:h-11 bg-[#151F33] text-[#42E8F5] border border-[#42E8F5]/40 rounded-lg flex items-center justify-center shadow-[0_0_12px_rgba(66,232,245,0.25)] group-hover:border-[#42E8F5] group-hover:scale-105 transition-all">
+                <Ship className="w-5 h-5 text-[#42E8F5]" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-serif tracking-tight text-base sm:text-lg text-[#171717] font-black italic leading-tight">
+                  <span className="tracking-widest text-base sm:text-lg text-[#F4F4F0] font-black leading-tight font-display">
                     GRAND PEARL
                   </span>
-                  <span className="neo-badge bg-[#D9FF43] text-[#171717]">
+                  <span className="text-[10px] font-mono font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-[#4169FF]/20 text-[#42E8F5] border border-[#42E8F5]/40">
                     VOYAGER
                   </span>
                 </div>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-[#171717]/70 font-bold">Guest Experience Portal</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-[#A7B4C9]">
+                    Guest Experience Portal
+                  </p>
+                  <span className="hidden sm:inline-block text-[9px] font-mono text-[#42E8F5]/60">
+                    LAT 20°57'N • LON 107°04'E
+                  </span>
+                </div>
               </div>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-2">
+            <nav className="hidden lg:flex items-center gap-1.5">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -105,10 +116,10 @@ export function PassengerLayout() {
                     key={item.to}
                     to={item.to}
                     className={({ isActive }) =>
-                      `flex items-center gap-2 px-3.5 py-2 text-xs font-mono font-bold uppercase tracking-wider transition-all ${
+                      `flex items-center gap-2 px-3.5 py-2 text-xs font-mono font-semibold uppercase tracking-wider rounded-md transition-all ${
                         isActive
-                          ? 'bg-[#171717] text-[#F7F5F0] border-2 border-[#171717] shadow-[2.5px_2.5px_0px_#3155E7] -translate-y-0.5'
-                          : 'text-[#171717] hover:bg-[#E7E4DC] border-2 border-transparent'
+                          ? 'bg-[#151F33] text-[#42E8F5] border border-[#42E8F5]/50 shadow-[0_0_12px_rgba(66,232,245,0.2)]'
+                          : 'text-[#A7B4C9] hover:text-[#F4F4F0] hover:bg-[#151F33]/60 border border-transparent'
                       }`
                     }
                   >
@@ -122,21 +133,21 @@ export function PassengerLayout() {
             {/* Guest Cabin & Status Widget */}
             <div className="flex items-center gap-3">
               {/* Ship Connectivity Indicator */}
-              <div className="hidden sm:flex items-center gap-2 text-[11px] font-mono font-bold text-[#171717] bg-[#E7E4DC] px-2.5 py-1.5 border-2 border-[#171717] shadow-[1.5px_1.5px_0px_#171717]">
-                <Wifi className="w-3.5 h-3.5 text-[#059669]" />
-                <span>SHIP WI-FI</span>
+              <div className="hidden sm:flex items-center gap-2 text-[11px] font-mono font-medium text-[#A7B4C9] bg-[#151F33] px-2.5 py-1.5 rounded-md border border-[#42E8F5]/20">
+                <Wifi className="w-3.5 h-3.5 text-[#42E8F5] animate-pulse" />
+                <span className="text-[#42E8F5]">SHIP WI-FI</span>
               </div>
 
               {/* Guest Profile Pill */}
-              <div className="flex items-center gap-2.5 px-3 py-1.5 bg-[#FFFFFF] border-2 border-[#171717] shadow-[2.5px_2.5px_0px_#171717]">
-                <div className="w-8 h-8 bg-[#3155E7] text-white border-2 border-[#171717] flex items-center justify-center font-bold text-xs">
+              <div className="flex items-center gap-2.5 px-3 py-1.5 bg-[#151F33] border border-[#42E8F5]/30 rounded-lg">
+                <div className="w-8 h-8 bg-[#10182A] text-[#42E8F5] border border-[#42E8F5]/40 rounded-full flex items-center justify-center font-bold text-xs">
                   <User className="w-4 h-4" />
                 </div>
                 <div className="text-left hidden sm:block">
-                  <p className="text-xs font-black text-[#171717] leading-tight truncate max-w-[140px] font-display">
+                  <p className="text-xs font-semibold text-[#F4F4F0] leading-tight truncate max-w-[140px]">
                     {guestProfile.name}
                   </p>
-                  <p className="text-[10px] font-mono font-bold text-[#3155E7] uppercase">
+                  <p className="text-[10px] font-mono text-[#FFBD59] uppercase tracking-wider">
                     Phòng {guestProfile.cabin} • {guestProfile.category}
                   </p>
                 </div>
@@ -146,7 +157,7 @@ export function PassengerLayout() {
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 bg-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717] text-[#171717] cursor-pointer"
+                className="lg:hidden p-2 bg-[#151F33] border border-[#42E8F5]/30 rounded-md text-[#42E8F5] hover:bg-[#10182A] transition-colors cursor-pointer"
                 aria-label={isMobileMenuOpen ? 'Đóng menu' : 'Mở menu khách'}
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -157,16 +168,16 @@ export function PassengerLayout() {
 
         {/* Mobile Navigation Drawer / Dropdown */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden border-t-2 border-[#171717] bg-[#FFFFFF] px-4 py-4 space-y-3 shadow-[0_6px_0px_#171717]">
-            <div className="p-3 bg-[#E7E4DC] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-between">
+          <div className="lg:hidden border-t border-[#42E8F5]/20 bg-[#10182A] px-4 py-4 space-y-3 shadow-2xl">
+            <div className="p-3 bg-[#151F33] border border-[#42E8F5]/20 rounded-lg flex items-center justify-between">
               <div>
-                <p className="text-xs font-black text-[#171717] font-display uppercase">{guestProfile.name}</p>
-                <p className="text-[10px] font-mono font-bold text-[#3155E7] uppercase">
+                <p className="text-xs font-bold text-[#F4F4F0] uppercase tracking-wider">{guestProfile.name}</p>
+                <p className="text-[10px] font-mono text-[#FFBD59] uppercase">
                   Phòng {guestProfile.cabin} • {guestProfile.category} (ID: #{passengerId})
                 </p>
               </div>
-              <span className="neo-badge bg-[#D9FF43] text-[#171717]">
-                Online
+              <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-[#42E8F5]/10 text-[#42E8F5] border border-[#42E8F5]/30 flex items-center gap-1">
+                <Radio className="w-3 h-3 text-[#42E8F5] animate-pulse" /> Online
               </span>
             </div>
 
@@ -178,10 +189,10 @@ export function PassengerLayout() {
                     key={item.to}
                     to={item.to}
                     className={({ isActive }) =>
-                      `flex items-center gap-2 px-3 py-2 text-xs font-mono font-bold uppercase transition-all ${
+                      `flex items-center gap-2 px-3 py-2 text-xs font-mono font-semibold uppercase rounded-md transition-all ${
                         isActive
-                          ? 'bg-[#171717] text-white border-2 border-[#171717] shadow-[2px_2px_0px_#3155E7]'
-                          : 'bg-[#F7F5F0] text-[#171717] border-2 border-[#171717] shadow-[2px_2px_0px_#171717]'
+                          ? 'bg-[#151F33] text-[#42E8F5] border border-[#42E8F5]/60 shadow-[0_0_10px_rgba(66,232,245,0.2)]'
+                          : 'bg-[#151F33]/60 text-[#A7B4C9] border border-transparent'
                       }`
                     }
                   >
@@ -192,13 +203,13 @@ export function PassengerLayout() {
               })}
             </div>
 
-            <div className="pt-2 border-t-2 border-[#171717] flex items-center justify-between text-[11px] font-mono font-bold text-[#171717]">
+            <div className="pt-2 border-t border-[#42E8F5]/15 flex items-center justify-between text-[11px] font-mono text-[#A7B4C9]">
               <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-[#3155E7]" /> Giờ du thuyền: 19:35 UTC+7
+                <Clock className="w-3.5 h-3.5 text-[#42E8F5]" /> Giờ du thuyền: 19:35 UTC+7
               </span>
               <Link
                 to="/login"
-                className="neo-badge bg-[#D9FF43] text-[#171717] flex items-center gap-1"
+                className="text-[10px] font-mono uppercase px-2.5 py-1 rounded bg-[#FFBD59]/15 text-[#FFBD59] border border-[#FFBD59]/40 flex items-center gap-1 hover:bg-[#FFBD59]/25 transition-colors"
               >
                 Crew Portal <ArrowRight className="w-3 h-3" />
               </Link>
@@ -212,33 +223,33 @@ export function PassengerLayout() {
         <Outlet />
       </main>
 
-      {/* Guest Editorial Footer */}
-      <footer className="border-t-2 border-[#171717] bg-[#FFFFFF] py-6 px-4 sm:px-6 lg:px-8 text-xs text-[#171717]">
+      {/* Guest Futuristic Footer */}
+      <footer className="border-t border-[#42E8F5]/20 bg-[#10182A] py-6 px-4 sm:px-6 lg:px-8 text-xs text-[#A7B4C9]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-center md:text-left">
-            <div className="w-7 h-7 bg-[#D9FF43] border border-[#171717] flex items-center justify-center shrink-0">
-              <PhoneCall className="w-3.5 h-3.5 text-[#171717]" />
+            <div className="w-7 h-7 bg-[#151F33] border border-[#42E8F5]/40 rounded flex items-center justify-center shrink-0 text-[#42E8F5]">
+              <PhoneCall className="w-3.5 h-3.5" />
             </div>
             <span className="font-mono text-xs">
-              Dịch Vụ Quản Gia & Lễ Tân 24/7: Phím <strong className="bg-[#171717] text-white px-1.5 py-0.5">0</strong> từ điện thoại phòng hoặc gặp trực tiếp tại <strong className="underline decoration-[#3155E7] decoration-2">Sảnh Deck 4 Atrium</strong>.
+              Dịch Vụ Quản Gia & Lễ Tân 24/7: Phím <strong className="text-[#42E8F5] bg-[#151F33] px-1.5 py-0.5 rounded border border-[#42E8F5]/30">0</strong> từ điện thoại phòng hoặc gặp trực tiếp tại <strong className="text-[#F4F4F0] underline decoration-[#42E8F5] decoration-1 underline-offset-2">Sảnh Deck 4 Atrium</strong>.
             </span>
           </div>
-          <div className="flex items-center gap-4 text-[11px] font-mono font-bold">
-            <span className="text-[#171717]/60">Grand Pearl Voyager • Stateroom Portal</span>
+          <div className="flex items-center gap-4 text-[11px] font-mono">
+            <span className="text-[#A7B4C9]/80">Grand Pearl Voyager • Stateroom Portal</span>
             <Link
               to="/login"
-              className="neo-btn neo-btn-secondary text-[10px] py-1 px-2.5 flex items-center gap-1"
+              className="text-[10px] font-mono font-medium py-1 px-2.5 rounded bg-[#151F33] text-[#42E8F5] border border-[#42E8F5]/30 flex items-center gap-1 hover:border-[#42E8F5] transition-all"
             >
-              Đăng nhập Thủy Thủ Đoàn <ShieldCheck className="w-3 h-3 text-[#3155E7]" />
+              Đăng nhập Thủy Thủ Đoàn <ShieldCheck className="w-3 h-3 text-[#42E8F5]" />
             </Link>
           </div>
         </div>
       </footer>
 
-      {/* Bottom Mobile Dock Navigation (Touch-Friendly Quick Actions on Small Screens) */}
+      {/* Bottom Mobile Dock Navigation */}
       <nav
         aria-label="Điều hướng nhanh trên thiết bị di động"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FFFFFF] border-t-2 border-[#171717] px-2 py-1.5 flex items-center justify-around shadow-[0_-4px_0px_#171717]"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#10182A]/95 backdrop-blur-lg border-t border-[#42E8F5]/20 px-2 py-1.5 flex items-center justify-around shadow-[0_-4px_20px_rgba(7,11,22,0.8)]"
       >
         {navItems.slice(0, 5).map((item) => {
           const Icon = item.icon;
@@ -247,8 +258,8 @@ export function PassengerLayout() {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center py-1 px-2 text-[10px] font-mono font-bold uppercase transition-all min-w-[56px] ${
-                  isActive ? 'bg-[#D9FF43] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] text-[#171717]' : 'text-[#171717]/70'
+                `flex flex-col items-center justify-center py-1 px-2 text-[10px] font-mono font-medium uppercase rounded transition-all min-w-[56px] ${
+                  isActive ? 'bg-[#151F33] text-[#42E8F5] border border-[#42E8F5]/50 shadow-[0_0_8px_rgba(66,232,245,0.25)]' : 'text-[#A7B4C9]'
                 }`
               }
             >
