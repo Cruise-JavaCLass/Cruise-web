@@ -7,6 +7,12 @@ import { App } from './App';
 vi.mock('./services/api', () => ({
   checkBackendHealth: vi.fn().mockResolvedValue(null),
   getBackendInfo: vi.fn().mockResolvedValue(null),
+  apiClient: {
+    get: vi.fn().mockResolvedValue({ data: {} }),
+    post: vi.fn().mockResolvedValue({ data: {} }),
+    put: vi.fn().mockResolvedValue({ data: {} }),
+    delete: vi.fn().mockResolvedValue({ data: {} }),
+  },
 }));
 
 describe('App Routing Integration Tests', () => {
@@ -112,6 +118,37 @@ describe('App Routing Integration Tests', () => {
       expect(screen.getByRole('heading', { level: 2, name: '404' })).toBeInTheDocument();
       expect(screen.getByText('Trang không tồn tại')).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /Về Trang Chủ/i })).toHaveAttribute('href', '/');
+    });
+  });
+
+  it('navigates to "/passenger-home" within dedicated PassengerLayout and without admin sidebar', async () => {
+    render(
+      <MemoryRouter initialEntries={['/passenger-home']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      // Passenger portal branding
+      expect(screen.getByText('GRAND PEARL')).toBeInTheDocument();
+      expect(screen.getByText('Guest Experience Portal')).toBeInTheDocument();
+      // Admin operations sidebar must NOT be present
+      expect(screen.queryByText('CRUISE MANAGER')).not.toBeInTheDocument();
+      expect(screen.queryByText('MARITIME COMPUTE')).not.toBeInTheDocument();
+    });
+  });
+
+  it('redirects "/passenger" route to "/passenger-home" inside PassengerLayout', async () => {
+    render(
+      <MemoryRouter initialEntries={['/passenger']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('GRAND PEARL')).toBeInTheDocument();
+      expect(screen.getByText('Guest Experience Portal')).toBeInTheDocument();
+      expect(screen.queryByText('CRUISE MANAGER')).not.toBeInTheDocument();
     });
   });
 });

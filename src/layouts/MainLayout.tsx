@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, Link } from 'react-router-dom';
 import {
   Compass,
   Ship,
@@ -63,15 +63,15 @@ export function MainLayout() {
 
   const navItems = [
     { to: '/', label: 'Dashboard Tổng quan', icon: Compass },
-    { to: '/passenger-home', label: 'Trang Chủ Khách (Guest)', icon: Compass },
-    { to: '/my-schedule', label: 'Lịch Cá Nhân (My Day)', icon: Clock },
+
+
     { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship },
     { to: '/admin/cruise-area-policies', label: 'Quản lý Khu vực & Chính sách', icon: Ship },
     { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin },
     { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation },
     { to: '/excursion-attendance', label: 'Điểm Danh Tour Bờ', icon: Users },
     { to: '/activities', label: 'Hoạt động & Excursion', icon: Activity },
-    { to: '/catalog', label: 'Duyệt Hoạt Động (Guest)', icon: Compass },
+
     { to: '/pos', label: 'POS & Chi tiêu Onboard', icon: CreditCard },
     { to: '/passengers', label: 'Hành khách & Check-in', icon: Users },
     { to: '/embarkation', label: 'Cảng Đón Khách (Terminal)', icon: Ship },
@@ -185,6 +185,13 @@ export function MainLayout() {
             </span>
           </div>
           <div className="flex items-center gap-3 sm:gap-4">
+            <Link
+              to="/passenger-home"
+              className="hidden md:flex items-center gap-1.5 text-xs font-mono text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-3 py-1.5 rounded-xl transition-all"
+              title="Mở Cổng Trải Nghiệm Khách Hàng"
+            >
+              <span>Cổng Khách Hàng ↗</span>
+            </Link>
             <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-slate-400 bg-white/[0.03] px-3 py-1.5 rounded-xl border border-white/5">
               <Clock className="w-3.5 h-3.5 text-cyan-400" />
               <span>Time: 19:35 (UTC)</span>

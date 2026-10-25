@@ -1,5 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { MainLayout } from './layouts/MainLayout';
+import { PassengerLayout } from './layouts/PassengerLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { ActivitiesPage } from './pages/ActivitiesPage';
 import { ExcursionsPage } from './pages/ExcursionsPage';
@@ -25,9 +26,9 @@ import { PassengerFolioPage } from './pages/passenger/PassengerFolioPage';
 import { BoardingPassPage } from './pages/passenger/BoardingPassPage';
 import { TerminalEmbarkationPage } from './pages/TerminalEmbarkationPage';
 import { ProviderSettlementDashboard } from './pages/ProviderSettlementDashboard';
+import { OperationalReportsPage } from './pages/OperationalReportsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { CruiseAreaPolicyManager } from './components/admin/CruiseAreaPolicyManager';
-import { useSearchParams } from 'react-router-dom';
 
 function CruiseAreaPolicyRoute() {
   const [searchParams] = useSearchParams();
@@ -35,24 +36,30 @@ function CruiseAreaPolicyRoute() {
   const shipId = shipIdParam ? Number(shipIdParam) : 1;
   return <CruiseAreaPolicyManager shipId={shipId} />;
 }
-import { OperationalReportsPage } from './pages/OperationalReportsPage';
 
 export function App() {
   return (
     <Routes>
-      <Route path="/" element={<MainLayout />}>
-        <Route index element={<DashboardPage />} />
+      {/* Dedicated Luxury Guest Portal Routes (Separated from Operations) */}
+      <Route element={<PassengerLayout />}>
         <Route path="passenger-home" element={<PassengerHomePage />} />
         <Route path="boarding-pass" element={<BoardingPassPage />} />
         <Route path="my-schedule" element={<MySchedulePage />} />
         <Route path="passenger/folio" element={<PassengerFolioPage />} />
+        <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />
+        <Route path="catalog" element={<PassengerCatalogPage />} />
+        <Route path="passenger" element={<Navigate to="/passenger-home" replace />} />
+      </Route>
+
+      {/* Maritime Operations & Administrative Fleet Console */}
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<DashboardPage />} />
         <Route path="ships" element={<ShipsPage />} />
         <Route path="ships/:id" element={<ShipDetailPage />} />
         <Route path="admin/cruise-area-policies" element={<CruiseAreaPolicyRoute />} />
         <Route path="itinerary" element={<ItineraryPage />} />
         <Route path="excursions" element={<ExcursionsPage />} />
         <Route path="excursions/:id" element={<ExcursionDetailPage />} />
-        <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />
         <Route path="excursion-dispatcher" element={<ExcursionDispatcherDashboard />} />
         <Route path="excursions/:id/roster" element={<ExcursionRosterPage />} />
         <Route path="excursions/roster" element={<ExcursionRosterPage />} />
@@ -64,7 +71,6 @@ export function App() {
         <Route path="activity-attendance" element={<ActivityAttendancePage />} />
         <Route path="activities/:id/roster" element={<ActivityRosterPage />} />
         <Route path="activity-roster" element={<ActivityRosterPage />} />
-        <Route path="catalog" element={<PassengerCatalogPage />} />
         <Route path="pos" element={<PosPage />} />
         <Route path="passengers" element={<PassengersPage />} />
         <Route path="embarkation" element={<TerminalEmbarkationPage />} />
