@@ -50,23 +50,23 @@ export const ExcursionAnalyticsDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-[#171717] pb-5 dark:border-slate-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E0D7] pb-5">
         <div>
-          <span className="border border-[#171717] bg-[#D9FF43] px-2.5 py-0.5 text-xs font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_#171717]">
+          <span className="inline-block border border-[#C5A572]/40 bg-[#C5A572]/15 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-[#102A43] rounded-md">
             OPS INTELLIGENCE // ANALYTICS
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#171717] mt-2 flex items-center gap-2 dark:text-white">
-            <BarChart3 className="w-7 h-7 text-[#3155E7] dark:text-[#D9FF43]" />
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#102A43] mt-2 flex items-center gap-2.5">
+            <BarChart3 className="w-7 h-7 text-[#102A43]" />
             Phân Tích Hiệu Suất Tour Bờ & Đội Xe (Analytics)
           </h1>
-          <p className="text-xs font-bold text-neutral-600 mt-1 dark:text-neutral-400">
+          <p className="text-xs text-[#687787] mt-1">
             Đánh giá chất lượng dịch vụ (Post-Tour Feedback), tỷ lệ lấp đầy ghế xe (Fleet Occupancy) và đối tác tour
           </p>
         </div>
         <button
           onClick={() => void loadDashboardData()}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-4 py-2 border-2 border-[#171717] bg-white hover:bg-[#E7E4DC] text-black text-xs font-black uppercase shadow-[2px_2px_0px_#171717] transition-all active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50 dark:bg-slate-800 dark:text-white"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-[#E5E0D7] bg-white hover:bg-[#F7F4ED] text-[#102A43] text-xs font-semibold rounded-lg shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Làm mới dữ liệu
@@ -74,13 +74,13 @@ export const ExcursionAnalyticsDashboard: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 border-b-2 border-[#171717] pb-3 dark:border-slate-700">
+      <div className="flex flex-wrap gap-2 border-b border-[#E5E0D7] pb-3">
         <button
           onClick={() => setActiveTab('fleet')}
-          className={`px-4 py-2 text-xs font-black uppercase tracking-wider border-2 border-[#171717] flex items-center gap-2 transition-all active:translate-x-[1px] active:translate-y-[1px] ${
+          className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg border flex items-center gap-2 transition-all cursor-pointer ${
             activeTab === 'fleet'
-              ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#171717] dark:bg-[#D9FF43] dark:text-black'
-              : 'bg-white text-black shadow-[2px_2px_0px_#171717] hover:bg-[#E7E4DC] dark:bg-slate-800 dark:text-white'
+              ? 'bg-[#102A43] text-white border-[#102A43] shadow-xs'
+              : 'bg-white text-[#252B32] border-[#E5E0D7] hover:bg-[#F7F4ED]'
           }`}
         >
           <BarChart3 className="w-4 h-4" />
@@ -88,26 +88,26 @@ export const ExcursionAnalyticsDashboard: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('reviews')}
-          className={`px-4 py-2 text-xs font-black uppercase tracking-wider border-2 border-[#171717] flex items-center gap-2 transition-all active:translate-x-[1px] active:translate-y-[1px] ${
+          className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg border flex items-center gap-2 transition-all cursor-pointer ${
             activeTab === 'reviews'
-              ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#171717] dark:bg-[#D9FF43] dark:text-black'
-              : 'bg-white text-black shadow-[2px_2px_0px_#171717] hover:bg-[#E7E4DC] dark:bg-slate-800 dark:text-white'
+              ? 'bg-[#102A43] text-white border-[#102A43] shadow-xs'
+              : 'bg-white text-[#252B32] border-[#E5E0D7] hover:bg-[#F7F4ED]'
           }`}
         >
           <MessageSquare className="w-4 h-4" />
           Đánh Giá Khách Hàng (Guest Feedback)
           {kpi?.totalFlaggedReviews ? (
-            <span className="ml-1.5 px-2 py-0.5 border border-black text-xs font-black bg-[#DC2626] text-white">
+            <span className="ml-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-600 text-white">
               {kpi.totalFlaggedReviews}
             </span>
           ) : null}
         </button>
         <button
           onClick={() => setActiveTab('scorecards')}
-          className={`px-4 py-2 text-xs font-black uppercase tracking-wider border-2 border-[#171717] flex items-center gap-2 transition-all active:translate-x-[1px] active:translate-y-[1px] ${
+          className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg border flex items-center gap-2 transition-all cursor-pointer ${
             activeTab === 'scorecards'
-              ? 'bg-[#171717] text-white shadow-[2px_2px_0px_#171717] dark:bg-[#D9FF43] dark:text-black'
-              : 'bg-white text-black shadow-[2px_2px_0px_#171717] hover:bg-[#E7E4DC] dark:bg-slate-800 dark:text-white'
+              ? 'bg-[#102A43] text-white border-[#102A43] shadow-xs'
+              : 'bg-white text-[#252B32] border-[#E5E0D7] hover:bg-[#F7F4ED]'
           }`}
         >
           <Award className="w-4 h-4" />
@@ -117,7 +117,7 @@ export const ExcursionAnalyticsDashboard: React.FC = () => {
 
       {/* Error state */}
       {error && (
-        <div className="p-4 border-2 border-[#171717] bg-rose-100 shadow-[3px_3px_0px_#171717] flex items-center gap-3 text-rose-800 font-bold text-xs">
+        <div className="p-4 border border-rose-200 bg-rose-50 rounded-xl shadow-xs flex items-center gap-3 text-rose-800 text-xs font-medium">
           <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600" />
           <span>{error}</span>
         </div>
@@ -126,8 +126,8 @@ export const ExcursionAnalyticsDashboard: React.FC = () => {
       {/* Loading */}
       {loading && !kpi && !fleet ? (
         <div className="py-20 text-center space-y-3">
-          <RefreshCw className="w-8 h-8 text-[#3155E7] animate-spin mx-auto" />
-          <p className="text-neutral-500 font-bold uppercase tracking-wider text-sm">Đang tổng hợp số liệu phân tích...</p>
+          <RefreshCw className="w-8 h-8 text-[#102A43] animate-spin mx-auto" />
+          <p className="text-[#687787] font-medium tracking-wider text-sm">Đang tổng hợp số liệu phân tích...</p>
         </div>
       ) : (
         <div>

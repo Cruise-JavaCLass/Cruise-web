@@ -94,29 +94,29 @@ export const UrgentOperationalBanner: React.FC = () => {
     <div
       role={isCritical ? 'alert' : 'status'}
       aria-live={isCritical ? 'assertive' : 'polite'}
-      className={`w-full px-4 py-3 flex items-center justify-between text-white shadow-lg animate-in slide-in-from-top duration-300 z-40 ${
+      className={`w-full px-4 py-3 flex items-center justify-between text-white shadow-md animate-in slide-in-from-top duration-300 z-40 ${
         isCritical
-          ? 'bg-gradient-to-r from-red-600 via-rose-600 to-red-700'
-          : 'bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700'
+          ? 'bg-rose-800 border-b border-rose-900'
+          : 'bg-[#102A43] border-b border-[#0B1F33]'
       }`}
     >
       <div className="flex items-center gap-3 max-w-4xl">
         <div className="p-2 bg-white/20 rounded-lg shrink-0">
-          {isCritical ? <AlertTriangle className="w-5 h-5 animate-pulse" /> : <Megaphone className="w-5 h-5" />}
+          {isCritical ? <AlertTriangle className="w-5 h-5 animate-pulse text-rose-200" /> : <Megaphone className="w-5 h-5 text-[#C5A572]" />}
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-black uppercase tracking-wider bg-black/30 px-2 py-0.5 rounded">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-black/25 px-2 py-0.5 rounded">
               {activeAlert.category}
             </span>
-            <span className="font-bold text-sm leading-tight">{activeAlert.title}</span>
+            <span className="font-bold text-sm leading-tight text-white">{activeAlert.title}</span>
             {alertQueue.length > 0 && (
-              <span className="text-[10px] bg-black/30 px-1.5 py-0.5 rounded font-mono">
+              <span className="text-[10px] bg-black/25 px-1.5 py-0.5 rounded font-mono text-white/90">
                 +{alertQueue.length} tin chờ
               </span>
             )}
           </div>
-          <p className="text-xs opacity-95 mt-0.5 line-clamp-2">{activeAlert.message}</p>
+          <p className="text-xs text-white/90 mt-0.5 line-clamp-2">{activeAlert.message}</p>
         </div>
       </div>
 
@@ -124,7 +124,7 @@ export const UrgentOperationalBanner: React.FC = () => {
         {activeAlert.requireAcknowledgment && (
           <button
             onClick={handleDismiss}
-            className="px-3 py-1 bg-white text-slate-900 rounded-lg text-xs font-bold hover:bg-slate-100 transition-colors shrink-0"
+            className="px-3 py-1 bg-white hover:bg-[#F7F4ED] text-[#102A43] rounded-lg text-xs font-bold transition-colors shrink-0 shadow-xs cursor-pointer"
           >
             Đã Nhận Tin
           </button>
@@ -132,7 +132,7 @@ export const UrgentOperationalBanner: React.FC = () => {
         {!activeAlert.requireAcknowledgment && (
           <button
             onClick={handleDismiss}
-            className="p-1 rounded-md hover:bg-white/20 transition-colors text-white shrink-0"
+            className="p-1 rounded-md hover:bg-white/20 transition-colors text-white shrink-0 cursor-pointer"
             title="Đóng banner"
           >
             <X className="w-5 h-5" />

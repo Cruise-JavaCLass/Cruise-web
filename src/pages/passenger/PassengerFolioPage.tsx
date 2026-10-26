@@ -123,30 +123,29 @@ export const PassengerFolioPage: React.FC = () => {
 
   return (
     <div
-      data-theme="passenger-retro"
-      className="min-h-screen bg-[#070B16] text-[#F4F4F0] p-4 md:p-8 font-sans bg-[linear-gradient(to_right,rgba(66,232,245,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(66,232,245,0.03)_1px,transparent_1px)] bg-[size:32px_32px]"
+      className="min-h-screen bg-[#F7F4ED] text-[#252B32] p-4 md:p-8 font-sans"
     >
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header Title & Export Button — Retro-Futuristic Folio Header */}
-        <div className="bg-[#151F33] border border-[#42E8F5]/30 rounded-2xl p-6 shadow-[0_4px_24px_rgba(7,11,22,0.8)] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        {/* Header Title & Export Button — Luxury Maritime Folio Header */}
+        <div className="bg-white border border-[#E5E0D7] rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-mono font-bold tracking-wider uppercase px-2.5 py-0.5 rounded bg-[#4169FF]/20 text-[#42E8F5] border border-[#42E8F5]/40">
+              <span className="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7]">
                 FOLIO AUDIT
               </span>
-              <span className="text-[10px] font-mono text-[#A7B4C9]">• REAL-TIME LEDGER // SECURE_NFC</span>
+              <span className="text-xs text-[#252B32]/60">• SỔ CÁI TRỰC TUYẾN // SECURE NFC</span>
             </div>
-            <h1 className="text-2xl font-display font-black text-[#F4F4F0] uppercase tracking-wide">
+            <h1 className="text-2xl font-display font-bold text-[#102A43] uppercase tracking-wide">
               Chi Phí Phòng & Sao Kê Trực Tuyến
             </h1>
-            <p className="text-xs font-mono text-[#A7B4C9] mt-1">
+            <p className="text-xs text-[#252B32]/70 mt-1">
               Theo dõi chi tiêu theo thời gian thực trên hải trình không dùng tiền mặt (Cashless Cruise)
             </p>
           </div>
           <button
             onClick={handleExportStatement}
             disabled={!summary}
-            className="py-2.5 px-4 rounded-lg bg-[#42E8F5] hover:bg-[#32d8e5] text-[#070B16] font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-[#42E8F5]/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+            className="py-2.5 px-4 rounded-xl bg-[#102A43] hover:bg-[#0B1F33] text-white font-semibold text-xs uppercase tracking-wider flex items-center gap-2 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
           >
             <span>📥</span> Xuất Sao Kê Tạm Tính (Interim Statement)
           </button>
@@ -155,10 +154,10 @@ export const PassengerFolioPage: React.FC = () => {
         {/* Alerts / Feedback Message */}
         {feedbackMessage && (
           <div
-            className={`p-4 rounded-xl text-xs font-mono flex justify-between items-center shadow-md ${
+            className={`p-4 rounded-2xl text-xs flex justify-between items-center shadow-sm ${
               feedbackMessage.type === 'success'
-                ? 'bg-emerald-950/70 border border-emerald-500/50 text-emerald-300'
-                : 'bg-rose-950/70 border border-rose-500/50 text-rose-300'
+                ? 'bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium'
+                : 'bg-rose-50 border border-rose-200 text-rose-800 font-medium'
             }`}
           >
             <span>{feedbackMessage.text}</span>
@@ -173,13 +172,13 @@ export const PassengerFolioPage: React.FC = () => {
 
         {/* 80% and 100% Visual Alerts */}
         {summary && summary.limitExceeded && (
-          <div className="bg-rose-950/80 text-rose-100 border border-rose-500/60 rounded-2xl p-5 flex items-center gap-3.5 shadow-xl">
+          <div className="bg-rose-50 text-rose-900 border border-rose-300 rounded-2xl p-5 flex items-center gap-3.5 shadow-sm">
             <span className="text-2xl">🚨</span>
             <div>
-              <div className="font-display font-black text-base uppercase text-rose-100">
+              <div className="font-display font-bold text-base uppercase text-rose-900">
                 Cảnh báo: Đã đạt 100% hạn mức tín dụng cabin!
               </div>
-              <div className="text-xs font-mono text-rose-200/90 mt-0.5">
+              <div className="text-xs text-rose-800/90 mt-0.5">
                 Tổng chi tiêu ({formatCurrency(summary.currentBalance)}) đã chạm hoặc vượt mức hạn mức cho phép ({formatCurrency(summary.creditLimit)}).
                 Vui lòng thanh toán bớt tại Quầy Lễ Tân (Front Desk) để tiếp tục chi tiêu.
               </div>
@@ -188,13 +187,13 @@ export const PassengerFolioPage: React.FC = () => {
         )}
 
         {summary && !summary.limitExceeded && summary.warningThresholdReached && (
-          <div className="bg-amber-950/80 text-[#FFBD59] border border-amber-500/60 rounded-2xl p-5 flex items-center gap-3.5 shadow-xl">
+          <div className="bg-amber-50 text-amber-950 border border-amber-300 rounded-2xl p-5 flex items-center gap-3.5 shadow-sm">
             <span className="text-2xl">⚠️</span>
             <div>
-              <div className="font-display font-black text-base uppercase text-[#FFBD59]">
+              <div className="font-display font-bold text-base uppercase text-amber-900">
                 Cảnh báo: Đã dùng hơn 80% hạn mức tín dụng cabin
               </div>
-              <div className="text-xs font-mono text-amber-200/90 mt-0.5 font-medium">
+              <div className="text-xs text-amber-800/90 mt-0.5 font-medium">
                 Cabin đã sử dụng {summary.spendingPercentage.toFixed(1)}% hạn mức tín dụng. Bạn còn lại{' '}
                 {formatCurrency(summary.availableLimit)} trước khi chạm ngưỡng tối đa.
               </div>
@@ -205,73 +204,73 @@ export const PassengerFolioPage: React.FC = () => {
         {/* Summary Dashboard Grid */}
         {isLoadingSummary ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
-            <div className="h-36 bg-[#151F33] border border-[#42E8F5]/20 rounded-2xl"></div>
-            <div className="h-36 bg-[#151F33] border border-[#42E8F5]/20 rounded-2xl"></div>
-            <div className="h-36 bg-[#151F33] border border-[#42E8F5]/20 rounded-2xl"></div>
+            <div className="h-36 bg-white border border-[#E5E0D7] rounded-3xl"></div>
+            <div className="h-36 bg-white border border-[#E5E0D7] rounded-3xl"></div>
+            <div className="h-36 bg-white border border-[#E5E0D7] rounded-3xl"></div>
           </div>
         ) : summary ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1: Balance & Cabin */}
-            <div className="bg-[#151F33] border border-[#42E8F5]/30 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+            <div className="bg-white border border-[#E5E0D7] rounded-3xl p-6 shadow-sm flex flex-col justify-between">
               <div>
-                <div className="flex justify-between items-center text-[10px] font-mono font-medium uppercase tracking-wider text-[#A7B4C9]">
+                <div className="flex justify-between items-center text-[10px] font-semibold uppercase tracking-wider text-[#252B32]/60">
                   <span>Cabin {summary.cabinNumber}</span>
-                  <span className="px-2 py-0.5 rounded bg-[#10182A] text-[#42E8F5] border border-[#42E8F5]/30 font-mono text-[10px]">
+                  <span className="px-2 py-0.5 rounded-full bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] text-[10px] font-semibold">
                     {summary.status}
                   </span>
                 </div>
-                <div className="text-[#F4F4F0] font-display font-black text-lg mt-1 uppercase">
+                <div className="text-[#102A43] font-display font-bold text-lg mt-1 uppercase">
                   {summary.passengerName}
                 </div>
                 <div className="mt-4">
-                  <div className="text-[10px] font-mono uppercase text-[#A7B4C9]">Tổng chi tiêu hiện tại</div>
-                  <div className="text-3xl font-display font-black text-[#F4F4F0] mt-0.5 tabular-nums">
+                  <div className="text-[10px] uppercase text-[#252B32]/60 font-medium">Tổng chi tiêu hiện tại</div>
+                  <div className="text-3xl font-display font-bold text-[#102A43] mt-0.5 tabular-nums">
                     {formatCurrency(summary.currentBalance)}
                   </div>
                 </div>
               </div>
-              <div className="mt-4 text-xs font-mono text-[#A7B4C9] border-t border-[#42E8F5]/15 pt-3">
-                Hạn mức cho phép: <span className="font-bold text-[#F4F4F0] tabular-nums">{formatCurrency(summary.creditLimit)}</span>
+              <div className="mt-4 text-xs text-[#252B32]/70 border-t border-[#E5E0D7] pt-3">
+                Hạn mức cho phép: <span className="font-bold text-[#102A43] tabular-nums">{formatCurrency(summary.creditLimit)}</span>
               </div>
             </div>
 
             {/* Card 2: Progress & Credit Limit */}
-            <div className="bg-[#151F33] border border-[#42E8F5]/30 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+            <div className="bg-white border border-[#E5E0D7] rounded-3xl p-6 shadow-sm flex flex-col justify-between">
               <div>
-                <div className="text-[10px] font-mono uppercase tracking-wider text-[#A7B4C9]">
+                <div className="text-[10px] uppercase tracking-wider text-[#252B32]/60 font-medium">
                   Tỷ lệ hạn mức sử dụng
                 </div>
                 <div className="flex items-baseline gap-2 mt-2">
-                  <span className="text-3xl font-display font-black text-[#42E8F5] tabular-nums">
+                  <span className="text-3xl font-display font-bold text-[#102A43] tabular-nums">
                     {summary.spendingPercentage.toFixed(1)}%
                   </span>
-                  <span className="text-xs font-mono text-[#A7B4C9] tabular-nums">
+                  <span className="text-xs text-[#252B32]/70 tabular-nums">
                     (Còn lại {formatCurrency(summary.availableLimit)})
                   </span>
                 </div>
                 {/* Progress bar */}
-                <div className="w-full bg-[#10182A] border border-[#42E8F5]/30 h-3 rounded-full mt-4 overflow-hidden p-0.5">
+                <div className="w-full bg-[#F7F4ED] border border-[#E5E0D7] h-3 rounded-full mt-4 overflow-hidden p-0.5">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       summary.limitExceeded
-                        ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]'
+                        ? 'bg-rose-500'
                         : summary.warningThresholdReached
-                        ? 'bg-[#FFBD59] shadow-[0_0_8px_rgba(255,189,89,0.5)]'
-                        : 'bg-[#42E8F5] shadow-[0_0_8px_rgba(66,232,245,0.5)]'
+                        ? 'bg-amber-500'
+                        : 'bg-[#397C80]'
                     }`}
                     style={{ width: `${Math.min(summary.spendingPercentage, 100)}%` }}
                   ></div>
                 </div>
               </div>
-              <div className="mt-4 text-[10px] font-mono text-[#A7B4C9] border-t border-[#42E8F5]/15 pt-3 flex justify-between uppercase">
+              <div className="mt-4 text-[10px] text-[#252B32]/60 border-t border-[#E5E0D7] pt-3 flex justify-between uppercase font-medium">
                 <span>Ngưỡng cảnh báo: 80%</span>
                 <span>Khóa quẹt thẻ: 100%</span>
               </div>
             </div>
 
             {/* Card 3: Spending Breakdown by Category */}
-            <div className="bg-[#151F33] border border-[#42E8F5]/30 rounded-2xl p-6 shadow-xl">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-[#A7B4C9] mb-3">
+            <div className="bg-white border border-[#E5E0D7] rounded-3xl p-6 shadow-sm">
+              <div className="text-[10px] uppercase tracking-wider text-[#252B32]/60 font-medium mb-3">
                 Phân bổ theo danh mục
               </div>
               <div className="space-y-2.5">
@@ -279,13 +278,13 @@ export const PassengerFolioPage: React.FC = () => {
                   const percent = summary.currentBalance > 0 ? (amt / summary.currentBalance) * 100 : 0;
                   return (
                     <div key={cat} className="space-y-1">
-                      <div className="flex justify-between text-xs font-mono">
-                        <span className="text-[#A7B4C9]">{CATEGORY_LABELS[cat] || cat}</span>
-                        <span className="font-bold text-[#F4F4F0] tabular-nums">{formatCurrency(amt)}</span>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-[#252B32]/80 font-medium">{CATEGORY_LABELS[cat] || cat}</span>
+                        <span className="font-bold text-[#102A43] tabular-nums">{formatCurrency(amt)}</span>
                       </div>
-                      <div className="w-full bg-[#10182A] border border-[#42E8F5]/20 h-2 rounded-full overflow-hidden">
+                      <div className="w-full bg-[#F7F4ED] border border-[#E5E0D7] h-2 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-[#4169FF] rounded-full"
+                          className="h-full bg-[#397C80] rounded-full"
                           style={{ width: `${Math.min(percent, 100)}%` }}
                         ></div>
                       </div>
@@ -299,11 +298,11 @@ export const PassengerFolioPage: React.FC = () => {
 
         {/* Itemized Transaction Ledger */}
         <div className="space-y-3">
-          <div className="flex justify-between items-center pb-2 border-b border-[#42E8F5]/20">
-            <h2 className="text-base font-display font-black text-[#F4F4F0] uppercase tracking-wide">
+          <div className="flex justify-between items-center pb-2 border-b border-[#E5E0D7]">
+            <h2 className="text-base font-display font-bold text-[#102A43] uppercase tracking-wide">
               Nhật Ký Giao Dịch Chi Tiết
             </h2>
-            <span className="text-xs font-mono text-[#A7B4C9]">Món miễn phí trong gói được thể hiện $0.00</span>
+            <span className="text-xs text-[#252B32]/60">Món miễn phí trong gói được thể hiện $0.00</span>
           </div>
 
           <FolioTransactionList

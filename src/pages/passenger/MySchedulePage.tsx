@@ -166,37 +166,36 @@ export const MySchedulePage: React.FC = () => {
 
   return (
     <div
-      data-theme="passenger-retro"
-      className="min-h-screen bg-[#070B16] text-[#F4F4F0] p-4 sm:p-6 lg:p-8 font-sans bg-[linear-gradient(to_right,rgba(66,232,245,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(66,232,245,0.03)_1px,transparent_1px)] bg-[size:32px_32px]"
+      className="min-h-screen bg-[#F7F4ED] text-[#252B32] p-4 sm:p-6 lg:p-8 font-sans"
     >
       {/* Top Banner Navigation & Breadcrumb */}
       <div className="max-w-6xl mx-auto mb-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-[#42E8F5]/20">
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-[#E5E0D7]">
           <div className="flex items-center gap-4">
             <button
               type="button"
               onClick={() => navigate('/passenger')}
-              className="p-2.5 rounded-lg border border-[#42E8F5]/30 bg-[#151F33] text-[#42E8F5] hover:bg-[#10182A] transition-all cursor-pointer"
+              className="p-2.5 rounded-xl border border-[#E5E0D7] bg-white text-[#102A43] hover:text-[#397C80] hover:border-[#397C80] transition-all shadow-xs cursor-pointer"
               aria-label="Quay lại trang chính"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-2xl sm:text-3xl font-display font-black tracking-wide uppercase text-[#F4F4F0]">
+                <h1 className="text-2xl sm:text-3xl font-display font-bold tracking-wide uppercase text-[#102A43]">
                   Lịch Trình Cá Nhân (My Day)
                 </h1>
                 {isOffline && (
                   <span
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#FFBD59]/20 text-[#FFBD59] border border-[#FFBD59]/40 text-xs font-mono font-bold uppercase"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200 text-xs font-semibold uppercase"
                     title="Đang xem dữ liệu lưu trong bộ nhớ thiết bị"
                   >
-                    <WifiOff className="w-3.5 h-3.5" />
+                    <WifiOff className="w-3.5 h-3.5 text-amber-700" />
                     <span>Ngoại tuyến {lastUpdated && `• Cập nhật ${lastUpdated}`}</span>
                   </span>
                 )}
               </div>
-              <p className="text-xs font-mono text-[#A7B4C9] uppercase tracking-wider mt-0.5">
+              <p className="text-xs text-[#252B32]/70 uppercase tracking-wider mt-0.5 font-medium">
                 {scheduleData?.passengerName
                   ? `${scheduleData.passengerName} • Cabin ${scheduleData.cabinNumber}`
                   : 'Hành khách'}
@@ -210,14 +209,14 @@ export const MySchedulePage: React.FC = () => {
               type="button"
               data-testid="notification-bell-btn"
               onClick={() => setIsNotificationOpen(true)}
-              className="relative p-2.5 rounded-lg border border-[#42E8F5]/30 bg-[#151F33] text-[#42E8F5] hover:bg-[#10182A] transition-all cursor-pointer"
+              className="relative p-2.5 rounded-xl border border-[#E5E0D7] bg-white text-[#102A43] hover:text-[#397C80] hover:border-[#397C80] transition-all shadow-xs cursor-pointer"
               title="Mở trung tâm thông báo"
             >
-              <Bell className="w-4 h-4 text-[#42E8F5]" />
+              <Bell className="w-4 h-4 text-[#102A43]" />
               {unreadNotificationCount > 0 && (
                 <span
                   data-testid="header-unread-counter"
-                  className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] bg-rose-600 text-white text-[10px] font-mono font-bold rounded-full flex items-center justify-center px-1 border border-[#070B16]"
+                  className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 border-2 border-white"
                 >
                   {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
                 </span>
@@ -228,17 +227,17 @@ export const MySchedulePage: React.FC = () => {
               type="button"
               onClick={loadSchedule}
               disabled={isLoading}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-[#42E8F5]/30 bg-[#151F33] hover:bg-[#10182A] text-[#42E8F5] text-xs font-mono font-bold uppercase transition-all disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-[#E5E0D7] bg-white hover:bg-[#F7F4ED] text-[#102A43] text-xs font-semibold uppercase transition-all disabled:opacity-50 shadow-xs cursor-pointer"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-[#397C80] ${isLoading ? 'animate-spin' : ''}`} />
               <span>Làm mới</span>
             </button>
             <button
               type="button"
               onClick={() => navigate('/catalog')}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#4169FF] text-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-[#3458db] shadow-lg shadow-[#4169FF]/20 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#102A43] text-white text-xs font-semibold uppercase tracking-wider hover:bg-[#0B1F33] shadow-sm transition-all cursor-pointer"
             >
-              <Compass className="w-3.5 h-3.5" />
+              <Compass className="w-3.5 h-3.5 text-[#C5A572]" />
               <span>Duyệt Hoạt Động</span>
             </button>
           </div>
@@ -247,14 +246,14 @@ export const MySchedulePage: React.FC = () => {
         {/* Filter Toolbar: Cabin Scope Toggle & Day Tabs */}
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
           {/* Day Tabs */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#10182A] border border-[#42E8F5]/25 overflow-x-auto max-w-full">
+          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-white border border-[#E5E0D7] shadow-xs overflow-x-auto max-w-full">
             <button
               type="button"
               onClick={() => handleDayChange(undefined)}
-              className={`px-4 py-1.5 text-xs font-mono font-bold uppercase rounded-lg transition-all whitespace-nowrap cursor-pointer ${
+              className={`px-4 py-1.5 text-xs font-semibold uppercase rounded-xl transition-all whitespace-nowrap cursor-pointer ${
                 selectedDay === undefined
-                  ? 'bg-[#151F33] text-[#42E8F5] border border-[#42E8F5]/50 shadow-[0_0_10px_rgba(66,232,245,0.2)]'
-                  : 'text-[#A7B4C9] hover:text-[#F4F4F0]'
+                  ? 'bg-[#102A43] text-white shadow-xs'
+                  : 'text-[#252B32]/70 hover:text-[#102A43] hover:bg-[#F7F4ED]'
               }`}
             >
               Toàn bộ hải trình
@@ -264,10 +263,10 @@ export const MySchedulePage: React.FC = () => {
                 key={`day-tab-${day}`}
                 type="button"
                 onClick={() => handleDayChange(day)}
-                className={`px-4 py-1.5 text-xs font-mono font-bold uppercase rounded-lg transition-all whitespace-nowrap cursor-pointer ${
+                className={`px-4 py-1.5 text-xs font-semibold uppercase rounded-xl transition-all whitespace-nowrap cursor-pointer ${
                   selectedDay === day
-                    ? 'bg-[#151F33] text-[#42E8F5] border border-[#42E8F5]/50 shadow-[0_0_10px_rgba(66,232,245,0.2)]'
-                    : 'text-[#A7B4C9] hover:text-[#F4F4F0]'
+                    ? 'bg-[#102A43] text-white shadow-xs'
+                    : 'text-[#252B32]/70 hover:text-[#102A43] hover:bg-[#F7F4ED]'
                 }`}
               >
                 Ngày {day}
@@ -276,14 +275,14 @@ export const MySchedulePage: React.FC = () => {
           </div>
 
           {/* Scope Toggle: My Schedule vs Cabin Schedule */}
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-[#10182A] border border-[#42E8F5]/25">
+          <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-white border border-[#E5E0D7] shadow-xs">
             <button
               type="button"
               onClick={() => handleScopeChange('my')}
-              className={`inline-flex items-center gap-2 px-4 py-1.5 text-xs font-mono font-bold uppercase rounded-lg transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold uppercase rounded-xl transition-all cursor-pointer ${
                 scope === 'my'
-                  ? 'bg-[#151F33] text-[#42E8F5] border border-[#42E8F5]/50 shadow-[0_0_10px_rgba(66,232,245,0.2)]'
-                  : 'text-[#A7B4C9] hover:text-[#F4F4F0]'
+                  ? 'bg-[#102A43] text-white shadow-xs'
+                  : 'text-[#252B32]/70 hover:text-[#102A43] hover:bg-[#F7F4ED]'
               }`}
             >
               <User className="w-3.5 h-3.5" />
@@ -292,10 +291,10 @@ export const MySchedulePage: React.FC = () => {
             <button
               type="button"
               onClick={() => handleScopeChange('cabin')}
-              className={`inline-flex items-center gap-2 px-4 py-1.5 text-xs font-mono font-bold uppercase rounded-lg transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold uppercase rounded-xl transition-all cursor-pointer ${
                 scope === 'cabin'
-                  ? 'bg-[#151F33] text-[#42E8F5] border border-[#42E8F5]/50 shadow-[0_0_10px_rgba(66,232,245,0.2)]'
-                  : 'text-[#A7B4C9] hover:text-[#F4F4F0]'
+                  ? 'bg-[#102A43] text-white shadow-xs'
+                  : 'text-[#252B32]/70 hover:text-[#102A43] hover:bg-[#F7F4ED]'
               }`}
             >
               <Users className="w-3.5 h-3.5" />
@@ -306,44 +305,44 @@ export const MySchedulePage: React.FC = () => {
 
         {/* Stats Metrics Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-          <div className="p-4 bg-[#151F33] border border-[#42E8F5]/25 rounded-2xl shadow-lg">
-            <div className="flex items-center justify-between text-xs font-mono uppercase text-[#A7B4C9] mb-1">
+          <div className="p-4 bg-white border border-[#E5E0D7] rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between text-xs uppercase text-[#252B32]/60 font-medium mb-1">
               <span>Tổng sự kiện</span>
-              <Calendar className="w-4 h-4 text-[#42E8F5]" />
+              <Calendar className="w-4 h-4 text-[#397C80]" />
             </div>
-            <div className="font-mono text-3xl font-bold text-[#F4F4F0]">{totalEvents}</div>
+            <div className="font-display text-3xl font-bold text-[#102A43]">{totalEvents}</div>
           </div>
 
-          <div className="p-4 bg-[#151F33] border border-[#42E8F5]/25 rounded-2xl shadow-lg">
-            <div className="flex items-center justify-between text-xs font-mono uppercase text-[#A7B4C9] mb-1">
+          <div className="p-4 bg-white border border-[#E5E0D7] rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between text-xs uppercase text-[#252B32]/60 font-medium mb-1">
               <span>Đã check-in</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             </div>
-            <div className="font-mono text-3xl font-bold text-emerald-400">{checkedInCount}</div>
+            <div className="font-display text-3xl font-bold text-emerald-700">{checkedInCount}</div>
           </div>
 
-          <div className="p-4 bg-[#151F33] border border-[#42E8F5]/25 rounded-2xl shadow-lg">
-            <div className="flex items-center justify-between text-xs font-mono uppercase text-[#A7B4C9] mb-1">
+          <div className="p-4 bg-white border border-[#E5E0D7] rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between text-xs uppercase text-[#252B32]/60 font-medium mb-1">
               <span>Chờ tham gia</span>
-              <Clock className="w-4 h-4 text-[#42E8F5]" />
+              <Clock className="w-4 h-4 text-[#397C80]" />
             </div>
-            <div className="font-mono text-3xl font-bold text-[#42E8F5]">{pendingCount}</div>
+            <div className="font-display text-3xl font-bold text-[#102A43]">{pendingCount}</div>
           </div>
 
           <div
-            className={`p-4 rounded-2xl border transition-colors shadow-lg ${
+            className={`p-4 rounded-2xl border transition-colors shadow-sm ${
               totalConflicts > 0
-                ? 'bg-amber-950/40 border-amber-500/60 text-[#FFBD59]'
-                : 'bg-[#151F33] border-[#42E8F5]/25 text-[#A7B4C9]'
+                ? 'bg-amber-50/80 border-amber-300 text-amber-900'
+                : 'bg-white border-[#E5E0D7] text-[#252B32]/60'
             }`}
           >
-            <div className="flex items-center justify-between text-xs font-mono uppercase mb-1">
+            <div className="flex items-center justify-between text-xs uppercase font-medium mb-1">
               <span>Trùng lịch</span>
               <AlertTriangle
-                className={`w-4 h-4 ${totalConflicts > 0 ? 'text-[#FFBD59]' : 'text-[#A7B4C9]'}`}
+                className={`w-4 h-4 ${totalConflicts > 0 ? 'text-amber-700' : 'text-[#252B32]/40'}`}
               />
             </div>
-            <div className={`font-mono text-3xl font-bold ${totalConflicts > 0 ? 'text-[#FFBD59]' : 'text-[#F4F4F0]'}`}>
+            <div className={`font-display text-3xl font-bold ${totalConflicts > 0 ? 'text-amber-800' : 'text-[#102A43]'}`}>
               {totalConflicts}
             </div>
           </div>
@@ -358,19 +357,19 @@ export const MySchedulePage: React.FC = () => {
         <div className="mt-8">
           {isLoading && !scheduleData ? (
             <div className="py-20 flex flex-col items-center justify-center space-y-3">
-              <RefreshCw className="w-8 h-8 text-[#42E8F5] animate-spin" />
-              <p className="text-xs font-mono font-bold uppercase tracking-wider text-[#A7B4C9]">
+              <RefreshCw className="w-8 h-8 text-[#397C80] animate-spin" />
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#252B32]/70">
                 Đang tải lịch trình cá nhân...
               </p>
             </div>
           ) : errorMessage && !scheduleData ? (
-            <div className="p-6 bg-[#151F33] border border-rose-500/50 rounded-2xl text-center shadow-xl">
-              <AlertTriangle className="w-8 h-8 text-rose-400 mx-auto mb-2" />
-              <p className="text-sm font-mono text-rose-300 font-semibold">{errorMessage}</p>
+            <div className="p-6 bg-rose-50 border border-rose-200 rounded-2xl text-center shadow-sm">
+              <AlertTriangle className="w-8 h-8 text-rose-600 mx-auto mb-2" />
+              <p className="text-sm text-rose-800 font-semibold">{errorMessage}</p>
               <button
                 type="button"
                 onClick={loadSchedule}
-                className="mt-4 px-5 py-2 rounded-lg bg-rose-900/60 hover:bg-rose-800 text-rose-200 border border-rose-500/40 text-xs font-mono font-bold uppercase cursor-pointer"
+                className="mt-4 px-5 py-2 rounded-xl bg-rose-800 hover:bg-rose-900 text-white text-xs font-semibold uppercase shadow-xs cursor-pointer"
               >
                 Thử lại
               </button>

@@ -14,7 +14,7 @@ export const CatalogItemCard: React.FC<CatalogItemCardProps> = ({ item, onSelect
     <div
       role="article"
       aria-label={item.title}
-      className={`group relative flex flex-col justify-between border-2 border-[#171717] bg-white p-5 shadow-[4px_4px_0px_#171717] transition-all duration-200 hover:-translate-y-1 hover:shadow-[6px_6px_0px_#171717] dark:bg-slate-800 ${
+      className={`group relative flex flex-col justify-between border border-[#E5E0D7] bg-white p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-[#102A43]/40 transition-all duration-200 text-[#252B32] ${
         item.isSoldOut ? 'opacity-85' : ''
       }`}
     >
@@ -23,27 +23,27 @@ export const CatalogItemCard: React.FC<CatalogItemCardProps> = ({ item, onSelect
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
             <span
-              className={`inline-flex items-center gap-1 border border-[#171717] px-2.5 py-0.5 text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#171717] ${
+              className={`inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider rounded-lg ${
                 isExcursion
-                  ? 'bg-amber-300 text-black'
-                  : 'bg-cyan-300 text-black'
+                  ? 'bg-[#397C80]/15 text-[#397C80] border border-[#397C80]/30'
+                  : 'bg-[#102A43]/10 text-[#102A43] border border-[#102A43]/20'
               }`}
             >
               {isExcursion ? <Compass className="h-3 w-3" /> : <Ship className="h-3 w-3" />}
               {isExcursion ? 'Tour trên bờ' : 'Trên tàu'}
             </span>
-            <span className="border border-[#171717] bg-[#E7E4DC] px-2 py-0.5 text-xs font-black uppercase text-black dark:bg-slate-700 dark:text-white">
+            <span className="border border-[#E5E0D7] bg-[#F7F4ED] px-2 py-0.5 text-xs font-semibold uppercase text-[#102A43] rounded-lg">
               Ngày {item.dayNumber}
             </span>
           </div>
 
           <div>
             {item.isIncluded ? (
-              <span className="inline-flex items-center gap-1 border border-[#171717] bg-[#D9FF43] px-2.5 py-0.5 text-xs font-black uppercase text-black shadow-[2px_2px_0px_#171717]">
+              <span className="inline-flex items-center gap-1 border border-[#397C80]/30 bg-[#397C80]/15 px-2.5 py-0.5 text-xs font-bold uppercase text-[#397C80] rounded-lg">
                 <CheckCircle2 className="h-3 w-3" /> Đã bao gồm
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 border border-[#171717] bg-[#3155E7] px-2.5 py-0.5 text-xs font-black uppercase text-white shadow-[2px_2px_0px_#171717]">
+              <span className="inline-flex items-center gap-1 border border-[#C5A572]/30 bg-[#C5A572]/15 px-2.5 py-0.5 text-xs font-bold uppercase text-[#9E7A3E] rounded-lg">
                 <Tag className="h-3 w-3" /> {item.price > 0 ? `${item.currency || '$'}${item.price.toFixed(2)}` : 'Tính phí'}
               </span>
             )}
@@ -51,19 +51,19 @@ export const CatalogItemCard: React.FC<CatalogItemCardProps> = ({ item, onSelect
         </div>
 
         {/* Title */}
-        <h3 className="mb-2 text-lg font-black uppercase tracking-tight text-[#171717] line-clamp-1 group-hover:text-[#3155E7] dark:text-white dark:group-hover:text-[#D9FF43]">
+        <h3 className="mb-2 text-base sm:text-lg font-bold text-[#102A43] line-clamp-1 group-hover:text-[#397C80] transition-colors">
           {item.title}
         </h3>
 
         {/* Description */}
-        <p className="mb-4 text-xs font-medium text-neutral-600 line-clamp-2 dark:text-neutral-400">
+        <p className="mb-4 text-xs font-normal text-[#5A6B7C] line-clamp-2">
           {item.description || 'Chưa có mô tả chi tiết cho hoạt động này.'}
         </p>
 
         {/* Info Grid */}
-        <div className="space-y-2 border-2 border-[#171717] bg-[#F7F5F0] p-3 text-xs font-bold text-[#171717] dark:bg-slate-900/60 dark:text-neutral-300">
+        <div className="space-y-2 border border-[#E5E0D7] bg-[#F7F4ED] p-3 rounded-xl text-xs font-medium text-[#252B32]">
           <div className="flex items-center gap-2">
-            <Clock className="h-3.5 w-3.5 text-[#3155E7]" />
+            <Clock className="h-3.5 w-3.5 text-[#397C80]" />
             <span className="font-mono">
               {isExcursion
                 ? `Tập trung: ${item.gatheringTime || item.startTime} • Về tàu: ${item.returnToShipTime || item.endTime}`
@@ -71,17 +71,17 @@ export const CatalogItemCard: React.FC<CatalogItemCardProps> = ({ item, onSelect
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <MapPin className="h-3.5 w-3.5 text-rose-600" />
+            <MapPin className="h-3.5 w-3.5 text-[#C5A572]" />
             <span className="line-clamp-1">{item.locationOrPort}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Users className="h-3.5 w-3.5 text-amber-600" />
+            <Users className="h-3.5 w-3.5 text-[#102A43]" />
             <span>
               {item.isSoldOut ? (
-                <span className="font-black text-rose-600 dark:text-rose-400">Đã hết chỗ</span>
+                <span className="font-bold text-rose-600">Đã hết chỗ</span>
               ) : (
                 <span>
-                  Còn trống: <strong className="font-black text-emerald-700 dark:text-emerald-400">{item.remainingCapacity}</strong> / {item.maxCapacity} chỗ
+                  Còn trống: <strong className="font-bold text-[#397C80]">{item.remainingCapacity}</strong> / {item.maxCapacity} chỗ
                 </span>
               )}
             </span>
@@ -90,14 +90,14 @@ export const CatalogItemCard: React.FC<CatalogItemCardProps> = ({ item, onSelect
       </div>
 
       {/* Footer Button */}
-      <div className="mt-5 border-t-2 border-[#171717] pt-3">
+      <div className="mt-5 border-t border-[#E5E0D7] pt-3">
         <button
           type="button"
           onClick={() => onSelect(item)}
-          className={`w-full border-2 border-[#171717] py-2.5 text-center text-xs font-black uppercase tracking-wider transition-all active:translate-x-[1px] active:translate-y-[1px] ${
+          className={`w-full py-2.5 text-center text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
             item.isSoldOut
-              ? 'bg-[#E7E4DC] text-neutral-700 shadow-[2px_2px_0px_#171717] hover:bg-[#d8d4c9] dark:bg-slate-700 dark:text-neutral-300'
-              : 'bg-[#171717] text-white shadow-[3px_3px_0px_#171717] hover:bg-[#3155E7] hover:shadow-[4px_4px_0px_#171717]'
+              ? 'bg-[#F7F4ED] text-[#5A6B7C] border border-[#E5E0D7] hover:bg-[#ECE7DC]'
+              : 'bg-[#102A43] hover:bg-[#0B1F33] text-white shadow-sm'
           }`}
         >
           {item.isSoldOut ? 'Xem chi tiết (Hết chỗ)' : 'Xem chi tiết & Lịch trình'}

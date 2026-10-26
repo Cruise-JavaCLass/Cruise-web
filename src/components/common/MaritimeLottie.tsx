@@ -16,7 +16,6 @@ const variantPaths: Record<MaritimeVariant, string> = {
   waves: '/animations/maritime/ocean-waves.json',
 };
 
-// Safe type for dynamic Lottie component
 interface LottieComponentProps {
   animationData: unknown;
   loop?: boolean;
@@ -37,7 +36,6 @@ export const MaritimeLottie: React.FC<MaritimeLottieProps> = ({
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
-    // Check reduced motion
     if (typeof window !== 'undefined' && window.matchMedia) {
       try {
         const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -53,12 +51,11 @@ export const MaritimeLottie: React.FC<MaritimeLottieProps> = ({
   }, []);
 
   useEffect(() => {
-    // Check if canvas 2D context is supported before importing lottie-web
-    // This prevents JSDOM / headless test environments from crashing on lottie-web initialization
     if (
       typeof window === 'undefined' ||
       typeof document === 'undefined' ||
-      typeof document.createElement !== 'function'
+      typeof document.createElement !== 'function' ||
+      (typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent || ''))
     ) {
       return;
     }
@@ -74,11 +71,13 @@ export const MaritimeLottie: React.FC<MaritimeLottieProps> = ({
     }
 
     let isMounted = true;
+    const pkgName = 'lottie-react';
 
-    // Dynamically load lottie-react
-    import('lottie-react')
+    import(/* @vite-ignore */ pkgName)
       .then((mod) => {
-        const rawComp = (mod as { default?: ComponentType<LottieComponentProps> }).default || (mod as unknown as ComponentType<LottieComponentProps>);
+        const rawComp =
+          (mod as { default?: ComponentType<LottieComponentProps> }).default ||
+          (mod as unknown as ComponentType<LottieComponentProps>);
         if (isMounted && rawComp) {
           setLottieComp(() => rawComp);
         }
@@ -96,7 +95,11 @@ export const MaritimeLottie: React.FC<MaritimeLottieProps> = ({
     let isMounted = true;
     const path = variantPaths[variant];
 
-    if (typeof window === 'undefined' || !window.fetch) {
+    if (
+      typeof window === 'undefined' ||
+      !window.fetch ||
+      (typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent || ''))
+    ) {
       return;
     }
 
@@ -117,25 +120,36 @@ export const MaritimeLottie: React.FC<MaritimeLottieProps> = ({
     };
   }, [variant]);
 
-  // Static Accessible Vector Fallback
   const renderFallback = () => {
     switch (variant) {
       case 'radar':
         return (
-          <div className="flex flex-col items-center justify-center w-full h-full text-[#42E8F5]" role="img" aria-label={title || 'Nautical Radar Diagnostic'}>
+          <div
+            className="flex flex-col items-center justify-center w-full h-full text-[#397C80]"
+            role="img"
+            aria-label={title || 'Nautical Radar Diagnostic'}
+          >
             <Compass className="w-full h-full animate-pulse opacity-90" />
           </div>
         );
       case 'waves':
         return (
-          <div className="flex flex-col items-center justify-center w-full h-full text-[#42E8F5]" role="img" aria-label={title || 'Ocean Waves'}>
+          <div
+            className="flex flex-col items-center justify-center w-full h-full text-[#397C80]"
+            role="img"
+            aria-label={title || 'Ocean Waves'}
+          >
             <Waves className="w-full h-full opacity-80" />
           </div>
         );
       case 'ship':
       default:
         return (
-          <div className="flex flex-col items-center justify-center w-full h-full text-[#42E8F5]" role="img" aria-label={title || 'Maritime Cruise Ship'}>
+          <div
+            className="flex flex-col items-center justify-center w-full h-full text-[#102A43]"
+            role="img"
+            aria-label={title || 'Maritime Cruise Ship'}
+          >
             <Ship className="w-full h-full opacity-90" />
           </div>
         );

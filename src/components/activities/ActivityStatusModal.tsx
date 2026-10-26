@@ -81,46 +81,50 @@ export function ActivityStatusModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl p-5">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 bg-[#0B1F33]/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+    >
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl w-full max-w-md shadow-xl overflow-hidden text-[#252B32]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E0D7] bg-[#F7F4ED]">
           <div>
-            <h3 className="text-base font-bold text-white">Chuyển Trạng Thái Hoạt Động</h3>
-            <p className="text-xs text-slate-400 truncate max-w-xs">{activity.title}</p>
+            <h3 className="font-serif text-base font-bold text-[#102A43]">Chuyển Trạng Thái Hoạt Động</h3>
+            <p className="text-xs text-[#252B32]/70 truncate max-w-xs mt-0.5">{activity.title}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Đóng"
-            className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1.5 text-[#252B32]/60 hover:text-[#102A43] rounded-lg hover:bg-[#ECE7DC] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-white">
           {error && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           <div>
-            <span className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <span className="block text-xs font-semibold text-[#102A43] mb-1.5">
               Trạng thái hiện tại
             </span>
-            <div className="px-3 py-2 bg-slate-800/80 border border-slate-700/60 rounded-xl text-xs font-medium text-cyan-300">
+            <div className="px-3 py-2 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl text-xs font-semibold text-[#102A43]">
               {getStatusLabel(currentStatus)}
             </div>
           </div>
 
           <div>
-            <span className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <span className="block text-xs font-semibold text-[#102A43] mb-1.5">
               Chọn trạng thái chuyển tiếp
             </span>
             {allowedStatuses.length === 0 ? (
-              <p className="text-xs text-slate-500 italic">
+              <p className="text-xs text-[#252B32]/60 italic">
                 Hoạt động đã kết thúc (COMPLETED) và không thể chuyển trạng thái tiếp.
               </p>
             ) : (
@@ -130,8 +134,8 @@ export function ActivityStatusModal({
                     key={st}
                     className={`flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer transition-all ${
                       activeStatus === st
-                        ? 'border-cyan-500 bg-cyan-500/10 text-white'
-                        : 'border-slate-800 bg-slate-800/50 text-slate-300 hover:border-slate-700'
+                        ? 'border-[#102A43] bg-[#F7F4ED] text-[#102A43] font-semibold'
+                        : 'border-[#E5E0D7] bg-white text-[#252B32] hover:border-[#102A43]/40'
                     }`}
                   >
                     <input
@@ -140,9 +144,9 @@ export function ActivityStatusModal({
                       value={st}
                       checked={activeStatus === st}
                       onChange={() => setSelectedStatus(st)}
-                      className="text-cyan-600 focus:ring-cyan-500"
+                      className="text-[#102A43] focus:ring-[#102A43]"
                     />
-                    <span className="text-xs font-semibold">{getStatusLabel(st)}</span>
+                    <span className="text-xs">{getStatusLabel(st)}</span>
                   </label>
                 ))}
               </div>
@@ -151,8 +155,8 @@ export function ActivityStatusModal({
 
           {activeStatus === 'CANCELLED' && (
             <div>
-              <label htmlFor="cancel-reason-textarea" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Lý do hủy hoạt động <span className="text-rose-400">*</span>
+              <label htmlFor="cancel-reason-textarea" className="block text-xs font-semibold text-[#102A43] mb-1.5">
+                Lý do hủy hoạt động <span className="text-rose-600">*</span>
               </label>
               <textarea
                 id="cancel-reason-textarea"
@@ -160,24 +164,24 @@ export function ActivityStatusModal({
                 value={cancellationReason}
                 onChange={(e) => setCancellationReason(e.target.value)}
                 placeholder="VD: Thời tiết biển có giông bão, sự cố kỹ thuật..."
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors resize-none"
+                className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-colors resize-none"
               />
             </div>
           )}
 
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+          <div className="pt-4 border-t border-[#E5E0D7] flex items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition-colors"
+              className="px-4 py-2 bg-[#F7F4ED] hover:bg-[#ECE7DC] text-[#102A43] border border-[#E5E0D7] rounded-xl text-xs font-semibold transition-colors"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={submitting || allowedStatuses.length === 0}
-              className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 transition-all disabled:opacity-50"
+              className="px-4 py-2 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-xs font-semibold shadow-xs transition-colors disabled:opacity-50"
             >
               {submitting ? 'Đang cập nhật...' : 'Xác nhận chuyển đổi'}
             </button>

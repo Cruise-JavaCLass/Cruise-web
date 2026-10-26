@@ -25,22 +25,22 @@ export const OpenDisputesBanner: React.FC<OpenDisputesBannerProps> = ({
   return (
     <div
       role="alert"
-      className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-amber-200 text-xs flex items-start gap-3"
+      className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900 text-xs flex items-start gap-3"
     >
-      <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-400" />
+      <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-700" />
       <div className="space-y-2">
-        <p className="font-semibold text-amber-300">
+        <p className="font-semibold text-amber-950">
           Có {preview.openDisputeCount} khiếu nại đang mở cho cabin {preview.cabinNumber}
         </p>
-        <p className="text-amber-200/80">
+        <p className="text-amber-900/80">
           Số tiền đang giữ: {formatCurrency(preview.heldDisputeAmount, preview.currency)}. Vui lòng xử
           lý khiếu nại trước khi tất toán.
         </p>
         {canForceWithHold && (
-          <label className="flex items-start gap-2 cursor-pointer select-none text-amber-100">
+          <label className="flex items-start gap-2 cursor-pointer select-none text-amber-900 font-medium">
             <input
               type="checkbox"
-              className="mt-0.5 accent-amber-400"
+              className="mt-0.5 accent-[#102A43]"
               checked={forceWithHold}
               onChange={(event) => onForceWithHoldChange(event.target.checked)}
             />

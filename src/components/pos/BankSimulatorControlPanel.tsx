@@ -55,22 +55,22 @@ export const BankSimulatorControlPanel: React.FC<BankSimulatorControlPanelProps>
   };
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
-      <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+    <div className="rounded-2xl border border-[#E5E0D7] bg-white p-5 shadow-sm space-y-4 text-[#252B32]">
+      <div className="flex items-center justify-between border-b border-[#E5E0D7] pb-3">
         <div className="flex items-center space-x-2">
-          <span className="flex h-2.5 w-2.5 rounded-full bg-indigo-500" />
-          <h3 className="font-bold text-gray-900 text-sm">
+          <span className="flex h-2.5 w-2.5 rounded-full bg-[#397C80]" />
+          <h3 className="font-serif font-bold text-[#102A43] text-sm">
             Mock Bank Webhook Sandbox Simulator (VietQR)
           </h3>
         </div>
-        <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
+        <span className="rounded-full bg-[#FAF8F5] border border-[#E5E0D7] px-2.5 py-0.5 text-[11px] font-medium text-[#102A43]">
           Sandbox Tool
         </span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">
+          <label className="block text-xs font-medium text-[#252B32] mb-1">
             Payment Reference
           </label>
           <input
@@ -78,18 +78,18 @@ export const BankSimulatorControlPanel: React.FC<BankSimulatorControlPanelProps>
             value={paymentRef}
             onChange={(e) => setPaymentRef(e.target.value)}
             placeholder="PAY-xxxxxx"
-            className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+            className="w-full rounded-xl border border-[#E5E0D7] bg-[#FAF8F5] px-3 py-2 text-sm text-[#252B32] focus:border-[#102A43] focus:outline-none transition-colors"
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">
+          <label className="block text-xs font-medium text-[#252B32] mb-1">
             Số Tiền Chuyển Khoản (VND)
           </label>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(Number(e.target.value))}
-            className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+            className="w-full rounded-xl border border-[#E5E0D7] bg-[#FAF8F5] px-3 py-2 text-sm text-[#252B32] focus:border-[#102A43] focus:outline-none transition-colors"
           />
         </div>
       </div>
@@ -111,7 +111,7 @@ export const BankSimulatorControlPanel: React.FC<BankSimulatorControlPanelProps>
           type="button"
           disabled={isTriggering}
           onClick={() => void handleTriggerWebhook('FAILED')}
-          className="rounded-xl border border-rose-300 bg-white px-4 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50 transition"
+          className="rounded-xl border border-rose-200 bg-white px-4 py-2 text-xs font-medium text-rose-700 hover:bg-rose-50 disabled:opacity-50 transition cursor-pointer"
         >
           Giả Lập Giao Dịch Thất Bại
         </button>
@@ -119,7 +119,7 @@ export const BankSimulatorControlPanel: React.FC<BankSimulatorControlPanelProps>
           type="button"
           disabled={isTriggering}
           onClick={() => void handleTriggerWebhook('SUCCESS')}
-          className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 transition"
+          className="rounded-xl bg-[#102A43] hover:bg-[#183B5B] px-4 py-2 text-xs font-medium text-white shadow-sm disabled:opacity-50 transition cursor-pointer"
         >
           {isTriggering ? 'Đang gửi...' : '⚡ Bắn Webhook Thành Công Tức Thì'}
         </button>

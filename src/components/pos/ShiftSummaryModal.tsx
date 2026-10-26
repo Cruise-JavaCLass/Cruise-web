@@ -64,35 +64,35 @@ export const ShiftSummaryModal: React.FC<ShiftSummaryModalProps> = ({ isOpen, on
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl w-full max-w-xl shadow-xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/70">
-          <div className="flex items-center gap-2 text-amber-400">
-            <FileText className="w-5 h-5" />
-            <h3 className="font-bold text-white text-base">
+        <div className="px-6 py-4 border-b border-[#E5E0D7] flex items-center justify-between bg-[#F7F4ED]">
+          <div className="flex items-center gap-2 text-[#C5A572]">
+            <FileText className="w-5 h-5 text-[#C5A572]" />
+            <h3 className="font-serif font-bold text-[#102A43] text-base">
               Báo Cáo Ca POS ({reportType === 'Z_REPORT' ? 'Z-Report Chốt Ca' : 'X-Report Tạm Tính'})
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1 rounded-lg text-[#687787] hover:text-[#102A43] hover:bg-[#E5E0D7]/60 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4 text-xs text-slate-300 overflow-y-auto max-h-[75vh]">
+        <div className="p-6 space-y-4 text-xs text-[#252B32] overflow-y-auto max-h-[75vh]">
           {isLoading && (
-            <div className="flex items-center justify-center py-12 text-slate-400 gap-2">
-              <Loader2 className="w-5 h-5 animate-spin text-amber-400" />
+            <div className="flex items-center justify-center py-12 text-[#687787] gap-2">
+              <Loader2 className="w-5 h-5 animate-spin text-[#102A43]" />
               <span>Đang tải số liệu ca làm việc...</span>
             </div>
           )}
 
           {loadError && !isLoading && (
-            <div className="flex items-start gap-2 bg-rose-500/10 border border-rose-500/30 p-3 rounded-xl text-rose-400 text-xs">
+            <div className="flex items-start gap-2 bg-rose-50 border border-rose-200 p-3 rounded-xl text-rose-800 text-xs">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{loadError}</span>
             </div>
@@ -101,12 +101,12 @@ export const ShiftSummaryModal: React.FC<ShiftSummaryModalProps> = ({ isOpen, on
           {summary && !isLoading && (
             <>
               {/* Shift status & report selector */}
-              <div className="flex justify-between items-center bg-slate-950 p-3 rounded-xl border border-slate-800">
+              <div className="flex justify-between items-center bg-[#F7F4ED] p-3 rounded-xl border border-[#E5E0D7]">
                 <div>
-                  <p className="text-white font-bold">
+                  <p className="text-[#102A43] font-bold">
                     Ca #{summary.shiftId} • {summary.stationId}
                   </p>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-[#687787]">
                     Mở lúc: {summary.openedAt ? new Date(summary.openedAt).toLocaleString('vi-VN') : 'N/A'}
                   </p>
                 </div>
@@ -114,7 +114,7 @@ export const ShiftSummaryModal: React.FC<ShiftSummaryModalProps> = ({ isOpen, on
                   <button
                     onClick={() => setReportType('X_REPORT')}
                     className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-colors cursor-pointer ${
-                      reportType === 'X_REPORT' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300'
+                      reportType === 'X_REPORT' ? 'bg-[#102A43] text-white shadow-xs' : 'bg-white border border-[#E5E0D7] text-[#687787] hover:text-[#102A43]'
                     }`}
                   >
                     X-Report
@@ -122,7 +122,7 @@ export const ShiftSummaryModal: React.FC<ShiftSummaryModalProps> = ({ isOpen, on
                   <button
                     onClick={() => setReportType('Z_REPORT')}
                     className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-colors cursor-pointer ${
-                      reportType === 'Z_REPORT' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
+                      reportType === 'Z_REPORT' ? 'bg-[#102A43] text-white shadow-xs' : 'bg-white border border-[#E5E0D7] text-[#687787] hover:text-[#102A43]'
                     }`}
                   >
                     Z-Report
@@ -132,57 +132,57 @@ export const ShiftSummaryModal: React.FC<ShiftSummaryModalProps> = ({ isOpen, on
 
               {/* Metric cards */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-                  <span className="text-[11px] text-slate-400 block">Tiền Đầu Ca</span>
-                  <span className="text-base font-extrabold text-white font-mono">
+                <div className="bg-[#F7F4ED]/50 p-3 rounded-xl border border-[#E5E0D7] text-center">
+                  <span className="text-[11px] text-[#687787] block">Tiền Đầu Ca</span>
+                  <span className="text-base font-extrabold text-[#102A43] font-mono">
                     ${summary.startingCash?.toFixed(2)}
                   </span>
                 </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-                  <span className="text-[11px] text-slate-400 block">Doanh Thu</span>
-                  <span className="text-base font-extrabold text-emerald-400 font-mono">
+                <div className="bg-[#F7F4ED]/50 p-3 rounded-xl border border-[#E5E0D7] text-center">
+                  <span className="text-[11px] text-[#687787] block">Doanh Thu</span>
+                  <span className="text-base font-extrabold text-emerald-700 font-mono">
                     ${summary.totalSales?.toFixed(2)}
                   </span>
                 </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-                  <span className="text-[11px] text-slate-400 block">Tiền Hủy/Hoàn</span>
-                  <span className="text-base font-extrabold text-rose-400 font-mono">
+                <div className="bg-[#F7F4ED]/50 p-3 rounded-xl border border-[#E5E0D7] text-center">
+                  <span className="text-[11px] text-[#687787] block">Tiền Hủy/Hoàn</span>
+                  <span className="text-base font-extrabold text-rose-700 font-mono">
                     -${summary.totalRefunds?.toFixed(2)}
                   </span>
                 </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-                  <span className="text-[11px] text-slate-400 block">Doanh Số Ròng</span>
-                  <span className="text-base font-extrabold text-amber-400 font-mono">
+                <div className="bg-[#F7F4ED]/50 p-3 rounded-xl border border-[#E5E0D7] text-center">
+                  <span className="text-[11px] text-[#687787] block">Doanh Số Ròng</span>
+                  <span className="text-base font-extrabold text-[#8C6D37] font-mono">
                     ${summary.netRevenue?.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               {/* Breakdown by Payment Method */}
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                <h4 className="font-bold text-white text-xs uppercase tracking-wider text-slate-400">
+              <div className="bg-[#F7F4ED]/30 p-4 rounded-xl border border-[#E5E0D7] space-y-2">
+                <h4 className="font-bold text-[#102A43] text-xs uppercase tracking-wider">
                   Phân Bổ Doanh Thu Theo Phương Thức
                 </h4>
-                <div className="divide-y divide-slate-800/80">
+                <div className="divide-y divide-[#E5E0D7]">
                   {Object.entries(summary.revenueByPaymentMethod || {}).map(([method, amt]) => (
                     <div key={method} className="py-1.5 flex justify-between items-center text-xs">
-                      <span className="text-slate-300">{method}</span>
-                      <span className="font-bold text-white font-mono">${amt.toFixed(2)}</span>
+                      <span className="text-[#252B32]">{method}</span>
+                      <span className="font-bold text-[#102A43] font-mono">${amt.toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Breakdown by Category */}
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                <h4 className="font-bold text-white text-xs uppercase tracking-wider text-slate-400">
+              <div className="bg-[#F7F4ED]/30 p-4 rounded-xl border border-[#E5E0D7] space-y-2">
+                <h4 className="font-bold text-[#102A43] text-xs uppercase tracking-wider">
                   Phân Bổ Doanh Thu Theo Danh Mục Mặt Hàng
                 </h4>
-                <div className="divide-y divide-slate-800/80">
+                <div className="divide-y divide-[#E5E0D7]">
                   {Object.entries(summary.revenueByCategory || {}).map(([category, amt]) => (
                     <div key={category} className="py-1.5 flex justify-between items-center text-xs">
-                      <span className="text-slate-300">{category}</span>
-                      <span className="font-bold text-white font-mono">${amt.toFixed(2)}</span>
+                      <span className="text-[#252B32]">{category}</span>
+                      <span className="font-bold text-[#102A43] font-mono">${amt.toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
@@ -190,46 +190,46 @@ export const ShiftSummaryModal: React.FC<ShiftSummaryModalProps> = ({ isOpen, on
 
               {/* Close Shift Section if still OPEN */}
               {summary.status === 'OPEN' && (
-                <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-2">
-                  <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs">
-                    <Lock className="w-4 h-4" /> Niêm Phong & Chốt Ca (Z-Report)
+                <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
+                  <div className="flex items-center gap-1.5 text-amber-800 font-bold text-xs">
+                    <Lock className="w-4 h-4 text-[#8C6D37]" /> Niêm Phong & Chốt Ca (Z-Report)
                   </div>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-[#687787]">
                     Thao tác này sẽ khóa toàn bộ giao dịch trong ca và niêm phong số liệu doanh thu gửi về kế toán tàu.
                   </p>
                   <div className="flex gap-2 pt-1 flex-wrap items-center">
                     <div>
-                      <label htmlFor="shift-manager-id" className="text-[10px] text-slate-400 block mb-0.5">Mã Quản lý:</label>
+                      <label htmlFor="shift-manager-id" className="text-[10px] text-[#687787] block mb-0.5">Mã Quản lý:</label>
                       <input
                         id="shift-manager-id"
                         type="text"
                         placeholder="Mã Quản lý"
                         value={managerId}
                         onChange={(e) => setManagerId(e.target.value.toUpperCase())}
-                        className="w-32 px-2.5 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-white font-mono text-xs focus:outline-none focus:border-amber-500"
+                        className="w-32 px-2.5 py-1.5 bg-white border border-[#E5E0D7] rounded-lg text-[#252B32] font-mono text-xs focus:outline-none focus:border-[#102A43]"
                       />
                     </div>
                     <div>
-                      <label htmlFor="shift-ending-cash" className="text-[10px] text-slate-400 block mb-0.5">Tiền mặt kết ca ($):</label>
+                      <label htmlFor="shift-ending-cash" className="text-[10px] text-[#687787] block mb-0.5">Tiền mặt kết ca ($):</label>
                       <input
                         id="shift-ending-cash"
                         type="number"
                         placeholder="Tiền mặt kết ca"
                         value={endingCash}
                         onChange={(e) => setEndingCash(Number(e.target.value))}
-                        className="w-36 px-2.5 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-white font-mono text-xs focus:outline-none focus:border-amber-500"
+                        className="w-36 px-2.5 py-1.5 bg-white border border-[#E5E0D7] rounded-lg text-[#252B32] font-mono text-xs focus:outline-none focus:border-[#102A43]"
                       />
                     </div>
                     <button
                       onClick={handleCloseShift}
                       disabled={isClosingShift || !managerId.trim()}
-                      className="mt-4 px-4 py-1.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-lg font-bold text-xs transition-colors cursor-pointer"
+                      className="mt-4 px-4 py-1.5 bg-[#102A43] hover:bg-[#183B5B] disabled:opacity-50 text-white rounded-lg font-bold text-xs transition-colors cursor-pointer shadow-xs"
                     >
                       {isClosingShift ? 'Đang đóng...' : 'Xác Nhận Đóng Ca'}
                     </button>
                   </div>
                   {closeError && (
-                    <div className="flex items-start gap-2 bg-rose-500/10 border border-rose-500/30 p-2 rounded-lg text-rose-400 text-xs">
+                    <div className="flex items-start gap-2 bg-rose-50 border border-rose-200 p-2 rounded-lg text-rose-800 text-xs">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                       <span>{closeError}</span>
                     </div>
@@ -241,16 +241,16 @@ export const ShiftSummaryModal: React.FC<ShiftSummaryModalProps> = ({ isOpen, on
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-slate-950/80 border-t border-slate-800 flex gap-3">
+        <div className="px-6 py-4 bg-[#F7F4ED]/50 border-t border-[#E5E0D7] flex gap-3">
           <button
             onClick={() => window.print()}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] rounded-xl text-xs font-semibold transition-colors cursor-pointer shadow-xs"
           >
             <Printer className="w-4 h-4" /> In Báo Cáo
           </button>
           <button
             onClick={onClose}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#102A43] hover:bg-[#183B5B] text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer shadow-xs"
           >
             Đóng
           </button>

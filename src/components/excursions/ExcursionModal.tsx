@@ -20,8 +20,8 @@ import {
   updateExcursion,
   EXCURSION_CATEGORY_LABELS,
 } from '../../services/excursionService';
-import { INITIAL_TOURS } from '../../services/tourService';
-import { INITIAL_PORTS } from '../../services/portStopService';
+import { getTours, INITIAL_TOURS, type CruiseTour } from '../../services/tourService';
+import { getPorts, INITIAL_PORTS, type Port } from '../../services/portStopService';
 
 interface ExcursionModalProps {
   isOpen: boolean;
@@ -66,12 +66,23 @@ export function ExcursionModal({
 }: ExcursionModalProps) {
   const isEditMode = Boolean(excursionToEdit);
 
+  const [tours, setTours] = useState<CruiseTour[]>(INITIAL_TOURS);
+  const [ports, setPorts] = useState<Port[]>(INITIAL_PORTS);
   const [formData, setFormData] = useState<ExcursionFormData>(() =>
     getDefaultFormData(defaultTourId)
   );
   const [errors, setErrors] = useState<ExcursionFormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      void Promise.all([getTours(), getPorts()]).then(([tourList, portList]) => {
+        if (tourList.length > 0) setTours(tourList);
+        if (portList.length > 0) setPorts(portList);
+      });
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (excursionToEdit) {
@@ -145,7 +156,7 @@ export function ExcursionModal({
     setSubmitting(true);
     setApiError(null);
 
-    const selectedPort = INITIAL_PORTS.find((p) => p.id === Number(formData.portId));
+    const selectedPort = ports.find((p) => p.id === Number(formData.portId));
     const portName = selectedPort?.name || 'Cảng Dừng Chân';
     const portCity = selectedPort?.city || 'Điểm Dừng';
 
@@ -166,30 +177,30 @@ export function ExcursionModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="excursion-modal-title"
     >
-      <div className="bg-slate-900 border border-slate-800 w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white border border-[#E5E0D7] w-full max-w-3xl rounded-2xl shadow-xl overflow-hidden my-8 text-[#252B32]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-900 to-cyan-950/40">
+        <div className="px-6 py-4 border-b border-[#E5E0D7] flex items-center justify-between bg-[#F7F4ED]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shadow-inner">
-              <Compass className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-[#102A43]/10 border border-[#102A43]/15 flex items-center justify-center text-[#102A43] shadow-inner">
+              <Compass className="w-5 h-5 text-[#397C80]" />
             </div>
             <div>
-              <h3 id="excursion-modal-title" className="text-base font-bold text-white">
+              <h3 id="excursion-modal-title" className="font-serif text-base font-bold text-[#102A43]">
                 {isEditMode ? 'Chỉnh Sửa Tour Trên Bờ (Shore Excursion)' : 'Tạo Tour Trên Bờ Mới (Shore Excursion)'}
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[#252B32]/70">
                 Điều phối nhà cung cấp • Giờ All-Aboard an toàn • Sức chứa đoàn khách
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-2 text-[#252B32]/60 hover:text-[#102A43] rounded-lg hover:bg-[#ECE7DC] transition-colors"
             title="Đóng"
           >
             <X className="w-5 h-5" />
@@ -197,64 +208,72 @@ export function ExcursionModal({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} noValidate className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} noValidate className="p-6 space-y-5 max-h-[80vh] overflow-y-auto bg-white">
           {apiError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-center gap-2 text-xs text-rose-300">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-xs text-rose-700">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600" />
               <span>{apiError}</span>
             </div>
           )}
 
           {/* Group 1: General Info */}
           <div className="space-y-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5 border-b border-slate-800 pb-2">
-              <Compass className="w-4 h-4" /> 1. Thông Tin Chung & Địa Điểm Cập Cảng
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#102A43] flex items-center gap-1.5 border-b border-[#E5E0D7] pb-2">
+              <Compass className="w-4 h-4 text-[#397C80]" /> 1. Thông Tin Chung & Địa Điểm Cập Cảng
             </h4>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="excursion-tour-id" className="block text-xs font-medium text-slate-300 mb-1">
-                  Tour Du Thuyền <span className="text-rose-400">*</span>
+                <label htmlFor="excursion-tour-id" className="block text-xs font-semibold text-[#102A43] mb-1">
+                  Tour Du Thuyền <span className="text-rose-600">*</span>
                 </label>
                 <select
                   id="excursion-tour-id"
                   value={formData.tourId}
                   onChange={(e) => handleChange('tourId', Number(e.target.value))}
-                  className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 >
-                  {INITIAL_TOURS.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.name} ({t.code})
-                    </option>
-                  ))}
+                  {tours.length === 0 ? (
+                    <option value={1}>Tour #1 (Mặc định)</option>
+                  ) : (
+                    tours.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name} ({t.code})
+                      </option>
+                    ))
+                  )}
                 </select>
-                {errors.tourId && <p className="text-[11px] text-rose-400 mt-1">{errors.tourId}</p>}
+                {errors.tourId && <p className="text-[11px] text-rose-600 mt-1">{errors.tourId}</p>}
               </div>
 
               <div>
-                <label htmlFor="excursion-port-id" className="block text-xs font-medium text-slate-300 mb-1">
-                  Cảng Dừng Chân (Port of Call) <span className="text-rose-400">*</span>
+                <label htmlFor="excursion-port-id" className="block text-xs font-semibold text-[#102A43] mb-1">
+                  Cảng Dừng Chân (Port of Call) <span className="text-rose-600">*</span>
                 </label>
                 <select
                   id="excursion-port-id"
                   value={formData.portId}
                   onChange={(e) => handleChange('portId', Number(e.target.value))}
-                  className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 >
-                  {INITIAL_PORTS.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} — {p.city} ({p.code})
-                    </option>
-                  ))}
+                  {ports.length === 0 ? (
+                    <option value={1}>Cảng #1 (Mặc định)</option>
+                  ) : (
+                    ports.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} — {p.city} ({p.code})
+                      </option>
+                    ))
+                  )}
                 </select>
-                {errors.portId && <p className="text-[11px] text-rose-400 mt-1">{errors.portId}</p>}
+                {errors.portId && <p className="text-[11px] text-rose-600 mt-1">{errors.portId}</p>}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2">
-                <label htmlFor="excursion-title" className="block text-xs font-medium text-slate-300 mb-1">
-                  Tên Tour Trên Bờ <span className="text-rose-400">*</span>
+                <label htmlFor="excursion-title" className="block text-xs font-semibold text-[#102A43] mb-1">
+                  Tên Tour Trên Bờ <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="excursion-title"
@@ -262,16 +281,16 @@ export function ExcursionModal({
                   placeholder="Ví dụ: Khám phá Hang Sửng Sốt & Đảo Ti Tốp"
                   value={formData.title}
                   onChange={(e) => handleChange('title', e.target.value)}
-                  className={`w-full px-3 py-2 bg-slate-800/80 border rounded-xl text-xs text-white focus:outline-none ${
-                    errors.title ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-500'
+                  className={`w-full px-3 py-2 bg-white border rounded-xl text-xs text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 ${
+                    errors.title ? 'border-rose-500' : 'border-[#E5E0D7] focus:border-[#102A43]'
                   }`}
                 />
-                {errors.title && <p className="text-[11px] text-rose-400 mt-1">{errors.title}</p>}
+                {errors.title && <p className="text-[11px] text-rose-600 mt-1">{errors.title}</p>}
               </div>
 
               <div>
-                <label htmlFor="excursion-code" className="block text-xs font-medium text-slate-300 mb-1">
-                  Mã Excursion <span className="text-rose-400">*</span>
+                <label htmlFor="excursion-code" className="block text-xs font-semibold text-[#102A43] mb-1">
+                  Mã Excursion <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="excursion-code"
@@ -279,24 +298,24 @@ export function ExcursionModal({
                   placeholder="EXC-HL-01"
                   value={formData.code}
                   onChange={(e) => handleChange('code', e.target.value.toUpperCase())}
-                  className={`w-full px-3 py-2 bg-slate-800/80 border rounded-xl text-xs text-white uppercase focus:outline-none ${
-                    errors.code ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-500'
+                  className={`w-full px-3 py-2 bg-white border rounded-xl text-xs text-[#252B32] uppercase placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 ${
+                    errors.code ? 'border-rose-500' : 'border-[#E5E0D7] focus:border-[#102A43]'
                   }`}
                 />
-                {errors.code && <p className="text-[11px] text-rose-400 mt-1">{errors.code}</p>}
+                {errors.code && <p className="text-[11px] text-rose-600 mt-1">{errors.code}</p>}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="excursion-category" className="block text-xs font-medium text-slate-300 mb-1">
+                <label htmlFor="excursion-category" className="block text-xs font-semibold text-[#102A43] mb-1">
                   Chủ Đề / Thể Loại
                 </label>
                 <select
                   id="excursion-category"
                   value={formData.category}
                   onChange={(e) => handleChange('category', e.target.value as ExcursionCategory)}
-                  className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 >
                   {Object.entries(EXCURSION_CATEGORY_LABELS).map(([catKey, catLabel]) => (
                     <option key={catKey} value={catKey}>
@@ -307,14 +326,14 @@ export function ExcursionModal({
               </div>
 
               <div>
-                <label htmlFor="excursion-difficulty" className="block text-xs font-medium text-slate-300 mb-1">
+                <label htmlFor="excursion-difficulty" className="block text-xs font-semibold text-[#102A43] mb-1">
                   Mức Độ Vận Động
                 </label>
                 <select
                   id="excursion-difficulty"
                   value={formData.difficulty}
                   onChange={(e) => handleChange('difficulty', e.target.value as ExcursionDifficulty)}
-                  className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 >
                   <option value="EASY">Nhẹ nhàng (Phù hợp mọi lứa tuổi)</option>
                   <option value="MODERATE">Trung bình (Đi bộ nhiều, leo bậc thang)</option>
@@ -324,7 +343,7 @@ export function ExcursionModal({
             </div>
 
             <div>
-              <label htmlFor="excursion-description" className="block text-xs font-medium text-slate-300 mb-1">
+              <label htmlFor="excursion-description" className="block text-xs font-semibold text-[#102A43] mb-1">
                 Mô Tả Lịch Trình Tour
               </label>
               <textarea
@@ -333,92 +352,92 @@ export function ExcursionModal({
                 placeholder="Tóm tắt điểm tham quan, lưu ý trang phục, bữa ăn đi kèm..."
                 value={formData.description}
                 onChange={(e) => handleChange('description', e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
               />
             </div>
           </div>
 
           {/* Group 2: Operational Timing & Ship Safety */}
           <div className="space-y-4 pt-2">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5 border-b border-slate-800 pb-2">
-              <Clock className="w-4 h-4" /> 2. Lịch Trình Giờ Giấc & Cảnh Báo An Toàn Quay Lại Tàu (All-Aboard)
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#102A43] flex items-center gap-1.5 border-b border-[#E5E0D7] pb-2">
+              <Clock className="w-4 h-4 text-[#397C80]" /> 2. Lịch Trình Giờ Giấc & Cảnh Báo An Toàn Quay Lại Tàu (All-Aboard)
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
               <div>
-                <label htmlFor="excursion-date" className="block text-xs font-medium text-slate-300 mb-1">
-                  Ngày Đi <span className="text-rose-400">*</span>
+                <label htmlFor="excursion-date" className="block text-xs font-semibold text-[#102A43] mb-1">
+                  Ngày Đi <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="excursion-date"
                   type="date"
                   value={formData.excursionDate}
                   onChange={(e) => handleChange('excursionDate', e.target.value)}
-                  className="w-full px-2.5 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 />
-                {errors.excursionDate && <p className="text-[11px] text-rose-400 mt-1">{errors.excursionDate}</p>}
+                {errors.excursionDate && <p className="text-[11px] text-rose-600 mt-1">{errors.excursionDate}</p>}
               </div>
 
               <div>
-                <label htmlFor="excursion-meeting-time" className="block text-xs font-medium text-slate-300 mb-1">
-                  Giờ Tập Trung <span className="text-rose-400">*</span>
+                <label htmlFor="excursion-meeting-time" className="block text-xs font-semibold text-[#102A43] mb-1">
+                  Giờ Tập Trung <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="excursion-meeting-time"
                   type="time"
                   value={formData.meetingTime}
                   onChange={(e) => handleChange('meetingTime', e.target.value)}
-                  className="w-full px-2.5 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 />
-                {errors.meetingTime && <p className="text-[11px] text-rose-400 mt-1">{errors.meetingTime}</p>}
+                {errors.meetingTime && <p className="text-[11px] text-rose-600 mt-1">{errors.meetingTime}</p>}
               </div>
 
               <div>
-                <label htmlFor="excursion-departure-time" className="block text-xs font-medium text-slate-300 mb-1">
-                  Giờ Xuất Bến <span className="text-rose-400">*</span>
+                <label htmlFor="excursion-departure-time" className="block text-xs font-semibold text-[#102A43] mb-1">
+                  Giờ Xuất Bến <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="excursion-departure-time"
                   type="time"
                   value={formData.departureTime}
                   onChange={(e) => handleChange('departureTime', e.target.value)}
-                  className={`w-full px-2.5 py-2 bg-slate-800/80 border rounded-xl text-xs text-white focus:outline-none ${
-                    errors.departureTime ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-500'
+                  className={`w-full px-2.5 py-2 bg-white border rounded-xl text-xs text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 ${
+                    errors.departureTime ? 'border-rose-500' : 'border-[#E5E0D7] focus:border-[#102A43]'
                   }`}
                 />
-                {errors.departureTime && <p className="text-[11px] text-rose-400 mt-1">{errors.departureTime}</p>}
+                {errors.departureTime && <p className="text-[11px] text-rose-600 mt-1">{errors.departureTime}</p>}
               </div>
 
               <div>
-                <label htmlFor="excursion-return-time" className="block text-xs font-medium text-amber-300 mb-1">
-                  Về Lại Tàu <span className="text-rose-400">*</span>
+                <label htmlFor="excursion-return-time" className="block text-xs font-semibold text-amber-700 mb-1">
+                  Về Lại Tàu <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="excursion-return-time"
                   type="time"
                   value={formData.returnToShipTime}
                   onChange={(e) => handleChange('returnToShipTime', e.target.value)}
-                  className={`w-full px-2.5 py-2 bg-slate-800/80 border rounded-xl text-xs text-white focus:outline-none ${
-                    errors.returnToShipTime ? 'border-rose-500' : 'border-amber-500/50 focus:border-amber-400'
+                  className={`w-full px-2.5 py-2 bg-white border rounded-xl text-xs text-[#252B32] focus:outline-none focus:ring-2 focus:ring-amber-500/20 ${
+                    errors.returnToShipTime ? 'border-rose-500' : 'border-amber-400 focus:border-amber-600'
                   }`}
                 />
-                {errors.returnToShipTime && <p className="text-[11px] text-rose-400 mt-1">{errors.returnToShipTime}</p>}
+                {errors.returnToShipTime && <p className="text-[11px] text-rose-600 mt-1">{errors.returnToShipTime}</p>}
               </div>
 
               <div>
-                <label htmlFor="excursion-all-aboard-time" className="block text-xs font-medium text-rose-300 mb-1">
-                  All-Aboard <span className="text-rose-400">*</span>
+                <label htmlFor="excursion-all-aboard-time" className="block text-xs font-semibold text-rose-700 mb-1">
+                  All-Aboard <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="excursion-all-aboard-time"
                   type="time"
                   value={formData.allAboardTime}
                   onChange={(e) => handleChange('allAboardTime', e.target.value)}
-                  className={`w-full px-2.5 py-2 bg-slate-800/80 border rounded-xl text-xs text-white focus:outline-none ${
-                    errors.allAboardTime ? 'border-rose-500' : 'border-rose-500/50 focus:border-rose-400'
+                  className={`w-full px-2.5 py-2 bg-white border rounded-xl text-xs text-[#252B32] focus:outline-none focus:ring-2 focus:ring-rose-500/20 ${
+                    errors.allAboardTime ? 'border-rose-500' : 'border-rose-400 focus:border-rose-600'
                   }`}
                 />
-                {errors.allAboardTime && <p className="text-[11px] text-rose-400 mt-1">{errors.allAboardTime}</p>}
+                {errors.allAboardTime && <p className="text-[11px] text-rose-600 mt-1">{errors.allAboardTime}</p>}
               </div>
             </div>
 
@@ -427,17 +446,17 @@ export function ExcursionModal({
               <div
                 className={`p-3 rounded-xl border flex items-center justify-between text-xs ${
                   marginMinutes < 0
-                    ? 'bg-rose-950/40 border-rose-500/50 text-rose-300'
+                    ? 'bg-rose-50 border-rose-200 text-rose-700'
                     : marginMinutes < 30
-                    ? 'bg-amber-950/40 border-amber-500/50 text-amber-300'
-                    : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
+                    ? 'bg-amber-50 border-amber-200 text-amber-800'
+                    : 'bg-emerald-50 border-emerald-200 text-emerald-800'
                 }`}
               >
                 <div className="flex items-center gap-2">
                   {marginMinutes < 30 ? (
-                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                    <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
                   ) : (
-                    <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-400" />
+                    <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-600" />
                   )}
                   <span>
                     Khoảng đệm an toàn All-Aboard:{' '}
@@ -457,14 +476,14 @@ export function ExcursionModal({
 
           {/* Group 3: Operator & Transport */}
           <div className="space-y-4 pt-2">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-blue-400 flex items-center gap-1.5 border-b border-slate-800 pb-2">
-              <Building2 className="w-4 h-4" /> 3. Đối Tác Địa Phương & Điều Phối Phương Tiện
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#102A43] flex items-center gap-1.5 border-b border-[#E5E0D7] pb-2">
+              <Building2 className="w-4 h-4 text-[#397C80]" /> 3. Đối Tác Địa Phương & Điều Phối Phương Tiện
             </h4>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="excursion-operator" className="block text-xs font-medium text-slate-300 mb-1">
-                  Nhà Cung Cấp Tour Địa Phương <span className="text-rose-400">*</span>
+                <label htmlFor="excursion-operator" className="block text-xs font-semibold text-[#102A43] mb-1">
+                  Nhà Cung Cấp Tour Địa Phương <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="excursion-operator"
@@ -472,15 +491,15 @@ export function ExcursionModal({
                   placeholder="Halong Heritage Travel Co."
                   value={formData.operatorName}
                   onChange={(e) => handleChange('operatorName', e.target.value)}
-                  className={`w-full px-3 py-2 bg-slate-800/80 border rounded-xl text-xs text-white focus:outline-none ${
-                    errors.operatorName ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-500'
+                  className={`w-full px-3 py-2 bg-white border rounded-xl text-xs text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 ${
+                    errors.operatorName ? 'border-rose-500' : 'border-[#E5E0D7] focus:border-[#102A43]'
                   }`}
                 />
-                {errors.operatorName && <p className="text-[11px] text-rose-400 mt-1">{errors.operatorName}</p>}
+                {errors.operatorName && <p className="text-[11px] text-rose-600 mt-1">{errors.operatorName}</p>}
               </div>
 
               <div>
-                <label htmlFor="excursion-operator-contact" className="block text-xs font-medium text-slate-300 mb-1">
+                <label htmlFor="excursion-operator-contact" className="block text-xs font-semibold text-[#102A43] mb-1">
                   Hotline / Liên Hệ Khẩn Cấp
                 </label>
                 <input
@@ -489,14 +508,14 @@ export function ExcursionModal({
                   placeholder="+84 203 384 6688"
                   value={formData.operatorContact}
                   onChange={(e) => handleChange('operatorContact', e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="excursion-guide" className="block text-xs font-medium text-slate-300 mb-1">
+                <label htmlFor="excursion-guide" className="block text-xs font-semibold text-[#102A43] mb-1">
                   Hướng Dẫn Viên Phụ Trách
                 </label>
                 <input
@@ -505,12 +524,12 @@ export function ExcursionModal({
                   placeholder="Hoàng Hải Đăng"
                   value={formData.guideName}
                   onChange={(e) => handleChange('guideName', e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 />
               </div>
 
               <div>
-                <label htmlFor="excursion-guide-phone" className="block text-xs font-medium text-slate-300 mb-1">
+                <label htmlFor="excursion-guide-phone" className="block text-xs font-semibold text-[#102A43] mb-1">
                   SĐT Hướng Dẫn Viên
                 </label>
                 <input
@@ -519,12 +538,12 @@ export function ExcursionModal({
                   placeholder="+84 912 888 999"
                   value={formData.guidePhone}
                   onChange={(e) => handleChange('guidePhone', e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 />
               </div>
 
               <div>
-                <label htmlFor="excursion-bus" className="block text-xs font-medium text-slate-300 mb-1">
+                <label htmlFor="excursion-bus" className="block text-xs font-semibold text-[#102A43] mb-1">
                   Phương Tiện Đưa Đón (Xe/Tàu)
                 </label>
                 <input
@@ -533,7 +552,7 @@ export function ExcursionModal({
                   placeholder="XE-VIP-01 (45 chỗ)"
                   value={formData.busNumber}
                   onChange={(e) => handleChange('busNumber', e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 />
               </div>
             </div>
@@ -541,14 +560,14 @@ export function ExcursionModal({
 
           {/* Group 4: Capacity & Pricing */}
           <div className="space-y-4 pt-2">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-slate-800 pb-2">
-              <DollarSign className="w-4 h-4" /> 4. Sức Chứa & Biểu Phí Tham Gia
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#102A43] flex items-center gap-1.5 border-b border-[#E5E0D7] pb-2">
+              <DollarSign className="w-4 h-4 text-[#397C80]" /> 4. Sức Chứa & Biểu Phí Tham Gia
             </h4>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
               <div>
-                <label htmlFor="excursion-capacity" className="block text-xs font-medium text-slate-300 mb-1">
-                  Sức Chứa Tối Đa (Khách) <span className="text-rose-400">*</span>
+                <label htmlFor="excursion-capacity" className="block text-xs font-semibold text-[#102A43] mb-1">
+                  Sức Chứa Tối Đa (Khách) <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="excursion-capacity"
@@ -557,11 +576,11 @@ export function ExcursionModal({
                   max="1000"
                   value={formData.maxCapacity}
                   onChange={(e) => handleChange('maxCapacity', e.target.value ? Number(e.target.value) : '')}
-                  className={`w-full px-3 py-2 bg-slate-800/80 border rounded-xl text-xs text-white focus:outline-none ${
-                    errors.maxCapacity ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-500'
+                  className={`w-full px-3 py-2 bg-white border rounded-xl text-xs text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 ${
+                    errors.maxCapacity ? 'border-rose-500' : 'border-[#E5E0D7] focus:border-[#102A43]'
                   }`}
                 />
-                {errors.maxCapacity && <p className="text-[11px] text-rose-400 mt-1">{errors.maxCapacity}</p>}
+                {errors.maxCapacity && <p className="text-[11px] text-rose-600 mt-1">{errors.maxCapacity}</p>}
               </div>
 
               <div className="pt-5">
@@ -570,9 +589,9 @@ export function ExcursionModal({
                     type="checkbox"
                     checked={formData.isIncluded}
                     onChange={(e) => handleChange('isIncluded', e.target.checked)}
-                    className="w-4 h-4 text-cyan-600 rounded bg-slate-800 border-slate-700 focus:ring-0 focus:ring-offset-0"
+                    className="w-4 h-4 text-[#102A43] rounded border-[#E5E0D7] focus:ring-[#102A43]"
                   />
-                  <span className="text-xs text-slate-200 font-medium">
+                  <span className="text-xs text-[#252B32] font-semibold">
                     Đã bao gồm trong giá vé Cruise (Miễn phí)
                   </span>
                 </label>
@@ -580,8 +599,8 @@ export function ExcursionModal({
 
               {!formData.isIncluded && (
                 <div>
-                  <label htmlFor="excursion-price" className="block text-xs font-medium text-slate-300 mb-1">
-                    Giá Vé Bổ Sung (VND) <span className="text-rose-400">*</span>
+                  <label htmlFor="excursion-price" className="block text-xs font-semibold text-[#102A43] mb-1">
+                    Giá Vé Bổ Sung (VND) <span className="text-rose-600">*</span>
                   </label>
                   <input
                     id="excursion-price"
@@ -591,17 +610,17 @@ export function ExcursionModal({
                     placeholder="850000"
                     value={formData.price}
                     onChange={(e) => handleChange('price', e.target.value ? Number(e.target.value) : '')}
-                    className={`w-full px-3 py-2 bg-slate-800/80 border rounded-xl text-xs text-white focus:outline-none ${
-                      errors.price ? 'border-rose-500' : 'border-slate-700 focus:border-cyan-500'
+                    className={`w-full px-3 py-2 bg-white border rounded-xl text-xs text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 ${
+                      errors.price ? 'border-rose-500' : 'border-[#E5E0D7] focus:border-[#102A43]'
                     }`}
                   />
-                  {errors.price && <p className="text-[11px] text-rose-400 mt-1">{errors.price}</p>}
+                  {errors.price && <p className="text-[11px] text-rose-600 mt-1">{errors.price}</p>}
                 </div>
               )}
             </div>
 
             <div>
-              <label htmlFor="excursion-image-url" className="block text-xs font-medium text-slate-300 mb-1">
+              <label htmlFor="excursion-image-url" className="block text-xs font-semibold text-[#102A43] mb-1">
                 Link Ảnh Minh Họa (URL)
               </label>
               <input
@@ -610,25 +629,25 @@ export function ExcursionModal({
                 placeholder="https://images.unsplash.com/photo-..."
                 value={formData.imageUrl}
                 onChange={(e) => handleChange('imageUrl', e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
               />
             </div>
           </div>
 
           {/* Form Action Controls */}
-          <div className="pt-4 border-t border-slate-800/90 flex items-center justify-end gap-3.5">
+          <div className="pt-4 border-t border-[#E5E0D7] flex items-center justify-end gap-3.5">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 bg-slate-800/90 hover:bg-slate-750 text-slate-300 rounded-xl text-xs font-medium active:scale-95 transition-all"
+              className="px-4 py-2 bg-[#F7F4ED] hover:bg-[#ECE7DC] text-[#102A43] border border-[#E5E0D7] rounded-xl text-xs font-semibold transition-colors"
             >
               Hủy Bỏ
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 active:scale-95 transition-all flex items-center gap-2"
+              className="px-5 py-2 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-xs font-semibold shadow-xs transition-colors flex items-center gap-2 disabled:opacity-50"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{submitting ? 'Đang lưu...' : isEditMode ? 'Lưu Cập Nhật' : 'Tạo Excursion'}</span>

@@ -57,24 +57,31 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-[#090d16] border border-amber-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="discrepancy-inspector-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs animate-in fade-in duration-200"
+    >
+      <div className="relative w-full max-w-2xl bg-white border border-[#E5E0D7] rounded-2xl p-6 sm:p-8 shadow-xl space-y-6 text-[#252B32]">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-white/10">
+        <div className="flex items-center justify-between pb-4 border-b border-[#E5E0D7]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white">Soi Chi Tiết Sai Lệch Đối Soát</h3>
-              <p className="text-xs text-slate-400">
-                Mã giao dịch: <span className="font-mono text-cyan-400">{record.transactionId}</span>
+              <h3 id="discrepancy-inspector-title" className="text-lg font-serif font-bold text-[#102A43]">
+                Soi Chi Tiết Sai Lệch Đối Soát
+              </h3>
+              <p className="text-xs text-[#687787]">
+                Mã giao dịch: <span className="font-mono text-[#102A43] font-medium">{record.transactionId}</span>
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
+            className="p-2 text-[#687787] hover:text-[#102A43] rounded-xl hover:bg-[#FAF8F5] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -83,27 +90,27 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
         {/* 2-Column Side-by-Side Diff */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* POS Terminal Column */}
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-3">
+          <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#E5E0D7] space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#102A43] uppercase tracking-wider">
                 1. Nhật Ký Trạm POS
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-50 text-sky-800 border border-sky-200 font-medium">
                 Journal Record
               </span>
             </div>
             <div className="space-y-1.5 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-400">Khu vực:</span>
-                <span className="text-white">{record.serviceArea || 'Sky Bar'}</span>
+                <span className="text-[#687787]">Khu vực:</span>
+                <span className="text-[#252B32] font-medium">{record.serviceArea || 'Sky Bar'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Cabin / Khách:</span>
-                <span className="text-white font-medium">{record.cabinNumber}</span>
+                <span className="text-[#687787]">Cabin / Khách:</span>
+                <span className="text-[#252B32] font-semibold">{record.cabinNumber}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Số tiền POS:</span>
-                <span className="font-mono font-bold text-amber-400">
+                <span className="text-[#687787]">Số tiền POS:</span>
+                <span className="font-mono font-bold text-[#B45309]">
                   ${(record.posAmount || 0).toFixed(2)} USD
                 </span>
               </div>
@@ -111,27 +118,27 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
           </div>
 
           {/* Folio Master Column */}
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-3">
+          <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#E5E0D7] space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#047857] uppercase tracking-wider">
                 2. Sổ Cái Cabin Folio
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
                 Folio Ledger
               </span>
             </div>
             <div className="space-y-1.5 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-400">Mã Folio:</span>
-                <span className="text-white font-mono">{record.folioId || 'CHƯA GHI NHẬN'}</span>
+                <span className="text-[#687787]">Mã Folio:</span>
+                <span className="text-[#252B32] font-mono font-medium">{record.folioId || 'CHƯA GHI NHẬN'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Tên hành khách:</span>
-                <span className="text-white">{record.passengerName || 'Chưa định danh'}</span>
+                <span className="text-[#687787]">Tên hành khách:</span>
+                <span className="text-[#252B32] font-medium">{record.passengerName || 'Chưa định danh'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Số tiền Folio:</span>
-                <span className="font-mono font-bold text-emerald-400">
+                <span className="text-[#687787]">Số tiền Folio:</span>
+                <span className="font-mono font-bold text-[#047857]">
                   ${(record.folioAmount || 0).toFixed(2)} USD
                 </span>
               </div>
@@ -140,20 +147,20 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
         </div>
 
         {/* Variance Highlight Bar */}
-        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 text-amber-300 font-semibold">
-            <DollarSign className="w-4 h-4 text-amber-400" />
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2 text-amber-900 font-semibold">
+            <DollarSign className="w-4 h-4 text-amber-600" />
             <span>Chênh lệch phát hiện ({record.discrepancyType}):</span>
           </div>
-          <span className="font-mono font-bold text-sm text-amber-300">
+          <span className="font-mono font-bold text-sm text-amber-900">
             ${record.variance.toFixed(2)} USD
           </span>
         </div>
 
         {/* Resolution Notes Input */}
         <div className="space-y-2">
-          <label htmlFor="discrepancy-resolution-notes" className="block text-xs font-medium text-slate-300">
-            Ghi Chú Giải Trình & Hướng Xử Lý <span className="text-rose-400">*</span>
+          <label htmlFor="discrepancy-resolution-notes" className="block text-xs font-medium text-[#252B32]">
+            Ghi Chú Giải Trình & Hướng Xử Lý <span className="text-rose-500">*</span>
           </label>
           <textarea
             id="discrepancy-resolution-notes"
@@ -161,7 +168,7 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
             value={resolutionNotes}
             onChange={(e) => setResolutionNotes(e.target.value)}
             placeholder="Ví dụ: Đã kiểm tra bill giấy tại quầy, đồng ý tạo bút toán điều chỉnh bổ sung cho Folio..."
-            className="w-full bg-[#030712] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+            className="w-full bg-[#FAF8F5] border border-[#E5E0D7] rounded-xl px-3.5 py-2.5 text-xs text-[#252B32] placeholder-[#687787] focus:outline-none focus:border-[#102A43] transition-colors"
           />
         </div>
 
@@ -170,7 +177,7 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
           <button
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-medium text-[#687787] hover:text-[#102A43] hover:bg-[#FAF8F5] transition-colors cursor-pointer"
           >
             Đóng
           </button>
@@ -180,7 +187,7 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
               type="button"
               disabled={isSubmitting}
               onClick={() => handleResolveAction('WRITTEN_OFF')}
-              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-300 bg-white/10 hover:bg-white/15 transition-all cursor-pointer"
+              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-medium text-[#102A43] bg-white border border-[#E5E0D7] hover:bg-[#FAF8F5] transition-all cursor-pointer"
             >
               Bỏ Qua / Xóa Lệch
             </button>
@@ -188,7 +195,7 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
               type="button"
               disabled={isSubmitting}
               onClick={() => handleResolveAction('RESOLVED')}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-600/20 disabled:opacity-50 transition-all cursor-pointer"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-medium text-white bg-[#102A43] hover:bg-[#183B5B] shadow-sm disabled:opacity-50 transition-all cursor-pointer"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               {isSubmitting ? 'Đang lưu...' : 'Xác Nhận Đã Giải Quyết'}

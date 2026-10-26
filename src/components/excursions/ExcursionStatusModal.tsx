@@ -88,15 +88,15 @@ export function ExcursionStatusModal({
   const getStatusIcon = (st: ExcursionStatus) => {
     switch (st) {
       case 'SCHEDULED':
-        return <Clock className="w-4 h-4 text-cyan-400" />;
+        return <Clock className="w-4 h-4 text-[#397C80]" />;
       case 'IN_PROGRESS':
-        return <PlayCircle className="w-4 h-4 text-blue-400" />;
+        return <PlayCircle className="w-4 h-4 text-blue-600" />;
       case 'DELAYED':
-        return <AlertTriangle className="w-4 h-4 text-amber-400" />;
+        return <AlertTriangle className="w-4 h-4 text-amber-600" />;
       case 'COMPLETED':
-        return <CheckCircle2 className="w-4 h-4 text-emerald-400" />;
+        return <CheckCircle2 className="w-4 h-4 text-emerald-600" />;
       case 'CANCELLED':
-        return <XCircle className="w-4 h-4 text-rose-400" />;
+        return <XCircle className="w-4 h-4 text-rose-600" />;
     }
   };
 
@@ -105,20 +105,20 @@ export function ExcursionStatusModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="excursion-status-modal-title"
-      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 overflow-y-auto bg-[#0B1F33]/60 backdrop-blur-xs flex items-center justify-center p-4"
     >
-      <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white border border-[#E5E0D7] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+        <div className="px-6 py-4 border-b border-[#E5E0D7] flex items-center justify-between bg-[#F7F4ED]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/25 flex items-center justify-center text-cyan-400">
+            <div className="w-9 h-9 rounded-xl bg-[#397C80]/10 border border-[#397C80]/20 flex items-center justify-center text-[#397C80]">
               <RefreshCw className="w-4 h-4" />
             </div>
             <div>
-              <h3 id="excursion-status-modal-title" className="text-sm font-bold text-white tracking-wide">
+              <h3 id="excursion-status-modal-title" className="text-sm font-bold text-[#102A43] tracking-wide">
                 Chuyển Đổi Trạng Thái Tour Trên Bờ
               </h3>
-              <span className="text-xs text-slate-400 block truncate max-w-[280px]">
+              <span className="text-xs text-[#252B32]/70 block truncate max-w-[280px]">
                 {excursion.title} ({excursion.code})
               </span>
             </div>
@@ -126,7 +126,7 @@ export function ExcursionStatusModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/80 transition-all cursor-pointer"
+            className="p-1.5 text-[#252B32]/60 hover:text-[#102A43] rounded-lg hover:bg-slate-100 transition-all cursor-pointer"
             title="Đóng hộp thoại"
           >
             <X className="w-4 h-4" />
@@ -136,34 +136,34 @@ export function ExcursionStatusModal({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-center gap-2 text-xs text-rose-300">
-              <AlertOctagon className="w-4 h-4 shrink-0 text-rose-400" />
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-xs text-rose-800">
+              <AlertOctagon className="w-4 h-4 shrink-0 text-rose-600" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Current Status Box */}
-          <div className="p-3.5 bg-slate-800/60 border border-slate-700/60 rounded-xl space-y-1">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+          <div className="p-3.5 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl space-y-1">
+            <span className="text-[11px] font-semibold text-[#102A43] uppercase tracking-wider block">
               Trạng thái hiện tại:
             </span>
             <div className="flex items-center gap-2">
-              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${statusConfig.cls}`}>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${statusConfig.cls}`}>
                 {getStatusIcon(excursion.status)}
                 {statusConfig.label}
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">{statusConfig.desc}</p>
+            <p className="text-[11px] text-[#252B32]/70 mt-1">{statusConfig.desc}</p>
           </div>
 
           {/* Target Status Selection */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-300 block">
+            <label className="text-xs font-semibold text-[#102A43] block">
               Chọn trạng thái chuyển tiếp:
             </label>
 
             {allowedTransitions.length === 0 ? (
-              <p className="text-xs text-amber-400 bg-amber-500/10 p-3 rounded-xl border border-amber-500/20">
+              <p className="text-xs text-amber-800 bg-amber-50 p-3 rounded-xl border border-amber-200">
                 Tour đã hoàn thành và đạt trạng thái cuối cùng, không thể chuyển đổi thêm.
               </p>
             ) : (
@@ -176,16 +176,16 @@ export function ExcursionStatusModal({
                       key={st}
                       type="button"
                       onClick={() => handleStatusSelect(st)}
-                      className={`w-full p-3 rounded-xl border text-left flex items-start gap-3 transition-all ${
+                      className={`w-full p-3 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-cyan-950/40 border-cyan-500 text-white shadow-lg shadow-cyan-950/30'
-                          : 'bg-slate-800/40 border-slate-700 hover:bg-slate-800 text-slate-300'
+                          ? 'bg-[#102A43] border-[#102A43] text-white shadow-sm'
+                          : 'bg-white border-[#E5E0D7] hover:bg-[#F7F4ED] text-[#252B32]'
                       }`}
                     >
                       <div className="mt-0.5">{getStatusIcon(st)}</div>
                       <div>
-                        <p className="text-xs font-semibold">{cfg.label}</p>
-                        <p className="text-[11px] text-slate-400">{cfg.desc}</p>
+                        <p className={`text-xs font-semibold ${isSelected ? 'text-white' : 'text-[#102A43]'}`}>{cfg.label}</p>
+                        <p className={`text-[11px] ${isSelected ? 'text-slate-200' : 'text-[#252B32]/70'}`}>{cfg.desc}</p>
                       </div>
                     </button>
                   );
@@ -197,9 +197,9 @@ export function ExcursionStatusModal({
           {/* Reason input for DELAYED or CANCELLED */}
           {(selectedStatus === 'DELAYED' || selectedStatus === 'CANCELLED') && (
             <div>
-              <label htmlFor="status-reason-input" className="block text-xs font-medium text-slate-300 mb-1">
+              <label htmlFor="status-reason-input" className="block text-xs font-semibold text-[#102A43] mb-1">
                 {selectedStatus === 'DELAYED' ? 'Lý do bị trễ giờ' : 'Lý do hủy tour'}{' '}
-                <span className="text-rose-400">*</span>
+                <span className="text-rose-500">*</span>
               </label>
               <textarea
                 id="status-reason-input"
@@ -211,25 +211,25 @@ export function ExcursionStatusModal({
                 }
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#102A43] placeholder-[#252B32]/40 focus:outline-none focus:border-[#397C80] focus:ring-1 focus:ring-[#397C80]"
               />
             </div>
           )}
 
           {/* Modal Action Controls */}
-          <div className="pt-3.5 border-t border-slate-800 flex items-center justify-end gap-3">
+          <div className="pt-3.5 border-t border-[#E5E0D7] flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700/80 active:scale-95 transition-all"
+              className="px-4 py-2 rounded-xl text-xs font-medium bg-white text-[#252B32] border border-[#E5E0D7] hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
             >
               Hủy bỏ
             </button>
             <button
               type="submit"
               disabled={submitting || allowedTransitions.length === 0}
-              className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 shadow-md shadow-cyan-900/30"
+              className="px-4 py-2 bg-[#102A43] hover:bg-[#0B1F33] disabled:opacity-50 text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-95"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{submitting ? 'Đang cập nhật...' : 'Xác Nhận Đổi'}</span>

@@ -62,13 +62,13 @@ export const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
         onClick={handleDownload}
         disabled={disabled || loading || blocked}
         aria-label={`Tải hoá đơn PDF cho cabin ${cabinNumber}`}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 font-semibold text-xs hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#397C80] hover:bg-[#2D6468] text-white font-semibold text-xs shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
       >
         {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
         {invoiceNumber ? `Hoá đơn ${invoiceNumber}` : 'Tải hoá đơn PDF'}
       </button>
       {errorMessage && (
-        <p role="alert" className="flex items-center gap-1.5 text-[11px] text-rose-400">
+        <p role="alert" className="flex items-center gap-1.5 text-[11px] text-rose-600 font-medium">
           <AlertCircle className="w-3.5 h-3.5" />
           {errorMessage}
         </p>

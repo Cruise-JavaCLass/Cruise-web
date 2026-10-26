@@ -60,7 +60,7 @@ export function BlurWord({ words }: { words: string[] }) {
   }, [trigger, currentWord]);
 
   return (
-    <span className="inline-block word-gradient font-display italic font-normal">
+    <span className="inline-block maritime-shimmer-text font-serif italic font-normal">
       {letters.map((char, i) => (
         <span
           key={i}

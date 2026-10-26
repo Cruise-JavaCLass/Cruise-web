@@ -204,20 +204,20 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="bulk-import-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B1F33]/60 backdrop-blur-xs p-4 animate-in fade-in"
     >
-      <div className="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+      <div className="bg-white border border-[#E5E0D7] w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[85vh]">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-800 bg-slate-950/70">
+        <div className="flex items-center justify-between p-5 border-b border-[#E5E0D7] bg-[#F7F4ED]">
           <div className="flex items-center gap-2">
-            <UploadCloud className="w-5 h-5 text-blue-400" />
-            <h3 id="bulk-import-title" className="text-base font-bold text-white">
+            <UploadCloud className="w-5 h-5 text-[#397C80]" />
+            <h3 id="bulk-import-title" className="text-base font-serif font-bold text-[#102A43]">
               Nhập Danh Mục Hàng Loạt (Bulk Manifest Sync)
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-[#687787] hover:text-[#102A43] rounded-lg hover:bg-[#E5E0D7]/60 transition"
             aria-label="Đóng cửa sổ"
           >
             <X className="w-5 h-5" />
@@ -227,25 +227,25 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {parseError && (
-            <div className="p-3 rounded-xl bg-rose-950/60 border border-rose-800 text-xs text-rose-300 flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{parseError}</span>
             </div>
           )}
 
           {importResult && (
-            <div className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-800 text-xs text-emerald-300 space-y-1">
+            <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-1">
               <div className="flex items-center gap-2 font-bold text-sm">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span>Nhập danh mục hoàn tất!</span>
               </div>
               <p>
                 Tổng số mục: <strong>{importResult.totalItems}</strong> | Thành công:{' '}
-                <strong className="text-emerald-400">{importResult.successCount}</strong> | Lỗi:{' '}
-                <strong className="text-rose-400">{importResult.failedCount}</strong>
+                <strong className="text-emerald-700">{importResult.successCount}</strong> | Lỗi:{' '}
+                <strong className="text-rose-700">{importResult.failedCount}</strong>
               </p>
               {importResult.errors && importResult.errors.length > 0 && (
-                <div className="mt-2 pt-2 border-t border-emerald-900/60 text-rose-300">
+                <div className="mt-2 pt-2 border-t border-emerald-200 text-rose-700">
                   <p className="font-semibold mb-1">Chi tiết lỗi:</p>
                   <ul className="list-disc pl-4 space-y-0.5">
                     {importResult.errors.map((err, i) => (
@@ -259,7 +259,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
 
           {/* Manifest Info */}
           <div>
-            <label htmlFor="bulk-manifest-number" className="text-xs font-semibold text-slate-400 block mb-1">
+            <label htmlFor="bulk-manifest-number" className="text-xs font-semibold text-[#687787] block mb-1">
               Số Vận Đơn Nhà Cung Cấp (Manifest Number)
             </label>
             <input
@@ -268,37 +268,37 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
               value={manifestNumber}
               onChange={(e) => setManifestNumber(e.target.value)}
               placeholder="VD: MANIFEST-OCT-2026"
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-xs text-[#252B32] font-mono focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
             />
           </div>
 
           {/* File Upload Box */}
-          <div className="p-6 rounded-2xl border-2 border-dashed border-slate-700 hover:border-blue-500 transition text-center bg-slate-800/40 cursor-pointer relative">
+          <div className="p-6 rounded-2xl border-2 border-dashed border-[#E5E0D7] hover:border-[#102A43] transition text-center bg-[#F7F4ED]/60 cursor-pointer relative">
             <input
               type="file"
               accept=".csv,.json"
               onChange={handleFileUpload}
               className="absolute inset-0 opacity-0 cursor-pointer"
             />
-            <FileText className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-            <p className="text-xs font-semibold text-white">
+            <FileText className="w-8 h-8 text-[#687787] mx-auto mb-2" />
+            <p className="text-xs font-semibold text-[#102A43]">
               {fileName ? fileName : 'Kéo thả file CSV hoặc JSON vào đây, hoặc bấm để chọn file'}
             </p>
-            <p className="text-[11px] text-slate-500 mt-1">Hỗ trợ định dạng: .csv, .json</p>
+            <p className="text-[11px] text-[#687787] mt-1">Hỗ trợ định dạng: .csv, .json</p>
           </div>
 
           {/* Items Preview Table */}
           {items.length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-white uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#102A43] uppercase tracking-wider">
                   Bảng Xem Trước ({items.length} món)
                 </span>
               </div>
 
-              <div className="max-h-48 overflow-y-auto border border-slate-800 rounded-xl">
+              <div className="max-h-48 overflow-y-auto border border-[#E5E0D7] rounded-xl">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-950 text-slate-400 uppercase font-semibold">
+                  <thead className="bg-[#F7F4ED] text-[#687787] uppercase font-semibold">
                     <tr>
                       <th className="p-2">SKU</th>
                       <th className="p-2">Tên món</th>
@@ -307,16 +307,16 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
                       <th className="p-2 text-right">Tồn kho</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800">
+                  <tbody className="divide-y divide-[#E5E0D7]">
                     {items.map((item, idx) => (
-                      <tr key={idx} className="hover:bg-slate-800/50">
-                        <td className="p-2 font-mono text-slate-300">{item.sku}</td>
-                        <td className="p-2 font-medium text-white">{item.name}</td>
-                        <td className="p-2 text-slate-400">{item.outletCode || 'CHUNG'}</td>
-                        <td className="p-2 text-right font-mono text-emerald-400">
+                      <tr key={idx} className="hover:bg-[#F7F4ED]/50 transition-colors">
+                        <td className="p-2 font-mono text-[#252B32]">{item.sku}</td>
+                        <td className="p-2 font-medium text-[#102A43]">{item.name}</td>
+                        <td className="p-2 text-[#687787]">{item.outletCode || 'CHUNG'}</td>
+                        <td className="p-2 text-right font-mono font-bold text-[#102A43]">
                           ${item.basePrice.toFixed(2)}
                         </td>
-                        <td className="p-2 text-right font-mono text-slate-300">
+                        <td className="p-2 text-right font-mono text-[#252B32]">
                           {item.stockQuantity ?? 100}
                         </td>
                       </tr>
@@ -329,11 +329,11 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-800 bg-slate-950/70 flex justify-between items-center">
+        <div className="p-4 border-t border-[#E5E0D7] bg-[#F7F4ED]/50 flex justify-between items-center">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-semibold transition"
+            className="px-4 py-2 rounded-xl border border-[#E5E0D7] text-[#687787] hover:bg-[#F7F4ED] hover:text-[#102A43] text-xs font-semibold transition shadow-xs"
           >
             Đóng
           </button>
@@ -342,7 +342,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
             type="button"
             disabled={isImporting || items.length === 0}
             onClick={() => void handleConfirmImport()}
-            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-blue-600/30 transition"
+            className="px-5 py-2 rounded-xl bg-[#102A43] hover:bg-[#183B5B] disabled:opacity-50 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition"
           >
             {isImporting ? (
               <>

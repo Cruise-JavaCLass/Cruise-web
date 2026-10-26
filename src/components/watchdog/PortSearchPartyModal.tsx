@@ -166,67 +166,67 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="search-party-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B1F33]/60 backdrop-blur-xs p-4 animate-in fade-in duration-200"
     >
       <div
         ref={modalRef}
         tabIndex={-1}
-        className="bg-slate-900 border-2 border-amber-500 rounded-2xl w-full max-w-lg overflow-hidden text-slate-100 shadow-2xl focus:outline-none"
+        className="bg-white border border-[#E5E0D7] rounded-2xl w-full max-w-lg overflow-hidden text-[#252B32] shadow-2xl focus:outline-none"
       >
         {/* Modal Header */}
-        <div className="bg-amber-600 px-6 py-4 flex items-center justify-between">
+        <div className="bg-[#F7F4ED] border-b border-[#E5E0D7] px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Search className="w-5 h-5 text-white" />
-            <h3 id="search-party-title" className="text-base font-black uppercase tracking-wider text-white">
+            <Search className="w-5 h-5 text-[#102A43]" />
+            <h3 id="search-party-title" className="text-base font-bold uppercase tracking-wider text-[#102A43]">
               Port Search Party Coordinator
             </h3>
           </div>
           <button
             onClick={onClose}
             aria-label="Close coordinator"
-            className="p-1 rounded-lg text-amber-200 hover:text-white hover:bg-amber-700 transition"
+            className="p-1 rounded-lg text-[#252B32]/60 hover:text-[#102A43] hover:bg-[#ECE7DC] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Content */}
-        <div className="p-6 space-y-5">
+        <div className="p-6 space-y-5 bg-white">
           {/* Passenger Brief Card */}
-          <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-2">
+          <div className="bg-[#F7F4ED]/60 p-4 rounded-xl border border-[#E5E0D7] space-y-2">
             <div className="flex justify-between items-start">
               <div>
-                <h4 className="text-lg font-bold text-white">{passenger.fullName}</h4>
-                <p className="text-xs text-slate-400 font-mono">
-                  Cabin: <strong className="text-amber-300">{passenger.cabinNumber}</strong> | RFID: {passenger.rfidTag || 'None'}
+                <h4 className="text-lg font-bold text-[#102A43]">{passenger.fullName}</h4>
+                <p className="text-xs text-[#252B32]/60 font-mono">
+                  Cabin: <strong className="text-[#102A43]">{passenger.cabinNumber}</strong> | RFID: {passenger.rfidTag || 'None'}
                 </p>
               </div>
-              <span className="px-2 py-0.5 bg-red-950 text-red-300 border border-red-800 rounded text-xs font-mono">
+              <span className="px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-200 rounded text-xs font-mono font-semibold">
                 DISEMBARKED
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-700/60 font-mono">
+            <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-[#E5E0D7] font-mono">
               <div>
-                <span className="text-slate-500 block">Phone:</span>
-                <span className="text-slate-200 font-medium">{passenger.phoneNumber || 'N/A'}</span>
+                <span className="text-[#252B32]/60 block">Phone:</span>
+                <span className="text-[#252B32] font-medium">{passenger.phoneNumber || 'N/A'}</span>
               </div>
               <div>
-                <span className="text-slate-500 block">ICE Contact:</span>
-                <span className="text-slate-200 font-medium">{passenger.emergencyContact || 'N/A'}</span>
+                <span className="text-[#252B32]/60 block">ICE Contact:</span>
+                <span className="text-[#252B32] font-medium">{passenger.emergencyContact || 'N/A'}</span>
               </div>
             </div>
           </div>
 
           {feedback && (
-            <div className="p-3 bg-amber-950/80 border border-amber-500 rounded-lg text-amber-200 text-xs font-semibold">
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs font-semibold">
               {feedback}
             </div>
           )}
 
           {/* Quick Action Triggers */}
           <div className="space-y-3">
-            <label htmlFor="search-party-notes" className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
+            <label htmlFor="search-party-notes" className="text-xs font-bold uppercase tracking-wider text-[#102A43] block">
               Direct Contact & Alert Protocols:
             </label>
 
@@ -234,18 +234,18 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
               <button
                 onClick={() => void handleSendDirectAlert('SMS')}
                 disabled={submitting || !passenger.phoneNumber}
-                className="flex items-center justify-center gap-2 p-3 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 text-xs font-bold text-slate-200 transition disabled:opacity-50"
+                className="flex items-center justify-center gap-2 p-3 bg-white hover:bg-[#F7F4ED] rounded-xl border border-[#E5E0D7] text-xs font-bold text-[#102A43] transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
               >
-                <MessageSquare className="w-4 h-4 text-cyan-400" />
+                <MessageSquare className="w-4 h-4 text-[#397C80]" />
                 Dispatch Direct SMS
               </button>
 
               <button
                 onClick={() => void handleSendDirectAlert('IN_APP')}
                 disabled={submitting}
-                className="flex items-center justify-center gap-2 p-3 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 text-xs font-bold text-slate-200 transition disabled:opacity-50"
+                className="flex items-center justify-center gap-2 p-3 bg-white hover:bg-[#F7F4ED] rounded-xl border border-[#E5E0D7] text-xs font-bold text-[#102A43] transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
               >
-                <Megaphone className="w-4 h-4 text-amber-400" />
+                <Megaphone className="w-4 h-4 text-amber-600" />
                 Push Urgent App Alert
               </button>
             </div>
@@ -253,7 +253,7 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={handleCallEmergencyContact}
-                className="flex items-center justify-center gap-2 p-3 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 text-xs font-bold text-emerald-400 transition"
+                className="flex items-center justify-center gap-2 p-3 bg-white hover:bg-[#F7F4ED] rounded-xl border border-[#E5E0D7] text-xs font-bold text-emerald-700 transition-colors shadow-2xs cursor-pointer"
               >
                 <PhoneCall className="w-4 h-4" />
                 Call ICE Emergency
@@ -262,7 +262,7 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
               <button
                 onClick={() => void handleSendDirectAlert('PA')}
                 disabled={submitting}
-                className="flex items-center justify-center gap-2 p-3 bg-red-950/40 hover:bg-red-900/50 rounded-xl border border-red-800 text-xs font-bold text-red-300 transition disabled:opacity-50"
+                className="flex items-center justify-center gap-2 p-3 bg-rose-50 hover:bg-rose-100 rounded-xl border border-rose-200 text-xs font-bold text-rose-700 transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
               >
                 <ShieldAlert className="w-4 h-4" />
                 Terminal PA Page
@@ -273,26 +273,27 @@ export const PortSearchPartyModal: React.FC<PortSearchPartyModalProps> = ({
           {/* Search Party Dispatch Directive */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
+              <label className="text-xs font-bold uppercase tracking-wider text-[#102A43] block">
                 Search Party Dispatch Notes:
               </label>
-              <span className="text-[10px] text-slate-500 font-mono">Auto-saved to coordination log</span>
+              <span className="text-[10px] text-[#252B32]/60 font-mono">Auto-saved to coordination log</span>
             </div>
             <textarea
+              id="search-party-notes"
               rows={2}
               value={notes}
               onChange={(e) => handleNotesChange(e.target.value)}
               placeholder="e.g. Dispatched local port security team to Marina shopping district..."
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="w-full bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl p-3 text-xs text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/10 focus:border-[#102A43]"
             />
           </div>
         </div>
 
         {/* Modal Footer */}
-        <div className="bg-slate-800/80 px-6 py-3 border-t border-slate-800 flex justify-end">
+        <div className="bg-[#F7F4ED] px-6 py-3 border-t border-[#E5E0D7] flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold text-white transition"
+            className="px-4 py-2 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
           >
             Close Coordinator
           </button>

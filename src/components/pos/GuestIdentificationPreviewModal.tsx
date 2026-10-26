@@ -25,23 +25,23 @@ export const GuestIdentificationPreviewModal: React.FC<GuestIdentificationPrevie
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B1F33]/60 p-4 backdrop-blur-xs"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
+      <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white border border-[#E5E0D7] shadow-xl transition-all">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-[#E5E0D7] bg-[#F7F4ED] px-6 py-4">
           <div className="flex items-center space-x-2">
-            <span className="flex h-3 w-3 rounded-full bg-emerald-500" />
-            <h2 id="modal-title" className="text-lg font-bold text-gray-900">
+            <span className="flex h-3 w-3 rounded-full bg-[#397C80]" />
+            <h2 id="modal-title" className="text-lg font-serif font-bold text-[#102A43]">
               Đối Chiếu Nhận Diện Hành Khách
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
+            className="rounded-lg p-1 text-[#687787] hover:bg-[#E5E0D7]/60 hover:text-[#102A43] transition"
             aria-label="Đóng modal"
           >
             ✕
@@ -52,20 +52,20 @@ export const GuestIdentificationPreviewModal: React.FC<GuestIdentificationPrevie
         <div className="p-6">
           <div className="flex flex-col sm:flex-row items-center gap-6">
             {/* Guest Portrait Photo */}
-            <div className="relative flex-shrink-0">
+            <div className="relative shrink-0">
               {guest.photoUrl ? (
                 <img
                   src={guest.photoUrl}
                   alt={guest.fullName}
-                  className="h-32 w-32 rounded-2xl border-2 border-gray-200 object-cover shadow-sm"
+                  className="h-32 w-32 rounded-2xl border border-[#E5E0D7] object-cover shadow-xs"
                 />
               ) : (
-                <div className="flex h-32 w-32 items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 text-gray-400 font-medium">
+                <div className="flex h-32 w-32 items-center justify-center rounded-2xl border-2 border-dashed border-[#E5E0D7] bg-[#F7F4ED] text-[#687787] font-medium">
                   Không có ảnh
                 </div>
               )}
               {guest.isMinor && (
-                <span className="absolute -bottom-2 -right-2 rounded-full bg-amber-500 px-2 py-0.5 text-xs font-bold text-white shadow">
+                <span className="absolute -bottom-2 -right-2 rounded-full bg-[#C5A572] px-2 py-0.5 text-xs font-bold text-[#0B1F33] shadow-xs">
                   Trẻ em
                 </span>
               )}
@@ -73,25 +73,25 @@ export const GuestIdentificationPreviewModal: React.FC<GuestIdentificationPrevie
 
             {/* Profile Summary */}
             <div className="flex-1 text-center sm:text-left space-y-2">
-              <h3 className="text-xl font-bold text-gray-900">{guest.fullName}</h3>
-              <p className="text-sm font-medium text-gray-500">
-                Cabin: <span className="font-bold text-gray-900">{guest.cabinNumber}</span>
+              <h3 className="text-xl font-serif font-bold text-[#102A43]">{guest.fullName}</h3>
+              <p className="text-sm font-medium text-[#687787]">
+                Cabin: <span className="font-bold text-[#102A43] font-mono">{guest.cabinNumber}</span>
               </p>
               <div className="flex flex-wrap gap-1.5 justify-center sm:justify-start">
-                <span className="rounded-md bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
+                <span className="rounded-md bg-[#102A43]/10 px-2.5 py-0.5 text-xs font-semibold text-[#102A43] border border-[#102A43]/20">
                   {guest.credentialType}: {guest.maskedIdentifier}
                 </span>
                 <span
                   className={`rounded-md px-2.5 py-0.5 text-xs font-semibold ${
                     guest.credentialStatus === 'ACTIVE'
-                      ? 'bg-emerald-50 text-emerald-700'
-                      : 'bg-rose-50 text-rose-700'
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                      : 'bg-rose-50 text-rose-800 border border-rose-200'
                   }`}
                 >
                   {guest.credentialStatus}
                 </span>
                 {guest.alcoholRestricted && (
-                  <span className="rounded-md bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-700">
+                  <span className="rounded-md bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-800 border border-rose-200">
                     Cấm đồ cồn
                   </span>
                 )}
@@ -100,27 +100,27 @@ export const GuestIdentificationPreviewModal: React.FC<GuestIdentificationPrevie
           </div>
 
           {/* Folio & Balance Overview */}
-          <div className="mt-6 rounded-xl bg-gray-50 p-4 border border-gray-100 space-y-3">
+          <div className="mt-6 rounded-xl bg-[#F7F4ED] p-4 border border-[#E5E0D7] space-y-3">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-500">Trạng thái Folio:</span>
-              <span className="font-semibold text-gray-900">{guest.folioStatus}</span>
+              <span className="text-[#687787]">Trạng thái Folio:</span>
+              <span className="font-semibold text-[#252B32]">{guest.folioStatus}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-500">Hạn mức khả dụng:</span>
-              <span className="text-lg font-bold text-emerald-600">
+              <span className="text-[#687787]">Hạn mức khả dụng:</span>
+              <span className="text-lg font-bold text-[#102A43] font-mono">
                 ${guest.availableLimit.toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-500">Tổng hạn mức / Đã tiêu:</span>
-              <span className="text-gray-700 font-medium">
+              <span className="text-[#687787]">Tổng hạn mức / Đã tiêu:</span>
+              <span className="text-[#252B32] font-mono font-medium">
                 ${guest.creditLimit.toFixed(2)} / ${guest.currentBalance.toFixed(2)}
               </span>
             </div>
             {guest.individualSpendingLimit !== undefined && (
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Hạn mức cá nhân phụ trợ:</span>
-                <span className="text-amber-600 font-semibold">
+                <span className="text-[#687787]">Hạn mức cá nhân phụ trợ:</span>
+                <span className="text-[#8C6D37] font-semibold font-mono">
                   ${guest.individualSpendingLimit.toFixed(2)}
                 </span>
               </div>
@@ -129,18 +129,18 @@ export const GuestIdentificationPreviewModal: React.FC<GuestIdentificationPrevie
 
           {/* Security Alert Banner if Blocked */}
           {isBlocked && (
-            <div className="mt-4 rounded-xl bg-rose-50 p-3.5 border border-rose-200 text-rose-700 text-sm">
+            <div className="mt-4 rounded-xl bg-rose-50 p-3.5 border border-rose-200 text-rose-800 text-sm">
               ⚠️ Thẻ hoặc tài khoản này không được phép chi tiêu (Trạng thái: {guest.credentialStatus}). Vui lòng thông báo cho bộ phận an ninh hoặc quầy Lễ tân.
             </div>
           )}
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-[#E5E0D7] bg-[#F7F4ED]/50 px-6 py-4">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition"
+            className="rounded-xl px-4 py-2 text-sm font-semibold text-[#687787] hover:bg-[#F7F4ED] hover:text-[#102A43] border border-[#E5E0D7] transition shadow-xs"
           >
             Hủy Bỏ
           </button>
@@ -148,7 +148,7 @@ export const GuestIdentificationPreviewModal: React.FC<GuestIdentificationPrevie
             type="button"
             disabled={isBlocked || isLoading}
             onClick={() => onConfirmAssign(guest)}
-            className="rounded-xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="rounded-xl bg-[#102A43] hover:bg-[#183B5B] px-5 py-2 text-sm font-semibold text-white shadow-xs disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             {isLoading ? 'Đang Xử Lý...' : 'Xác Nhận Gán Vào Giỏ Hàng'}
           </button>

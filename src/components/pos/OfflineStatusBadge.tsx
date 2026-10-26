@@ -61,11 +61,11 @@ export const OfflineStatusBadge: React.FC<OfflineStatusBadgeProps> = ({ onOpenIn
         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold border transition-all ${
           isOnline
             ? latencyGrade === 'GOOD'
-              ? 'bg-emerald-950/60 border-emerald-800 text-emerald-400'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
               : latencyGrade === 'FAIR'
-              ? 'bg-amber-950/60 border-amber-800 text-amber-400'
-              : 'bg-orange-950/60 border-orange-800 text-orange-400'
-            : 'bg-rose-950/70 border-rose-800 text-rose-300 animate-pulse'
+              ? 'bg-amber-50 border-amber-200 text-amber-800'
+              : 'bg-orange-50 border-orange-200 text-orange-800'
+            : 'bg-rose-50 border-rose-200 text-rose-800 animate-pulse'
         }`}
       >
         {isOnline ? (
@@ -89,20 +89,20 @@ export const OfflineStatusBadge: React.FC<OfflineStatusBadgeProps> = ({ onOpenIn
         onClick={onOpenInspector}
         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
           pendingCount > 0
-            ? 'bg-amber-950/80 border-amber-600 text-amber-300 hover:bg-amber-900/90 shadow-sm'
-            : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:text-slate-200'
+            ? 'bg-amber-50 border-amber-300 text-amber-900 hover:bg-amber-100 shadow-xs'
+            : 'bg-white border-[#E5E0D7] text-[#687787] hover:text-[#102A43] hover:bg-[#F7F4ED]'
         }`}
       >
         <Database className="w-3.5 h-3.5" />
         <span>Hàng đợi:</span>
         <span
           className={`px-1.5 py-0.2 rounded-md font-mono text-[11px] ${
-            pendingCount > 0 ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-700 text-slate-300'
+            pendingCount > 0 ? 'bg-amber-200 text-amber-950 font-bold' : 'bg-[#F7F4ED] text-[#687787]'
           }`}
         >
           {pendingCount}
         </span>
-        {pendingCount > 0 && <RefreshCw className="w-3 h-3 animate-spin text-amber-400" />}
+        {pendingCount > 0 && <RefreshCw className="w-3 h-3 animate-spin text-amber-600" />}
       </button>
     </div>
   );

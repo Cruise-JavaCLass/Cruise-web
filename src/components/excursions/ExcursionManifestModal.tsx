@@ -380,25 +380,25 @@ export function ExcursionManifestModal({
       case 'REGISTERED':
         return {
           label: 'Đã Đăng Ký',
-          cls: 'bg-slate-500/10 text-slate-300 border-slate-500/20',
+          cls: 'bg-slate-100 text-slate-700 border-slate-200',
           icon: Clock,
         };
       case 'CHECKED_IN':
         return {
           label: 'Đã Lên Xe',
-          cls: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20',
+          cls: 'bg-[#397C80]/10 text-[#397C80] border-[#397C80]/30',
           icon: UserCheck,
         };
       case 'ON_TOUR':
         return {
           label: 'Đang Tham Quan',
-          cls: 'bg-blue-500/10 text-blue-300 border-blue-500/20',
+          cls: 'bg-blue-50 text-blue-700 border-blue-200',
           icon: Bus,
         };
       case 'RETURNED_SAFE':
         return {
           label: 'Về Tàu An Toàn',
-          cls: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
+          cls: 'bg-emerald-50 text-emerald-800 border-emerald-200',
           icon: ShieldCheck,
         };
     }
@@ -414,23 +414,23 @@ export function ExcursionManifestModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-labelledby="manifest-modal-title"
     >
-      <div className="bg-slate-900 border border-slate-800 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden my-6 animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white border border-[#E5E0D7] w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden my-6 animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-900 to-cyan-950/40">
+        <div className="px-6 py-4 border-b border-[#E5E0D7] flex items-center justify-between bg-[#F7F4ED]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+            <div className="w-10 h-10 rounded-xl bg-[#397C80]/10 border border-[#397C80]/20 flex items-center justify-center text-[#397C80]">
               <Bus className="w-5 h-5" />
             </div>
             <div>
-              <h3 id="manifest-modal-title" className="text-base font-bold text-white flex items-center gap-2">
+              <h3 id="manifest-modal-title" className="text-base font-bold text-[#102A43] flex items-center gap-2">
                 Danh Sách Đoàn & Xe Đưa Đón (Passenger Manifest)
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[#252B32]/70">
                 {excursion.title} • {excursion.portCity} ({excursion.excursionDate})
               </p>
             </div>
@@ -441,10 +441,10 @@ export function ExcursionManifestModal({
             <button
               type="button"
               onClick={handleAutoAssign}
-              className="px-3 py-1.5 bg-gradient-to-r from-cyan-600/30 to-blue-600/30 hover:from-cyan-600/50 hover:to-blue-600/50 text-cyan-300 border border-cyan-500/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"
+              className="px-3 py-1.5 bg-[#397C80]/10 hover:bg-[#397C80]/20 text-[#397C80] border border-[#397C80]/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 shadow-xs cursor-pointer"
               title="Tự động chia đều hành khách vào các nhóm và xe"
             >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <Sparkles className="w-3.5 h-3.5 text-[#397C80]" />
               Chia nhóm tự động
             </button>
 
@@ -453,21 +453,21 @@ export function ExcursionManifestModal({
               type="button"
               onClick={() => setIsAddPassengerOpen((prev) => !prev)}
               disabled={isCapacityFull}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer ${
                 isCapacityFull
-                  ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
-                  : 'bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40'
+                  ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
+                  : 'bg-[#102A43] hover:bg-[#0B1F33] text-white border border-[#102A43]'
               }`}
               title={isCapacityFull ? 'Tour đã đạt sức chứa tối đa' : 'Thêm hành khách vào tour'}
             >
-              <UserPlus className="w-3.5 h-3.5 text-emerald-400" />
+              <UserPlus className={`w-3.5 h-3.5 ${isCapacityFull ? 'text-slate-400' : 'text-white'}`} />
               + Thêm hành khách
             </button>
 
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors ml-1"
+              className="p-1.5 text-[#252B32]/60 hover:text-[#102A43] rounded-lg hover:bg-slate-100 transition-colors ml-1 cursor-pointer"
               title="Đóng"
             >
               <X className="w-5 h-5" />
@@ -477,26 +477,26 @@ export function ExcursionManifestModal({
 
         {/* Feedback / Alert Notice */}
         {successMessage && (
-          <div className="mx-6 mt-4 p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-xs text-emerald-300 flex items-center gap-2 animate-in fade-in">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="mx-6 mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2 animate-in fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{successMessage}</span>
           </div>
         )}
         {errorMessage && (
-          <div className="mx-6 mt-4 p-3 rounded-xl bg-rose-950/40 border border-rose-500/40 text-xs text-rose-300 flex items-center gap-2 animate-in fade-in">
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+          <div className="mx-6 mt-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center gap-2 animate-in fade-in">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {/* Add Passenger Expandable Panel */}
         {isAddPassengerOpen && (
-          <div className="mx-6 mt-4 p-4 rounded-2xl bg-slate-800/80 border border-cyan-500/30 space-y-3 animate-in fade-in duration-150">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-700">
-              <h4 className="text-xs font-bold text-white flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-cyan-400" /> Thêm Hành Khách Vào Tour
+          <div className="mx-6 mt-4 p-4 rounded-2xl bg-[#F7F4ED] border border-[#E5E0D7] space-y-3 animate-in fade-in duration-150">
+            <div className="flex items-center justify-between pb-2 border-b border-[#E5E0D7]">
+              <h4 className="text-xs font-bold text-[#102A43] flex items-center gap-2">
+                <UserPlus className="w-4 h-4 text-[#397C80]" /> Thêm Hành Khách Vào Tour
               </h4>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-[#252B32]/70">
                 Sức chứa hiện tại: {passengers.length} / {excursion.maxCapacity}
               </span>
             </div>
@@ -505,14 +505,14 @@ export function ExcursionManifestModal({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* Pick from onboard passengers */}
                 <div className="sm:col-span-3">
-                  <label htmlFor="select-ship-passenger" className="text-[11px] text-slate-400 block mb-1">
+                  <label htmlFor="select-ship-passenger" className="text-[11px] font-semibold text-[#102A43] block mb-1">
                     Chọn nhanh từ danh sách khách trên tàu (chưa tham gia):
                   </label>
                   <select
                     id="select-ship-passenger"
                     value={selectedShipPassengerId}
                     onChange={(e) => handleSelectShipPassenger(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-1.5 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#102A43] focus:outline-none focus:border-[#397C80] focus:ring-1 focus:ring-[#397C80]"
                   >
                     <option value="">-- Nhập thủ công hoặc chọn từ danh sách khách trên tàu --</option>
                     {availableShipPassengers.map((sp) => (
@@ -524,8 +524,8 @@ export function ExcursionManifestModal({
                 </div>
 
                 <div>
-                  <label htmlFor="new-passenger-name" className="text-[11px] text-slate-400 block mb-1">
-                    Họ và tên hành khách <span className="text-rose-400">*</span>
+                  <label htmlFor="new-passenger-name" className="text-[11px] font-semibold text-[#102A43] block mb-1">
+                    Họ và tên hành khách <span className="text-rose-500">*</span>
                   </label>
                   <input
                     id="new-passenger-name"
@@ -534,13 +534,13 @@ export function ExcursionManifestModal({
                     placeholder="Nguyễn Văn A"
                     value={newPassengerName}
                     onChange={(e) => setNewPassengerName(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-1.5 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#102A43] focus:outline-none focus:border-[#397C80] focus:ring-1 focus:ring-[#397C80]"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="new-cabin-number" className="text-[11px] text-slate-400 block mb-1">
-                    Số phòng / Cabin <span className="text-rose-400">*</span>
+                  <label htmlFor="new-cabin-number" className="text-[11px] font-semibold text-[#102A43] block mb-1">
+                    Số phòng / Cabin <span className="text-rose-500">*</span>
                   </label>
                   <input
                     id="new-cabin-number"
@@ -549,12 +549,12 @@ export function ExcursionManifestModal({
                     placeholder="Suite-801"
                     value={newCabinNumber}
                     onChange={(e) => setNewCabinNumber(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-1.5 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#102A43] focus:outline-none focus:border-[#397C80] focus:ring-1 focus:ring-[#397C80]"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="new-phone" className="text-[11px] text-slate-400 block mb-1">
+                  <label htmlFor="new-phone" className="text-[11px] font-semibold text-[#102A43] block mb-1">
                     SĐT khẩn cấp
                   </label>
                   <input
@@ -563,19 +563,19 @@ export function ExcursionManifestModal({
                     placeholder="+84 912 345 678"
                     value={newPhone}
                     onChange={(e) => setNewPhone(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-1.5 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#102A43] focus:outline-none focus:border-[#397C80] focus:ring-1 focus:ring-[#397C80]"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="new-group-select" className="text-[11px] text-slate-400 block mb-1">
+                  <label htmlFor="new-group-select" className="text-[11px] font-semibold text-[#102A43] block mb-1">
                     Phân bổ vào Nhóm & Xe:
                   </label>
                   <select
                     id="new-group-select"
                     value={newGroupId}
                     onChange={(e) => setNewGroupId(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-1.5 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#102A43] focus:outline-none focus:border-[#397C80] focus:ring-1 focus:ring-[#397C80]"
                   >
                     {DEFAULT_EXCURSION_GROUPS.map((g) => (
                       <option key={g.id} value={g.id}>
@@ -586,7 +586,7 @@ export function ExcursionManifestModal({
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label htmlFor="new-special-req" className="text-[11px] text-slate-400 block mb-1">
+                  <label htmlFor="new-special-req" className="text-[11px] font-semibold text-[#102A43] block mb-1">
                     Yêu cầu đặc biệt (Ăn chay, hỗ trợ y tế, xe lăn...)
                   </label>
                   <input
@@ -595,23 +595,23 @@ export function ExcursionManifestModal({
                     placeholder="Không có ghi chú"
                     value={newSpecialReq}
                     onChange={(e) => setNewSpecialReq(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-1.5 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#102A43] focus:outline-none focus:border-[#397C80] focus:ring-1 focus:ring-[#397C80]"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-700/60">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E5E0D7]">
                 <button
                   type="button"
                   onClick={() => setIsAddPassengerOpen(false)}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition-colors"
+                  className="px-3 py-1.5 bg-white hover:bg-slate-50 text-[#252B32] border border-[#E5E0D7] rounded-xl text-xs font-medium transition-colors cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={isCapacityFull || isSubmitting}
-                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold transition-all shadow-md active:scale-95 disabled:opacity-50"
+                  className="px-4 py-1.5 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-xs font-semibold transition-all shadow-xs active:scale-95 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? 'Đang thêm...' : 'Xác nhận thêm khách'}
                 </button>
@@ -623,29 +623,29 @@ export function ExcursionManifestModal({
         {/* Info & KPI Bar */}
         <div className="p-6 space-y-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60">
-              <span className="text-[11px] text-slate-400 block">Tổng số khách đăng ký</span>
-              <span className="text-base font-bold text-white">
+            <div className="bg-[#F7F4ED] p-3 rounded-xl border border-[#E5E0D7]">
+              <span className="text-[11px] text-[#252B32]/70 block font-medium">Tổng số khách đăng ký</span>
+              <span className="text-base font-bold text-[#102A43]">
                 {passengers.length} / {excursion.maxCapacity} khách
               </span>
             </div>
-            <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60">
-              <span className="text-[11px] text-slate-400 block">Hướng dẫn viên</span>
-              <span className="text-xs font-semibold text-cyan-300 truncate block">
+            <div className="bg-[#F7F4ED] p-3 rounded-xl border border-[#E5E0D7]">
+              <span className="text-[11px] text-[#252B32]/70 block font-medium">Hướng dẫn viên</span>
+              <span className="text-xs font-semibold text-[#397C80] truncate block">
                 {excursion.guideName || 'Chưa phân bổ'}
               </span>
-              <span className="text-[10px] text-slate-400">{excursion.guidePhone}</span>
+              <span className="text-[10px] text-[#252B32]/60">{excursion.guidePhone}</span>
             </div>
-            <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60">
-              <span className="text-[11px] text-slate-400 block">Phương tiện chính</span>
-              <span className="text-xs font-semibold text-white truncate block">
+            <div className="bg-[#F7F4ED] p-3 rounded-xl border border-[#E5E0D7]">
+              <span className="text-[11px] text-[#252B32]/70 block font-medium">Phương tiện chính</span>
+              <span className="text-xs font-semibold text-[#102A43] truncate block">
                 {excursion.busNumber || 'Xe du lịch'}
               </span>
-              <span className="text-[10px] text-slate-400">{excursion.operatorName}</span>
+              <span className="text-[10px] text-[#252B32]/60">{excursion.operatorName}</span>
             </div>
-            <div className="bg-emerald-950/30 p-3 rounded-xl border border-emerald-800/40">
-              <span className="text-[11px] text-emerald-400 block">Đã về tàu an toàn</span>
-              <span className="text-base font-bold text-emerald-300">
+            <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+              <span className="text-[11px] text-emerald-800 block font-medium">Đã về tàu an toàn</span>
+              <span className="text-base font-bold text-emerald-900">
                 {returnedSafeCount} / {passengers.length} khách
               </span>
             </div>
@@ -654,14 +654,14 @@ export function ExcursionManifestModal({
           {/* Group Capacity Distribution Chips / Filter by Group */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5 text-cyan-400" /> Phân Bổ Sức Chứa Theo Nhóm & Xe:
+              <span className="text-[11px] font-semibold text-[#102A43] uppercase tracking-wider flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-[#397C80]" /> Phân Bổ Sức Chứa Theo Nhóm & Xe:
               </span>
               {selectedGroup !== 'ALL' && (
                 <button
                   type="button"
                   onClick={() => setSelectedGroup('ALL')}
-                  className="text-[11px] text-cyan-400 hover:text-cyan-300 underline cursor-pointer"
+                  className="text-[11px] text-[#397C80] hover:text-[#2d6366] font-medium underline cursor-pointer"
                 >
                   Xem tất cả đoàn
                 </button>
@@ -675,8 +675,8 @@ export function ExcursionManifestModal({
                 onClick={() => setSelectedGroup('ALL')}
                 className={`px-2.5 py-1 rounded-lg border text-[11px] flex items-center gap-1.5 transition-all cursor-pointer ${
                   selectedGroup === 'ALL'
-                    ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 font-semibold shadow-sm ring-1 ring-cyan-500/30'
-                    : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                    ? 'bg-[#102A43] border-[#102A43] text-white font-semibold shadow-xs'
+                    : 'bg-white border-[#E5E0D7] text-[#252B32] hover:bg-[#F7F4ED]'
                 }`}
               >
                 Tất cả các đoàn ({passengers.length})
@@ -693,17 +693,17 @@ export function ExcursionManifestModal({
                     onClick={() => setSelectedGroup(isSelected ? 'ALL' : group.id)}
                     className={`px-2.5 py-1 rounded-lg border text-[11px] flex items-center gap-2 transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 font-semibold shadow-sm ring-1 ring-cyan-500/30'
+                        ? 'bg-[#102A43] border-[#102A43] text-white font-semibold shadow-xs'
                         : group.currentCount > 0
-                        ? 'bg-slate-800/80 border-slate-700 text-slate-200 hover:border-cyan-500/50'
-                        : 'bg-slate-900/40 border-slate-800 text-slate-500 hover:border-slate-700'
+                        ? 'bg-white border-[#E5E0D7] text-[#102A43] hover:border-[#397C80]'
+                        : 'bg-slate-50 border-[#E5E0D7] text-[#252B32]/50'
                     }`}
                   >
-                    <span className="font-semibold text-cyan-300">{group.groupName}:</span>
-                    <span className={isFull ? 'text-amber-400 font-bold' : 'text-slate-300'}>
+                    <span className="font-semibold">{group.groupName}:</span>
+                    <span className={isFull ? 'text-amber-700 font-bold' : 'text-[#252B32]'}>
                       {group.currentCount}/{group.maxSeats} chỗ
                     </span>
-                    <span className="text-[10px] text-slate-400 hidden sm:inline">({group.busNumber})</span>
+                    <span className="text-[10px] text-[#252B32]/60 hidden sm:inline">({group.busNumber})</span>
                   </button>
                 );
               })}
@@ -716,26 +716,26 @@ export function ExcursionManifestModal({
               <label htmlFor={searchInputId} className="sr-only">
                 Tìm hành khách theo tên hoặc cabin
               </label>
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#252B32]/40 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 id={searchInputId}
                 type="text"
                 placeholder="Tìm theo tên, cabin, mã vé..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="w-full pl-9 pr-3 py-1.5 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#102A43] placeholder-[#252B32]/40 focus:outline-none focus:border-[#397C80] focus:ring-1 focus:ring-[#397C80]"
               />
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <label htmlFor={busFilterId} className="text-xs text-slate-400 whitespace-nowrap">
+              <label htmlFor={busFilterId} className="text-xs font-semibold text-[#102A43] whitespace-nowrap">
                 Lọc theo xe:
               </label>
               <select
                 id={busFilterId}
                 value={selectedGroup}
                 onChange={(e) => setSelectedGroup(e.target.value)}
-                className="px-3 py-1.5 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="px-3 py-1.5 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#102A43] focus:outline-none focus:border-[#397C80] focus:ring-1 focus:ring-[#397C80]"
               >
                 <option value="ALL">Tất cả xe đưa đón</option>
                 {busOptions.map((bus) => (
@@ -749,12 +749,12 @@ export function ExcursionManifestModal({
 
           {/* Bulk Assignment Toolbar */}
           {selectedPassengerIds.length > 0 && (
-            <div className="p-3 bg-cyan-950/40 border border-cyan-500/40 rounded-xl flex flex-wrap items-center justify-between gap-3 animate-in fade-in">
+            <div className="p-3 bg-[#F7F4ED] border border-[#C5A572]/40 rounded-xl flex flex-wrap items-center justify-between gap-3 animate-in fade-in">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-xs font-bold">
+                <span className="px-2 py-0.5 rounded bg-[#102A43] text-white text-xs font-bold">
                   Đã chọn {selectedPassengerIds.length} hành khách
                 </span>
-                <span className="text-xs text-slate-300 hidden sm:inline">| Gán vào nhóm & xe:</span>
+                <span className="text-xs text-[#252B32] hidden sm:inline">| Gán vào nhóm & xe:</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -762,7 +762,7 @@ export function ExcursionManifestModal({
                   aria-label="Chọn đoàn gán hàng loạt"
                   value={bulkTargetGroupId}
                   onChange={(e) => setBulkTargetGroupId(e.target.value)}
-                  className="px-3 py-1.5 bg-slate-900 border border-cyan-500/40 rounded-lg text-xs text-white focus:outline-none focus:border-cyan-400"
+                  className="px-3 py-1.5 bg-white border border-[#E5E0D7] rounded-lg text-xs text-[#102A43] focus:outline-none focus:border-[#397C80]"
                 >
                   {DEFAULT_EXCURSION_GROUPS.map((g) => (
                     <option key={g.id} value={g.id}>
@@ -774,7 +774,7 @@ export function ExcursionManifestModal({
                 <button
                   type="button"
                   onClick={handleBulkAssign}
-                  className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold transition-all active:scale-95"
+                  className="px-3 py-1.5 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-lg text-xs font-semibold transition-all active:scale-95 cursor-pointer shadow-xs"
                 >
                   Gán nhóm hàng loạt
                 </button>
@@ -782,7 +782,7 @@ export function ExcursionManifestModal({
                 <button
                   type="button"
                   onClick={() => setSelectedPassengerIds([])}
-                  className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+                  className="px-2.5 py-1.5 bg-white hover:bg-slate-50 text-[#252B32] border border-[#E5E0D7] rounded-lg text-xs font-medium transition-colors cursor-pointer"
                 >
                   Bỏ chọn
                 </button>
@@ -791,9 +791,9 @@ export function ExcursionManifestModal({
           )}
 
           {/* Passenger Table */}
-          <div className="overflow-x-auto border border-slate-800 rounded-xl max-h-80 overflow-y-auto">
+          <div className="overflow-x-auto border border-[#E5E0D7] rounded-xl max-h-80 overflow-y-auto bg-white">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-800/80 text-slate-400 text-[11px] uppercase tracking-wider sticky top-0 backdrop-blur-md">
+              <thead className="bg-[#F7F4ED] text-[#102A43] text-[11px] uppercase tracking-wider sticky top-0 backdrop-blur-md border-b border-[#E5E0D7]">
                 <tr>
                   <th className="py-2.5 px-3 w-8">
                     <input
@@ -801,7 +801,7 @@ export function ExcursionManifestModal({
                       aria-label="Chọn tất cả hành khách"
                       checked={isAllFilteredSelected}
                       onChange={handleToggleSelectAll}
-                      className="rounded border-slate-700 text-cyan-500 focus:ring-0 cursor-pointer"
+                      className="rounded border-[#E5E0D7] text-[#397C80] focus:ring-0 cursor-pointer"
                     />
                   </th>
                   <th className="py-2.5 px-3">Hành Khách</th>
@@ -813,10 +813,10 @@ export function ExcursionManifestModal({
                   <th className="py-2.5 px-3 text-right">Thao Tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-300">
+              <tbody className="divide-y divide-[#E5E0D7] text-[#252B32]">
                 {filteredPassengers.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-8 text-center text-slate-500">
+                    <td colSpan={8} className="py-8 text-center text-[#252B32]/50">
                       Không tìm thấy hành khách nào phù hợp.
                     </td>
                   </tr>
@@ -833,7 +833,7 @@ export function ExcursionManifestModal({
                       <tr
                         key={p.id}
                         className={`transition-colors ${
-                          isSelected ? 'bg-cyan-950/20 hover:bg-cyan-950/30' : 'hover:bg-slate-800/40'
+                          isSelected ? 'bg-[#397C80]/10 hover:bg-[#397C80]/15' : 'hover:bg-[#F7F4ED]/60'
                         }`}
                       >
                         <td className="py-2.5 px-3">
@@ -842,23 +842,23 @@ export function ExcursionManifestModal({
                             aria-label={`Chọn ${p.passengerName}`}
                             checked={isSelected}
                             onChange={() => handleToggleSelectOne(p.id)}
-                            className="rounded border-slate-700 text-cyan-500 focus:ring-0 cursor-pointer"
+                            className="rounded border-[#E5E0D7] text-[#397C80] focus:ring-0 cursor-pointer"
                           />
                         </td>
-                        <td className="py-2.5 px-3 font-semibold text-white">
+                        <td className="py-2.5 px-3 font-semibold text-[#102A43]">
                           {p.passengerName}
                           {p.specialRequirements && (
-                            <span className="block text-[10px] text-amber-400 font-normal">
+                            <span className="block text-[10px] text-amber-700 font-normal">
                               Lưu ý: {p.specialRequirements}
                             </span>
                           )}
                         </td>
-                        <td className="py-2.5 px-3 text-cyan-400">{p.cabinNumber}</td>
-                        <td className="py-2.5 px-3 font-mono text-[11px] text-slate-400">{p.ticketCode}</td>
+                        <td className="py-2.5 px-3 text-[#397C80] font-semibold">{p.cabinNumber}</td>
+                        <td className="py-2.5 px-3 font-mono text-[11px] text-[#252B32]/70">{p.ticketCode}</td>
                         <td className="py-2.5 px-3">
                           <div className="space-y-1">
-                            <span className="inline-flex items-center gap-1 text-[11px] text-slate-300 font-medium">
-                              <Bus className="w-3 h-3 text-cyan-400" />
+                            <span className="inline-flex items-center gap-1 text-[11px] text-[#252B32] font-medium">
+                              <Bus className="w-3 h-3 text-[#397C80]" />
                               {p.busNumber}
                             </span>
                             <div>
@@ -866,7 +866,7 @@ export function ExcursionManifestModal({
                                 aria-label={`Đổi đoàn cho ${p.passengerName}`}
                                 value={currentGroupId}
                                 onChange={(e) => handleInlineGroupChange(p.id, e.target.value)}
-                                className="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-cyan-300 focus:outline-none focus:border-cyan-500"
+                                className="px-2 py-0.5 bg-white border border-[#E5E0D7] rounded text-[10px] text-[#102A43] focus:outline-none focus:border-[#397C80]"
                               >
                                 {DEFAULT_EXCURSION_GROUPS.map((g) => (
                                   <option key={g.id} value={g.id}>
@@ -877,9 +877,9 @@ export function ExcursionManifestModal({
                             </div>
                           </div>
                         </td>
-                        <td className="py-2.5 px-3 text-[11px] text-slate-400">
+                        <td className="py-2.5 px-3 text-[11px] text-[#252B32]/70">
                           <span className="flex items-center gap-1">
-                            <Phone className="w-3 h-3 text-slate-500" /> {p.emergencyPhone}
+                            <Phone className="w-3 h-3 text-[#252B32]/40" /> {p.emergencyPhone}
                           </span>
                         </td>
                         <td className="py-2.5 px-3">
@@ -893,7 +893,7 @@ export function ExcursionManifestModal({
                             <button
                               type="button"
                               onClick={() => handleToggleStatus(p.id)}
-                              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-lg text-[10px] font-medium transition-colors"
+                              className="px-2.5 py-1 bg-white hover:bg-[#F7F4ED] border border-[#E5E0D7] text-[#102A43] rounded-lg text-[10px] font-medium transition-colors cursor-pointer shadow-xs"
                               title="Chuyển trạng thái điểm danh"
                             >
                               Đổi trạng thái
@@ -901,7 +901,7 @@ export function ExcursionManifestModal({
                             <button
                               type="button"
                               onClick={() => handleRemovePassenger(p.id, p.passengerName)}
-                              className="p-1 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors"
+                              className="p-1 text-[#252B32]/40 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors cursor-pointer"
                               title={`Xóa ${p.passengerName} khỏi tour`}
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -917,14 +917,14 @@ export function ExcursionManifestModal({
           </div>
 
           {/* Modal Footer Controls */}
-          <footer className="pt-3 border-t border-slate-800 flex items-center justify-between">
-            <span className="text-[11px] text-slate-500">
+          <footer className="pt-3 border-t border-[#E5E0D7] flex items-center justify-between">
+            <span className="text-[11px] text-[#252B32]/70">
               Hiển thị {filteredPassengers.length} / {passengers.length} hành khách
             </span>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 rounded-xl text-xs font-medium transition-all"
+              className="px-4 py-2 bg-white hover:bg-[#F7F4ED] border border-[#E5E0D7] active:scale-95 text-[#102A43] rounded-xl text-xs font-semibold transition-all shadow-xs cursor-pointer"
             >
               Đóng
             </button>

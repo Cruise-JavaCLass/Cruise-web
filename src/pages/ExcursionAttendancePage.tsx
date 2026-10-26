@@ -117,22 +117,24 @@ export const ExcursionAttendancePage: React.FC = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
-      {/* Top Banner & Excursion Selector — Editorial Broadside */}
-      <div className="neo-card bg-white p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-[6px_6px_0px_#171717]">
+      {/* Top Banner & Excursion Selector — Luxury Maritime */}
+      <div className="bg-white border border-[#E5E0D7] rounded-xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-[#3155E7] text-white border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-6 h-6" />
+            <div className="w-12 h-12 bg-[#102A43] text-white rounded-xl flex items-center justify-center shrink-0 shadow-xs">
+              <ShieldCheck className="w-6 h-6 text-[#C5A572]" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="neo-badge bg-[#D9FF43] text-[#171717]">ALL-ABOARD SAFETY</span>
-                <span className="text-[10px] font-mono text-[#171717]/60 font-bold">• REAL-TIME DISPATCH</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#102A43]/10 text-[#102A43] border border-[#102A43]/20 tracking-wider">
+                  ALL-ABOARD SAFETY
+                </span>
+                <span className="text-[10px] text-[#687787] font-semibold">• REAL-TIME DISPATCH</span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-display font-black text-[#171717] uppercase tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#102A43] uppercase tracking-tight">
                 Điểm Danh & Kiểm Soát Tour Bờ
               </h1>
-              <p className="text-xs font-mono text-[#171717]/70 mt-0.5">
+              <p className="text-xs text-[#687787] mt-0.5">
                 Quản lý lên xe xuất bến và xác nhận hành khách quay lại tàu an toàn (All-Aboard)
               </p>
             </div>
@@ -147,7 +149,7 @@ export const ExcursionAttendancePage: React.FC = () => {
               setSelectedExcursionId(newId);
               void loadData(newId);
             }}
-            className="neo-input font-mono font-bold text-xs bg-[#F7F5F0] py-2 px-3"
+            className="text-xs font-semibold bg-[#F7F4ED]/60 border border-[#E5E0D7] rounded-lg py-2 px-3 text-[#252B32] focus:ring-2 focus:ring-[#102A43]/15 focus:border-[#102A43]"
           >
             {excursions.map((exc) => (
               <option key={exc.id} value={exc.id}>
@@ -158,7 +160,7 @@ export const ExcursionAttendancePage: React.FC = () => {
 
           <button
             onClick={() => void loadData(selectedExcursionId)}
-            className="w-9 h-9 bg-white hover:bg-[#E7E4DC] text-[#171717] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center transition-all active:translate-x-0.5 active:translate-y-0.5"
+            className="w-9 h-9 bg-white hover:bg-[#F7F4ED] text-[#252B32] border border-[#E5E0D7] rounded-lg shadow-xs flex items-center justify-center transition-colors cursor-pointer"
             title="Làm mới dữ liệu"
           >
             <RefreshCw className="w-4 h-4" />
@@ -169,108 +171,110 @@ export const ExcursionAttendancePage: React.FC = () => {
               setScannerTargetStatus('CHECKED_IN');
               setIsQrModalOpen(true);
             }}
-            className="neo-btn neo-btn-primary py-2 px-3 text-xs flex items-center gap-1.5"
+            className="inline-flex items-center gap-1.5 py-2 px-3 text-xs font-semibold bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-lg shadow-xs transition-colors cursor-pointer"
           >
-            <QrCode className="w-4 h-4" /> Quét QR / Thẻ
+            <QrCode className="w-4 h-4 text-[#C5A572]" /> Quét QR / Thẻ
           </button>
 
           <button
             onClick={() => setIsMissingModalOpen(true)}
-            className="px-3.5 py-2 text-xs font-mono font-black uppercase text-white bg-[#DC2626] border-2 border-[#171717] shadow-[3px_3px_0px_#171717] flex items-center gap-1.5 hover:bg-[#DC2626]/90 transition-all active:translate-x-0.5 active:translate-y-0.5"
+            className="px-3.5 py-2 text-xs font-semibold uppercase text-white bg-rose-700 hover:bg-rose-800 border border-rose-800 rounded-lg shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
-            <AlertTriangle className="w-4 h-4 text-[#D9FF43]" /> Khách Chưa Về ({summary?.totalMissingReturn || 0})
+            <AlertTriangle className="w-4 h-4 text-amber-300" /> Khách Chưa Về ({summary?.totalMissingReturn || 0})
           </button>
         </div>
       </div>
 
       {notificationMsg && (
         <div
-          className={`p-4 border-2 border-[#171717] shadow-[3px_3px_0px_#171717] flex items-center justify-between text-xs font-mono font-bold ${
-            notificationMsg.type === 'success' ? 'bg-[#D9FF43] text-[#171717]' : 'bg-[#DC2626] text-white'
+          className={`p-4 border rounded-xl flex items-center justify-between text-xs font-medium shadow-xs ${
+            notificationMsg.type === 'success'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              : 'bg-rose-50 border-rose-200 text-rose-800'
           }`}
         >
           <span>{notificationMsg.text}</span>
-          <button onClick={() => setNotificationMsg(null)} className="px-2 py-0.5 border border-[#171717] text-xs font-bold uppercase">
+          <button onClick={() => setNotificationMsg(null)} className="px-2 py-0.5 border border-current rounded-md text-xs font-semibold cursor-pointer">
             ✕
           </button>
         </div>
       )}
 
-      {/* KPI Stats Overview — Neo-Brutalist 4-Up Grid */}
+      {/* KPI Stats Overview — Luxury Maritime 4-Up Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="neo-card bg-white p-4">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono font-bold text-[#171717]/70 uppercase tracking-wider">Tổng Đăng Ký</span>
-            <Users className="w-4 h-4 text-[#3155E7]" />
+            <span className="text-[10px] font-semibold text-[#687787] uppercase tracking-wider">Tổng Đăng Ký</span>
+            <Users className="w-4 h-4 text-[#397C80]" />
           </div>
-          <div className="text-3xl font-display font-black text-[#171717] mt-1">{summary?.totalRegistered || 0}</div>
-          <p className="text-[10px] font-mono text-[#171717]/60 mt-1">Sức chứa tối đa: {currentExcursion?.maxCapacity || 0}</p>
+          <div className="text-3xl font-bold text-[#102A43] mt-1 tabular-nums">{summary?.totalRegistered || 0}</div>
+          <p className="text-[10px] text-[#687787] mt-1">Sức chứa tối đa: {currentExcursion?.maxCapacity || 0}</p>
         </div>
 
-        <div className="neo-card bg-white p-4">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono font-bold text-[#171717]/70 uppercase tracking-wider">Đã Tập Trung (Bến)</span>
-            <UserCheck className="w-4 h-4 text-[#3155E7]" />
+            <span className="text-[10px] font-semibold text-[#687787] uppercase tracking-wider">Đã Tập Trung (Bến)</span>
+            <UserCheck className="w-4 h-4 text-[#397C80]" />
           </div>
-          <div className="text-3xl font-display font-black text-[#3155E7] mt-1">{summary?.totalCheckedIn || 0}</div>
-          <p className="text-[10px] font-mono text-[#171717]/60 mt-1">Chờ khởi hành: {summary?.totalPendingDeparture || 0}</p>
+          <div className="text-3xl font-bold text-[#397C80] mt-1 tabular-nums">{summary?.totalCheckedIn || 0}</div>
+          <p className="text-[10px] text-[#687787] mt-1">Chờ khởi hành: {summary?.totalPendingDeparture || 0}</p>
         </div>
 
-        <div className="neo-card bg-white p-4">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono font-bold text-[#171717]/70 uppercase tracking-wider">Đang Đi Tour</span>
+            <span className="text-[10px] font-semibold text-[#687787] uppercase tracking-wider">Đang Đi Tour</span>
             <Bus className="w-4 h-4 text-amber-600" />
           </div>
-          <div className="text-3xl font-display font-black text-amber-600 mt-1">{summary?.totalOnTour || 0}</div>
-          <p className="text-[10px] font-mono text-amber-700 font-bold mt-1">Đang trên các xe tham quan</p>
+          <div className="text-3xl font-bold text-amber-600 mt-1 tabular-nums">{summary?.totalOnTour || 0}</div>
+          <p className="text-[10px] text-amber-700 font-medium mt-1">Đang trên các xe tham quan</p>
         </div>
 
-        <div className="neo-card bg-white p-4">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono font-bold text-[#171717]/70 uppercase tracking-wider">Đã Về Tàu An Toàn</span>
-            <CheckCircle2 className="w-4 h-4 text-[#171717]" />
+            <span className="text-[10px] font-semibold text-[#687787] uppercase tracking-wider">Đã Về Tàu An Toàn</span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-3xl font-display font-black text-[#171717] mt-1">{summary?.totalReturnedSafe || 0}</div>
-          <p className="text-[10px] font-mono text-[#171717]/60 mt-1">
-            Giờ All-Aboard: <strong className="text-[#DC2626]">{currentExcursion?.allAboardTime || currentExcursion?.returnToShipTime}</strong>
+          <div className="text-3xl font-bold text-emerald-700 mt-1 tabular-nums">{summary?.totalReturnedSafe || 0}</div>
+          <p className="text-[10px] text-[#687787] mt-1">
+            Giờ All-Aboard: <strong className="text-rose-600">{currentExcursion?.allAboardTime || currentExcursion?.returnToShipTime}</strong>
           </p>
         </div>
       </div>
 
       {/* Bus Logistics Cards */}
-      <div className="neo-card bg-white p-6 space-y-4">
-        <h2 className="text-base font-display font-black text-[#171717] uppercase flex items-center gap-2 pb-3 border-b-2 border-[#171717]">
-          <Bus className="w-5 h-5 text-[#3155E7]" /> Tiến Độ Điểm Danh Theo Phương Tiện (Xe Buýt)
+      <div className="bg-white border border-[#E5E0D7] rounded-xl p-6 space-y-4 shadow-xs">
+        <h2 className="text-base font-serif font-bold text-[#102A43] uppercase flex items-center gap-2 pb-3 border-b border-[#E5E0D7]">
+          <Bus className="w-5 h-5 text-[#397C80]" /> Tiến Độ Điểm Danh Theo Phương Tiện (Xe Buýt)
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {(summary?.busStats || []).map((bus) => (
-            <div key={bus.busNumber} className="border-2 border-[#171717] p-4 bg-[#F7F5F0] shadow-[2px_2px_0px_#171717] flex flex-col justify-between space-y-3">
+            <div key={bus.busNumber} className="border border-[#E5E0D7] rounded-xl p-4 bg-[#F7F4ED]/50 shadow-xs flex flex-col justify-between space-y-3">
               <div className="flex items-center justify-between">
-                <span className="font-display font-black text-[#171717] text-base uppercase">{bus.busNumber}</span>
-                <span className="px-2 py-0.5 text-[10px] font-mono font-bold border border-[#171717] bg-[#3155E7] text-white">
+                <span className="font-bold text-[#102A43] text-base uppercase">{bus.busNumber}</span>
+                <span className="px-2 py-0.5 text-[10px] font-semibold rounded-md border border-[#102A43]/20 bg-[#102A43]/10 text-[#102A43]">
                   {bus.checkedIn}/{bus.total} Khách
                 </span>
               </div>
-              <div className="w-full bg-white border-2 border-[#171717] h-3 overflow-hidden">
+              <div className="w-full bg-[#E5E0D7] rounded-full h-2 overflow-hidden">
                 <div
-                  className="bg-[#D9FF43] border-r-2 border-[#171717] h-full transition-all duration-300"
+                  className="bg-emerald-600 rounded-full h-full transition-all duration-300"
                   style={{ width: `${bus.total > 0 ? (bus.returnedSafe / bus.total) * 100 : 0}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between text-xs font-mono font-bold text-[#171717]">
-                <span>Về an toàn: <strong className="text-[#3155E7]">{bus.returnedSafe}</strong></span>
-                <span>Chưa về: <strong className="text-[#DC2626]">{bus.missing}</strong></span>
+              <div className="flex items-center justify-between text-xs text-[#252B32]">
+                <span>Về an toàn: <strong className="text-[#397C80] font-semibold">{bus.returnedSafe}</strong></span>
+                <span>Chưa về: <strong className="text-rose-600 font-semibold">{bus.missing}</strong></span>
               </div>
               <div className="flex gap-2 pt-1">
                 <button
                   onClick={() => handleBulkCheckInByBus(bus.busNumber, 'CHECKED_IN')}
-                  className="flex-1 py-1.5 text-[11px] font-mono font-bold text-[#171717] bg-white border-2 border-[#171717] shadow-[1px_1px_0px_#171717] hover:bg-[#E7E4DC] active:translate-x-0.5 active:translate-y-0.5 transition"
+                  className="flex-1 py-1.5 text-[11px] font-medium text-[#102A43] bg-white border border-[#E5E0D7] rounded-lg shadow-xs hover:bg-[#F7F4ED] transition cursor-pointer"
                 >
                   Xuất bến xe này
                 </button>
                 <button
                   onClick={() => handleBulkCheckInByBus(bus.busNumber, 'RETURNED_SAFE')}
-                  className="flex-1 py-1.5 text-[11px] font-mono font-bold text-[#171717] bg-[#D9FF43] border-2 border-[#171717] shadow-[1px_1px_0px_#171717] hover:bg-[#D9FF43]/90 active:translate-x-0.5 active:translate-y-0.5 transition"
+                  className="flex-1 py-1.5 text-[11px] font-semibold text-white bg-[#102A43] hover:bg-[#0B1F33] rounded-lg shadow-xs transition cursor-pointer"
                 >
                   Về tàu cả xe
                 </button>
@@ -281,16 +285,16 @@ export const ExcursionAttendancePage: React.FC = () => {
       </div>
 
       {/* Passenger Table & Controls */}
-      <div className="neo-card bg-white p-6 space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b-2 border-[#171717]">
+      <div className="bg-white border border-[#E5E0D7] rounded-xl p-6 space-y-4 shadow-xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-[#E5E0D7]">
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#171717]/60 pointer-events-none" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#687787] pointer-events-none" />
             <input
               type="text"
               placeholder="Tìm hành khách theo tên, cabin, mã vé..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="neo-input w-full pl-9 py-2 text-xs bg-[#F7F5F0]"
+              className="w-full pl-9 pr-3 py-2 text-xs bg-[#F7F4ED]/60 border border-[#E5E0D7] rounded-lg text-[#252B32] placeholder-[#687787]/60 focus:ring-2 focus:ring-[#102A43]/15 focus:border-[#102A43]"
             />
           </div>
 
@@ -298,7 +302,7 @@ export const ExcursionAttendancePage: React.FC = () => {
             <select
               value={selectedBusFilter}
               onChange={(e) => setSelectedBusFilter(e.target.value)}
-              className="neo-input font-mono font-bold text-xs bg-[#F7F5F0] py-2 px-3"
+              className="font-semibold text-xs bg-[#F7F4ED]/60 border border-[#E5E0D7] rounded-lg py-2 px-3 text-[#252B32] focus:ring-2 focus:ring-[#102A43]/15 focus:border-[#102A43]"
             >
               <option value="ALL">Tất cả xe ({passengerList.length})</option>
               {busList.map((b) => (
@@ -311,7 +315,7 @@ export const ExcursionAttendancePage: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="neo-input font-mono font-bold text-xs bg-[#F7F5F0] py-2 px-3"
+              className="font-semibold text-xs bg-[#F7F4ED]/60 border border-[#E5E0D7] rounded-lg py-2 px-3 text-[#252B32] focus:ring-2 focus:ring-[#102A43]/15 focus:border-[#102A43]"
             >
               <option value="ALL">Tất cả trạng thái</option>
               <option value="REGISTERED">Chưa điểm danh (REGISTERED)</option>
@@ -323,9 +327,9 @@ export const ExcursionAttendancePage: React.FC = () => {
         </div>
 
         {/* Passenger List Table */}
-        <div className="overflow-x-auto border-2 border-[#171717]">
-          <table className="w-full text-left text-xs font-mono">
-            <thead className="bg-[#E7E4DC] text-[#171717] uppercase font-bold text-[10px] border-b-2 border-[#171717]">
+        <div className="overflow-x-auto border border-[#E5E0D7] rounded-lg">
+          <table className="w-full text-left text-xs text-[#252B32]">
+            <thead className="bg-[#F7F4ED] text-[#687787] uppercase font-semibold text-[10px] border-b border-[#E5E0D7] tracking-wider">
               <tr>
                 <th className="py-3 px-4">Hành Khách</th>
                 <th className="py-3 px-4">Số Cabin</th>
@@ -335,45 +339,45 @@ export const ExcursionAttendancePage: React.FC = () => {
                 <th className="py-3 px-4 text-right">Thao Tác Điểm Danh</th>
               </tr>
             </thead>
-            <tbody className="divide-y-2 divide-[#171717] bg-white text-[#171717]">
+            <tbody className="divide-y divide-[#E5E0D7] bg-white text-[#252B32]">
               {filteredPassengers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-[#171717]/60 font-mono font-bold">
+                  <td colSpan={6} className="py-8 text-center text-[#687787] font-medium">
                     Không tìm thấy hành khách nào phù hợp với bộ lọc
                   </td>
                 </tr>
               ) : (
                 filteredPassengers.map((p) => (
-                  <tr key={p.id} className="hover:bg-[#F7F5F0] transition">
+                  <tr key={p.id} className="hover:bg-[#F7F4ED]/60 transition-colors">
                     <td className="py-3.5 px-4">
-                      <div className="font-bold text-[#171717]">{p.passengerName}</div>
+                      <div className="font-semibold text-[#252B32]">{p.passengerName}</div>
                       {p.emergencyPhone && (
-                        <div className="text-[11px] text-[#171717]/70 flex items-center gap-1 mt-0.5">
-                          <Phone className="w-3 h-3 text-[#3155E7]" /> {p.emergencyPhone}
+                        <div className="text-[11px] text-[#687787] flex items-center gap-1 mt-0.5">
+                          <Phone className="w-3 h-3 text-[#397C80]" /> {p.emergencyPhone}
                         </div>
                       )}
                     </td>
-                    <td className="py-3.5 px-4 font-bold text-[#3155E7]">{p.cabinNumber}</td>
+                    <td className="py-3.5 px-4 font-semibold text-[#102A43]">{p.cabinNumber}</td>
                     <td className="py-3.5 px-4 font-mono text-xs">{p.ticketCode}</td>
                     <td className="py-3.5 px-4">
-                      <div className="font-bold text-[#171717]">{p.busNumber || 'Chưa phân xe'}</div>
-                      <div className="text-[10px] text-[#171717]/60">{p.groupName || 'Chưa xếp nhóm'}</div>
+                      <div className="font-semibold text-[#252B32]">{p.busNumber || 'Chưa phân xe'}</div>
+                      <div className="text-[10px] text-[#687787]">{p.groupName || 'Chưa xếp nhóm'}</div>
                     </td>
                     <td className="py-3.5 px-4">
                       {p.status === 'RETURNED_SAFE' ? (
-                        <span className="px-2 py-0.5 text-[10px] font-bold border border-[#171717] bg-[#D9FF43] text-[#171717] flex items-center gap-1 w-fit">
+                        <span className="px-2 py-0.5 text-[10px] font-semibold rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700 flex items-center gap-1 w-fit">
                           <CheckCircle2 className="w-3 h-3" /> Đã về tàu
                         </span>
                       ) : p.status === 'ON_TOUR' ? (
-                        <span className="px-2 py-0.5 text-[10px] font-bold border border-[#171717] bg-[#3155E7] text-white flex items-center gap-1 w-fit">
+                        <span className="px-2 py-0.5 text-[10px] font-semibold rounded-md border border-[#102A43]/20 bg-[#102A43]/10 text-[#102A43] flex items-center gap-1 w-fit">
                           <Bus className="w-3 h-3" /> Đang đi tour
                         </span>
                       ) : p.status === 'CHECKED_IN' ? (
-                        <span className="px-2 py-0.5 text-[10px] font-bold border border-[#171717] bg-[#E7E4DC] text-[#171717] flex items-center gap-1 w-fit">
-                          <UserCheck className="w-3 h-3" /> Đã tập trung
+                        <span className="px-2 py-0.5 text-[10px] font-semibold rounded-md border border-[#E5E0D7] bg-[#F7F4ED] text-[#252B32] flex items-center gap-1 w-fit">
+                          <UserCheck className="w-3 h-3 text-[#397C80]" /> Đã tập trung
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 text-[10px] font-bold border border-[#171717] bg-white text-[#171717]/70 flex items-center gap-1 w-fit">
+                        <span className="px-2 py-0.5 text-[10px] font-semibold rounded-md border border-[#E5E0D7] bg-white text-[#687787] flex items-center gap-1 w-fit">
                           <Clock className="w-3 h-3" /> Chưa điểm danh
                         </span>
                       )}
@@ -382,21 +386,21 @@ export const ExcursionAttendancePage: React.FC = () => {
                       <div className="flex justify-end gap-1.5">
                         <button
                           onClick={() => handleIndividualStatusChange(p, 'CHECKED_IN')}
-                          className="px-2.5 py-1 text-[11px] font-mono font-bold bg-white hover:bg-[#E7E4DC] text-[#171717] border border-[#171717] shadow-[1px_1px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5"
+                          className="px-2.5 py-1 text-[11px] font-medium bg-white hover:bg-[#F7F4ED] text-[#252B32] border border-[#E5E0D7] rounded-md transition-colors cursor-pointer"
                           title="Điểm danh tập trung bến cảng"
                         >
                           Tập trung
                         </button>
                         <button
                           onClick={() => handleIndividualStatusChange(p, 'ON_TOUR')}
-                          className="px-2.5 py-1 text-[11px] font-mono font-bold bg-white hover:bg-[#E7E4DC] text-[#171717] border border-[#171717] shadow-[1px_1px_0px_#171717] active:translate-x-0.5 active:translate-y-0.5"
+                          className="px-2.5 py-1 text-[11px] font-medium bg-white hover:bg-[#F7F4ED] text-[#252B32] border border-[#E5E0D7] rounded-md transition-colors cursor-pointer"
                           title="Xác nhận lên xe đi tour"
                         >
                           Lên xe
                         </button>
                         <button
                           onClick={() => handleIndividualStatusChange(p, 'RETURNED_SAFE')}
-                          className="px-2.5 py-1 text-[11px] font-mono font-bold bg-[#D9FF43] text-[#171717] border border-[#171717] shadow-[1px_1px_0px_#171717] hover:bg-[#D9FF43]/90 active:translate-x-0.5 active:translate-y-0.5"
+                          className="px-2.5 py-1 text-[11px] font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-md transition-colors shadow-xs cursor-pointer"
                           title="Xác nhận về tàu an toàn"
                         >
                           Về tàu

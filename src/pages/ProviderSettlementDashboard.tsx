@@ -122,17 +122,19 @@ export const ProviderSettlementDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header — Editorial Broadside */}
-      <div className="neo-card bg-white p-6 shadow-[6px_6px_0px_#171717] flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Header — Luxury Maritime */}
+      <div className="bg-white border border-[#E5E0D7] rounded-xl p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="neo-badge bg-[#3155E7] text-white">PROVIDER AUDIT</span>
-            <span className="text-[10px] font-mono text-[#171717]/60 font-bold">• FINANCIAL RECONCILIATION</span>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-semibold bg-[#C5A572]/15 text-[#102A43] border border-[#C5A572]/40 tracking-wider">
+              PROVIDER AUDIT
+            </span>
+            <span className="text-[11px] font-medium text-[#687787]">• FINANCIAL RECONCILIATION</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-display font-black text-[#171717] uppercase tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#102A43] tracking-tight">
             Đối Soát & Quyết Toán Chi Phí Nhà Cung Cấp Tour
           </h1>
-          <p className="text-xs font-mono text-[#171717]/70 mt-1">
+          <p className="text-xs text-[#687787] mt-1">
             Tour Provider Financial Reconciliation & Cost Settlement Ledger (KAN-332)
           </p>
         </div>
@@ -140,9 +142,9 @@ export const ProviderSettlementDashboard: React.FC = () => {
           <button
             onClick={() => loadData()}
             disabled={loading}
-            className="neo-btn neo-btn-secondary py-2 px-3 text-xs flex items-center gap-1.5"
+            className="py-2 px-3 text-xs font-semibold bg-white hover:bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] rounded-lg shadow-xs flex items-center gap-1.5 cursor-pointer transition-colors"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#3155E7]' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#102A43]' : ''}`} />
             Làm mới
           </button>
         </div>
@@ -150,12 +152,12 @@ export const ProviderSettlementDashboard: React.FC = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="neo-card bg-white p-4">
-          <div className="flex items-center justify-between text-[#171717]/70 text-[10px] font-mono font-bold uppercase mb-2">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs">
+          <div className="flex items-center justify-between text-[#687787] text-[10px] font-semibold uppercase tracking-wider mb-2">
             <span>Tổng Công Nợ Quyết Toán</span>
-            <DollarSign className="w-4 h-4 text-[#3155E7]" />
+            <DollarSign className="w-4 h-4 text-[#102A43]" />
           </div>
-          <div className="text-2xl font-display font-black text-[#171717]">
+          <div className="text-2xl font-serif font-bold text-[#102A43]">
             {Object.keys(amountsByCurrency).length > 0 ? (
               <div className="flex flex-col gap-1">
                 {Object.entries(amountsByCurrency).map(([curr, amt]) => (
@@ -168,69 +170,69 @@ export const ProviderSettlementDashboard: React.FC = () => {
               '0.00 USD'
             )}
           </div>
-          <div className="text-[10px] text-[#171717]/60 mt-1 font-mono">
+          <div className="text-[10px] text-[#687787] mt-1">
             {settlements.length} chuyến tour đã ghi nhận
           </div>
         </div>
 
-        <div className="neo-card bg-white p-4">
-          <div className="flex items-center justify-between text-[#171717]/70 text-[10px] font-mono font-bold uppercase mb-2">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs">
+          <div className="flex items-center justify-between text-[#687787] text-[10px] font-semibold uppercase tracking-wider mb-2">
             <span>Khách Thực Tế Tham Gia</span>
-            <Users className="w-4 h-4 text-[#3155E7]" />
+            <Users className="w-4 h-4 text-[#102A43]" />
           </div>
-          <div className="text-2xl font-display font-black text-[#3155E7]">
-            {totalActualPax.toLocaleString()} <span className="text-xs font-mono font-bold opacity-75">Pax</span>
+          <div className="text-2xl font-serif font-bold text-[#102A43]">
+            {totalActualPax.toLocaleString()} <span className="text-xs font-medium text-[#687787]">Pax</span>
           </div>
-          <div className="text-[10px] text-[#171717]/60 mt-1 font-mono">
+          <div className="text-[10px] text-[#687787] mt-1">
             Dựa trên điểm danh cổng/xe
           </div>
         </div>
 
-        <div className="neo-card bg-white p-4">
-          <div className="flex items-center justify-between text-[#171717]/70 text-[10px] font-mono font-bold uppercase mb-2">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs">
+          <div className="flex items-center justify-between text-[#687787] text-[10px] font-semibold uppercase tracking-wider mb-2">
             <span>Tổng Điều Chỉnh / Phạt</span>
             <AlertCircle className="w-4 h-4 text-amber-600" />
           </div>
-          <div className="text-2xl font-display font-black">
+          <div className="text-2xl font-serif font-bold">
             {Object.keys(adjustmentsByCurrency).length > 0 ? (
               <div className="flex flex-col gap-1">
                 {Object.entries(adjustmentsByCurrency).map(([curr, amt]) => (
-                  <span key={curr} className={amt < 0 ? 'text-[#DC2626]' : 'text-[#3155E7]'}>
+                  <span key={curr} className={amt < 0 ? 'text-rose-700' : 'text-emerald-700'}>
                     {amt !== 0 ? `${amt > 0 ? '+' : ''}${amt.toFixed(2)}` : '0.00'} {curr}
                   </span>
                 ))}
               </div>
             ) : (
-              <span className="text-[#3155E7]">0.00 USD</span>
+              <span className="text-[#102A43]">0.00 USD</span>
             )}
           </div>
-          <div className="text-[10px] text-[#171717]/60 mt-1 font-mono">
+          <div className="text-[10px] text-[#687787] mt-1">
             Khấu trừ sự cố & phụ phí
           </div>
         </div>
 
-        <div className="neo-card bg-white p-4">
-          <div className="flex items-center justify-between text-[#171717]/70 text-[10px] font-mono font-bold uppercase mb-2">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs">
+          <div className="flex items-center justify-between text-[#687787] text-[10px] font-semibold uppercase tracking-wider mb-2">
             <span>Chờ Duyệt Chi Trả</span>
             <ShieldCheck className="w-4 h-4 text-amber-600" />
           </div>
-          <div className="text-2xl font-display font-black text-amber-600">
-            {pendingApprovals} <span className="text-xs font-mono font-bold opacity-75">Hồ sơ</span>
+          <div className="text-2xl font-serif font-bold text-amber-700">
+            {pendingApprovals} <span className="text-xs font-medium text-[#687787]">Hồ sơ</span>
           </div>
-          <div className="text-[10px] text-[#171717]/60 mt-1 font-mono">
+          <div className="text-[10px] text-[#687787] mt-1">
             Cần Payout Authorization
           </div>
         </div>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="neo-card bg-white p-4 flex items-center gap-3">
-        <Filter className="w-4 h-4 text-[#3155E7]" />
-        <span className="text-[#171717] font-mono font-bold text-xs uppercase">Trạng thái:</span>
+      <div className="bg-white border border-[#E5E0D7] rounded-xl p-4 flex items-center gap-3 shadow-xs">
+        <Filter className="w-4 h-4 text-[#102A43]" />
+        <span className="text-[#252B32] font-semibold text-xs uppercase tracking-wider">Trạng thái:</span>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="neo-input font-mono font-bold text-xs bg-[#F7F5F0] py-1.5 px-3"
+          className="bg-[#F7F4ED] border border-[#E5E0D7] rounded-lg text-xs font-semibold p-2 text-[#252B32] focus:outline-none focus:border-[#102A43]"
         >
           <option value="ALL">Tất Cả Trạng Thái</option>
           <option value="DRAFT">Nháp (DRAFT)</option>
@@ -243,11 +245,11 @@ export const ProviderSettlementDashboard: React.FC = () => {
 
       {/* Error state */}
       {error && (
-        <div className="p-4 bg-[#DC2626] border-2 border-[#171717] shadow-[3px_3px_0px_#171717] text-white text-xs font-mono font-bold flex items-center justify-between">
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs font-medium flex items-center justify-between shadow-xs">
           <span>{error}</span>
           <button
             onClick={() => loadData()}
-            className="px-3 py-1 bg-white text-[#171717] border border-[#171717] font-bold uppercase"
+            className="px-3 py-1 bg-white hover:bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] rounded-md font-semibold cursor-pointer"
           >
             Thử lại
           </button>
@@ -256,10 +258,8 @@ export const ProviderSettlementDashboard: React.FC = () => {
 
       {/* Main Table */}
       {loading ? (
-        <div className="p-12 text-center text-xs font-mono font-bold text-[#171717] flex flex-col items-center gap-3">
-          <div className="w-10 h-10 bg-[#D9FF43] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] flex items-center justify-center">
-            <RefreshCw className="w-5 h-5 animate-spin text-[#171717]" />
-          </div>
+        <div className="p-12 text-center text-xs font-medium text-[#687787] flex flex-col items-center gap-3">
+          <RefreshCw className="w-6 h-6 animate-spin text-[#102A43]" />
           <span>Đang tải bảng đối soát tài chính...</span>
         </div>
       ) : (

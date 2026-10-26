@@ -1,4 +1,24 @@
 @import "tailwindcss";
+@import "animate.css";
+
+@theme {
+  --color-maritime-ivory: #F7F4ED;
+  --color-maritime-navy: #102A43;
+  --color-maritime-gold: #C5A572;
+  --color-maritime-deep: #0B1F33;
+  --color-maritime-teal: #397C80;
+  --color-maritime-charcoal: #252B32;
+  --color-maritime-border: #E5E0D7;
+  --color-maritime-muted: #627D98;
+
+  --color-ivory: #F7F4ED;
+  --color-navy: #102A43;
+  --color-gold: #C5A572;
+  --color-deep: #0B1F33;
+  --color-teal: #397C80;
+  --color-charcoal: #252B32;
+  --color-soft-border: #E5E0D7;
+}
 
 @layer base {
   :root {
@@ -8,19 +28,28 @@
     --font-retro: 'Space Grotesk', 'Plus Jakarta Sans', monospace;
     --font-serif: 'Instrument Serif', Georgia, serif;
 
-    /* Editorial / Soft Modern Default Tokens */
-    --bg-warm: #F6F7F9;
-    --ink: #20242C;
-    --cobalt: #5277D9;
-    --neutral-muted: #E5E7EB;
+    /* Luxury Maritime Design System Tokens */
+    --maritime-ivory: #F7F4ED;
+    --maritime-navy: #102A43;
+    --maritime-gold: #C5A572;
+    --maritime-deep: #0B1F33;
+    --maritime-teal: #397C80;
+    --maritime-charcoal: #252B32;
+    --maritime-border: #E5E0D7;
+    --maritime-muted: #627D98;
+
+    --bg-warm: #F7F4ED;
+    --ink: #252B32;
+    --cobalt: #102A43;
+    --neutral-muted: #E5E0D7;
     --danger-red: #DC2626;
 
-    --background: #F6F7F9;
-    --foreground: #20242C;
+    --background: #F7F4ED;
+    --foreground: #252B32;
     --card: #FFFFFF;
-    --card-foreground: #20242C;
-    --border: #E5E7EB;
-    --border-hover: #5277D9;
+    --card-foreground: #252B32;
+    --border: #E5E0D7;
+    --border-hover: #C5A572;
   }
 
   body {
@@ -35,8 +64,8 @@
   }
 
   ::selection {
-    background-color: #5277D9;
-    color: #FFFFFF;
+    background-color: #102A43;
+    color: #F7F4ED;
   }
 
   /* Tactile scrollbars */
@@ -45,29 +74,31 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #F7F4ED;
   }
   ::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
+    background: #C5A572;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #94A3B8;
+    background: #102A43;
   }
 }
 
 /* =========================================================================
-   Scope A: Soft Editorial / Modern SaaS (Admin Dashboard)
+   Scope A: Executive Fleet Console (Admin Operations)
    ========================================================================= */
 [data-theme="admin-editorial"] {
-  --bg-app: #F6F7F9;
+  --bg-app: #F7F4ED;
   --bg-surface: #FFFFFF;
-  --bg-surface-muted: #F1F3F7;
-  --text-primary: #20242C;
-  --text-secondary: #687080;
-  --border-subtle: #E5E7EB;
-  --accent-primary: #5277D9;
-  --accent-surface: #EEF2FF;
+  --bg-surface-muted: #F7F4ED;
+  --text-primary: #252B32;
+  --text-secondary: #627D98;
+  --border-subtle: #E5E0D7;
+  --accent-primary: #102A43;
+  --accent-surface: #F7F4ED;
+  --accent-gold: #C5A572;
+  --accent-teal: #397C80;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -78,21 +109,21 @@
 }
 
 [data-theme="admin-editorial"] ::selection {
-  background-color: #5277D9;
-  color: #FFFFFF;
+  background-color: #102A43;
+  color: #F7F4ED;
 }
 
-/* Soft Editorial UI Card Utilities */
+/* Luxury Maritime Editorial Card Utilities */
 .editorial-card {
   background-color: #FFFFFF;
-  border: 1px solid #E5E7EB;
-  border-radius: 14px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid #E5E0D7;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px -1px rgba(11, 31, 51, 0.05);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .editorial-card-interactive:hover {
-  border-color: #CBD5E1;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border-color: #C5A572;
+  box-shadow: 0 8px 24px -4px rgba(16, 42, 67, 0.12);
 }
 
 .editorial-btn-primary {
@@ -102,140 +133,112 @@
   font-weight: 600;
   font-size: 0.875rem;
   padding: 0.5rem 1rem;
-  border-radius: 10px;
-  background-color: #5277D9;
+  border-radius: 12px;
+  background-color: #102A43;
   color: #FFFFFF;
-  transition: background-color 0.15s ease;
+  border: 1px solid #102A43;
+  transition: all 0.15s ease;
 }
 .editorial-btn-primary:hover {
-  background-color: #4364C2;
+  background-color: #0B1F33;
+  border-color: #0B1F33;
 }
 
 /* =========================================================================
-   Scope B: Retro-Futurism / Maritime Terminal (Passenger Portal)
+   Scope B: Five-Star Luxury Concierge (Passenger Portal)
    ========================================================================= */
 [data-theme="passenger-retro"] {
-  --bg-app: #070B16;
-  --bg-secondary: #10182A;
-  --bg-surface: #151F33;
-  --text-primary: #F4F4F0;
-  --text-secondary: #A7B4C9;
-  --accent-cyan: #42E8F5;
-  --accent-blue: #4169FF;
-  --accent-amber: #FFBD59;
-  --border-hud: rgba(66, 232, 245, 0.22);
+  --bg-app: #F7F4ED;
+  --bg-secondary: #FFFFFF;
+  --bg-surface: #FFFFFF;
+  --text-primary: #252B32;
+  --text-secondary: #627D98;
+  --accent-gold: #C5A572;
+  --accent-navy: #102A43;
+  --accent-teal: #397C80;
+  --border-subtle: #E5E0D7;
   background-color: var(--bg-app);
   color: var(--text-primary);
 }
 
 [data-theme="passenger-retro"] ::selection {
-  background-color: #42E8F5;
-  color: #070B16;
+  background-color: #102A43;
+  color: #F7F4ED;
 }
 
 [data-theme="passenger-retro"] ::-webkit-scrollbar-track {
-  background: #070B16;
+  background: #F7F4ED;
 }
 [data-theme="passenger-retro"] ::-webkit-scrollbar-thumb {
-  background: rgba(66, 232, 245, 0.3);
-  border-radius: 4px;
+  background: #C5A572;
+  border-radius: 9999px;
 }
 [data-theme="passenger-retro"] ::-webkit-scrollbar-thumb:hover {
-  background: #42E8F5;
+  background: #102A43;
 }
 
-/* Retro-Futuristic HUD Utilities */
-.hud-grid {
-  background-image: 
-    linear-gradient(to right, rgba(66, 232, 245, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(66, 232, 245, 0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
+/* Animated gradient text (Luxury Maritime Gold-Navy shimmer) */
+.maritime-shimmer-text {
+  background: linear-gradient(
+    135deg,
+    #102A43 0%,
+    #C5A572 45%,
+    #397C80 80%,
+    #102A43 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: maritime-shimmer 4s ease infinite;
 }
 
-.hud-panel {
-  background-color: #151F33;
-  border: 1px solid rgba(66, 232, 245, 0.22);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px 0 rgba(7, 11, 22, 0.6);
+@keyframes maritime-shimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-.hud-panel-glow {
-  box-shadow: 0 0 15px 0 rgba(66, 232, 245, 0.15);
+@keyframes shiny-sweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
-/* Backward compatibility for neo-card and ref-card */
-.neo-card, .ref-card {
-  background-color: #ffffff;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-}
-.neo-card-sm {
-  background-color: #ffffff;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-.neo-card-interactive {
-  background-color: #ffffff;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-}
-.neo-card-interactive:hover {
-  border-color: #CBD5E1;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
-}
-
-.neo-btn {
-  display: inline-flex;
+/* =========================================================================
+   Standard Luxury Maritime Modal & Overlay Utilities
+   ========================================================================= */
+.maritime-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 0.8125rem;
-  padding: 0.45rem 0.9rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  padding: 1rem;
+  background-color: rgba(11, 31, 51, 0.6);
+  backdrop-filter: blur(4px);
 }
-.neo-btn-primary {
-  background-color: #5277D9;
-  color: #ffffff;
-  border: 1px solid #5277D9;
-}
-.neo-btn-primary:hover {
-  background-color: #4364C2;
-}
-.neo-btn-secondary {
+
+.maritime-modal-card {
   background-color: #ffffff;
-  color: #20242C;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #E5E0D7;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(11, 31, 51, 0.2), 0 8px 10px -6px rgba(11, 31, 51, 0.1);
+  overflow: hidden;
+  width: 100%;
+  color: #252B32;
 }
-.neo-btn-secondary:hover {
-  background-color: #F1F3F7;
-}
-.neo-badge {
-  display: inline-flex;
+
+.maritime-modal-header {
+  background-color: #F7F4ED;
+  border-bottom: 1px solid #E5E0D7;
+  padding: 1rem 1.5rem;
+  display: flex;
   align-items: center;
-  gap: 0.25rem;
-  font-weight: 600;
-  font-size: 0.6875rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #E5E7EB;
-}
-.neo-input {
-  background-color: #ffffff;
-  color: #20242C;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  padding: 0.5rem 0.75rem;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.neo-input:focus {
-  outline: none;
-  border-color: #5277D9;
-  box-shadow: 0 0 0 2px rgba(82, 119, 217, 0.2);
+  justify-content: space-between;
+  color: #102A43;
 }

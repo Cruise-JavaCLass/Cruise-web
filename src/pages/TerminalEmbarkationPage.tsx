@@ -165,20 +165,22 @@ export const TerminalEmbarkationPage: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Top Banner / Port Gate Monitor — Editorial Neo-Brutalist Terminal Display */}
-      <div className="neo-card bg-white p-6 shadow-[6px_6px_0px_#171717]">
+      {/* Top Banner / Port Gate Monitor — Luxury Maritime Terminal Display */}
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl p-6 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="neo-badge bg-[#D9FF43] text-[#171717]">LIVE GATE MONITOR</span>
-              <span className="text-[10px] font-mono text-[#171717]/60 font-bold">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-semibold bg-[#C5A572]/15 text-[#102A43] border border-[#C5A572]/40 tracking-wider">
+                LIVE GATE MONITOR
+              </span>
+              <span className="text-[11px] font-medium text-[#687787]">
                 • SOLAS PORT TERMINAL EMBARKATION
               </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-display font-black text-[#171717] uppercase tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#102A43] tracking-tight">
               Quầy Làm Thủ Tục Lên Tàu & Cấp Phát Thẻ RFID
             </h1>
-            <p className="text-xs font-mono text-[#171717]/70 mt-1">
+            <p className="text-xs text-[#687787] mt-1">
               Cổng quốc tế • Khung giờ đón khách: 08:00 - 12:00 • Kiểm soát Biên phòng & Hải quân
             </p>
           </div>
@@ -186,9 +188,9 @@ export const TerminalEmbarkationPage: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={handleExportManifest}
-              className="neo-btn neo-btn-secondary py-2 px-3 text-xs inline-flex items-center gap-2"
+              className="py-2 px-3 text-xs font-semibold bg-white border border-[#E5E0D7] hover:bg-[#F7F4ED] text-[#102A43] rounded-lg shadow-xs transition-colors inline-flex items-center gap-2 cursor-pointer"
             >
-              <Download className="w-4 h-4 text-[#3155E7]" />
+              <Download className="w-4 h-4 text-[#102A43]" />
               Xuất Manifest Biên Phòng (CSV)
             </button>
           </div>
@@ -196,44 +198,44 @@ export const TerminalEmbarkationPage: React.FC = () => {
 
         {/* Real-time Headcount Stats */}
         {summary && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-5 border-t-2 border-[#171717]">
-            <div className="p-3.5 bg-[#F7F5F0] border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
-              <div className="flex items-center justify-between text-[#171717]/70 text-[10px] font-mono font-bold uppercase mb-1">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-5 border-t border-[#E5E0D7]">
+            <div className="p-3.5 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl shadow-xs">
+              <div className="flex items-center justify-between text-[#687787] text-[10px] font-semibold uppercase mb-1">
                 <span>Tổng Dự Kiến</span>
-                <Users className="w-4 h-4 text-[#3155E7]" />
+                <Users className="w-4 h-4 text-[#102A43]" />
               </div>
-              <p className="text-2xl font-display font-black text-[#171717]">{summary.expectedTotal}</p>
+              <p className="text-2xl font-serif font-bold text-[#102A43]">{summary.expectedTotal}</p>
             </div>
 
-            <div className="p-3.5 bg-[#F7F5F0] border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
-              <div className="flex items-center justify-between text-[#171717]/70 text-[10px] font-mono font-bold uppercase mb-1">
+            <div className="p-3.5 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl shadow-xs">
+              <div className="flex items-center justify-between text-[#687787] text-[10px] font-semibold uppercase mb-1">
                 <span>Đã Lên Tàu (Boarded)</span>
-                <CheckCircle2 className="w-4 h-4 text-[#171717]" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-700" />
               </div>
-              <p className="text-2xl font-display font-black text-[#171717]">
+              <p className="text-2xl font-serif font-bold text-emerald-700">
                 {summary.boardedCount}{' '}
-                <span className="text-xs font-mono font-bold text-[#3155E7]">
+                <span className="text-xs font-medium text-[#102A43]">
                   ({summary.boardingProgressPercent}%)
                 </span>
               </p>
             </div>
 
-            <div className="p-3.5 bg-[#F7F5F0] border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
-              <div className="flex items-center justify-between text-[#171717]/70 text-[10px] font-mono font-bold uppercase mb-1">
+            <div className="p-3.5 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl shadow-xs">
+              <div className="flex items-center justify-between text-[#687787] text-[10px] font-semibold uppercase mb-1">
                 <span>Chưa Đến Cảng (Pending)</span>
                 <Activity className="w-4 h-4 text-amber-600" />
               </div>
-              <p className="text-2xl font-display font-black text-amber-600">
+              <p className="text-2xl font-serif font-bold text-amber-700">
                 {summary.remainingCount}
               </p>
             </div>
 
-            <div className="p-3.5 bg-[#F7F5F0] border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
-              <div className="flex items-center justify-between text-[#171717]/70 text-[10px] font-mono font-bold uppercase mb-1">
+            <div className="p-3.5 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl shadow-xs">
+              <div className="flex items-center justify-between text-[#687787] text-[10px] font-semibold uppercase mb-1">
                 <span>Hội Viên VIP Đã Lên</span>
-                <Sparkles className="w-4 h-4 text-[#3155E7]" />
+                <Sparkles className="w-4 h-4 text-[#C5A572]" />
               </div>
-              <p className="text-2xl font-display font-black text-[#3155E7]">
+              <p className="text-2xl font-serif font-bold text-[#102A43]">
                 {summary.vipBoarded} / {summary.vipTotal}
               </p>
             </div>
@@ -245,15 +247,15 @@ export const TerminalEmbarkationPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Search & Verification */}
         <div className="lg:col-span-1 space-y-4">
-          <div className="neo-card bg-white p-5 shadow-[4px_4px_0px_#171717]">
-            <h3 className="text-sm font-display font-black text-[#171717] uppercase mb-3 flex items-center gap-2">
-              <Search className="w-4 h-4 text-[#3155E7]" />
+          <div className="bg-white border border-[#E5E0D7] rounded-2xl p-5 shadow-xs">
+            <h3 className="text-sm font-serif font-bold text-[#102A43] uppercase mb-3 flex items-center gap-2">
+              <Search className="w-4 h-4 text-[#102A43]" />
               Tra Cứu Hồ Sơ Hành Khách
             </h3>
 
             <form onSubmit={handleLookup} className="space-y-3">
               <div>
-                <label htmlFor="embarkation-keyword" className="text-[11px] font-mono font-bold text-[#171717] uppercase block mb-1">
+                <label htmlFor="embarkation-keyword" className="text-[11px] font-semibold text-[#252B32] uppercase block mb-1">
                   Mã Đặt Chỗ (Booking) / Số Hộ Chiếu / Tên
                 </label>
                 <div className="relative">
@@ -263,12 +265,12 @@ export const TerminalEmbarkationPage: React.FC = () => {
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
                     placeholder="VD: B9827361 hoặc BK-202688"
-                    className="neo-input w-full pr-14 text-xs font-mono font-bold bg-[#F7F5F0]"
+                    className="w-full pr-14 text-xs font-medium bg-[#F7F4ED] border border-[#E5E0D7] rounded-lg p-2.5 text-[#252B32] focus:outline-none focus:border-[#102A43]"
                   />
                   <button
                     type="submit"
                     disabled={loadingLookup}
-                    className="absolute right-1.5 top-1.5 px-3 py-1 bg-[#3155E7] text-white text-xs font-mono font-bold border border-[#171717] hover:bg-[#3155E7]/90 active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50"
+                    className="absolute right-1.5 top-1.5 px-3 py-1 bg-[#102A43] text-white text-xs font-semibold rounded-md hover:bg-[#183B5B] transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     {loadingLookup ? '...' : 'Tìm'}
                   </button>
@@ -276,22 +278,22 @@ export const TerminalEmbarkationPage: React.FC = () => {
               </div>
 
               {lookupError && (
-                <div className="flex items-center gap-2 p-2.5 bg-[#DC2626] border border-[#171717] text-white text-xs font-mono font-bold">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-[#D9FF43]" />
+                <div className="flex items-center gap-2 p-2.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-lg text-xs font-medium">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                   <span>{lookupError}</span>
                 </div>
               )}
             </form>
 
-            <div className="mt-4 pt-4 border-t-2 border-[#171717]">
-              <p className="text-[11px] font-mono font-bold text-[#171717]/70 uppercase mb-2">Hoặc quét nhanh qua thiết bị:</p>
+            <div className="mt-4 pt-4 border-t border-[#E5E0D7]">
+              <p className="text-[11px] font-semibold text-[#687787] uppercase mb-2">Hoặc quét nhanh qua thiết bị:</p>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={handleSimulateCameraScan}
-                  className="flex-1 py-2 px-3 bg-white hover:bg-[#E7E4DC] border-2 border-[#171717] shadow-[2px_2px_0px_#171717] text-xs font-mono font-bold text-[#171717] transition flex items-center justify-center gap-1.5 active:translate-x-0.5 active:translate-y-0.5"
+                  className="flex-1 py-2 px-3 bg-white hover:bg-[#F7F4ED] border border-[#E5E0D7] rounded-lg shadow-xs text-xs font-semibold text-[#102A43] transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <Camera className="w-3.5 h-3.5 text-[#3155E7]" />
+                  <Camera className="w-3.5 h-3.5 text-[#102A43]" />
                   Quét Hộ Chiếu
                 </button>
                 <button
@@ -301,30 +303,30 @@ export const TerminalEmbarkationPage: React.FC = () => {
                     setKeyword(scannedCode);
                     void handleLookup(undefined, scannedCode);
                   }}
-                  className="flex-1 py-2 px-3 bg-[#D9FF43] hover:bg-[#D9FF43]/90 border-2 border-[#171717] shadow-[2px_2px_0px_#171717] text-xs font-mono font-bold text-[#171717] transition flex items-center justify-center gap-1.5 active:translate-x-0.5 active:translate-y-0.5"
+                  className="flex-1 py-2 px-3 bg-[#102A43] hover:bg-[#183B5B] text-white rounded-lg shadow-xs text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <Zap className="w-3.5 h-3.5 text-[#171717]" />
+                  <Zap className="w-3.5 h-3.5 text-[#C5A572]" />
                   Quét QR App
                 </button>
               </div>
 
               {isCameraActive && (
-                <div className="mt-3 p-3 bg-[#F7F5F0] border-2 border-[#3155E7] text-center">
-                  <Camera className="w-6 h-6 text-[#3155E7] mx-auto mb-1 animate-bounce" />
-                  <p className="text-[11px] font-mono font-bold text-[#3155E7]">Đang quét mã nhận dạng qua Camera...</p>
+                <div className="mt-3 p-3 bg-[#F7F4ED] border border-[#102A43] rounded-lg text-center">
+                  <Camera className="w-6 h-6 text-[#102A43] mx-auto mb-1 animate-bounce" />
+                  <p className="text-[11px] font-medium text-[#102A43]">Đang quét mã nhận dạng qua Camera...</p>
                 </div>
               )}
             </div>
 
-            <div className="mt-4 pt-4 border-t-2 border-[#171717]">
-              <label htmlFor="embarkation-lane" className="text-[11px] font-mono font-bold text-[#171717] uppercase block mb-1">
+            <div className="mt-4 pt-4 border-t border-[#E5E0D7]">
+              <label htmlFor="embarkation-lane" className="text-[11px] font-semibold text-[#252B32] uppercase block mb-1">
                 Cửa / Làn Check-in Hiện Tại
               </label>
               <select
                 id="embarkation-lane"
                 value={activeLane}
                 onChange={(e) => setActiveLane(e.target.value)}
-                className="neo-input w-full text-xs font-mono font-bold bg-[#F7F5F0]"
+                className="w-full text-xs font-semibold bg-[#F7F4ED] border border-[#E5E0D7] rounded-lg p-2.5 text-[#252B32] focus:outline-none focus:border-[#102A43]"
               >
                 <option value="GATE-LANE-01">Làn Thường 01 (Gate 01)</option>
                 <option value="GATE-LANE-02">Làn Thường 02 (Gate 02)</option>
@@ -337,70 +339,70 @@ export const TerminalEmbarkationPage: React.FC = () => {
         {/* Right 2 Columns: Identity Verification, RFID Writer & Boarding Execution */}
         <div className="lg:col-span-2 space-y-4">
           {profile ? (
-            <div className="neo-card bg-white p-6 shadow-[6px_6px_0px_#171717] space-y-6">
+            <div className="bg-white border border-[#E5E0D7] rounded-2xl p-6 shadow-xs space-y-6">
               {/* Profile Header & VIP Routing */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b-2 border-[#171717] gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#E5E0D7] gap-2">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-xl sm:text-2xl font-display font-black text-[#171717] uppercase">{profile.fullName}</h2>
+                    <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#102A43]">{profile.fullName}</h2>
                     {profile.isVip && (
-                      <span className="neo-badge bg-[#D9FF43] text-[#171717]">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#C5A572]/20 text-[#102A43] border border-[#C5A572]/40">
                         ★ VIP ROYAL SUITE
                       </span>
                     )}
                   </div>
-                  <p className="text-xs font-mono text-[#171717]/70 mt-0.5">
-                    Số Hộ Chiếu: <span className="font-bold text-[#171717]">{profile.passportNumber}</span> • Quốc Tịch: {profile.nationality}
+                  <p className="text-xs text-[#687787] mt-0.5">
+                    Số Hộ Chiếu: <span className="font-semibold text-[#252B32]">{profile.passportNumber}</span> • Quốc Tịch: {profile.nationality}
                   </p>
                 </div>
 
                 <div className="text-left sm:text-right">
-                  <span className="text-[10px] font-mono font-bold text-[#171717]/70 uppercase block">Số Phòng / Cabin</span>
-                  <span className="text-xl font-display font-black text-[#3155E7]">{profile.cabinNumber}</span>
+                  <span className="text-[10px] font-semibold text-[#687787] uppercase block">Số Phòng / Cabin</span>
+                  <span className="text-xl font-serif font-bold text-[#102A43]">{profile.cabinNumber}</span>
                 </div>
               </div>
 
               {/* Status Checks Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3 bg-[#F7F5F0] border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
-                  <span className="text-[10px] font-mono font-bold text-[#171717]/70 uppercase block">Khai Báo Y Tế</span>
+                <div className="p-3 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl">
+                  <span className="text-[10px] font-semibold text-[#687787] uppercase block">Khai Báo Y Tế</span>
                   <div className="flex items-center gap-1.5 mt-1">
                     {profile.healthDeclarationCompleted ? (
                       <>
-                        <CheckCircle2 className="w-4 h-4 text-[#171717]" />
-                        <span className="text-xs font-mono font-bold text-[#171717]">Đã khai báo</span>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <span className="text-xs font-semibold text-emerald-800">Đã khai báo</span>
                       </>
                     ) : (
                       <>
-                        <AlertCircle className="w-4 h-4 text-[#DC2626]" />
-                        <span className="text-xs font-mono font-bold text-[#DC2626]">Chưa khai báo</span>
+                        <AlertCircle className="w-4 h-4 text-rose-600" />
+                        <span className="text-xs font-semibold text-rose-700">Chưa khai báo</span>
                       </>
                     )}
                   </div>
                 </div>
 
-                <div className="p-3 bg-[#F7F5F0] border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
-                  <span className="text-[10px] font-mono font-bold text-[#171717]/70 uppercase block">Tài Khoản Folio</span>
+                <div className="p-3 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl">
+                  <span className="text-[10px] font-semibold text-[#687787] uppercase block">Tài Khoản Folio</span>
                   <div className="flex items-center gap-1.5 mt-1">
-                    <CreditCard className="w-4 h-4 text-[#3155E7]" />
-                    <span className="text-xs font-mono font-bold text-[#3155E7]">
+                    <CreditCard className="w-4 h-4 text-[#102A43]" />
+                    <span className="text-xs font-semibold text-[#102A43]">
                       {profile.folioStatus === 'ACTIVE' ? 'Đã kích hoạt' : 'Chờ kích hoạt'}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-3 bg-[#F7F5F0] border-2 border-[#171717] shadow-[2px_2px_0px_#171717]">
-                  <span className="text-[10px] font-mono font-bold text-[#171717]/70 uppercase block">Trạng Thái Lên Tàu</span>
+                <div className="p-3 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl">
+                  <span className="text-[10px] font-semibold text-[#687787] uppercase block">Trạng Thái Lên Tàu</span>
                   <div className="flex items-center gap-1.5 mt-1">
                     {profile.checkInStatus === 'BOARDED' ? (
                       <>
-                        <CheckCircle2 className="w-4 h-4 text-[#171717]" />
-                        <span className="text-xs font-mono font-bold text-[#171717]">Đã lên tàu</span>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <span className="text-xs font-semibold text-emerald-800">Đã lên tàu</span>
                       </>
                     ) : (
                       <>
                         <AlertCircle className="w-4 h-4 text-amber-600" />
-                        <span className="text-xs font-mono font-bold text-amber-600">Chờ boarding</span>
+                        <span className="text-xs font-semibold text-amber-700">Chờ boarding</span>
                       </>
                     )}
                   </div>
@@ -408,15 +410,15 @@ export const TerminalEmbarkationPage: React.FC = () => {
               </div>
 
               {/* RFID Issuance & Hardware Writer Section */}
-              <div className="p-4 bg-[#F7F5F0] border-2 border-[#171717] shadow-[3px_3px_0px_#171717] space-y-3">
+              <div className="p-4 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Radio className="w-4 h-4 text-[#3155E7]" />
-                    <h4 className="text-xs font-mono font-black text-[#171717] uppercase tracking-wider">
+                    <Radio className="w-4 h-4 text-[#102A43]" />
+                    <h4 className="text-xs font-semibold text-[#102A43] uppercase tracking-wider">
                       Cấp Phát Thẻ Cruise Card / Vòng Tay RFID (NFC)
                     </h4>
                   </div>
-                  <span className="text-[10px] font-mono font-bold text-[#3155E7]">Đầu Đọc USB: SẴN SÀNG</span>
+                  <span className="text-[10px] font-semibold text-emerald-700">Đầu Đọc USB: SẴN SÀNG</span>
                 </div>
 
                 <div className="flex gap-2">
@@ -425,12 +427,12 @@ export const TerminalEmbarkationPage: React.FC = () => {
                     value={rfidInput}
                     onChange={(e) => setRfidInput(e.target.value)}
                     placeholder="Chạm thẻ trắng vào đầu đọc RFID..."
-                    className="neo-input flex-1 text-xs font-mono font-bold bg-white"
+                    className="flex-1 text-xs bg-white border border-[#E5E0D7] rounded-lg px-3 py-2 text-[#252B32] focus:outline-none focus:border-[#102A43]"
                   />
                   <button
                     type="button"
                     onClick={handleBindRfid}
-                    className="neo-btn neo-btn-primary py-2 px-4 text-xs flex items-center gap-1.5"
+                    className="py-2 px-4 text-xs font-semibold bg-[#102A43] hover:bg-[#183B5B] text-white rounded-lg shadow-xs transition cursor-pointer flex items-center gap-1.5"
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
                     Gán Mã Thẻ
@@ -439,8 +441,8 @@ export const TerminalEmbarkationPage: React.FC = () => {
 
                 {rfidStatusMsg && (
                   <p
-                    className={`text-xs font-mono font-bold ${
-                      rfidStatusMsg.type === 'success' ? 'text-[#3155E7]' : 'text-[#DC2626]'
+                    className={`text-xs font-medium ${
+                      rfidStatusMsg.type === 'success' ? 'text-[#102A43]' : 'text-rose-600'
                     }`}
                   >
                     {rfidStatusMsg.text}
@@ -454,13 +456,13 @@ export const TerminalEmbarkationPage: React.FC = () => {
                   type="button"
                   onClick={handleExecuteCheckIn}
                   disabled={isProcessingCheckIn || profile.checkInStatus === 'BOARDED'}
-                  className={`w-full py-4 px-6 border-2 border-[#171717] shadow-[4px_4px_0px_#171717] font-display font-black text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-50 ${
+                  className={`w-full py-4 px-6 rounded-xl font-semibold text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50 ${
                     profile.checkInStatus === 'BOARDED'
-                      ? 'bg-[#E7E4DC] text-[#171717]'
-                      : 'bg-[#D9FF43] hover:bg-[#D9FF43]/90 text-[#171717]'
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                      : 'bg-[#102A43] hover:bg-[#183B5B] text-white'
                   }`}
                 >
-                  <Ship className="w-5 h-5 text-[#171717]" />
+                  <Ship className="w-5 h-5 text-current" />
                   {profile.checkInStatus === 'BOARDED'
                     ? 'HÀNH KHÁCH ĐÃ LÀM THỦ TỤC LÊN TÀU'
                     : isProcessingCheckIn
@@ -470,16 +472,16 @@ export const TerminalEmbarkationPage: React.FC = () => {
 
                 {checkInResultMsg && (
                   <div
-                    className={`mt-3 p-3 border-2 border-[#171717] shadow-[2px_2px_0px_#171717] text-xs font-mono font-bold flex items-center gap-2 ${
+                    className={`mt-3 p-3 border rounded-xl text-xs font-medium flex items-center gap-2 ${
                       checkInResultMsg.type === 'success'
-                        ? 'bg-[#D9FF43] text-[#171717]'
-                        : 'bg-[#DC2626] text-white'
+                        ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                        : 'bg-rose-50 border-rose-200 text-rose-800'
                     }`}
                   >
                     {checkInResultMsg.type === 'success' ? (
-                      <CheckCircle2 className="w-4 h-4 shrink-0 text-[#171717]" />
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
                     ) : (
-                      <AlertCircle className="w-4 h-4 shrink-0 text-[#D9FF43]" />
+                      <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                     )}
                     <span>{checkInResultMsg.text}</span>
                   </div>
@@ -487,10 +489,10 @@ export const TerminalEmbarkationPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="neo-card bg-white p-12 text-center border-dashed">
-              <User className="w-12 h-12 text-[#171717]/40 mx-auto mb-3" />
-              <h3 className="text-base font-display font-black text-[#171717] uppercase">Chưa Chọn Hồ Sơ Hành Khách</h3>
-              <p className="text-xs font-mono text-[#171717]/70 mt-1 max-w-sm mx-auto">
+            <div className="bg-white border border-dashed border-[#E5E0D7] rounded-2xl p-12 text-center">
+              <User className="w-12 h-12 text-[#687787]/40 mx-auto mb-3" />
+              <h3 className="text-base font-serif font-bold text-[#102A43] uppercase">Chưa Chọn Hồ Sơ Hành Khách</h3>
+              <p className="text-xs text-[#687787] mt-1 max-w-sm mx-auto">
                 Nhập số hộ chiếu hoặc mã đặt chỗ ở bảng bên trái hoặc chạm thẻ/quét QR để bắt đầu quy trình tiếp đón.
               </p>
             </div>

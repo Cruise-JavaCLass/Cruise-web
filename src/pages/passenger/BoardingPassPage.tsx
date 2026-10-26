@@ -18,7 +18,7 @@ export const BoardingPassPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const passengerId = resolvePassengerId();
+      const passengerId = resolvePassengerId(1);
       if (!passengerId) {
         throw new Error('Không xác định được danh tính hành khách (Passenger ID is missing)');
       }
@@ -46,62 +46,61 @@ export const BoardingPassPage: React.FC = () => {
 
   return (
     <div
-      data-theme="passenger-retro"
-      className="min-h-screen bg-[#070B16] text-[#F4F4F0] p-4 md:p-8 flex flex-col justify-center items-center bg-[linear-gradient(to_right,rgba(66,232,245,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(66,232,245,0.03)_1px,transparent_1px)] bg-[size:32px_32px]"
+      className="min-h-screen bg-[#F7F4ED] text-[#252B32] p-4 md:p-8 flex flex-col justify-center items-center"
     >
       <div className="w-full max-w-md mb-6 flex items-center justify-between">
         <Link
           to="/passenger-home"
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono font-medium uppercase text-[#A7B4C9] bg-[#151F33] border border-[#42E8F5]/30 rounded-lg hover:text-[#42E8F5] hover:border-[#42E8F5] transition-all"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold uppercase text-[#102A43] bg-white border border-[#E5E0D7] rounded-xl hover:text-[#397C80] hover:border-[#397C80] shadow-xs transition-all"
         >
           <ArrowLeft className="w-4 h-4" /> Quay lại Trang Chủ
         </Link>
         <button
           onClick={() => { void fetchProfile(); }}
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono font-medium uppercase text-[#42E8F5] bg-[#151F33] border border-[#42E8F5]/40 rounded-lg hover:bg-[#10182A] transition-all cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold uppercase text-[#102A43] bg-white border border-[#E5E0D7] rounded-xl hover:text-[#397C80] hover:border-[#397C80] shadow-xs transition-all cursor-pointer"
         >
-          <RefreshCw className="w-3.5 h-3.5" /> Làm mới
+          <RefreshCw className="w-3.5 h-3.5 text-[#397C80]" /> Làm mới
         </button>
       </div>
 
       {loading && (
         <div className="flex flex-col items-center justify-center p-12 text-center">
           <MaritimeLottie variant="radar" className="w-20 h-20 mb-4" />
-          <p className="text-xs font-mono font-semibold uppercase tracking-widest text-[#42E8F5] animate-pulse">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#102A43] animate-pulse">
             Đang tạo thẻ lên tàu kỹ thuật số...
           </p>
-          <span className="text-[10px] font-mono text-[#A7B4C9] mt-1">TELEMETRY_SYNC // ENCRYPTING RFID & QR</span>
+          <span className="text-[10px] text-[#252B32]/70 mt-1">HỆ THỐNG ĐANG ĐỒNG BỘ // MÃ HÓA RFID & QR</span>
         </div>
       )}
 
       {error && !loading && (
-        <div className="max-w-md w-full p-6 sm:p-8 bg-[#151F33] border border-[#FFBD59]/40 rounded-2xl shadow-[0_4px_30px_rgba(255,189,89,0.12)] text-center relative overflow-hidden">
+        <div className="max-w-md w-full p-6 sm:p-8 bg-white border border-amber-300 rounded-2xl shadow-sm text-center relative overflow-hidden">
           {/* Diagnostic Radar Graphic */}
-          <MaritimeLottie variant="radar" className="w-28 h-28 mx-auto mb-4" title="Chẩn đoán Radar hàng hải" />
+          <MaritimeLottie variant="radar" className="w-24 h-24 mx-auto mb-4" title="Chẩn đoán Radar hàng hải" />
 
           {/* Technical Diagnostic Header */}
-          <div className="inline-block px-3 py-1 bg-[#FFBD59]/15 border border-[#FFBD59]/40 rounded-full text-[10px] font-mono font-bold text-[#FFBD59] tracking-wider uppercase mb-3">
-            [ERR_PASS_SYNC_04 // BOARDING_TERMINAL_OFFLINE]
+          <div className="inline-block px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-[10px] font-bold text-amber-900 tracking-wider uppercase mb-3">
+            [LỖI ĐỒNG BỘ THẺ // TERMINAL NGOẠI TUYẾN]
           </div>
 
-          <h3 className="text-base font-bold text-[#F4F4F0] mb-2 font-display">
+          <h3 className="text-base font-bold text-[#102A43] mb-2 font-display">
             Không Thể Đồng Bộ Thẻ Lên Tàu
           </h3>
 
-          <p className="text-xs text-[#A7B4C9] mb-6 leading-relaxed">
+          <p className="text-xs text-[#252B32]/70 mb-6 leading-relaxed">
             {error}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={() => { void fetchProfile(); }}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-[#FFBD59] hover:bg-[#ffa929] text-[#070B16] font-mono font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#FFBD59]/20 transition-all cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#102A43] hover:bg-[#0B1F33] text-white font-semibold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" /> Thử lại
             </button>
             <Link
               to="/passenger-home"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-[#10182A] hover:bg-[#0c1221] text-[#42E8F5] border border-[#42E8F5]/30 font-mono font-semibold text-xs uppercase tracking-wider transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#102A43] hover:bg-[#0B1F33] text-white font-semibold text-xs uppercase tracking-wider shadow-sm transition-all"
             >
               <Home className="w-4 h-4" /> Về Trang Chủ Khách
             </Link>
