@@ -17,13 +17,26 @@ import { ExcursionAttendancePage } from './pages/ExcursionAttendancePage';
 import { ExcursionAnalyticsDashboard } from './pages/ExcursionAnalyticsDashboard';
 import { PassengerExcursionPassPage } from './pages/PassengerExcursionPassPage';
 import { ExcursionDispatcherDashboard } from './pages/ExcursionDispatcherDashboard';
+import { ExcursionRosterPage } from './pages/ExcursionRosterPage';
 import { ActivityAttendancePage } from './pages/ActivityAttendancePage';
 import { ActivityRosterPage } from './pages/ActivityRosterPage';
 import { MySchedulePage } from './pages/MySchedulePage';
 import { PassengerFolioPage } from './pages/passenger/PassengerFolioPage';
 import { BoardingPassPage } from './pages/passenger/BoardingPassPage';
 import { TerminalEmbarkationPage } from './pages/TerminalEmbarkationPage';
+import { ProviderSettlementDashboard } from './pages/ProviderSettlementDashboard';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { CruiseAreaPolicyManager } from './components/admin/CruiseAreaPolicyManager';
+import { useSearchParams } from 'react-router-dom';
+
+function CruiseAreaPolicyRoute() {
+  const [searchParams] = useSearchParams();
+  const shipIdParam = searchParams.get('shipId');
+  const shipId = shipIdParam ? Number(shipIdParam) : 1;
+  return <CruiseAreaPolicyManager shipId={shipId} />;
+}
+import { OperationalReportsPage } from './pages/OperationalReportsPage';
+import { VoyagePhaseControlCenter } from './components/voyage/VoyagePhaseControlCenter';
 
 export function App() {
   return (
@@ -36,11 +49,15 @@ export function App() {
         <Route path="passenger/folio" element={<PassengerFolioPage />} />
         <Route path="ships" element={<ShipsPage />} />
         <Route path="ships/:id" element={<ShipDetailPage />} />
+        <Route path="admin/cruise-area-policies" element={<CruiseAreaPolicyRoute />} />
         <Route path="itinerary" element={<ItineraryPage />} />
+        <Route path="voyage" element={<VoyagePhaseControlCenter />} />
         <Route path="excursions" element={<ExcursionsPage />} />
         <Route path="excursions/:id" element={<ExcursionDetailPage />} />
         <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />
         <Route path="excursion-dispatcher" element={<ExcursionDispatcherDashboard />} />
+        <Route path="excursions/:id/roster" element={<ExcursionRosterPage />} />
+        <Route path="excursions/roster" element={<ExcursionRosterPage />} />
         <Route path="excursion-attendance" element={<ExcursionAttendancePage />} />
         <Route path="excursion-analytics" element={<ExcursionAnalyticsDashboard />} />
         <Route path="activities" element={<ActivitiesPage />} />
@@ -54,6 +71,8 @@ export function App() {
         <Route path="passengers" element={<PassengersPage />} />
         <Route path="embarkation" element={<TerminalEmbarkationPage />} />
         <Route path="billing/settlement" element={<SettlementPage />} />
+        <Route path="reports/operational" element={<OperationalReportsPage />} />
+        <Route path="provider-settlement" element={<ProviderSettlementDashboard />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
@@ -61,4 +80,3 @@ export function App() {
 }
 
 export default App;
-

@@ -34,6 +34,10 @@ import {
 } from '../../services/posCatalogService';
 import { PosReceiptModal } from './PosReceiptModal';
 import { ModifierSelectorModal } from './ModifierSelectorModal';
+import { PosDigitalSignaturePad } from './PosDigitalSignaturePad';
+import { CabinBillSplittingWizard } from './CabinBillSplittingWizard';
+import { cabinBillingService } from '../../services/cabinBillingService';
+import { Users, PenTool } from 'lucide-react';
 
 export interface CartItemEntry {
   cartId: string;
@@ -182,7 +186,12 @@ export const PosRegister: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [completedTx, setCompletedTx] = useState<PosTransaction | null>(null);
+  const [completedSignatureBase64, setCompletedSignatureBase64] = useState<string | undefined>(undefined);
+  const [completedSignerName, setCompletedSignerName] = useState<string | undefined>(undefined);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
+  const [isSplitWizardOpen, setIsSplitWizardOpen] = useState(false);
+  const [capturedSignatureBase64, setCapturedSignatureBase64] = useState<string | undefined>(undefined);
   const [heldOrders, setHeldOrders] = useState<HeldOrder[]>(() => {
     try {
       const stored = localStorage.getItem('CRUISE_POS_HELD_ORDERS');
@@ -391,6 +400,7 @@ export const PosRegister: React.FC = () => {
       ];
     });
 
+    setCapturedSignatureBase64(undefined);
     setScanNotification(`Đã thêm: ${product.name}`);
     setTimeout(() => setScanNotification(null), 2000);
   };
@@ -486,6 +496,7 @@ export const PosRegister: React.FC = () => {
   // Cart operations
   const updateQuantity = (cartId: string, delta: number) => {
     idempotencyKeyRef.current = null;
+    setCapturedSignatureBase64(undefined);
     setCart((prev) =>
       prev
         .map((i) => (i.cartId === cartId ? { ...i, quantity: i.quantity + delta } : i))
@@ -495,11 +506,13 @@ export const PosRegister: React.FC = () => {
 
   const removeFromCart = (cartId: string) => {
     idempotencyKeyRef.current = null;
+    setCapturedSignatureBase64(undefined);
     setCart((prev) => prev.filter((i) => i.cartId !== cartId));
   };
 
   const clearCart = () => {
     idempotencyKeyRef.current = null;
+    setCapturedSignatureBase64(undefined);
     setCart([]);
   };
 
@@ -616,6 +629,7 @@ export const PosRegister: React.FC = () => {
       return;
     }
 
+    
     setIsSubmitting(true);
     setSubmitError(null);
 
@@ -645,8 +659,35 @@ export const PosRegister: React.FC = () => {
       };
 
       const result = await posService.createTransaction(payload, idempotencyKeyRef.current);
+      let archivedSignature: string | undefined = undefined;
+      let signerDisplayName: string | undefined = undefined;
+
+      if (capturedSignatureBase64 && result.transactionUuid && activeFolio?.cabinNumber) {
+        signerDisplayName =
+          (activeFolio as unknown as { guestName?: string })?.guestName ||
+          activeFolio?.primaryGuestName ||
+          'Valued Guest';
+        try {
+          await cabinBillingService.archiveSignature({
+            transactionUuid: result.transactionUuid,
+            transactionId: result.id,
+            cabinNumber: activeFolio.cabinNumber,
+            passengerId: activeFolio.passengerId,
+            signerName: signerDisplayName,
+            signatureImageBase64: capturedSignatureBase64,
+            capturedBy: cashierId,
+            amount: result.totalAmount,
+          });
+          archivedSignature = capturedSignatureBase64;
+        } catch (sigErr) {
+          console.warn('Could not archive signature:', sigErr);
+        }
+      }
       setCompletedTx(result);
+      setCompletedSignatureBase64(archivedSignature);
+      setCompletedSignerName(archivedSignature ? signerDisplayName : undefined);
       setIsReceiptOpen(true);
+      setCapturedSignatureBase64(undefined);
       clearCart();
       if (paymentMethod === 'CABIN_FOLIO' && activeFolio) {
         void handleLookupFolio();
@@ -990,6 +1031,7 @@ export const PosRegister: React.FC = () => {
                 setCabinInput(e.target.value.toUpperCase());
                 setFolioAccount(null);
                 setFolioError(null);
+                setCapturedSignatureBase64(undefined);
               }}
               placeholder="Nhập số Cabin (vd: CABIN-7012)"
               className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -1199,6 +1241,32 @@ export const PosRegister: React.FC = () => {
           </div>
         )}
 
+        {/* Split Bill & Digital Signature Controls */}
+        {cart.length > 0 && paymentMethod === 'CABIN_FOLIO' && (
+          <div className="mt-2 flex gap-2">
+            <button
+              type="button"
+              onClick={() => setIsSplitWizardOpen(true)}
+              className="flex-1 py-2 px-3 rounded-xl bg-indigo-900/40 hover:bg-indigo-900/60 border border-indigo-700/60 text-indigo-300 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition"
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Chia Bill Phòng</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsSignatureModalOpen(true)}
+              className={`py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                capturedSignatureBase64
+                  ? 'bg-emerald-950/50 border-emerald-600 text-emerald-300'
+                  : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+              }`}
+            >
+              <PenTool className="w-3.5 h-3.5" />
+              <span>{capturedSignatureBase64 ? 'Đã Ký Chữ Ký Số' : 'Ký Số Trước'}</span>
+            </button>
+          </div>
+        )}
+
         {/* Checkout Button */}
         <button
           type="button"
@@ -1232,9 +1300,56 @@ export const PosRegister: React.FC = () => {
         <PosReceiptModal
           isOpen={isReceiptOpen}
           transaction={completedTx}
+          signatureBase64={completedSignatureBase64}
+          signerName={completedSignerName}
           onClose={() => setIsReceiptOpen(false)}
         />
       )}
+
+      {/* Digital Signature Pad Modal */}
+      <PosDigitalSignaturePad
+        isOpen={isSignatureModalOpen}
+        onClose={() => setIsSignatureModalOpen(false)}
+        signerName={
+          (folioAccount as unknown as { guestName?: string })?.guestName ||
+          folioAccount?.primaryGuestName ||
+          'Valued Guest'
+        }
+        cabinNumber={folioAccount?.cabinNumber || cabinInput || 'CABIN-GUEST'}
+        totalAmount={cartCalculations.grandTotal}
+        onConfirm={(signatureBase64) => {
+          setCapturedSignatureBase64(signatureBase64);
+          setIsSignatureModalOpen(false);
+        }}
+      />
+
+      {/* Cabin Bill Splitting Wizard Modal */}
+      <CabinBillSplittingWizard
+        isOpen={isSplitWizardOpen}
+        onClose={() => setIsSplitWizardOpen(false)}
+        cabinNumber={folioAccount?.cabinNumber || cabinInput || ''}
+        stationId={stationId}
+        cashierId={cashierId}
+        totalAmount={cartCalculations.grandTotal}
+        items={cart.map((i) => ({
+          itemCode: i.product.sku,
+          itemName: i.product.name,
+          category: i.product.categoryName || 'GENERAL',
+          quantity: i.quantity,
+          unitPrice: i.unitPrice,
+        }))}
+        onSuccess={(result) => {
+          setIsSplitWizardOpen(false);
+          setScanNotification(
+            `Đã chia hóa đơn thành công thành ${result.splitCount} phần (${result.splits.map((s) => s.guestName).join(', ')})`
+          );
+          setTimeout(() => setScanNotification(null), 4000);
+          clearCart();
+          if (paymentMethod === 'CABIN_FOLIO' && folioAccount) {
+            void handleLookupFolio();
+          }
+        }}
+      />
     </div>
   );
 };

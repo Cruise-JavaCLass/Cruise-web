@@ -66,7 +66,9 @@ export function MainLayout() {
     { to: '/passenger-home', label: 'Trang Chủ Khách (Guest)', icon: Compass },
     { to: '/my-schedule', label: 'Lịch Cá Nhân (My Day)', icon: Clock },
     { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship },
+    { to: '/admin/cruise-area-policies', label: 'Quản lý Khu vực & Chính sách', icon: Ship },
     { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin },
+    { to: '/voyage', label: 'Vận hành Hải trình (Lifecycle)', icon: Compass },
     { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation },
     { to: '/excursion-attendance', label: 'Điểm Danh Tour Bờ', icon: Users },
     { to: '/activities', label: 'Hoạt động & Excursion', icon: Activity },
@@ -75,6 +77,7 @@ export function MainLayout() {
     { to: '/passengers', label: 'Hành khách & Check-in', icon: Users },
     { to: '/embarkation', label: 'Cảng Đón Khách (Terminal)', icon: Ship },
     { to: '/billing/settlement', label: 'Tất toán & Hoá đơn', icon: Receipt },
+    { to: '/reports/operational', label: 'Báo Cáo Doanh Thu (Audit)', icon: Receipt },
   ];
 
   return (
