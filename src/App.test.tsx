@@ -5,16 +5,20 @@ import { App } from './App';
 import { authService } from './services/authService';
 
 // Mock backend API to prevent async interval timer in tests
-vi.mock('./services/api', () => ({
-  checkBackendHealth: vi.fn().mockResolvedValue(null),
-  getBackendInfo: vi.fn().mockResolvedValue(null),
-  apiClient: {
-    get: vi.fn().mockResolvedValue({ data: {} }),
-    post: vi.fn().mockResolvedValue({ data: {} }),
-    put: vi.fn().mockResolvedValue({ data: {} }),
-    delete: vi.fn().mockResolvedValue({ data: {} }),
-  },
-}));
+vi.mock('./services/api', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./services/api')>();
+  return {
+    ...actual,
+    checkBackendHealth: vi.fn().mockResolvedValue(null),
+    getBackendInfo: vi.fn().mockResolvedValue(null),
+    apiClient: {
+      get: vi.fn().mockResolvedValue({ data: { success: true, data: null } }),
+      post: vi.fn().mockResolvedValue({ data: { success: true, data: null } }),
+      put: vi.fn().mockResolvedValue({ data: { success: true, data: null } }),
+      delete: vi.fn().mockResolvedValue({ data: { success: true, data: null } }),
+    }
+  };
+});
 
 describe('App Routing Integration Tests', () => {
   beforeEach(() => {

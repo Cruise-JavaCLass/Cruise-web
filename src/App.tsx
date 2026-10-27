@@ -38,6 +38,7 @@ function CruiseAreaPolicyRoute() {
   const shipId = shipIdParam ? Number(shipIdParam) : 1;
   return <CruiseAreaPolicyManager shipId={shipId} />;
 }
+import { VoyagePhaseControlCenter } from './components/voyage/VoyagePhaseControlCenter';
 
 function PassengerRedirect() {
   const location = useLocation();
@@ -69,6 +70,7 @@ export function App() {
           <Route path="ships/:id" element={<ShipDetailPage />} />
           <Route path="admin/cruise-area-policies" element={<CruiseAreaPolicyRoute />} />
           <Route path="itinerary" element={<ItineraryPage />} />
+          <Route path="voyage" element={<VoyagePhaseControlCenter />} />
           <Route path="excursions" element={<ExcursionsPage />} />
           <Route path="excursions/:id" element={<ExcursionDetailPage />} />
           <Route path="excursion-dispatcher" element={<ExcursionDispatcherDashboard />} />

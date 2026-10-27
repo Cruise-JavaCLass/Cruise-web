@@ -73,14 +73,15 @@ export function MainLayout() {
     { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship, code: '02' },
     { to: '/admin/cruise-area-policies', label: 'Khu vực & Chính sách', icon: Ship, code: '03' },
     { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin, code: '04' },
-    { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation, code: '05' },
-    { to: '/excursion-attendance', label: 'Điểm Danh Tour Bờ', icon: Users, code: '06' },
-    { to: '/activities', label: 'Hoạt động & Excursion', icon: Activity, code: '07' },
-    { to: '/pos', label: 'POS & Chi tiêu Onboard', icon: CreditCard, code: '08' },
-    { to: '/passengers', label: 'Hành khách & Check-in', icon: Users, code: '09' },
-    { to: '/embarkation', label: 'Cảng Đón Khách (Terminal)', icon: Ship, code: '10' },
-    { to: '/billing/settlement', label: 'Tất toán & Hoá đơn', icon: Receipt, code: '11' },
-    { to: '/reports/operational', label: 'Báo Cáo Doanh Thu (Audit)', icon: Receipt, code: '12' },
+    { to: '/voyage', label: 'Vận hành Hải trình (Lifecycle)', icon: Compass, code: '05' },
+    { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation, code: '06' },
+    { to: '/excursion-attendance', label: 'Điểm Danh Tour Bờ', icon: Users, code: '07' },
+    { to: '/activities', label: 'Hoạt động & Excursion', icon: Activity, code: '08' },
+    { to: '/pos', label: 'POS & Chi tiêu Onboard', icon: CreditCard, code: '09' },
+    { to: '/passengers', label: 'Hành khách & Check-in', icon: Users, code: '10' },
+    { to: '/embarkation', label: 'Cảng Đón Khách (Terminal)', icon: Ship, code: '11' },
+    { to: '/billing/settlement', label: 'Tất toán & Hoá đơn', icon: Receipt, code: '12' },
+    { to: '/reports/operational', label: 'Báo Cáo Doanh Thu (Audit)', icon: Receipt, code: '13' },
   ];
 
   return (
