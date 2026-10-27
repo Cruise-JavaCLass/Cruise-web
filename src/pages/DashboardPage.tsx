@@ -137,7 +137,7 @@ export function DashboardPage() {
                   {hasKpis ? (embarkationRate > 0 ? `${embarkationRate.toFixed(1)}%` : '0%') : '--'}
                 </span>
                 <span className="text-[10px] font-mono uppercase font-medium text-[#5A6578] block mt-0.5">
-                  on-time all-aboard
+                  embarkation rate
                 </span>
               </div>
               <div className="p-3.5 bg-[#F7F4ED]/60 rounded-xl border border-[#E5E0D7]">

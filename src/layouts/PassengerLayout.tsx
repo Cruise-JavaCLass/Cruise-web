@@ -33,6 +33,7 @@ export function PassengerLayout() {
   const location = useLocation();
 
   useEffect(() => {
+    let isCancelled = false;
     const pId = resolvePassengerId();
 
     // 1. Read stored passenger profile from localStorage immediately if matching selected passenger ID
@@ -55,11 +56,15 @@ export function PassengerLayout() {
       // ignore
     }
 
+    // Clear old profile while new lookup is pending
+    setGuestProfile(null);
+
     // 2. Refresh from backend API
     if (pId) {
       getPassengerBookingSummary(pId)
         .then((summary) => {
-          if (summary) {
+          if (isCancelled) return;
+          if (summary && summary.passengerId === pId) {
             setGuestProfile({
               name: summary.fullName,
               cabin: summary.cabinNumber,
@@ -70,11 +75,17 @@ export function PassengerLayout() {
           }
         })
         .catch(() => {
-          setGuestProfile(null);
+          if (!isCancelled) {
+            setGuestProfile(null);
+          }
         });
     } else {
       setGuestProfile(null);
     }
+
+    return () => {
+      isCancelled = true;
+    };
   }, [location.search]);
 
   // Close mobile drawer on route change

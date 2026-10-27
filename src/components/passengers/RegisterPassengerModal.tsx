@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, UserPlus, AlertCircle, RefreshCw } from 'lucide-react';
 import type { RegisterPassengerPayload } from '../../services/passengerService';
 
@@ -27,9 +27,11 @@ export const RegisterPassengerModal: React.FC<RegisterPassengerModalProps> = ({
   const [registrationStatus, setRegistrationStatus] = useState<'CONFIRMED' | 'PENDING' | 'CANCELLED'>('CONFIRMED');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
+  const submissionInstanceRef = useRef(0);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !isSubmittingRef.current) {
       setFullName('');
       setEmail('');
       setPhoneNumber('');
@@ -39,7 +41,6 @@ export const RegisterPassengerModal: React.FC<RegisterPassengerModalProps> = ({
       setBleZone('Zone A - Sky Lounge');
       setRegistrationStatus('CONFIRMED');
       setErrors({});
-      setIsSubmitting(false);
     }
   }, [isOpen]);
 
@@ -56,10 +57,12 @@ export const RegisterPassengerModal: React.FC<RegisterPassengerModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate() || isSubmitting) return;
 
+    const currentInstance = ++submissionInstanceRef.current;
     try {
       setIsSubmitting(true);
+      isSubmittingRef.current = true;
       const effectiveRfid = rfidTag.trim() || generateRandomRfidTag();
       await onSuccess({
         tourId,
@@ -74,11 +77,18 @@ export const RegisterPassengerModal: React.FC<RegisterPassengerModalProps> = ({
         registrationStatus,
         checkInStatus: 'NOT_CHECKED_IN',
       });
-      onClose();
+      if (submissionInstanceRef.current === currentInstance) {
+        onClose();
+      }
     } catch {
-      setErrors({ form: 'Đã có lỗi xảy ra khi lưu thông tin hành khách.' });
+      if (submissionInstanceRef.current === currentInstance) {
+        setErrors({ form: 'Đã có lỗi xảy ra khi lưu thông tin hành khách.' });
+      }
     } finally {
-      setIsSubmitting(false);
+      if (submissionInstanceRef.current === currentInstance) {
+        setIsSubmitting(false);
+        isSubmittingRef.current = false;
+      }
     }
   };
 
