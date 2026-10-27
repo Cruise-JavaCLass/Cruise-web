@@ -1,6 +1,6 @@
 import { CheckCircle, Upload, X } from 'lucide-react';
 import React, { useRef, useState } from 'react';
-import { useModalFocusTrap } from './useModalFocusTrap';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import {
   type BulkIngestResponse,
   rfidCardService,
@@ -26,7 +26,7 @@ export const BulkBatchScannerModal: React.FC<BulkBatchScannerModalProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const modalRef = useRef<HTMLDivElement>(null);
-  useModalFocusTrap(isOpen, modalRef, onClose);
+  useFocusTrap(isOpen, modalRef, onClose);
 
   if (!isOpen) return null;
 

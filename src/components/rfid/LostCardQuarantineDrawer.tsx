@@ -1,6 +1,6 @@
 import { CheckCircle, ShieldAlert, X } from 'lucide-react';
 import React, { useRef, useState } from 'react';
-import { useModalFocusTrap } from './useModalFocusTrap';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import {
   type BlacklistResponse,
   type RfidCardInventoryDto,
@@ -29,7 +29,7 @@ export const LostCardQuarantineDrawer: React.FC<LostCardQuarantineDrawerProps> =
   const [result, setResult] = useState<BlacklistResponse | null>(null);
 
   const drawerRef = useRef<HTMLDivElement>(null);
-  useModalFocusTrap(isOpen, drawerRef, onClose);
+  useFocusTrap(isOpen, drawerRef, onClose);
 
   if (!isOpen) return null;
 
