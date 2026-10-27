@@ -169,8 +169,8 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
 
   if (loading) {
     return (
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-12 text-center text-slate-400 text-xs">
-        <Clock className="w-8 h-8 text-cyan-400 animate-spin mx-auto mb-3" />
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl p-12 text-center text-[#5A6578] text-xs shadow-xs">
+        <Clock className="w-8 h-8 text-[#102A43] animate-spin mx-auto mb-3" />
         Đang tải lịch trình hàng ngày...
       </div>
     );
@@ -180,41 +180,41 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
     <div className="space-y-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md text-xs animate-fade-in">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl shadow-lg backdrop-blur-md text-xs animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Tour banner info */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-cyan-950/30 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Tour banner info — Luxury Maritime */}
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#F7F4ED] text-[#397C80] border border-[#E5E0D7]">
               {tour.code}
             </span>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-[#5A6578]">
               {tour.durationDays} Ngày {tour.durationNights} Đêm
             </span>
             {dailyData?.lastUpdated && (
-              <span className="flex items-center gap-1 text-[10px] text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded-full border border-cyan-800/50">
-                <RefreshCw className="w-3 h-3 text-cyan-400" />
+              <span className="flex items-center gap-1 text-[10px] text-[#102A43] bg-[#F7F4ED] px-2.5 py-0.5 rounded-full border border-[#E5E0D7]">
+                <RefreshCw className="w-3 h-3 text-[#397C80]" />
                 Cập nhật: {dailyData.lastUpdated}
               </span>
             )}
           </div>
-          <h2 className="text-lg font-bold text-white">{tour.name}</h2>
-          <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-2">
+          <h2 className="text-xl font-bold font-serif text-[#102A43]">{tour.name}</h2>
+          <div className="flex flex-wrap items-center gap-4 text-xs text-[#5A6578] mt-2">
             <span className="flex items-center gap-1.5">
-              <Ship className="w-3.5 h-3.5 text-cyan-400" />
+              <Ship className="w-3.5 h-3.5 text-[#102A43]" />
               {tour.shipName || 'Chưa gán tàu'}
             </span>
             <span className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              <Calendar className="w-3.5 h-3.5 text-[#5A6578]" />
               {tour.startDate} → {tour.endDate}
             </span>
             <span className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-blue-400" />
+              <MapPin className="w-3.5 h-3.5 text-[#397C80]" />
               {tour.departurePort} → {tour.destinationPort}
             </span>
           </div>
@@ -224,30 +224,30 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
           <button
             onClick={() => setIsHistoryModalOpen(true)}
             aria-label="Xem lịch sử thay đổi lịch trình"
-            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-slate-600 rounded-xl text-xs font-semibold shadow-sm cursor-pointer transition-colors"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-[#F7F4ED] hover:bg-[#ECE7DC] text-[#102A43] border border-[#E5E0D7] rounded-xl text-xs font-semibold shadow-xs cursor-pointer transition-colors"
           >
-            <History className="w-4 h-4 text-cyan-400" /> Lịch Sử Thay Đổi
+            <History className="w-4 h-4 text-[#397C80]" /> Lịch Sử Thay Đổi
             {dailyData?.changeHistory && dailyData.changeHistory.length > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 bg-cyan-500/20 text-cyan-300 rounded-full text-[10px] font-mono">
+              <span className="ml-1 px-1.5 py-0.5 bg-[#397C80]/10 text-[#397C80] rounded-full text-[10px] font-mono">
                 {dailyData.changeHistory.length}
               </span>
             )}
           </button>
           <button
             onClick={handleOpenAdd}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-xs font-semibold shadow-xs transition-colors cursor-pointer"
           >
-            <Plus className="w-4 h-4" /> Thêm Hoạt Động Vào Ngày {selectedDayNumber}
+            <Plus className="w-4 h-4 text-[#C5A572]" /> Thêm Hoạt Động Vào Ngày {selectedDayNumber}
           </button>
         </div>
       </div>
 
       {/* Updated Itinerary Notice Banner */}
       {dailyData?.updateNotice && (
-        <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2.5 shadow-sm">
-          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+        <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2.5 shadow-xs">
+          <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
           <div className="flex-1">
-            <span className="font-semibold text-amber-200">Thông báo điều chỉnh hải trình: </span>
+            <span className="font-semibold text-amber-950">Thông báo điều chỉnh hải trình: </span>
             <span>{dailyData.updateNotice}</span>
           </div>
         </div>
@@ -261,34 +261,42 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
             <button
               key={day.dayNumber}
               onClick={() => setSelectedDayNumber(day.dayNumber)}
-              className={`px-4 py-3 rounded-xl border text-left transition-all shrink-0 cursor-pointer ${
+              className={`px-4 py-3 rounded-2xl border text-left transition-all shrink-0 cursor-pointer ${
                 isSelected
-                  ? 'bg-slate-800 border-cyan-500/60 shadow-lg shadow-cyan-950/50'
-                  : 'bg-slate-900/60 border-slate-800 hover:bg-slate-850 hover:border-slate-700'
+                  ? 'bg-[#102A43] border-[#102A43] text-white shadow-sm'
+                  : 'bg-white border-[#E5E0D7] hover:bg-[#F7F4ED] text-[#252B32]'
               }`}
             >
               <div className="flex items-center justify-between gap-3">
                 <span
                   className={`text-xs font-bold ${
-                    isSelected ? 'text-cyan-400' : 'text-slate-300'
+                    isSelected ? 'text-white' : 'text-[#102A43]'
                   }`}
                 >
                   Ngày {day.dayNumber}
                 </span>
                 {day.seaDay ? (
-                  <span className="flex items-center gap-1 text-[10px] text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">
+                  <span className={`flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full ${
+                    isSelected ? 'bg-white/20 text-[#C5A572]' : 'bg-[#F7F4ED] text-[#397C80] border border-[#E5E0D7]'
+                  }`}>
                     <Waves className="w-3 h-3" /> Trên biển
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                  <span className={`flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full ${
+                    isSelected ? 'bg-white/20 text-emerald-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200/80'
+                  }`}>
                     <Anchor className="w-3 h-3" /> Cảng
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-slate-400 mt-1 truncate max-w-[150px]">
+              <p className={`text-[11px] mt-1 truncate max-w-[150px] ${
+                isSelected ? 'text-white/80' : 'text-[#5A6578]'
+              }`}>
                 {day.portName || day.title}
               </p>
-              <span className="text-[10px] text-slate-500 mt-0.5 block">
+              <span className={`text-[10px] mt-0.5 block ${
+                isSelected ? 'text-white/60' : 'text-[#5A6578]/70'
+              }`}>
                 {day.activities.length} hoạt động
               </span>
             </button>
@@ -298,33 +306,33 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
 
       {/* Selected Day Header & Category Filter */}
       {currentDay && (
-        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 space-y-3">
+        <div className="bg-white border border-[#E5E0D7] rounded-2xl p-4 space-y-3 shadow-xs">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-white">
+                <h3 className="text-sm font-bold font-serif text-[#102A43]">
                   Ngày {currentDay.dayNumber}: {currentDay.title}
                 </h3>
-                <span className="text-xs text-slate-400">• {currentDay.date}</span>
+                <span className="text-xs text-[#5A6578]">• {currentDay.date}</span>
                 {currentDay.isAffected && (
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
                     Đã điều chỉnh lịch trình
                   </span>
                 )}
               </div>
-              <p className="text-xs text-cyan-400 mt-1 flex items-center gap-1.5">
+              <p className="text-xs text-[#397C80] mt-1 flex items-center gap-1.5 font-medium">
                 <MapPin className="w-3.5 h-3.5" />
                 Địa điểm trọng tâm: {currentDay.portName || 'Hải trình mở trên biển'}
               </p>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">Lọc mục:</span>
+              <span className="text-xs text-[#5A6578]">Lọc mục:</span>
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 aria-label="Lọc hoạt động theo loại"
-                className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-cyan-500"
+                className="px-3 py-1.5 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10"
               >
                 <option value="ALL">Tất cả danh mục</option>
                 {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
@@ -337,24 +345,24 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
           </div>
 
           {/* Port Times & Weather Bar (KAN-206, KAN-207) */}
-          <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-800/80 text-xs">
+          <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-[#E5E0D7] text-xs">
             {currentDay.arrivalTime && (
-              <span className="flex items-center gap-1.5 text-emerald-400 font-mono bg-emerald-950/40 px-2.5 py-1 rounded-lg border border-emerald-800/30">
-                <Clock className="w-3.5 h-3.5" /> Giờ cập bến: <strong>{currentDay.arrivalTime}</strong>
+              <span className="flex items-center gap-1.5 text-emerald-800 font-mono bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/80">
+                <Clock className="w-3.5 h-3.5 text-emerald-600" /> Giờ cập bến: <strong>{currentDay.arrivalTime}</strong>
               </span>
             )}
             {currentDay.allAboardTime && (
-              <span className="flex items-center gap-1.5 text-rose-300 font-mono bg-rose-950/40 px-2.5 py-1 rounded-lg border border-rose-800/40 font-semibold">
-                <AlertCircle className="w-3.5 h-3.5 text-rose-400" /> Tất cả lên tàu (All-Aboard): <strong>{currentDay.allAboardTime}</strong>
+              <span className="flex items-center gap-1.5 text-rose-800 font-mono bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200/80 font-semibold">
+                <AlertCircle className="w-3.5 h-3.5 text-rose-600" /> Tất cả lên tàu (All-Aboard): <strong>{currentDay.allAboardTime}</strong>
               </span>
             )}
             {currentDay.departureTime && (
-              <span className="flex items-center gap-1.5 text-cyan-400 font-mono bg-cyan-950/40 px-2.5 py-1 rounded-lg border border-cyan-800/30">
-                <Ship className="w-3.5 h-3.5" /> Giờ rời bến: <strong>{currentDay.departureTime}</strong>
+              <span className="flex items-center gap-1.5 text-[#102A43] font-mono bg-[#F7F4ED] px-2.5 py-1 rounded-lg border border-[#E5E0D7]">
+                <Ship className="w-3.5 h-3.5 text-[#397C80]" /> Giờ rời bến: <strong>{currentDay.departureTime}</strong>
               </span>
             )}
             {currentDay.weatherForecast && (
-              <span className="flex items-center gap-1.5 text-slate-300 ml-auto bg-slate-800/60 px-2.5 py-1 rounded-lg border border-slate-700/50">
+              <span className="flex items-center gap-1.5 text-[#5A6578] ml-auto bg-[#F7F4ED] px-2.5 py-1 rounded-lg border border-[#E5E0D7]">
                 🌤️ {currentDay.weatherForecast}
               </span>
             )}
@@ -362,10 +370,10 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
 
           {/* Specific Day Change Alert Notice (KAN-207) */}
           {currentDay.isAffected && currentDay.changeReason && (
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2.5">
-              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
               <div>
-                <strong className="text-amber-200">Cảnh báo thay đổi ngày {currentDay.dayNumber}:</strong> {currentDay.changeReason}
+                <strong className="text-amber-950">Cảnh báo thay đổi ngày {currentDay.dayNumber}:</strong> {currentDay.changeReason}
               </div>
             </div>
           )}
@@ -374,70 +382,70 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
 
       {/* Timeline View */}
       {filteredActivities.length === 0 ? (
-        <div className="bg-slate-900/40 border border-dashed border-slate-800 rounded-2xl p-10 text-center">
-          <Info className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-          <p className="text-xs text-slate-400">
+        <div className="bg-white border border-dashed border-[#E5E0D7] rounded-2xl p-10 text-center">
+          <Info className="w-8 h-8 text-[#5A6578]/40 mx-auto mb-2" />
+          <p className="text-xs text-[#5A6578]">
             Chưa có hoạt động nào trong Ngày {selectedDayNumber} với bộ lọc hiện tại.
           </p>
           <button
             onClick={handleOpenAdd}
-            className="mt-3 text-xs text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer"
+            className="mt-3 text-xs text-[#102A43] hover:underline font-semibold cursor-pointer"
           >
             + Thêm hoạt động đầu tiên cho ngày này
           </button>
         </div>
       ) : (
-        <div className="relative pl-6 sm:pl-8 space-y-6 before:content-[''] before:absolute before:left-3 sm:before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-800">
+        <div className="relative pl-6 sm:pl-8 space-y-6 before:content-[''] before:absolute before:left-3 sm:before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-[#E5E0D7]">
           {filteredActivities.map((act, index) => {
             const catBadge = CATEGORY_LABELS[act.category] || CATEGORY_LABELS.OTHER;
             return (
               <div key={act.id} className="relative group">
                 {/* Timeline node */}
-                <div className="absolute -left-6 sm:-left-8 top-3 w-4 h-4 rounded-full bg-slate-900 border-2 border-cyan-500 shadow-md flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                <div className="absolute -left-6 sm:-left-8 top-3 w-4 h-4 rounded-full bg-white border-2 border-[#102A43] shadow-xs flex items-center justify-center">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#C5A572]" />
                 </div>
 
                 {/* Card */}
-                <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 hover:border-slate-700/80 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="bg-white border border-[#E5E0D7] rounded-2xl p-4 sm:p-5 hover:border-[#102A43]/30 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
                   <div className="space-y-2 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="flex items-center gap-1 text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-lg border border-cyan-500/20">
-                        <Clock className="w-3.5 h-3.5" />
+                      <span className="flex items-center gap-1 text-xs font-mono font-bold text-[#102A43] bg-[#F7F4ED] px-2.5 py-0.5 rounded-lg border border-[#E5E0D7]">
+                        <Clock className="w-3.5 h-3.5 text-[#397C80]" />
                         {act.time}
                       </span>
                       <span
-                        className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${catBadge.bg} ${catBadge.color} ${catBadge.border}`}
+                        className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${catBadge.bg} ${catBadge.border} text-[#102A43]`}
                       >
                         {catBadge.label}
                       </span>
                       {act.isIncluded ? (
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80">
                           Đã bao gồm trong tour
                         </span>
                       ) : (
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/80">
                           Phụ thu: {act.price?.toLocaleString()} {act.currency || 'VND'}
                         </span>
                       )}
                     </div>
 
-                    <h4 className="text-sm font-bold text-white">{act.title}</h4>
+                    <h4 className="text-sm font-bold text-[#102A43]">{act.title}</h4>
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-[#5A6578]">
                       <span className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <MapPin className="w-3.5 h-3.5 text-[#397C80] shrink-0" />
                         {act.location}
                       </span>
                       {act.capacity && (
-                        <span className="flex items-center gap-1 text-amber-300">
-                          <Tag className="w-3 h-3" />
+                        <span className="flex items-center gap-1 text-amber-800">
+                          <Tag className="w-3 h-3 text-amber-600" />
                           Sức chứa: {act.enrolledCount || 0}/{act.capacity} khách
                         </span>
                       )}
                     </div>
 
                     {act.description && (
-                      <p className="text-xs text-slate-300 italic pt-1 border-t border-slate-800/40">
+                      <p className="text-xs text-[#5A6578] italic pt-1 border-t border-[#E5E0D7]">
                         {act.description}
                       </p>
                     )}
@@ -448,7 +456,7 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
                     <button
                       onClick={() => void handleMoveActivity(index, 'UP')}
                       disabled={index === 0}
-                      className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-slate-800 disabled:opacity-30 disabled:hover:text-slate-400 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
+                      className="p-1.5 text-[#5A6578] hover:text-[#102A43] hover:bg-[#F7F4ED] disabled:opacity-30 disabled:hover:text-[#5A6578] disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
                       title="Di chuyển lên trên"
                       aria-label={`Di chuyển lên trên ${act.title}`}
                     >
@@ -457,7 +465,7 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
                     <button
                       onClick={() => void handleMoveActivity(index, 'DOWN')}
                       disabled={index === filteredActivities.length - 1}
-                      className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-slate-800 disabled:opacity-30 disabled:hover:text-slate-400 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
+                      className="p-1.5 text-[#5A6578] hover:text-[#102A43] hover:bg-[#F7F4ED] disabled:opacity-30 disabled:hover:text-[#5A6578] disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
                       title="Di chuyển xuống dưới"
                       aria-label={`Di chuyển xuống dưới ${act.title}`}
                     >
@@ -467,7 +475,7 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
                     {/* Edit Button */}
                     <button
                       onClick={() => handleOpenEdit(act)}
-                      className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                      className="p-1.5 text-[#5A6578] hover:text-[#102A43] hover:bg-[#F7F4ED] rounded-lg transition-colors cursor-pointer"
                       title="Cập nhật hoạt động"
                       aria-label={`Cập nhật hoạt động ${act.title}`}
                     >
@@ -477,7 +485,7 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
                     {/* Delete Button */}
                     <button
                       onClick={() => void handleDeleteActivity(act.id, act.title)}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 rounded-lg transition-colors cursor-pointer"
+                      className="p-1.5 text-[#5A6578] hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                       title="Xóa hoạt động khỏi ngày này"
                       aria-label={`Xóa hoạt động ${act.title}`}
                     >

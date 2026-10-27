@@ -99,7 +99,7 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B1F33]/60 backdrop-blur-xs p-4 animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="feedback-modal-title"
@@ -107,19 +107,19 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
       <div
         ref={modalRef}
         tabIndex={-1}
-        className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl transition-all focus:outline-none"
+        className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-[#E5E0D7] shadow-2xl transition-all focus:outline-none text-[#252B32]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-[#E5E0D7] bg-[#F7F4ED] px-6 py-4">
           <div className="flex items-center space-x-2">
-            <span className="flex h-3 w-3 rounded-full bg-amber-400" />
-            <h2 id="feedback-modal-title" className="text-lg font-bold text-gray-900">
+            <span className="flex h-3 w-3 rounded-full bg-[#C5A572]" />
+            <h2 id="feedback-modal-title" className="text-base sm:text-lg font-bold text-[#102A43]">
               Đánh Giá Trải Nghiệm Dịch Vụ
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
+            className="rounded-lg p-1.5 text-[#5A6B7C] hover:text-[#102A43] hover:bg-[#E5E0D7]/40 transition cursor-pointer"
             aria-label="Đóng"
           >
             ✕
@@ -129,24 +129,24 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
         {/* Content Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {errorMessage && (
-            <div className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700 border border-rose-200">
+            <div className="rounded-xl bg-rose-50 p-3 text-xs text-rose-700 border border-rose-200 font-medium">
               {errorMessage}
             </div>
           )}
 
           {/* Passenger Info Card */}
-          <div className="flex items-center justify-between rounded-xl bg-gray-50 p-3 border border-gray-100 text-xs text-gray-600">
+          <div className="flex items-center justify-between rounded-xl bg-[#F7F4ED] p-3.5 border border-[#E5E0D7] text-xs text-[#5A6B7C]">
             <div>
-              Khách hàng: <span className="font-bold text-gray-900">{passengerName}</span>
+              Khách hàng: <span className="font-bold text-[#102A43]">{passengerName}</span>
             </div>
             <div>
-              Cabin: <span className="font-bold text-gray-900">{cabinNumber}</span>
+              Cabin: <span className="font-bold text-[#102A43]">{cabinNumber}</span>
             </div>
           </div>
 
           {/* Star Rating Selector */}
-          <div className="text-center space-y-2">
-            <div className="block text-sm font-semibold text-gray-700">
+          <div className="text-center space-y-2 py-2">
+            <div className="block text-xs font-semibold text-[#102A43] uppercase tracking-wider">
               Mức độ hài lòng của quý khách
             </div>
             <div className="flex justify-center items-center gap-2">
@@ -159,15 +159,15 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
                     onClick={() => setRating(star)}
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
-                    className="p-1 text-3xl transition-transform hover:scale-125 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
+                    className="p-1 text-3xl transition-transform hover:scale-125 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#102A43] cursor-pointer"
                     aria-label={`${star} sao`}
                   >
-                    <span className={active ? 'text-amber-400' : 'text-gray-200'}>★</span>
+                    <span className={active ? 'text-[#C5A572]' : 'text-[#E5E0D7]'}>★</span>
                   </button>
                 );
               })}
             </div>
-            <div className="text-xs font-bold text-amber-600">
+            <div className="text-xs font-bold text-[#397C80]">
               {rating === 5 && 'Tuyệt vời, vượt mong đợi!'}
               {rating === 4 && 'Rất tốt, hài lòng!'}
               {rating === 3 && 'Bình thường, tạm chấp nhận'}
@@ -178,14 +178,14 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
 
           {/* Service Category */}
           <div>
-            <label htmlFor="star-rating-category-select" className="block text-xs font-semibold text-gray-600 mb-1">
+            <label htmlFor="star-rating-category-select" className="block text-xs font-semibold text-[#102A43] mb-1.5">
               Phân loại dịch vụ
             </label>
             <select
               id="star-rating-category-select"
               value={category}
               onChange={(e) => setCategory(e.target.value as FeedbackCategory)}
-              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-xl border border-[#E5E0D7] bg-[#F7F4ED]/40 px-3.5 py-2.5 text-xs text-[#252B32] focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43] focus:outline-none"
             >
               <option value="CABIN_SERVICE">Dịch vụ dọn phòng / Cabin</option>
               <option value="DINING_EXPERIENCE">Ẩm thực & Nhà hàng</option>
@@ -198,7 +198,7 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
 
           {/* Comments */}
           <div>
-            <label htmlFor="star-rating-comments-textarea" className="block text-xs font-semibold text-gray-600 mb-1">
+            <label htmlFor="star-rating-comments-textarea" className="block text-xs font-semibold text-[#102A43] mb-1.5">
               Ý kiến đóng góp chi tiết (Tùy chọn)
             </label>
             <textarea
@@ -207,23 +207,23 @@ export const StarRatingModal: React.FC<StarRatingModalProps> = ({
               value={comments}
               onChange={(e) => setComments(e.target.value)}
               placeholder="Chia sẻ thêm cảm nhận hoặc vấn đề quý khách gặp phải..."
-              className="w-full rounded-xl border border-gray-300 p-3 text-sm focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-xl border border-[#E5E0D7] bg-[#F7F4ED]/40 p-3 text-xs text-[#252B32] placeholder-[#5A6B7C]/70 focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43] focus:outline-none"
             />
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
+          <div className="flex items-center justify-end gap-3 border-t border-[#E5E0D7] pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition"
+              className="rounded-xl px-4 py-2 text-xs font-semibold text-[#5A6B7C] hover:text-[#102A43] bg-[#F7F4ED] border border-[#E5E0D7] hover:bg-[#ECE7DC] transition cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-xl bg-amber-500 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-600 disabled:opacity-50 transition"
+              className="rounded-xl bg-[#102A43] hover:bg-[#0B1F33] px-5 py-2 text-xs font-semibold text-white shadow-md disabled:opacity-50 transition cursor-pointer"
             >
               {isSubmitting ? 'Đang gửi...' : 'Gửi Đánh Giá'}
             </button>

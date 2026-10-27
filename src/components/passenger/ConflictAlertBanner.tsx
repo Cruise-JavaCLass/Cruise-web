@@ -21,23 +21,23 @@ export const ConflictAlertBanner: React.FC<ConflictAlertBannerProps> = ({
     <div
       role="alert"
       aria-label="Cảnh báo trùng lịch"
-      className="mb-6 rounded-2xl bg-amber-500/10 border border-amber-500/30 backdrop-blur-xl overflow-hidden shadow-lg transition-all animate-in fade-in slide-in-from-top-2"
+      className="mb-6 border border-amber-300 bg-amber-50/90 text-amber-950 rounded-2xl shadow-sm overflow-hidden transition-all animate-in fade-in slide-in-from-top-2"
     >
       <div className="p-4 sm:p-5 flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-400 shrink-0 mt-0.5">
+          <div className="p-2 rounded-xl border border-amber-300 bg-amber-100 text-amber-800 shrink-0 mt-0.5 shadow-xs">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-amber-300 text-sm sm:text-base">
+              <h3 className="font-bold uppercase tracking-tight text-amber-950 text-sm sm:text-base">
                 Phát hiện {conflicts.length} xung đột lịch trình trong ngày
               </h3>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+              <span className="px-2 py-0.5 text-[10px] font-mono font-bold border border-amber-300 bg-amber-200/80 text-amber-900 rounded-full">
                 {conflicts.length} TRÙNG LỊCH
               </span>
             </div>
-            <p className="text-xs text-amber-200/80 mt-1">
+            <p className="text-xs font-normal text-amber-800 mt-1 leading-relaxed">
               Bạn có các hoạt động hoặc tour tham quan trên bờ trùng lặp khung giờ. Vui lòng kiểm tra lại để không bỏ lỡ giờ đón xe hoặc sự kiện.
             </p>
           </div>
@@ -47,7 +47,7 @@ export const ConflictAlertBanner: React.FC<ConflictAlertBannerProps> = ({
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1.5 rounded-lg text-amber-400 hover:text-amber-200 hover:bg-amber-500/20 transition-colors"
+            className="p-1.5 border border-amber-200 rounded-lg bg-white text-amber-900 hover:bg-amber-100 shadow-xs transition-colors cursor-pointer"
             aria-label={isExpanded ? 'Thu gọn chi tiết xung đột' : 'Xem chi tiết xung đột'}
           >
             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -56,7 +56,7 @@ export const ConflictAlertBanner: React.FC<ConflictAlertBannerProps> = ({
             <button
               type="button"
               onClick={onDismiss}
-              className="p-1.5 rounded-lg text-amber-400/80 hover:text-amber-200 hover:bg-amber-500/20 transition-colors"
+              className="p-1.5 border border-amber-200 rounded-lg bg-white text-amber-900 hover:bg-amber-100 shadow-xs transition-colors cursor-pointer"
               aria-label="Đóng cảnh báo"
             >
               <X className="w-4 h-4" />
@@ -66,22 +66,22 @@ export const ConflictAlertBanner: React.FC<ConflictAlertBannerProps> = ({
       </div>
 
       {isExpanded && (
-        <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-0 border-t border-amber-500/20 mt-1">
+        <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-0 border-t border-amber-200 mt-1">
           <div className="mt-3 space-y-2">
             {conflicts.map((conflict, index) => (
               <div
                 key={`conflict-${index}-${conflict.firstEventId}-${conflict.secondEventId}`}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-black/40 border border-amber-500/20 text-xs"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 border border-amber-200 rounded-xl bg-white text-xs shadow-xs"
               >
-                <div className="flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span className="font-semibold text-slate-100">{conflict.firstEventTitle}</span>
-                  <span className="text-slate-400">({conflict.firstStartTime} - {conflict.firstEndTime})</span>
-                  <span className="text-amber-400 font-bold px-1.5">⚡ trùng với</span>
-                  <span className="font-semibold text-slate-100">{conflict.secondEventTitle}</span>
-                  <span className="text-slate-400">({conflict.secondStartTime} - {conflict.secondEndTime})</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Clock className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                  <span className="font-bold text-[#102A43]">{conflict.firstEventTitle}</span>
+                  <span className="font-mono text-[#5A6B7C]">({conflict.firstStartTime} - {conflict.firstEndTime})</span>
+                  <span className="text-rose-600 font-semibold px-1.5">⚡ trùng với</span>
+                  <span className="font-bold text-[#102A43]">{conflict.secondEventTitle}</span>
+                  <span className="font-mono text-[#5A6B7C]">({conflict.secondStartTime} - {conflict.secondEndTime})</span>
                 </div>
-                <div className="shrink-0 flex items-center gap-1.5 font-mono text-[11px] text-amber-300 font-medium">
+                <div className="shrink-0 flex items-center gap-1.5 font-mono text-[11px] text-amber-900 font-bold border border-amber-300 bg-amber-100 px-2 py-0.5 rounded-lg">
                   <span>Trùng {conflict.overlapMinutes} phút</span>
                 </div>
               </div>

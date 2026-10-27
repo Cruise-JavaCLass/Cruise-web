@@ -23,10 +23,11 @@ import {
   exportPassengersCsv,
   INITIAL_PASSENGERS,
 } from '../services/passengerService';
-import { INITIAL_TOURS } from '../services/tourService';
+import { getTours, INITIAL_TOURS, type CruiseTour } from '../services/tourService';
 import { RegisterPassengerModal } from '../components/passengers/RegisterPassengerModal';
 
 export function PassengersPage() {
+  const [tours, setTours] = useState<CruiseTour[]>(INITIAL_TOURS);
   const [selectedTourId, setSelectedTourId] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<RegistrationStatus | 'ALL'>('ALL');
@@ -43,6 +44,19 @@ export function PassengersPage() {
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    void getTours().then((list) => {
+      if (list.length > 0) {
+        setTours(list);
+        setSelectedTourId((prev) => {
+          if (list.some((t) => t.id === prev)) return prev;
+          setPage(0);
+          return list[0].id;
+        });
+      }
+    });
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -69,7 +83,7 @@ export function PassengersPage() {
   }, [selectedTourId, searchTerm, statusFilter, page, pageSize]);
 
   useEffect(() => {
-    loadPassengers();
+    void loadPassengers();
   }, [loadPassengers]);
 
   const handleTourChange = (newTourId: number) => {
@@ -110,7 +124,7 @@ export function PassengersPage() {
     try {
       await updateCheckInStatus(passenger.id, nextStatus);
       showToast(`Đã cập nhật check-in cho ${passenger.fullName}: ${nextStatus === 'BOARDED' ? 'Đã lên tàu' : 'Chưa lên tàu'}`);
-      loadPassengers();
+      void loadPassengers();
     } catch {
       showToast('Cập nhật check-in thất bại.');
     }
@@ -120,7 +134,7 @@ export function PassengersPage() {
     try {
       await updateRegistrationStatus(passengerId, status);
       showToast('Đã cập nhật trạng thái đăng ký thành công!');
-      loadPassengers();
+      void loadPassengers();
     } catch {
       showToast('Cập nhật trạng thái đăng ký thất bại.');
     }
@@ -129,52 +143,58 @@ export function PassengersPage() {
   const handleRegisterSuccess = async (payload: RegisterPassengerPayload) => {
     await registerPassenger(payload);
     showToast(`Đã đăng ký thành công cho hành khách ${payload.fullName}!`);
-    loadPassengers();
+    void loadPassengers();
   };
 
   const getStatusBadge = (status: RegistrationStatus) => {
     switch (status) {
       case 'CONFIRMED':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            <CheckCircle2 className="w-3 h-3" /> Xác nhận
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Xác nhận
           </span>
         );
       case 'PENDING':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-            <Clock className="w-3 h-3" /> Chờ duyệt
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-md bg-amber-50 text-amber-700 border border-amber-200/60">
+            <Clock className="w-3.5 h-3.5 text-amber-600" /> Chờ duyệt
           </span>
         );
       case 'CANCELLED':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-            <XCircle className="w-3 h-3" /> Đã hủy
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-md bg-rose-50 text-rose-700 border border-rose-200/60">
+            <XCircle className="w-3.5 h-3.5 text-rose-600" /> Đã hủy
           </span>
         );
     }
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6">
       {/* Toast Alert */}
       {toastMessage && (
         <div
           role="status"
-          className="fixed top-5 right-5 z-50 bg-[#030303]/80 backdrop-blur-xl border border-cyan-500/50 text-cyan-200 px-4 py-2.5 rounded-xl shadow-xl text-xs flex items-center gap-2 animate-in fade-in slide-in-from-top-2"
+          className="fixed top-20 right-6 z-50 bg-white border border-[#E5E0D7] text-[#252B32] px-5 py-3 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2 animate-in fade-in slide-in-from-top-2"
         >
-          <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Header and Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Header and Actions — Luxury Maritime */}
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Users className="w-5 h-5 text-cyan-400" /> Danh Sách Hành Khách & Định Vị BLE
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-[#C5A572]/15 text-[#102A43] border border-[#C5A572]/30 tracking-wider">
+              PASSENGER MANIFEST
+            </span>
+            <span className="text-[11px] font-medium text-[#687787]">• BLE SMART ZONE TRACKING</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#102A43] flex items-center gap-2 tracking-tight">
+            <Users className="w-6 h-6 text-[#102A43]" /> Danh Sách Hành Khách & Định Vị BLE
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[#687787] mt-1">
             Gán thẻ QR / RFID • Phân loại gói tour • Quản lý trạng thái đăng ký • Xuất file CSV báo cáo cảng
           </p>
         </div>
@@ -182,22 +202,22 @@ export function PassengersPage() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-900/30 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#102A43] hover:bg-[#183B5B] text-white rounded-lg shadow-xs transition-colors cursor-pointer"
           >
             <UserPlus className="w-4 h-4" /> Đăng Ký Khách
           </button>
           <button
             onClick={handleExportCsv}
             disabled={isExporting}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#030303]/60 hover:bg-white/[0.06] backdrop-blur-xl text-slate-200 border border-white/10 rounded-xl text-xs font-semibold transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-white border border-[#E5E0D7] hover:bg-[#F7F4ED] text-[#102A43] rounded-lg shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
           >
-            <Download className="w-4 h-4 text-emerald-400" /> {isExporting ? 'Đang xuất...' : 'Xuất CSV'}
+            <Download className="w-4 h-4 text-[#102A43]" /> {isExporting ? 'Đang xuất...' : 'Xuất CSV'}
           </button>
           <button
-            onClick={loadPassengers}
+            onClick={() => void loadPassengers()}
             disabled={loading}
             aria-label="Tải lại danh sách"
-            className="p-2 bg-[#030303]/60 hover:bg-white/[0.06] backdrop-blur-xl text-slate-300 border border-white/10 rounded-xl text-xs transition-colors"
+            className="w-9 h-9 bg-white hover:bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] rounded-lg shadow-xs flex items-center justify-center transition-colors cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -205,87 +225,91 @@ export function PassengersPage() {
       </div>
 
       {/* Registration & Check-in Status KPI Summary Cards (KAN-152) */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-cyan-500/30 transition-all">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Tổng Đăng Ký</p>
-            <p className="text-2xl font-display text-white mt-1">{totalCount}</p>
+            <p className="text-[11px] font-semibold text-[#687787] uppercase tracking-wider">Tổng Đăng Ký</p>
+            <p className="text-2xl font-serif font-bold tabular-nums text-[#102A43] mt-1">{totalCount}</p>
           </div>
-          <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-            <Users className="w-4 h-4" />
+          <div className="w-10 h-10 bg-[#F7F4ED] rounded-xl flex items-center justify-center text-[#102A43] border border-[#E5E0D7]">
+            <Users className="w-5 h-5 text-[#102A43]" />
           </div>
         </div>
 
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-emerald-500/30 transition-all">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Đã Xác Nhận</p>
-            <p className="text-2xl font-display text-emerald-400 mt-1">
+            <p className="text-[11px] font-semibold text-[#687787] uppercase tracking-wider">Đã Xác Nhận</p>
+            <p className="text-2xl font-serif font-bold tabular-nums text-emerald-700 mt-1">
               {passengers.filter((p) => p.registrationStatus === 'CONFIRMED').length}
             </p>
           </div>
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-            <CheckCircle2 className="w-4 h-4" />
+          <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-700 border border-emerald-200">
+            <CheckCircle2 className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-amber-500/30 transition-all">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Chờ Duyệt</p>
-            <p className="text-2xl font-display text-amber-400 mt-1">
+            <p className="text-[11px] font-semibold text-[#687787] uppercase tracking-wider">Chờ Duyệt</p>
+            <p className="text-2xl font-serif font-bold tabular-nums text-amber-700 mt-1">
               {passengers.filter((p) => p.registrationStatus === 'PENDING').length}
             </p>
           </div>
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-            <Clock className="w-4 h-4" />
+          <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-700 border border-amber-200">
+            <Clock className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center justify-between shadow-xl hover:border-purple-500/30 transition-all">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Đã Lên Tàu</p>
-            <p className="text-2xl font-display text-cyan-300 mt-1">
+            <p className="text-[11px] font-semibold text-[#687787] uppercase tracking-wider">Đã Lên Tàu</p>
+            <p className="text-2xl font-serif font-bold tabular-nums text-[#102A43] mt-1">
               {passengers.filter((p) => p.checkInStatus === 'BOARDED').length}
             </p>
           </div>
-          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
-            <Radio className="w-4 h-4" />
+          <div className="w-10 h-10 bg-[#102A43]/10 rounded-xl flex items-center justify-center text-[#102A43] border border-[#102A43]/20">
+            <Radio className="w-5 h-5" />
           </div>
         </div>
       </div>
 
       {/* Filter and Tour Selection Bar */}
-      <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl p-4 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         <div className="flex items-center gap-3 flex-wrap">
           {/* Tour Selector */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-400">Chọn Tour:</span>
+            <span className="text-xs font-semibold text-[#687787] uppercase tracking-wider">Chọn Tour:</span>
             <select
               aria-label="Chọn Tour"
               value={selectedTourId}
               onChange={(e) => handleTourChange(Number(e.target.value))}
-              className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+              className="text-xs font-semibold bg-[#F7F4ED] hover:bg-white focus:bg-white border border-[#E5E0D7] rounded-lg text-[#252B32] py-1.5 px-3 focus:outline-none focus:border-[#102A43]"
             >
-              {INITIAL_TOURS.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.code} - {t.name}
-                </option>
-              ))}
+              {tours.length === 0 ? (
+                <option value={1}>Tour #1 (Mặc định)</option>
+              ) : (
+                tours.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.code} - {t.name}
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-xs font-semibold text-slate-400">Trạng thái:</span>
-            <div className="flex items-center gap-1 bg-slate-950 p-1 border border-slate-800 rounded-xl">
+            <Filter className="w-3.5 h-3.5 text-[#102A43]" />
+            <span className="text-xs font-semibold text-[#687787] uppercase tracking-wider">Trạng thái:</span>
+            <div className="flex items-center gap-1">
               {(['ALL', 'CONFIRMED', 'PENDING', 'CANCELLED'] as const).map((st) => (
                 <button
                   key={st}
                   onClick={() => handleStatusFilterChange(st)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-colors ${
+                  className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                     statusFilter === st
-                      ? 'bg-cyan-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-[#102A43] text-white shadow-xs'
+                      : 'bg-white text-[#687787] border border-[#E5E0D7] hover:bg-[#F7F4ED]'
                   }`}
                 >
                   {st === 'ALL'
@@ -304,7 +328,7 @@ export function PassengersPage() {
         {/* Search Input & Reset */}
         <div className="flex items-center gap-2">
           <div className="relative flex-1 md:w-72">
-            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#687787] pointer-events-none" />
             <input
               type="text"
               role="searchbox"
@@ -315,7 +339,7 @@ export function PassengersPage() {
                 setSearchTerm(e.target.value);
                 setPage(0);
               }}
-              className="pl-9 pr-8 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 w-full"
+              className="w-full pl-9 pr-8 py-2 text-xs bg-[#F7F4ED] hover:bg-white focus:bg-white border border-[#E5E0D7] rounded-lg text-[#252B32] focus:outline-none focus:border-[#102A43] transition-all"
             />
             {searchTerm && (
               <button
@@ -325,7 +349,7 @@ export function PassengersPage() {
                   setSearchTerm('');
                   setPage(0);
                 }}
-                className="absolute right-2.5 top-2.5 text-slate-400 hover:text-white"
+                className="absolute right-2.5 top-2.5 text-[#687787] hover:text-rose-600 cursor-pointer"
               >
                 <XCircle className="w-3.5 h-3.5" />
               </button>
@@ -339,7 +363,7 @@ export function PassengersPage() {
                 setStatusFilter('ALL');
                 setPage(0);
               }}
-              className="px-2.5 py-2 text-xs text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700/80 rounded-xl whitespace-nowrap transition-colors"
+              className="px-3.5 py-2 text-xs font-semibold text-[#102A43] bg-white border border-[#E5E0D7] rounded-lg hover:bg-[#F7F4ED] shadow-xs whitespace-nowrap transition-colors cursor-pointer"
               title="Đặt lại bộ lọc"
             >
               Đặt lại
@@ -349,19 +373,19 @@ export function PassengersPage() {
       </div>
 
       {/* Passenger Table */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-          <h3 className="font-semibold text-sm text-slate-200">
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl overflow-hidden shadow-xs">
+        <div className="p-4 border-b border-[#E5E0D7] flex items-center justify-between bg-[#F7F4ED]">
+          <h3 className="font-serif font-bold text-sm text-[#102A43]">
             Danh Sách Hành Khách Đăng Ký ({totalCount} Khách)
           </h3>
-          <span className="text-xs text-purple-400 flex items-center gap-1">
-            <Radio className="w-3.5 h-3.5 animate-pulse" /> BLE Zone Tracking: Hoạt động
+          <span className="text-xs font-medium text-[#102A43] flex items-center gap-1.5">
+            <Radio className="w-3.5 h-3.5 text-[#102A43] animate-pulse" /> BLE Zone Tracking: Hoạt động
           </span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-800/50 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-[#F7F4ED] text-[#687787] uppercase text-[10px] font-semibold tracking-wider border-b border-[#E5E0D7]">
               <tr>
                 <th className="p-3.5">Hành khách</th>
                 <th className="p-3.5">Cabin</th>
@@ -372,41 +396,41 @@ export function PassengersPage() {
                 <th className="p-3.5">Check-in</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/70">
+            <tbody className="divide-y divide-[#E5E0D7] bg-white text-[#252B32]">
               {loading && passengers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-slate-400">
-                    <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-cyan-400" />
+                  <td colSpan={7} className="p-8 text-center text-[#687787] font-medium">
+                    <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-[#102A43]" />
                     Đang tải danh sách hành khách...
                   </td>
                 </tr>
               ) : passengers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-slate-400">
+                  <td colSpan={7} className="p-8 text-center text-[#687787] font-medium">
                     Không tìm thấy hành khách nào phù hợp với từ khóa "{searchTerm}"
                   </td>
                 </tr>
               ) : (
                 passengers.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-800/30 transition-colors">
+                  <tr key={p.id} className="hover:bg-[#F7F4ED]/50 transition-colors">
                     <td className="p-3.5">
-                      <div className="font-semibold text-slate-100">{p.fullName}</div>
-                      <div className="text-[11px] text-slate-400">
+                      <div className="font-semibold text-[#252B32]">{p.fullName}</div>
+                      <div className="text-[11px] text-[#687787]">
                         {p.email || p.phoneNumber || 'Không có liên hệ'}
                       </div>
                     </td>
-                    <td className="p-3.5 text-slate-300 font-medium">{p.cabinNumber}</td>
-                    <td className="p-3.5 font-mono text-cyan-400">
+                    <td className="p-3.5 text-[#252B32] font-semibold">{p.cabinNumber}</td>
+                    <td className="p-3.5 font-mono text-[#102A43] font-semibold">
                       <span className="flex items-center gap-1.5">
                         <QrCode className="w-3.5 h-3.5" /> {p.rfidTag}
                       </span>
                     </td>
                     <td className="p-3.5">
-                      <span className="bg-slate-800 px-2 py-0.5 rounded text-[11px] text-slate-300 border border-slate-700">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-[#F7F4ED] text-[#252B32] border border-[#E5E0D7]">
                         {p.tourPackage}
                       </span>
                     </td>
-                    <td className="p-3.5 text-purple-300 font-medium">{p.bleZone || 'Chưa cập nhật'}</td>
+                    <td className="p-3.5 text-[#102A43] font-medium">{p.bleZone || 'Chưa cập nhật'}</td>
                     <td className="p-3.5">
                       <div className="flex items-center gap-2">
                         {getStatusBadge(p.registrationStatus)}
@@ -416,7 +440,7 @@ export function PassengersPage() {
                           onChange={(e) =>
                             handleRegistrationStatusChange(p.id, e.target.value as RegistrationStatus)
                           }
-                          className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-0.5 text-[10px] text-slate-300 focus:outline-none focus:border-cyan-500"
+                          className="py-1 px-2 text-xs font-medium rounded-md bg-[#F7F4ED] border border-[#E5E0D7] text-[#252B32] focus:outline-none focus:border-[#102A43]"
                         >
                           <option value="CONFIRMED">Xác nhận</option>
                           <option value="PENDING">Chờ duyệt</option>
@@ -428,17 +452,17 @@ export function PassengersPage() {
                       <div className="flex flex-col items-start gap-1">
                         <button
                           onClick={() => handleCheckInToggle(p)}
-                          className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition-colors ${
+                          className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
                             p.checkInStatus === 'BOARDED'
-                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30'
-                              : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
+                              : 'bg-white text-[#687787] border border-[#E5E0D7] hover:bg-[#F7F4ED]'
                           }`}
                         >
                           {p.checkInStatus === 'BOARDED' ? 'Đã lên tàu' : 'Chưa check-in'}
                         </button>
                         {p.boardedAt && (
-                          <span className="text-[10px] text-slate-400 flex items-center gap-1 font-mono">
-                            <Clock className="w-3 h-3 text-cyan-400" />
+                          <span className="text-[11px] text-[#687787] flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-[#102A43]" />
                             {new Date(p.boardedAt).toLocaleTimeString('vi-VN', {
                               hour: '2-digit',
                               minute: '2-digit',
@@ -456,22 +480,22 @@ export function PassengersPage() {
 
         {/* Pagination Footer */}
         {totalPages > 1 && (
-          <div className="p-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+          <div className="p-4 border-t border-[#E5E0D7] flex items-center justify-between text-xs font-semibold text-[#252B32]">
             <span>
               Trang {page + 1} / {totalPages} (Tổng số {totalCount} hành khách)
             </span>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <button
                 disabled={page === 0}
                 onClick={() => setPage((prev) => Math.max(0, prev - 1))}
-                className="px-3 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 rounded-lg transition-colors"
+                className="py-1 px-3 text-xs bg-white border border-[#E5E0D7] rounded-lg disabled:opacity-40 hover:bg-[#F7F4ED] cursor-pointer"
               >
                 Trang trước
               </button>
               <button
                 disabled={page >= totalPages - 1}
                 onClick={() => setPage((prev) => Math.min(totalPages - 1, prev + 1))}
-                className="px-3 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-300 rounded-lg transition-colors"
+                className="py-1 px-3 text-xs bg-white border border-[#E5E0D7] rounded-lg disabled:opacity-40 hover:bg-[#F7F4ED] cursor-pointer"
               >
                 Trang sau
               </button>
@@ -490,3 +514,5 @@ export function PassengersPage() {
     </div>
   );
 }
+
+export default PassengersPage;

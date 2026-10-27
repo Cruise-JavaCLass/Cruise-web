@@ -99,17 +99,17 @@ export const BridgeMusterCommandConsole: React.FC = () => {
   const stationEntries = Object.entries(headCounts);
 
   return (
-    <div className="bg-slate-900 border-2 border-red-700/60 rounded-xl p-6 text-slate-100 shadow-2xl">
+    <div className="bg-white border border-[#E5E0D7] rounded-2xl p-6 text-[#252B32] shadow-sm">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between border-b border-red-800/40 pb-4 mb-6">
+      <div className="flex flex-wrap items-center justify-between border-b border-[#E5E0D7] pb-4 mb-6">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-red-500 animate-ping"></span>
-            <h2 className="text-xl font-bold tracking-wider text-red-400 uppercase font-mono">
+            <span className="w-3 h-3 rounded-full bg-rose-500 animate-pulse"></span>
+            <h2 className="text-xl font-bold tracking-wider text-[#102A43] uppercase font-mono">
               Bridge SOLAS Command & Muster Telemetry Console
             </h2>
           </div>
-          <p className="text-xs text-slate-400 mt-1 font-mono">
+          <p className="text-xs text-[#252B32]/60 mt-1 font-mono">
             Incident Status: {activeMuster?.status || 'STANDBY'} {activeMuster ? `(${activeMuster.incidentCode})` : ''}
           </p>
         </div>
@@ -117,7 +117,7 @@ export const BridgeMusterCommandConsole: React.FC = () => {
           <button
             onClick={fetchActiveMuster}
             disabled={loading}
-            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-semibold rounded border border-slate-700 text-slate-200 transition"
+            className="px-3.5 py-1.5 bg-[#F7F4ED] hover:bg-[#ECE7DC] text-xs font-semibold rounded-xl border border-[#E5E0D7] text-[#102A43] transition-colors cursor-pointer"
           >
             {loading ? 'Refreshing...' : 'Refresh Telemetry'}
           </button>
@@ -125,7 +125,7 @@ export const BridgeMusterCommandConsole: React.FC = () => {
             <button
               onClick={handleAllClear}
               disabled={broadcasting}
-              className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-xs font-bold rounded text-white shadow transition"
+              className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-xs font-bold rounded-xl text-white shadow-xs transition-colors cursor-pointer"
             >
               Broadcast All-Clear
             </button>
@@ -135,39 +135,39 @@ export const BridgeMusterCommandConsole: React.FC = () => {
 
       {/* Alert Notices */}
       {error && (
-        <div className="mb-4 p-3 bg-red-900/60 border border-red-500 rounded text-red-200 text-sm">
+        <div className="mb-4 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs font-medium">
           {error}
         </div>
       )}
       {broadcastSuccess && (
-        <div className="mb-4 p-3 bg-emerald-900/60 border border-emerald-500 rounded text-emerald-200 text-sm">
+        <div className="mb-4 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-medium">
           {broadcastSuccess}
         </div>
       )}
 
       {/* Overall Muster Progress Gauge */}
-      <div className="bg-slate-800/80 p-4 rounded-lg border border-slate-700 mb-6">
+      <div className="bg-[#F7F4ED] p-5 rounded-xl border border-[#E5E0D7] mb-6">
         <div className="flex justify-between items-end mb-2">
           <div>
-            <span className="text-xs uppercase tracking-widest text-slate-400 font-semibold">
+            <span className="text-xs uppercase tracking-widest text-[#252B32]/70 font-semibold">
               Total Vessel Muster Progress
             </span>
-            <div className="text-2xl font-black text-white mt-1">
-              {musteredSouls} / {totalSouls} <span className="text-sm font-normal text-slate-400">souls accounted for</span>
+            <div className="text-2xl font-black text-[#102A43] mt-1">
+              {musteredSouls} / {totalSouls} <span className="text-sm font-normal text-[#252B32]/70">souls accounted for</span>
             </div>
           </div>
-          <div className="text-3xl font-black font-mono text-cyan-400">{completionRate}%</div>
+          <div className="text-3xl font-black font-mono text-[#102A43]">{completionRate}%</div>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-slate-700 h-4 rounded-full overflow-hidden">
+        <div className="w-full bg-[#E5E0D7] h-3.5 rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-500 ${
               completionRate >= 100
-                ? 'bg-emerald-500'
+                ? 'bg-emerald-600'
                 : completionRate >= 70
-                ? 'bg-amber-400'
-                : 'bg-red-500'
+                ? 'bg-amber-500'
+                : 'bg-rose-600'
             }`}
             style={{ width: `${Math.min(completionRate, 100)}%` }}
           />
@@ -178,11 +178,11 @@ export const BridgeMusterCommandConsole: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Muster Stations Grid */}
         <div className="lg:col-span-2 space-y-3">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 font-mono">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[#102A43] font-mono">
             Muster Station Headcount Breakdown
           </h3>
           {stationEntries.length === 0 ? (
-            <div className="p-4 bg-slate-800/40 rounded border border-slate-800 text-center text-sm text-slate-500">
+            <div className="p-4 bg-[#F7F4ED]/50 rounded-xl border border-[#E5E0D7] text-center text-xs text-[#252B32]/60">
               No station check-ins reported yet or standby mode.
             </div>
           ) : (
@@ -190,15 +190,15 @@ export const BridgeMusterCommandConsole: React.FC = () => {
               {stationEntries.map(([code, count]) => (
                 <div
                   key={code}
-                  className="p-3.5 bg-slate-800/60 rounded-lg border border-slate-700 hover:border-slate-600 transition flex justify-between items-center"
+                  className="p-3.5 bg-white rounded-xl border border-[#E5E0D7] hover:border-[#102A43]/30 transition-colors flex justify-between items-center shadow-2xs"
                 >
                   <div>
-                    <div className="font-bold text-white text-base">Station {code}</div>
-                    <span className="text-xs text-slate-400">Headcount tally</span>
+                    <div className="font-bold text-[#102A43] text-sm">Station {code}</div>
+                    <span className="text-xs text-[#252B32]/60">Headcount tally</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-xl font-bold font-mono text-emerald-400">{count}</span>
-                    <span className="text-xs text-slate-400 block">souls checked in</span>
+                    <span className="text-xl font-bold font-mono text-emerald-700">{count}</span>
+                    <span className="text-xs text-[#252B32]/60 block">souls checked in</span>
                   </div>
                 </div>
               ))}
@@ -207,20 +207,20 @@ export const BridgeMusterCommandConsole: React.FC = () => {
         </div>
 
         {/* Emergency Trigger Controls */}
-        <div className="bg-red-950/20 border border-red-800/60 p-4 rounded-lg flex flex-col justify-between">
+        <div className="bg-rose-50/60 border border-rose-200 p-5 rounded-xl flex flex-col justify-between">
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-red-300 font-mono mb-3">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-rose-800 font-mono mb-3">
               Bridge Emergency Override
             </h3>
 
             <div className="space-y-3 text-xs">
               <div>
-                <label htmlFor="muster-emergency-type" className="block text-slate-400 mb-1">Emergency Type</label>
+                <label htmlFor="muster-emergency-type" className="block text-xs font-semibold text-rose-900 mb-1">Emergency Type</label>
                 <select
                   id="muster-emergency-type"
                   value={emergencyType}
                   onChange={(e) => setEmergencyType(e.target.value as SolasEmergencyType)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-white font-medium focus:ring-1 focus:ring-red-500"
+                  className="w-full bg-white border border-rose-300 rounded-xl px-3 py-2 text-xs text-[#252B32] font-medium focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-600"
                 >
                   <option value="GENERAL_EMERGENCY">GENERAL EMERGENCY</option>
                   <option value="FIRE_ALARM">FIRE ALARM</option>
@@ -231,23 +231,23 @@ export const BridgeMusterCommandConsole: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="muster-announcement" className="block text-slate-400 mb-1">Announcement Broadcast Message</label>
+                <label htmlFor="muster-announcement" className="block text-xs font-semibold text-rose-900 mb-1">Announcement Broadcast Message</label>
                 <textarea
                   id="muster-announcement"
                   rows={3}
                   value={announcementText}
                   onChange={(e) => setAnnouncementText(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-white font-medium focus:ring-1 focus:ring-red-500"
+                  className="w-full bg-white border border-rose-300 rounded-xl px-3 py-2 text-xs text-[#252B32] font-medium focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-600"
                 />
               </div>
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-red-900/40">
+          <div className="mt-4 pt-4 border-t border-rose-200">
             <button
               onClick={handleBroadcast}
               disabled={broadcasting}
-              className="w-full py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-black tracking-widest text-xs uppercase rounded shadow-lg border border-red-400/50 transition"
+              className="w-full py-3 bg-rose-700 hover:bg-rose-800 active:bg-rose-900 text-white font-bold tracking-widest text-xs uppercase rounded-xl shadow-md transition-colors cursor-pointer"
             >
               {broadcasting ? 'TRANSMITTING...' : 'TRIGGER VESSEL-WIDE ALARM'}
             </button>

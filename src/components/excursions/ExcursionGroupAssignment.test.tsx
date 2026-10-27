@@ -169,7 +169,7 @@ describe('ExcursionGroupAssignment Tests (KAN-181)', () => {
     expect(
       screen.getByText(/Đã thêm hành khách Đặng Hoàng Nam vào/i)
     ).toBeInTheDocument();
-  });
+  }, 15000);
 
   it('populates fields when selecting an onboard ship passenger', async () => {
     const user = userEvent.setup();

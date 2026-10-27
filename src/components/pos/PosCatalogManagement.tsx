@@ -183,15 +183,15 @@ export const PosCatalogManagement: React.FC = () => {
 
       {/* Outlet Error Banner */}
       {outletError && (
-        <div className="bg-rose-950/40 border border-rose-800/60 rounded-xl p-3 flex items-center justify-between text-rose-300 text-xs">
+        <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-center justify-between text-rose-800 text-xs">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-400" />
+            <AlertCircle className="w-4 h-4 text-rose-600" />
             <span>{outletError}</span>
           </div>
           <button
             type="button"
             onClick={() => void loadOutlets()}
-            className="px-2.5 py-1 bg-rose-900/60 hover:bg-rose-800 rounded-lg text-white font-medium flex items-center gap-1 transition cursor-pointer"
+            className="px-2.5 py-1 bg-white hover:bg-rose-100 border border-rose-200 rounded-lg text-rose-800 font-medium flex items-center gap-1 transition cursor-pointer"
           >
             <RefreshCw className="w-3 h-3" />
             Thử lại
@@ -200,7 +200,7 @@ export const PosCatalogManagement: React.FC = () => {
       )}
 
       {/* Top Controls Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-[#E5E0D7] rounded-2xl p-4 shadow-xs">
         <OutletSelector
           outlets={outlets}
           selectedOutletId={selectedOutletId}
@@ -214,28 +214,28 @@ export const PosCatalogManagement: React.FC = () => {
           <button
             type="button"
             onClick={handleExportOfflinePackage}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-semibold border border-slate-700 transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-[#F7F4ED] text-[#102A43] text-xs font-semibold border border-[#E5E0D7] transition shadow-xs"
             title="Đóng gói và tải cache danh mục ngoại tuyến (ETag 304)"
           >
-            <DownloadCloud className="w-3.5 h-3.5 text-blue-400" />
+            <DownloadCloud className="w-3.5 h-3.5 text-[#397C80]" />
             <span>Xuất Cache Ngoại Tuyến</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsHappyHourOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-amber-300 text-xs font-semibold border border-slate-700 transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#C5A572]/15 hover:bg-[#C5A572]/25 text-[#8C6D37] text-xs font-semibold border border-[#C5A572]/30 transition"
           >
-            <Flame className="w-3.5 h-3.5 text-amber-400" />
+            <Flame className="w-3.5 h-3.5 text-[#C5A572]" />
             <span>Giờ Vàng (Happy Hour)</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsBulkImportOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-semibold border border-slate-700 transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-[#F7F4ED] text-[#102A43] text-xs font-semibold border border-[#E5E0D7] transition shadow-xs"
           >
-            <UploadCloud className="w-3.5 h-3.5 text-emerald-400" />
+            <UploadCloud className="w-3.5 h-3.5 text-[#397C80]" />
             <span>Nhập File Hàng Loạt</span>
           </button>
 
@@ -245,7 +245,7 @@ export const PosCatalogManagement: React.FC = () => {
               setEditingProduct(null);
               setIsFormOpen(true);
             }}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 transition"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#102A43] hover:bg-[#183B5B] text-white text-xs font-bold shadow-xs transition"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Thêm Món Mới</span>
@@ -265,17 +265,17 @@ export const PosCatalogManagement: React.FC = () => {
         </div>
 
         {/* Right Product Management Table */}
-        <div className="flex-1 bg-slate-900 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-sm flex flex-col">
+        <div className="flex-1 bg-white border border-[#E5E0D7] rounded-2xl p-4 lg:p-5 shadow-xs flex flex-col">
           {/* Search & Filter Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E5E0D7]">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="w-4 h-4 text-[#687787] absolute left-3 top-2.5" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Tìm món theo tên, SKU, mã vạch..."
-                className="w-full bg-slate-800/80 border border-slate-700 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl pl-9 pr-3 py-1.5 text-xs text-[#252B32] placeholder-[#687787]/60 focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
               />
             </div>
 
@@ -283,7 +283,7 @@ export const PosCatalogManagement: React.FC = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as 'ALL' | ProductStatus)}
-                className="bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="bg-white border border-[#E5E0D7] rounded-xl px-3 py-1.5 text-xs text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
               >
                 <option value="ALL">Tất cả trạng thái</option>
                 <option value="ACTIVE">Đang phục vụ (ACTIVE)</option>
@@ -294,10 +294,10 @@ export const PosCatalogManagement: React.FC = () => {
               <button
                 type="button"
                 onClick={() => void loadProducts()}
-                className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-400 hover:text-white border border-slate-700 transition"
+                className="p-1.5 rounded-xl bg-white hover:bg-[#F7F4ED] text-[#687787] hover:text-[#102A43] border border-[#E5E0D7] transition shadow-xs"
                 title="Tải lại danh sách"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-blue-400' : ''}`} />
+                <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-[#102A43]' : ''}`} />
               </button>
             </div>
           </div>
@@ -305,7 +305,7 @@ export const PosCatalogManagement: React.FC = () => {
           {/* Table Container */}
           <div className="flex-1 overflow-x-auto mt-3">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950/80 text-slate-400 font-semibold uppercase border-b border-slate-800">
+              <thead className="bg-[#F7F4ED] text-[#687787] font-semibold uppercase border-b border-[#E5E0D7]">
                 <tr>
                   <th className="p-3">Sản phẩm</th>
                   <th className="p-3">Mã SKU / Barcode</th>
@@ -316,16 +316,16 @@ export const PosCatalogManagement: React.FC = () => {
                   <th className="p-3 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-[#E5E0D7]">
                 {productError ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-rose-400">
+                    <td colSpan={7} className="p-8 text-center text-rose-600">
                       <AlertCircle className="w-8 h-8 mx-auto mb-2 text-rose-500" />
                       <p className="font-medium text-sm">{productError}</p>
                       <button
                         type="button"
                         onClick={() => void loadProducts()}
-                        className="mt-3 px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 border border-slate-700 transition"
+                        className="mt-3 px-3.5 py-1.5 bg-white hover:bg-[#F7F4ED] text-[#102A43] rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 border border-[#E5E0D7] transition shadow-xs"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
                         <span>Thử lại</span>
@@ -334,7 +334,7 @@ export const PosCatalogManagement: React.FC = () => {
                   </tr>
                 ) : products.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-slate-500">
+                    <td colSpan={7} className="p-8 text-center text-[#687787]">
                       <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-30" />
                       <span>Không tìm thấy sản phẩm nào trong danh mục</span>
                     </td>
@@ -345,14 +345,14 @@ export const PosCatalogManagement: React.FC = () => {
                     return (
                       <tr
                         key={p.id}
-                        className={`hover:bg-slate-800/40 transition-colors ${
-                          is86ed ? 'bg-rose-950/10' : ''
+                        className={`hover:bg-[#F7F4ED]/50 transition-colors ${
+                          is86ed ? 'bg-rose-50/50' : ''
                         }`}
                       >
                         {/* Name & Photo */}
                         <td className="p-3">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 rounded-lg bg-slate-800 overflow-hidden shrink-0">
+                            <div className="w-9 h-9 rounded-lg bg-[#F7F4ED] border border-[#E5E0D7] overflow-hidden shrink-0">
                               {p.imageUrl ? (
                                 <img
                                   src={p.imageUrl}
@@ -360,16 +360,16 @@ export const PosCatalogManagement: React.FC = () => {
                                   className="w-full h-full object-cover"
                                 />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-slate-600">
+                                <div className="w-full h-full flex items-center justify-center text-[#687787]">
                                   <Package className="w-4 h-4" />
                                 </div>
                               )}
                             </div>
                             <div>
-                              <span className="font-semibold text-white block">{p.name}</span>
+                              <span className="font-semibold text-[#102A43] block">{p.name}</span>
                               {p.happyHourEligible && (
-                                <span className="inline-flex items-center gap-0.5 text-[10px] text-amber-400 font-semibold">
-                                  <Flame className="w-2.5 h-2.5" />
+                                <span className="inline-flex items-center gap-0.5 text-[10px] text-[#8C6D37] font-semibold">
+                                  <Flame className="w-2.5 h-2.5 text-[#C5A572]" />
                                   Happy Hour (-{p.happyHourDiscountPercent || 20}%)
                                 </span>
                               )}
@@ -379,16 +379,16 @@ export const PosCatalogManagement: React.FC = () => {
 
                         {/* SKU & Barcode */}
                         <td className="p-3 font-mono">
-                          <span className="text-slate-300 block">{p.sku}</span>
-                          <span className="text-[11px] text-slate-500">
+                          <span className="text-[#252B32] block font-medium">{p.sku}</span>
+                          <span className="text-[11px] text-[#687787]">
                             {p.barcode ? p.barcode : '—'}
                           </span>
                         </td>
 
                         {/* Category & Tax */}
                         <td className="p-3">
-                          <span className="text-slate-300 block">{p.categoryName || 'Mặc định'}</span>
-                          <span className="text-[10px] text-slate-400 uppercase">
+                          <span className="text-[#252B32] block font-medium">{p.categoryName || 'Mặc định'}</span>
+                          <span className="text-[10px] text-[#687787] uppercase">
                             {p.taxCategory === 'STANDARD_VAT'
                               ? 'VAT 10%'
                               : p.taxCategory === 'REDUCED_VAT'
@@ -398,17 +398,17 @@ export const PosCatalogManagement: React.FC = () => {
                         </td>
 
                         {/* Base Price */}
-                        <td className="p-3 text-right font-mono font-bold text-emerald-400">
+                        <td className="p-3 text-right font-mono font-bold text-[#102A43]">
                           ${p.basePrice.toFixed(2)}
                         </td>
 
                         {/* Stock */}
                         <td className="p-3 text-center font-mono">
                           <span
-                            className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                            className={`px-2 py-0.5 rounded-full text-[11px] font-semibold border ${
                               p.stockQuantity === 0
-                                ? 'bg-rose-950/80 text-rose-300 border border-rose-800'
-                                : 'bg-slate-800 text-slate-300'
+                                ? 'bg-rose-50 text-rose-700 border-rose-200'
+                                : 'bg-[#F7F4ED] text-[#252B32] border-[#E5E0D7]'
                             }`}
                           >
                             {p.stockQuantity}
@@ -423,12 +423,12 @@ export const PosCatalogManagement: React.FC = () => {
                             aria-checked={is86ed}
                             onClick={() => void handleToggle86ed(p)}
                             className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                              is86ed ? 'bg-rose-600' : 'bg-slate-700'
+                              is86ed ? 'bg-rose-600' : 'bg-slate-300'
                             }`}
                             title={is86ed ? "Khôi phục món (bỏ 86'd)" : "Đánh dấu 86'd (hết hàng)"}
                           >
                             <span
-                              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
                                 is86ed ? 'translate-x-4' : 'translate-x-0'
                               }`}
                             />
@@ -440,7 +440,7 @@ export const PosCatalogManagement: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => void handleEditProduct(p)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                            className="p-1.5 rounded-lg text-[#687787] hover:text-[#102A43] hover:bg-[#F7F4ED] transition"
                             title="Sửa thông tin món"
                           >
                             <Edit className="w-3.5 h-3.5" />

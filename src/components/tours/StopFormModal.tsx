@@ -94,41 +94,41 @@ export const StopFormModal: React.FC<StopFormModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
     >
-      <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 text-slate-100">
+      <div className="relative w-full max-w-lg bg-white border border-[#E5E0D7] rounded-2xl shadow-xl p-6 text-[#252B32]">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+          className="absolute top-4 right-4 text-[#5A6578] hover:text-[#102A43] p-1.5 rounded-lg hover:bg-[#E5E0D7]/50 transition-colors cursor-pointer"
           aria-label="Đóng"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-slate-800">
-          <div className="w-9 h-9 rounded-xl bg-cyan-600/20 text-cyan-400 flex items-center justify-center">
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-[#E5E0D7]">
+          <div className="w-9 h-9 rounded-xl bg-[#102A43] text-[#C5A572] flex items-center justify-center shadow-xs">
             <MapPin className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-white">Thêm Điểm Dừng Hải Trình</h2>
-            <p className="text-xs text-slate-400">Thiết lập cảng ghé, thời gian cập cảng và rời bến</p>
+            <h2 className="text-base font-bold font-serif text-[#102A43]">Thêm Điểm Dừng Hải Trình</h2>
+            <p className="text-xs text-[#5A6578]">Thiết lập cảng ghé, thời gian cập cảng và rời bến</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="port-select">
-                Cảng Ghé <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold text-[#252B32] mb-1" htmlFor="port-select">
+                Cảng Ghé <span className="text-rose-600">*</span>
               </label>
               <select
                 id="port-select"
                 aria-label="Cảng Ghé"
                 value={formData.portId}
                 onChange={(e) => setFormData({ ...formData, portId: Number(e.target.value) })}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10"
               >
                 <option value="">-- Chọn Cảng Ghé --</option>
                 {ports.map((p) => (
@@ -137,12 +137,12 @@ export const StopFormModal: React.FC<StopFormModalProps> = ({
                   </option>
                 ))}
               </select>
-              {errors.portId && <p className="text-[11px] text-rose-400 mt-1">{errors.portId}</p>}
+              {errors.portId && <p className="text-[11px] text-rose-600 mt-1">{errors.portId}</p>}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="stop-order">
-                Thứ Tự Điểm Dừng <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold text-[#252B32] mb-1" htmlFor="stop-order">
+                Thứ Tự Điểm Dừng <span className="text-rose-600">*</span>
               </label>
               <input
                 id="stop-order"
@@ -150,16 +150,16 @@ export const StopFormModal: React.FC<StopFormModalProps> = ({
                 aria-label="Thứ Tự Điểm Dừng"
                 value={formData.stopOrder}
                 onChange={(e) => setFormData({ ...formData, stopOrder: Number(e.target.value) })}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10"
               />
-              {errors.stopOrder && <p className="text-[11px] text-rose-400 mt-1">{errors.stopOrder}</p>}
+              {errors.stopOrder && <p className="text-[11px] text-rose-600 mt-1">{errors.stopOrder}</p>}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="arrival-time">
-                Thời Gian Cập Cảng (Arrival) <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold text-[#252B32] mb-1" htmlFor="arrival-time">
+                Thời Gian Cập Cảng (Arrival) <span className="text-rose-600">*</span>
               </label>
               <input
                 id="arrival-time"
@@ -167,14 +167,14 @@ export const StopFormModal: React.FC<StopFormModalProps> = ({
                 aria-label="Thời Gian Cập Cảng (Arrival)"
                 value={formData.arrivalTime}
                 onChange={(e) => setFormData({ ...formData, arrivalTime: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10"
               />
-              {errors.arrivalTime && <p className="text-[11px] text-rose-400 mt-1">{errors.arrivalTime}</p>}
+              {errors.arrivalTime && <p className="text-[11px] text-rose-600 mt-1">{errors.arrivalTime}</p>}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="departure-time">
-                Thời Gian Rời Cảng (Departure) <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold text-[#252B32] mb-1" htmlFor="departure-time">
+                Thời Gian Rời Cảng (Departure) <span className="text-rose-600">*</span>
               </label>
               <input
                 id="departure-time"
@@ -182,14 +182,14 @@ export const StopFormModal: React.FC<StopFormModalProps> = ({
                 aria-label="Thời Gian Rời Cảng (Departure)"
                 value={formData.departureTime}
                 onChange={(e) => setFormData({ ...formData, departureTime: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10"
               />
-              {errors.departureTime && <p className="text-[11px] text-rose-400 mt-1">{errors.departureTime}</p>}
+              {errors.departureTime && <p className="text-[11px] text-rose-600 mt-1">{errors.departureTime}</p>}
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="all-aboard-time">
+            <label className="block text-xs font-semibold text-[#252B32] mb-1" htmlFor="all-aboard-time">
               Thời Gian Lên Tàu (All-Aboard)
             </label>
             <input
@@ -198,13 +198,13 @@ export const StopFormModal: React.FC<StopFormModalProps> = ({
               aria-label="Thời Gian Lên Tàu (All-Aboard)"
               value={formData.allAboardTime || ''}
               onChange={(e) => setFormData({ ...formData, allAboardTime: e.target.value })}
-              className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-cyan-500"
+              className="w-full px-3 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10"
             />
-            {errors.allAboardTime && <p className="text-[11px] text-rose-400 mt-1">{errors.allAboardTime}</p>}
+            {errors.allAboardTime && <p className="text-[11px] text-rose-600 mt-1">{errors.allAboardTime}</p>}
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="stop-description">
+            <label className="block text-xs font-semibold text-[#252B32] mb-1" htmlFor="stop-description">
               Mô Tả / Hoạt Động Tại Cảng
             </label>
             <textarea
@@ -214,23 +214,23 @@ export const StopFormModal: React.FC<StopFormModalProps> = ({
               value={formData.description || ''}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="VD: Cập bến tham quan đảo Titop, hang Sửng Sốt..."
-              className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-cyan-500"
+              className="w-full px-3 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#5A6578]/50 focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10"
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#E5E0D7]">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+              className="px-4 py-2 bg-[#F7F4ED] hover:bg-[#ECE7DC] text-[#102A43] border border-[#E5E0D7] rounded-xl text-xs font-semibold transition-colors cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20"
+              className="px-4 py-2 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-xs font-semibold shadow-xs transition-colors cursor-pointer"
             >
               {isSubmitting ? 'Đang lưu...' : 'Lưu Điểm Dừng'}
             </button>
@@ -240,3 +240,5 @@ export const StopFormModal: React.FC<StopFormModalProps> = ({
     </div>
   );
 };
+
+export default StopFormModal;

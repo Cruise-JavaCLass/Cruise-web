@@ -21,14 +21,14 @@ export const SettlementSummaryCard: React.FC<SettlementSummaryCardProps> = ({
       <div
         role="status"
         aria-label="Đang tải bản tóm tắt tất toán"
-        className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 animate-pulse"
+        className="bg-white border border-[#E5E0D7] rounded-xl p-6 shadow-xs animate-pulse"
       >
-        <div className="h-4 w-40 bg-white/10 rounded mb-4" />
-        <div className="h-10 w-56 bg-white/10 rounded mb-6" />
+        <div className="h-4 w-40 bg-[#F7F4ED] rounded mb-4" />
+        <div className="h-10 w-56 bg-[#F7F4ED] rounded mb-6" />
         <div className="space-y-2">
-          <div className="h-3 w-full bg-white/5 rounded" />
-          <div className="h-3 w-5/6 bg-white/5 rounded" />
-          <div className="h-3 w-4/6 bg-white/5 rounded" />
+          <div className="h-3 w-full bg-[#F7F4ED] rounded" />
+          <div className="h-3 w-5/6 bg-[#F7F4ED] rounded" />
+          <div className="h-3 w-4/6 bg-[#F7F4ED] rounded" />
         </div>
         <span className="sr-only">Đang tải bản tóm tắt tất toán...</span>
       </div>
@@ -39,12 +39,12 @@ export const SettlementSummaryCard: React.FC<SettlementSummaryCardProps> = ({
     return (
       <div
         role="alert"
-        className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-6 text-rose-300 flex items-start gap-3"
+        className="bg-rose-50 border border-rose-200 rounded-xl p-6 text-rose-800 flex items-start gap-3 font-medium"
       >
-        <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+        <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600" />
         <div>
-          <p className="font-medium text-sm">Không thể tải folio</p>
-          <p className="text-xs mt-1 text-rose-200/80">{error}</p>
+          <p className="font-semibold text-sm">Không thể tải folio</p>
+          <p className="text-xs mt-1 text-rose-700">{error}</p>
         </div>
       </div>
     );
@@ -54,9 +54,9 @@ export const SettlementSummaryCard: React.FC<SettlementSummaryCardProps> = ({
     return (
       <div
         role="status"
-        className="bg-white/[0.02] border border-dashed border-white/10 rounded-2xl p-8 text-center text-slate-400"
+        className="bg-white border border-dashed border-[#E5E0D7] rounded-xl p-8 text-center text-[#687787]"
       >
-        <Receipt className="w-8 h-8 mx-auto mb-3 text-slate-500" />
+        <Receipt className="w-8 h-8 mx-auto mb-3 text-[#102A43]" />
         <p className="text-sm">Nhập số cabin và tải folio để xem bản tóm tắt tất toán.</p>
       </div>
     );
@@ -73,28 +73,28 @@ export const SettlementSummaryCard: React.FC<SettlementSummaryCardProps> = ({
   return (
     <section
       aria-label="Bản tóm tắt tất toán"
-      className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 shadow-xl"
+      className="bg-white border border-[#E5E0D7] rounded-2xl p-6 shadow-xs"
     >
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <p className="text-[10px] font-mono uppercase tracking-widest text-cyan-400">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#102A43]">
             Cabin {preview.cabinNumber}
           </p>
-          <h2 className="text-lg font-semibold text-white mt-1">{preview.primaryGuestName}</h2>
+          <h2 className="text-lg font-serif font-bold text-[#102A43] mt-1">{preview.primaryGuestName}</h2>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-mono uppercase tracking-widest text-slate-400">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#687787]">
             Tổng thanh toán
           </p>
-          <p className="text-3xl font-bold text-emerald-400 mt-1">
+          <p className="text-3xl font-serif font-bold text-[#102A43] mt-1">
             {formatCurrency(preview.netAmountDue, preview.currency)}
           </p>
         </div>
       </div>
 
       {preview.heldDisputeAmount > 0 && (
-        <div className="mt-4 flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-amber-300 text-xs">
-          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+        <div className="mt-4 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-900 text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
           <span>
             Đang giữ {formatCurrency(preview.heldDisputeAmount, preview.currency)} cho{' '}
             {preview.openDisputeCount} khiếu nại chưa xử lý.
@@ -102,18 +102,18 @@ export const SettlementSummaryCard: React.FC<SettlementSummaryCardProps> = ({
         </div>
       )}
 
-      <div className="mt-5 border-t border-white/5 pt-4 space-y-2 text-xs">
+      <div className="mt-5 border-t border-[#E5E0D7] pt-4 space-y-2 text-xs">
         {breakdown.map((row) => (
-          <div key={row.label} className="flex items-center justify-between text-slate-400">
-            <span>{row.label}</span>
-            <span className="font-mono text-slate-200">
+          <div key={row.label} className="flex items-center justify-between text-[#687787]">
+            <span className="font-medium">{row.label}</span>
+            <span className="font-mono font-bold text-[#252B32]">
               {formatCurrency(row.value, preview.currency)}
             </span>
           </div>
         ))}
         {!preview.eligibleForSettlement && (
-          <div className="flex items-start gap-2 pt-2 text-rose-300">
-            <TrendingDown className="w-4 h-4 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2 pt-2 text-rose-700 font-medium">
+            <TrendingDown className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
             <span>
               {preview.blockingReasons.length > 0
                 ? preview.blockingReasons.join(' • ')

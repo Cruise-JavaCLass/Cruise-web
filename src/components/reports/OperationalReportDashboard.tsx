@@ -76,16 +76,22 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
   return (
     <div className="space-y-6">
       {/* Query Filter Bar */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm space-y-4">
+      <div className="bg-white border border-[#E5E0D7] rounded-xl p-6 shadow-xs space-y-4">
         {isLoading && (
-          <div className="text-xs text-indigo-600 font-medium animate-pulse">
+          <div className="text-xs text-[#102A43] font-medium uppercase tracking-wider animate-pulse">
             Đang tải dữ liệu báo cáo...
           </div>
         )}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E5E0D7] pb-4">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Báo Cáo Doanh Thu & Vận Hành POS</h2>
-            <p className="text-xs text-gray-500">Phân tích đa chiều theo điểm bán, phương thức thanh toán</p>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-semibold bg-[#C5A572]/15 text-[#102A43] border border-[#C5A572]/40 tracking-wider">
+                REVENUE INTELLIGENCE
+              </span>
+              <span className="text-[11px] font-medium text-[#687787]">• MULTI-DIMENSIONAL AUDIT</span>
+            </div>
+            <h2 className="text-xl font-serif font-bold text-[#102A43]">Báo Cáo Doanh Thu & Vận Hành POS</h2>
+            <p className="text-xs text-[#687787] mt-1">Phân tích đa chiều theo điểm bán, phương thức thanh toán</p>
           </div>
           
           <div className="flex items-center gap-2 flex-wrap">
@@ -93,7 +99,7 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
               aria-label="Định dạng xuất file"
               value={selectedFormat}
               onChange={(e) => setSelectedFormat(e.target.value as ExportFormat)}
-              className="rounded-xl border border-gray-300 px-3 py-2 text-xs focus:border-indigo-500 focus:outline-none bg-white font-medium text-gray-700"
+              className="text-xs font-semibold bg-[#F7F4ED] border border-[#E5E0D7] rounded-lg py-2 px-3 text-[#252B32] focus:outline-none focus:border-[#102A43]"
             >
               <option value="CSV">CSV</option>
               <option value="EXCEL">EXCEL</option>
@@ -103,7 +109,7 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
               type="button"
               disabled={isExporting}
               onClick={() => void handleExport(selectedFormat)}
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50 transition"
+              className="py-2 px-4 text-xs font-semibold bg-[#102A43] hover:bg-[#183B5B] text-white rounded-lg shadow-xs transition-colors cursor-pointer disabled:opacity-50"
             >
               📥 {isExporting ? 'Đang tạo...' : `Xuất Báo Cáo (${selectedFormat})`}
             </button>
@@ -111,7 +117,7 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
               <button
                 type="button"
                 onClick={() => onOpenExportDrawer(query)}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition"
+                className="py-2 px-3 text-xs font-semibold bg-white hover:bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] rounded-lg shadow-xs transition-colors cursor-pointer"
               >
                 📂 Khay Tải
               </button>
@@ -120,22 +126,22 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
         </div>
 
         {exportMessage && (
-          <div className="rounded-xl bg-emerald-50 p-3 text-xs text-emerald-700 border border-emerald-200">
+          <div className="p-3 bg-emerald-50 border border-emerald-200 text-xs font-medium text-emerald-800 rounded-xl shadow-xs">
             {exportMessage}
           </div>
         )}
 
         {/* Filter Form Controls */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
           <div>
-            <label htmlFor="report-filter-dimension" className="block font-semibold text-gray-600 mb-1">
+            <label htmlFor="report-filter-dimension" className="block font-semibold text-[#252B32] uppercase mb-1.5 text-[11px]">
               Chiều phân tích
             </label>
             <select
               id="report-filter-dimension"
               value={query.dimension}
               onChange={(e) => setQuery({ ...query, dimension: e.target.value as ReportDimension })}
-              className="w-full rounded-xl border border-gray-300 p-2 focus:border-indigo-500 focus:outline-none"
+              className="w-full text-xs font-semibold bg-[#F7F4ED] border border-[#E5E0D7] rounded-lg p-2.5 text-[#252B32] focus:outline-none focus:border-[#102A43]"
             >
               <option value="OUTLET">Theo Điểm Bán (Outlet / Station)</option>
               <option value="PAYMENT_METHOD">Theo Phương Thức Thanh Toán</option>
@@ -143,14 +149,14 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
           </div>
 
           <div>
-            <label htmlFor="report-filter-payment" className="block font-semibold text-gray-600 mb-1">
+            <label htmlFor="report-filter-payment" className="block font-semibold text-[#252B32] uppercase mb-1.5 text-[11px]">
               Phương thức thanh toán
             </label>
             <select
               id="report-filter-payment"
               value={query.paymentMethod || ''}
               onChange={(e) => setQuery({ ...query, paymentMethod: e.target.value || undefined })}
-              className="w-full rounded-xl border border-gray-300 p-2 focus:border-indigo-500 focus:outline-none"
+              className="w-full text-xs font-semibold bg-[#F7F4ED] border border-[#E5E0D7] rounded-lg p-2.5 text-[#252B32] focus:outline-none focus:border-[#102A43]"
             >
               <option value="">Tất cả phương thức</option>
               <option value="CABIN_FOLIO">Tài khoản Cabin Folio</option>
@@ -161,7 +167,7 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
           </div>
 
           <div>
-            <label htmlFor="report-filter-start-date" className="block font-semibold text-gray-600 mb-1">
+            <label htmlFor="report-filter-start-date" className="block font-semibold text-[#252B32] uppercase mb-1.5 text-[11px]">
               Từ ngày
             </label>
             <input
@@ -169,12 +175,12 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
               type="date"
               value={query.startDate || ''}
               onChange={(e) => setQuery({ ...query, startDate: e.target.value || undefined })}
-              className="w-full rounded-xl border border-gray-300 p-2 focus:border-indigo-500 focus:outline-none"
+              className="w-full text-xs font-semibold bg-[#F7F4ED] border border-[#E5E0D7] rounded-lg p-2.5 text-[#252B32] focus:outline-none focus:border-[#102A43]"
             />
           </div>
 
           <div>
-            <label htmlFor="report-filter-end-date" className="block font-semibold text-gray-600 mb-1">
+            <label htmlFor="report-filter-end-date" className="block font-semibold text-[#252B32] uppercase mb-1.5 text-[11px]">
               Đến ngày
             </label>
             <input
@@ -182,15 +188,15 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
               type="date"
               value={query.endDate || ''}
               onChange={(e) => setQuery({ ...query, endDate: e.target.value || undefined })}
-              className="w-full rounded-xl border border-gray-300 p-2 focus:border-indigo-500 focus:outline-none"
+              className="w-full text-xs font-semibold bg-[#F7F4ED] border border-[#E5E0D7] rounded-lg p-2.5 text-[#252B32] focus:outline-none focus:border-[#102A43]"
             />
           </div>
 
-          <div className="sm:col-span-4 flex justify-end">
+          <div className="sm:col-span-4 flex justify-end pt-2">
             <button
               type="button"
               onClick={() => void fetchReport()}
-              className="rounded-xl bg-gray-900 px-6 py-2 text-xs font-semibold text-white hover:bg-gray-800 transition"
+              className="py-2 px-6 text-xs font-semibold bg-[#102A43] hover:bg-[#183B5B] text-white rounded-lg shadow-xs transition-colors cursor-pointer"
             >
               Áp Dụng Bộ Lọc
             </button>
@@ -199,7 +205,7 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
       </div>
 
       {errorMessage && (
-        <div className="rounded-xl bg-rose-50 p-4 text-sm text-rose-700 border border-rose-200">
+        <div className="p-4 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium rounded-xl shadow-xs">
           {errorMessage}
         </div>
       )}
@@ -207,30 +213,30 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
       {/* KPI Summary Cards */}
       {report && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-            <span className="text-xs font-semibold text-gray-500">Tổng doanh thu gộp</span>
-            <div className="text-xl font-bold text-gray-900 mt-1">
+          <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs">
+            <span className="text-[10px] font-semibold text-[#687787] uppercase tracking-wider">Tổng doanh thu gộp</span>
+            <div className="text-2xl font-serif font-bold text-[#102A43] mt-1">
               ${report.totalGrossRevenue.toFixed(2)}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-            <span className="text-xs font-semibold text-gray-500">Doanh thu thuần (Net)</span>
-            <div className="text-xl font-bold text-emerald-600 mt-1">
+          <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs">
+            <span className="text-[10px] font-semibold text-[#687787] uppercase tracking-wider">Doanh thu thuần (Net)</span>
+            <div className="text-2xl font-serif font-bold text-[#102A43] mt-1">
               ${report.totalNetRevenue.toFixed(2)}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-            <span className="text-xs font-semibold text-gray-500">Tổng số giao dịch</span>
-            <div className="text-xl font-bold text-gray-900 mt-1">
+          <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs">
+            <span className="text-[10px] font-semibold text-[#687787] uppercase tracking-wider">Tổng số giao dịch</span>
+            <div className="text-2xl font-serif font-bold text-[#102A43] mt-1">
               {report.totalTransactionCount}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-            <span className="text-xs font-semibold text-gray-500">Giá trị đơn trung bình</span>
-            <div className="text-xl font-bold text-indigo-600 mt-1">
+          <div className="bg-white border border-[#E5E0D7] rounded-xl p-4.5 shadow-xs">
+            <span className="text-[10px] font-semibold text-[#687787] uppercase tracking-wider">Giá trị đơn trung bình</span>
+            <div className="text-2xl font-serif font-bold text-[#102A43] mt-1">
               ${report.averageTicketSize.toFixed(2)}
             </div>
           </div>
@@ -239,12 +245,12 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
 
       {/* Data Table */}
       {report && (
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-100 bg-gray-50 px-6 py-3 text-xs font-bold uppercase tracking-wider text-gray-600">
+        <div className="bg-white border border-[#E5E0D7] rounded-xl overflow-hidden shadow-xs">
+          <div className="border-b border-[#E5E0D7] bg-[#F7F4ED] px-6 py-3.5 text-xs font-serif font-bold text-[#102A43]">
             Chi tiết phân rã số liệu
           </div>
-          <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
-            <thead className="bg-gray-50/50 text-xs font-semibold text-gray-500">
+          <table className="min-w-full text-left text-xs">
+            <thead className="bg-[#F7F4ED] text-[10px] font-semibold uppercase text-[#687787] border-b border-[#E5E0D7]">
               <tr>
                 <th className="px-6 py-3">Phân loại</th>
                 <th className="px-6 py-3">Số lượt giao dịch</th>
@@ -253,25 +259,25 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
                 <th className="px-6 py-3 text-right">Tỷ trọng (%)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-[#E5E0D7] bg-white text-[#252B32]">
               {report.breakdown.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-sm text-gray-400">
+                  <td colSpan={5} className="py-8 text-center text-xs font-medium text-[#687787]">
                     Không có giao dịch nào phù hợp với bộ lọc
                   </td>
                 </tr>
               ) : (
                 report.breakdown.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-gray-50/50">
-                    <td className="px-6 py-3 font-semibold text-gray-900">{row.label}</td>
-                    <td className="px-6 py-3 text-gray-600">{row.transactionCount}</td>
-                    <td className="px-6 py-3 font-medium text-gray-900">
+                  <tr key={idx} className="hover:bg-[#F7F4ED]/50 transition-colors">
+                    <td className="px-6 py-3 font-semibold text-[#102A43]">{row.label}</td>
+                    <td className="px-6 py-3 text-[#687787] font-medium">{row.transactionCount}</td>
+                    <td className="px-6 py-3 font-bold text-[#252B32]">
                       ${row.grossRevenue.toFixed(2)}
                     </td>
-                    <td className="px-6 py-3 font-semibold text-emerald-600">
+                    <td className="px-6 py-3 font-bold text-[#102A43]">
                       ${row.netRevenue.toFixed(2)}
                     </td>
-                    <td className="px-6 py-3 text-right font-bold text-indigo-600">
+                    <td className="px-6 py-3 text-right font-bold text-[#252B32]">
                       {row.revenuePercentage}%
                     </td>
                   </tr>
@@ -284,3 +290,4 @@ export const OperationalReportDashboard: React.FC<OperationalReportDashboardProp
     </div>
   );
 };
+export default OperationalReportDashboard;

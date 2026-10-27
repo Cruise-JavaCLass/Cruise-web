@@ -32,6 +32,10 @@ describe('MobileBoardingPass Component Tests (KAN-386 / KAN-388)', () => {
   });
 
   it('allows completing pre-cruise health declaration', async () => {
+    vi.spyOn(embarkationService, 'submitHealthDeclaration').mockResolvedValue({
+      ...mockProfile,
+      healthDeclarationCompleted: true,
+    });
     const onHealthDeclared = vi.fn();
     render(<MobileBoardingPass profile={mockProfile} onHealthDeclared={onHealthDeclared} />);
 

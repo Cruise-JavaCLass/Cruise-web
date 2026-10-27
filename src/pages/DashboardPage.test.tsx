@@ -28,14 +28,13 @@ describe('DashboardPage Component', () => {
     expect(screen.getByText('An toàn & Tập trung')).toBeInTheDocument();
   });
 
-  it('renders itinerary preview stops', () => {
+  it('renders empty state when no itinerary stops exist in the database', () => {
     render(
       <MemoryRouter>
         <DashboardPage />
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Cảng Quốc Tế Tuần Châu (Hạ Long)')).toBeInTheDocument();
-    expect(screen.getByText('Cảng Tiên Sa (Đà Nẵng & Hội An)')).toBeInTheDocument();
+    expect(screen.getByText('Chưa có điểm dừng hải trình nào trong hệ thống')).toBeInTheDocument();
   });
 });

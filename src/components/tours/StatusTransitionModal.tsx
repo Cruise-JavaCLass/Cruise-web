@@ -56,47 +56,47 @@ export const StatusTransitionModal: React.FC<StatusTransitionModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="status-modal-title"
     >
-      <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 text-slate-100">
+      <div className="relative w-full max-w-md bg-white border border-[#E5E0D7] rounded-2xl shadow-xl p-6 text-[#252B32]">
         <button
           onClick={onClose}
           disabled={isSubmitting}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+          className="absolute top-4 right-4 text-[#5A6578] hover:text-[#102A43] p-1.5 rounded-lg hover:bg-[#E5E0D7]/50 transition-colors cursor-pointer"
           aria-label="Đóng"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-slate-800">
-          <div className="w-9 h-9 rounded-xl bg-cyan-600/20 text-cyan-400 flex items-center justify-center">
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-[#E5E0D7]">
+          <div className="w-9 h-9 rounded-xl bg-[#102A43] text-[#C5A572] flex items-center justify-center shadow-xs">
             <ArrowRightCircle className="w-5 h-5" />
           </div>
           <div>
-            <h2 id="status-modal-title" className="text-base font-bold text-white">
+            <h2 id="status-modal-title" className="text-base font-bold font-serif text-[#102A43]">
               Chuyển Trạng Thái Tour
             </h2>
-            <p className="text-xs text-slate-400">{tour.name} ({tour.code})</p>
+            <p className="text-xs text-[#5A6578]">{tour.name} ({tour.code})</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <p className="text-xs text-slate-400 mb-1">Trạng thái hiện tại:</p>
-            <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-cyan-300 border border-slate-700 inline-block">
+            <p className="text-xs text-[#5A6578] mb-1">Trạng thái hiện tại:</p>
+            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] inline-block">
               {STATUS_LABELS[tour.status]}
             </span>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="target-status">
+            <label className="block text-xs font-semibold text-[#252B32] mb-1" htmlFor="target-status">
               Chọn Trạng Thái Kế Tiếp:
             </label>
             {allowedTransitions.length === 0 ? (
-              <p className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
+              <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3">
                 Tour đã ở trạng thái kết thúc (COMPLETED). Không thể chuyển đổi trạng thái tiếp theo.
               </p>
             ) : (
@@ -107,7 +107,7 @@ export const StatusTransitionModal: React.FC<StatusTransitionModalProps> = ({
                   setTargetStatus(e.target.value as TourStatus);
                   setError(null);
                 }}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+                className="w-full px-3 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10 transition-colors"
               >
                 <option value="">-- Chọn trạng thái hợp lệ --</option>
                 {allowedTransitions.map((st) => (
@@ -121,8 +121,8 @@ export const StatusTransitionModal: React.FC<StatusTransitionModalProps> = ({
 
           {targetStatus === 'CANCELLED' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="cancellationReason">
-                Lý Do Hủy Tour <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold text-[#252B32] mb-1" htmlFor="cancellationReason">
+                Lý Do Hủy Tour <span className="text-rose-600">*</span>
               </label>
               <textarea
                 id="cancellationReason"
@@ -133,30 +133,30 @@ export const StatusTransitionModal: React.FC<StatusTransitionModalProps> = ({
                   setError(null);
                 }}
                 placeholder="VD: Cảnh báo bão nhiệt đới số 3, hạn chế xuất bến tại Cảng..."
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+                className="w-full px-3 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#5A6578]/50 focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10 transition-colors"
               />
             </div>
           )}
 
           {error && (
-            <p className="text-xs text-rose-400 flex items-center gap-1.5 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl">
-              <AlertCircle className="w-4 h-4 shrink-0" /> {error}
+            <p className="text-xs text-rose-800 flex items-center gap-1.5 bg-rose-50 border border-rose-200 p-2.5 rounded-xl">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" /> {error}
             </p>
           )}
 
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#E5E0D7]">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition-colors"
+              className="px-4 py-2 bg-[#F7F4ED] hover:bg-[#ECE7DC] text-[#102A43] border border-[#E5E0D7] rounded-xl text-xs font-semibold transition-colors cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isSubmitting || allowedTransitions.length === 0}
-              className="px-4 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 transition-all disabled:opacity-50"
+              className="px-4 py-2 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-xs font-semibold shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
             >
               {isSubmitting ? 'Đang cập nhật...' : 'Xác Nhận'}
             </button>
@@ -166,3 +166,5 @@ export const StatusTransitionModal: React.FC<StatusTransitionModalProps> = ({
     </div>
   );
 };
+
+export default StatusTransitionModal;

@@ -68,46 +68,46 @@ export const CancelActivityModal: React.FC<CancelActivityModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-cancel-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+      <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl border border-[#E5E0D7] text-[#252B32]">
         {/* Header */}
-        <div className="bg-gradient-to-r from-rose-600 to-red-600 p-6 text-white">
+        <div className="bg-rose-600 p-6 text-white relative">
           <button
             type="button"
             onClick={onClose}
             aria-label="Đóng"
-            className="absolute top-5 right-5 rounded-full bg-white/10 p-2 text-white/80 transition-colors hover:bg-white/20 hover:text-white"
+            className="absolute top-5 right-5 rounded-xl bg-white/10 p-2 text-white/80 transition-colors hover:bg-white/20 hover:text-white cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
 
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-1.5">
             <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider">
               Xác Nhận Hủy Đặt Chỗ
             </span>
           </div>
-          <h2 id="modal-cancel-title" className="text-xl font-bold">{registration.activityTitle}</h2>
+          <h2 id="modal-cancel-title" className="text-lg sm:text-xl font-bold">{registration.activityTitle}</h2>
         </div>
 
         {/* Content */}
         <div className="p-6">
           {cancelResult ? (
             <div className="text-center py-4 space-y-4">
-              <div className="mx-auto w-16 h-16 rounded-full bg-rose-100 dark:bg-rose-900/40 flex items-center justify-center text-rose-600 dark:text-rose-400">
+              <div className="mx-auto w-16 h-16 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+              <h3 className="text-lg font-bold text-[#102A43]">
                 Hủy Đăng Ký Thành Công!
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-xs text-[#5A6B7C] leading-relaxed">
                 Suất tham gia của quý khách đã được hủy.
                 {cancelResult.refundAmount > 0
                   ? ` Số tiền ${cancelResult.refundAmount.toLocaleString('vi-VN')} VND đã được hoàn vào tài khoản Folio.`
                   : ' Không có số tiền hoàn theo quy định cắt giờ.'}
               </p>
               {cancelResult.waitlistPromotedPassengerId && (
-                <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 text-xs text-blue-700 dark:text-blue-300">
+                <div className="p-3 rounded-xl bg-[#397C80]/10 border border-[#397C80]/20 text-xs text-[#397C80]">
                   Hệ thống đã tự động phân bổ suất trống cho hành khách tiếp theo trong hàng đợi Waitlist.
                 </div>
               )}
@@ -115,7 +115,7 @@ export const CancelActivityModal: React.FC<CancelActivityModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-full py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-opacity"
+                  className="w-full py-2.5 rounded-xl bg-[#102A43] hover:bg-[#0B1F33] text-white font-semibold text-xs shadow-md transition cursor-pointer"
                 >
                   Đóng
                 </button>
@@ -124,7 +124,7 @@ export const CancelActivityModal: React.FC<CancelActivityModalProps> = ({
           ) : (
             <div className="space-y-4">
               {/* Warning Notice */}
-              <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2.5">
+              <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-start gap-2.5">
                 <AlertTriangle className="w-5 h-5 shrink-0 text-amber-600 mt-0.5" />
                 <div>
                   <strong>Quy định hủy (Cut-off policy):</strong>
@@ -136,16 +136,16 @@ export const CancelActivityModal: React.FC<CancelActivityModalProps> = ({
               </div>
 
               {/* Refund Info */}
-              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Số tiền hoàn dự kiến:</span>
-                <span className="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
+              <div className="p-3.5 rounded-xl bg-[#F7F4ED] border border-[#E5E0D7] flex items-center justify-between">
+                <span className="text-xs font-semibold text-[#5A6B7C]">Số tiền hoàn dự kiến:</span>
+                <span className="text-sm font-extrabold text-[#397C80]">
                   {charged > 0 ? `${charged.toLocaleString('vi-VN')} VND (100%)` : 'Miễn phí'}
                 </span>
               </div>
 
               {/* Cancellation Reason */}
               <div>
-                <label htmlFor="cancel-reason" className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                <label htmlFor="cancel-reason" className="block text-xs font-semibold text-[#102A43] mb-1">
                   Lý do hủy chỗ
                 </label>
                 <textarea
@@ -154,12 +154,12 @@ export const CancelActivityModal: React.FC<CancelActivityModalProps> = ({
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="Nhập lý do quý khách muốn hủy..."
-                  className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500 resize-none"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#E5E0D7] bg-[#F7F4ED]/40 text-[#252B32] placeholder-[#5A6B7C]/70 focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43] resize-none"
                 />
               </div>
 
               {errorMessage && (
-                <div role="alert" className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-xs text-rose-600 dark:text-rose-400">
+                <div role="alert" className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium">
                   {errorMessage}
                 </div>
               )}
@@ -169,7 +169,7 @@ export const CancelActivityModal: React.FC<CancelActivityModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-1/2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="w-1/2 py-2.5 rounded-xl border border-[#E5E0D7] bg-[#F7F4ED] hover:bg-[#ECE7DC] font-semibold text-[#102A43] text-xs transition cursor-pointer"
                 >
                   Giữ Chỗ
                 </button>
@@ -177,7 +177,7 @@ export const CancelActivityModal: React.FC<CancelActivityModalProps> = ({
                   type="button"
                   onClick={handleConfirmCancel}
                   disabled={isSubmitting}
-                  className="w-1/2 py-2.5 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 transition-colors disabled:opacity-50"
+                  className="w-1/2 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? 'Đang hủy...' : 'Xác Nhận Hủy'}
                 </button>

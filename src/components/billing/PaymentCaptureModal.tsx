@@ -92,47 +92,47 @@ export const PaymentCaptureModal: React.FC<PaymentCaptureModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs">
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Xác nhận tất toán folio"
-        className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden"
+        className="bg-white border border-[#E5E0D7] rounded-2xl w-full max-w-lg shadow-xl overflow-hidden"
       >
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/70">
-          <div className="flex items-center gap-2 text-cyan-400">
-            <CreditCard className="w-5 h-5" />
-            <h3 className="font-bold text-white text-base">Xác nhận tất toán</h3>
+        <div className="px-6 py-4 border-b border-[#E5E0D7] flex items-center justify-between bg-[#F7F4ED]">
+          <div className="flex items-center gap-2 text-[#102A43]">
+            <CreditCard className="w-5 h-5 text-[#102A43]" />
+            <h3 className="font-serif font-bold text-[#102A43] text-base">Xác nhận tất toán</h3>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Đóng hộp thoại tất toán"
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1 rounded-lg text-[#687787] hover:text-[#102A43] hover:bg-[#E5E0D7]/50 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 space-y-4 text-xs text-slate-300">
-          <div className="bg-white/[0.03] border border-white/10 rounded-xl p-3 flex items-center justify-between">
-            <span className="text-slate-400">
+        <div className="p-6 space-y-4 text-xs text-[#252B32]">
+          <div className="bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl p-3 flex items-center justify-between">
+            <span className="text-[#687787] font-medium">
               Cabin {preview.cabinNumber} • {preview.primaryGuestName}
             </span>
-            <span className="text-base font-bold text-emerald-400">
+            <span className="text-base font-bold text-[#102A43]">
               {formatCurrency(netAmountDue, preview.currency)}
             </span>
           </div>
 
           <div>
-            <label htmlFor="payment-method" className="block font-medium text-slate-400 mb-1">
+            <label htmlFor="payment-method" className="block font-semibold text-[#252B32] mb-1">
               Phương thức thanh toán
             </label>
             <select
               id="payment-method"
               value={paymentMethod}
               onChange={(event) => setPaymentMethod(event.target.value as PaymentMethod)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-cyan-500/60"
+              className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-[#252B32] focus:outline-none focus:border-[#102A43]"
             >
               <option value="CASH">Tiền mặt (CASH)</option>
               <option value="CREDIT_CARD">Thẻ tín dụng (CREDIT_CARD)</option>
@@ -140,7 +140,7 @@ export const PaymentCaptureModal: React.FC<PaymentCaptureModalProps> = ({
           </div>
 
           <div>
-            <label htmlFor="amount-tendered" className="block font-medium text-slate-400 mb-1">
+            <label htmlFor="amount-tendered" className="block font-semibold text-[#252B32] mb-1">
               Số tiền nhận
             </label>
             <input
@@ -153,22 +153,22 @@ export const PaymentCaptureModal: React.FC<PaymentCaptureModalProps> = ({
                 const next = event.target.value === '' ? 0 : Number(event.target.value);
                 setAmountTendered(Number.isFinite(next) ? next : 0);
               }}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono focus:outline-none focus:border-cyan-500/60"
+              className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-[#252B32] font-mono focus:outline-none focus:border-[#102A43]"
             />
           </div>
 
           <div
             aria-live="polite"
-            className="flex items-center justify-between bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-3 py-2"
+            className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2"
           >
-            <span className="text-slate-400">Tiền thừa trả khách</span>
-            <span className="font-mono font-semibold text-emerald-300">
+            <span className="text-[#687787] font-medium">Tiền thừa trả khách</span>
+            <span className="font-mono font-bold text-emerald-700">
               {formatCurrency(changeGiven, preview.currency)}
             </span>
           </div>
 
           <div>
-            <label htmlFor="settlement-notes" className="block font-medium text-slate-400 mb-1">
+            <label htmlFor="settlement-notes" className="block font-semibold text-[#252B32] mb-1">
               Ghi chú
             </label>
             <textarea
@@ -177,14 +177,14 @@ export const PaymentCaptureModal: React.FC<PaymentCaptureModalProps> = ({
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
               placeholder="Ghi chú cho giao dịch tất toán (không bắt buộc)"
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 resize-none focus:outline-none focus:border-cyan-500/60"
+              className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-[#252B32] resize-none focus:outline-none focus:border-[#102A43] placeholder-[#687787]/60"
             />
           </div>
 
           {validationError && (
             <div
               role="alert"
-              className="flex items-start gap-2 bg-rose-500/10 border border-rose-500/30 rounded-xl p-3 text-rose-300"
+              className="flex items-start gap-2 bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-700 font-medium"
             >
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{validationError}</span>
@@ -194,7 +194,7 @@ export const PaymentCaptureModal: React.FC<PaymentCaptureModalProps> = ({
           {errorMessage && (
             <div
               role="alert"
-              className="flex items-start gap-2 bg-rose-500/10 border border-rose-500/30 rounded-xl p-3 text-rose-300"
+              className="flex items-start gap-2 bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-700 font-medium"
             >
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{errorMessage}</span>
@@ -205,7 +205,7 @@ export const PaymentCaptureModal: React.FC<PaymentCaptureModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-xl border border-[#E5E0D7] text-[#102A43] bg-white hover:bg-[#F7F4ED] font-semibold transition-colors cursor-pointer"
             >
               Hủy
             </button>
@@ -213,7 +213,7 @@ export const PaymentCaptureModal: React.FC<PaymentCaptureModalProps> = ({
               type="button"
               onClick={handleConfirm}
               disabled={isLocked}
-              className="px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 font-semibold hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-[#102A43] text-white font-semibold hover:bg-[#183B5B] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
             >
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               Xác nhận tất toán

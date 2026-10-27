@@ -20,7 +20,7 @@ export const ReconciliationDetailTable: React.FC<ReconciliationDetailTableProps>
   const [verifyingId, setVerifyingId] = useState<number | null>(null);
   if (settlements.length === 0) {
     return (
-      <div className="p-8 text-center bg-[#07090e] border border-white/5 rounded-2xl text-slate-400 text-xs">
+      <div className="p-8 text-center bg-white border border-[#E5E0D7] rounded-xl text-[#687787] text-xs font-medium">
         Chưa có bản ghi quyết toán nào phù hợp với bộ lọc hiện tại.
       </div>
     );
@@ -30,29 +30,29 @@ export const ReconciliationDetailTable: React.FC<ReconciliationDetailTableProps>
     switch (status) {
       case 'DRAFT':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-slate-500/10 text-slate-400 border border-slate-500/20">
+          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-[#F7F4ED] text-[#687787] border border-[#E5E0D7]">
             DRAFT
           </span>
         );
       case 'PENDING_VERIFICATION':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-amber-500/10 text-amber-300 border border-amber-500/20 flex items-center gap-1 w-fit">
-            <Clock className="w-3 h-3 text-amber-400" />
+          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1 w-fit">
+            <Clock className="w-3 h-3 text-amber-600" />
             PENDING
           </span>
         );
       case 'APPROVED':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 flex items-center gap-1 w-fit">
-            <CheckCircle2 className="w-3 h-3 text-cyan-400" />
+          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-[#102A43]/10 text-[#102A43] border border-[#102A43]/20 flex items-center gap-1 w-fit font-bold">
+            <CheckCircle2 className="w-3 h-3 text-[#102A43]" />
             APPROVED
           </span>
         );
       case 'PAID':
       case 'RECONCILED':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 flex items-center gap-1 w-fit">
-            <DollarSign className="w-3 h-3 text-emerald-400" />
+          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1 w-fit font-bold">
+            <DollarSign className="w-3 h-3 text-emerald-700" />
             {status}
           </span>
         );
@@ -60,9 +60,9 @@ export const ReconciliationDetailTable: React.FC<ReconciliationDetailTableProps>
   };
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-white/5 bg-[#07090e]">
+    <div className="overflow-x-auto rounded-xl border border-[#E5E0D7] bg-white shadow-xs">
       <table className="w-full text-left text-xs">
-        <thead className="bg-white/[0.02] border-b border-white/5 text-slate-400 font-mono uppercase text-[10px] tracking-wider">
+        <thead className="bg-[#F7F4ED] border-b border-[#E5E0D7] text-[#687787] uppercase text-[10px] font-semibold tracking-wider">
           <tr>
             <th className="py-3 px-4">Tour & Cảng Dừng</th>
             <th className="py-3 px-4">Nhà Cung Cấp</th>
@@ -77,41 +77,41 @@ export const ReconciliationDetailTable: React.FC<ReconciliationDetailTableProps>
             <th className="py-3 px-4 text-right">Thao Tác</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/5">
+        <tbody className="divide-y divide-[#E5E0D7]">
           {settlements.map((s) => {
             const isLocked = s.status === 'APPROVED' || s.status === 'PAID' || s.status === 'RECONCILED';
             return (
-              <tr key={s.id} className="hover:bg-white/[0.01] transition-colors">
+              <tr key={s.id} className="hover:bg-[#F7F4ED]/50 transition-colors">
                 <td className="py-3 px-4">
-                  <div className="font-medium text-slate-100">{s.excursionTitle}</div>
-                  <div className="text-[11px] text-slate-400 font-mono">
+                  <div className="font-semibold text-[#102A43]">{s.excursionTitle}</div>
+                  <div className="text-[11px] text-[#687787]">
                     {s.portName || 'Port N/A'} • Voyage #{s.voyageId}
                   </div>
                 </td>
-                <td className="py-3 px-4 text-slate-200">
-                  <span className="font-medium">{s.providerName}</span>
+                <td className="py-3 px-4 text-[#252B32]">
+                  <span className="font-semibold">{s.providerName}</span>
                 </td>
-                <td className="py-3 px-4 text-center font-mono text-slate-300">{s.registeredPax}</td>
-                <td className="py-3 px-4 text-center font-mono text-cyan-300 font-semibold">{s.actualPax}</td>
-                <td className="py-3 px-4 text-center font-mono text-slate-400">{s.minGuaranteePax}</td>
-                <td className="py-3 px-4 text-center font-mono font-bold text-amber-300">
+                <td className="py-3 px-4 text-center font-mono text-[#687787]">{s.registeredPax}</td>
+                <td className="py-3 px-4 text-center font-mono text-[#102A43] font-bold">{s.actualPax}</td>
+                <td className="py-3 px-4 text-center font-mono text-[#687787]">{s.minGuaranteePax}</td>
+                <td className="py-3 px-4 text-center font-mono font-bold text-amber-700">
                   {s.billablePax}
                 </td>
-                <td className="py-3 px-4 text-right font-mono text-slate-300">
+                <td className="py-3 px-4 text-right font-mono text-[#252B32]">
                   ${s.agreedUnitRate.toFixed(2)}
                 </td>
                 <td
-                  className={`py-3 px-4 text-right font-mono ${
+                  className={`py-3 px-4 text-right font-mono font-medium ${
                     s.adjustedAmount < 0
-                      ? 'text-rose-400'
+                      ? 'text-rose-700'
                       : s.adjustedAmount > 0
-                      ? 'text-emerald-400'
-                      : 'text-slate-500'
+                      ? 'text-emerald-700'
+                      : 'text-[#687787]'
                   }`}
                 >
                   {s.adjustedAmount !== 0 ? (s.adjustedAmount > 0 ? `+$${s.adjustedAmount.toFixed(2)}` : `-$${Math.abs(s.adjustedAmount).toFixed(2)}`) : '$0.00'}
                 </td>
-                <td className="py-3 px-4 text-right font-mono font-bold text-white text-sm">
+                <td className="py-3 px-4 text-right font-mono font-bold text-[#102A43] text-sm">
                   ${s.totalAmount.toFixed(2)} {s.currency}
                 </td>
                 <td className="py-3 px-4 text-center">{renderStatusBadge(s.status)}</td>
@@ -130,7 +130,7 @@ export const ReconciliationDetailTable: React.FC<ReconciliationDetailTableProps>
                             setVerifyingId(null);
                           }
                         }}
-                        className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed text-amber-300 text-xs border border-amber-500/20"
+                        className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 disabled:opacity-50 disabled:cursor-not-allowed text-amber-800 text-xs font-semibold border border-amber-200 transition-colors cursor-pointer"
                       >
                         {verifyingId === s.id ? 'Đang gửi...' : 'Gửi Đối Soát'}
                       </button>
@@ -139,10 +139,10 @@ export const ReconciliationDetailTable: React.FC<ReconciliationDetailTableProps>
                     {!isLocked && (
                       <button
                         onClick={() => onOpenAdjustment(s)}
-                        className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs border border-white/10 flex items-center gap-1"
+                        className="px-2.5 py-1 rounded-lg bg-white hover:bg-[#F7F4ED] text-[#102A43] text-xs font-semibold border border-[#E5E0D7] flex items-center gap-1 shadow-xs transition-colors cursor-pointer"
                         title="Thêm khấu trừ hoặc bồi thường"
                       >
-                        <PlusCircle className="w-3 h-3 text-cyan-400" />
+                        <PlusCircle className="w-3 h-3 text-[#102A43]" />
                         Điều Chỉnh
                       </button>
                     )}

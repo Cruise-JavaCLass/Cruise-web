@@ -134,23 +134,23 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B1F33]/60 p-4 backdrop-blur-xs"
       role="dialog"
       aria-modal="true"
       aria-labelledby="settlement-modal-title"
     >
-      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl transition-all">
+      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white border border-[#E5E0D7] shadow-xl transition-all">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-[#E5E0D7] bg-[#F7F4ED] px-6 py-4">
           <div className="flex items-center space-x-2">
-            <span className="flex h-3 w-3 rounded-full bg-emerald-500 animate-pulse" />
-            <h2 id="settlement-modal-title" className="text-lg font-bold text-gray-900">
+            <span className="flex h-3 w-3 rounded-full bg-[#397C80] animate-pulse" />
+            <h2 id="settlement-modal-title" className="text-lg font-serif font-bold text-[#102A43]">
               Thanh Toán Tất Toán VietQR
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
+            className="rounded-lg p-1 text-[#687787] hover:bg-[#E5E0D7]/60 hover:text-[#102A43] transition"
             aria-label="Đóng"
           >
             ✕
@@ -160,13 +160,13 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
         {/* Content Body */}
         <div className="p-6 text-center space-y-4">
           {loading && (
-            <div className="py-12 text-sm font-semibold text-gray-500 animate-pulse">
+            <div className="py-12 text-sm font-semibold text-[#687787] animate-pulse">
               Đang kết nối cổng thanh toán ngân hàng & tạo mã VietQR...
             </div>
           )}
 
           {error && (
-            <div className="rounded-xl bg-rose-50 p-4 text-sm text-rose-700 border border-rose-200">
+            <div className="rounded-xl bg-rose-50 p-4 text-sm text-rose-800 border border-rose-200">
               {error}
             </div>
           )}
@@ -175,21 +175,21 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
           {!loading && (pollingStatus === 'FAILED' || pollingStatus === 'EXPIRED' || pollingStatus === 'CANCELLED') && (
             <div className="pt-2 space-y-2">
               {pollingStatus === 'FAILED' && (
-                <div className="rounded-xl bg-rose-50 p-4 text-xs text-rose-700 border border-rose-200 space-y-1">
+                <div className="rounded-xl bg-rose-50 p-4 text-xs text-rose-800 border border-rose-200 space-y-1">
                   <p className="font-bold">❌ Giao dịch thanh toán thất bại!</p>
-                  <p className="text-[11px] text-rose-600">Vui lòng thử lại hoặc chọn phương thức thanh toán khác.</p>
+                  <p className="text-[11px] text-rose-700">Vui lòng thử lại hoặc chọn phương thức thanh toán khác.</p>
                 </div>
               )}
               {pollingStatus === 'EXPIRED' && (
-                <div className="rounded-xl bg-amber-50 p-4 text-xs text-amber-700 border border-amber-200 space-y-1">
+                <div className="rounded-xl bg-amber-50 p-4 text-xs text-amber-800 border border-amber-200 space-y-1">
                   <p className="font-bold">⏰ Mã VietQR đã hết hạn hiệu lực!</p>
-                  <p className="text-[11px] text-amber-600">Vui lòng đóng modal và tạo mã thanh toán mới.</p>
+                  <p className="text-[11px] text-amber-700">Vui lòng đóng modal và tạo mã thanh toán mới.</p>
                 </div>
               )}
               {pollingStatus === 'CANCELLED' && (
-                <div className="rounded-xl bg-slate-50 p-4 text-xs text-slate-700 border border-slate-200 space-y-1">
+                <div className="rounded-xl bg-[#F7F4ED] p-4 text-xs text-[#252B32] border border-[#E5E0D7] space-y-1">
                   <p className="font-bold">⛔ Giao dịch đã bị hủy bỏ.</p>
-                  <p className="text-[11px] text-slate-600">Vui lòng liên hệ quầy thu ngân hoặc thử lại.</p>
+                  <p className="text-[11px] text-[#687787]">Vui lòng liên hệ quầy thu ngân hoặc thử lại.</p>
                 </div>
               )}
             </div>
@@ -198,17 +198,17 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
           {/* Active scannable QR when payment is pending */}
           {qrData && !loading && pollingStatus !== 'PAID' && (
             <>
-              <div className="rounded-xl bg-emerald-50 p-3 border border-emerald-100">
-                <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
+              <div className="rounded-xl bg-[#F7F4ED] p-3 border border-[#E5E0D7]">
+                <span className="text-xs font-semibold uppercase tracking-wider text-[#687787]">
                   Cabin {cabinNumber} • Số tiền cần thanh toán
                 </span>
-                <div className="text-2xl font-black text-emerald-800">
+                <div className="text-2xl font-black text-[#102A43] font-mono">
                   {(qrData.amount ?? amount).toLocaleString('vi-VN')} {qrData.currency || 'đ'}
                 </div>
               </div>
 
               {/* QR Image Box */}
-              <div className="mx-auto flex w-64 h-64 items-center justify-center rounded-2xl border-2 border-emerald-500 bg-white p-2 shadow-inner">
+              <div className="mx-auto flex w-64 h-64 items-center justify-center rounded-2xl border-2 border-[#102A43]/20 bg-white p-2 shadow-inner">
                 {qrData.qrImageUrl ? (
                   <img
                     src={qrData.qrImageUrl}
@@ -216,28 +216,28 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
                     className="h-full w-full object-contain"
                   />
                 ) : (
-                  <div className="text-xs text-gray-400">Không có hình ảnh QR</div>
+                  <div className="text-xs text-[#687787]">Không có hình ảnh QR</div>
                 )}
               </div>
 
-              <div className="text-xs text-gray-500 space-y-1">
+              <div className="text-xs text-[#687787] space-y-1">
                 <p>
-                  Ngân hàng: <span className="font-semibold text-gray-800">{qrData.bankCode}</span> • TK:{' '}
-                  <span className="font-semibold text-gray-800">{qrData.accountNumber}</span>
+                  Ngân hàng: <span className="font-semibold text-[#252B32]">{qrData.bankCode}</span> • TK:{' '}
+                  <span className="font-semibold text-[#252B32] font-mono">{qrData.accountNumber}</span>
                 </p>
                 <p>
-                  Người nhận: <span className="font-semibold text-gray-800">{qrData.accountName}</span>
+                  Người nhận: <span className="font-semibold text-[#252B32]">{qrData.accountName}</span>
                 </p>
                 <p>
                   Nội dung chuyển khoản:{' '}
-                  <span className="font-mono font-bold text-indigo-600">{qrData.description}</span>
+                  <span className="font-mono font-bold text-[#102A43]">{qrData.description}</span>
                 </p>
               </div>
 
               {/* Polling Status Badge */}
               <div className="pt-2">
                 {pollingStatus === 'PENDING' && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 border border-amber-200">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 border border-amber-200">
                     <span className="h-2 w-2 rounded-full bg-amber-500 animate-ping" />
                     Đang chờ hệ thống ngân hàng xác nhận tiền về...
                   </span>
@@ -249,20 +249,20 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
           {/* Success confirmation view - QR is hidden upon successful payment */}
           {!loading && pollingStatus === 'PAID' && (
             <div className="py-6 space-y-4">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-3xl font-bold shadow-inner">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-3xl font-bold shadow-inner">
                 ✓
               </div>
               <div className="space-y-1">
-                <h3 className="text-lg font-bold text-gray-900">Thanh toán thành công!</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="text-lg font-serif font-bold text-[#102A43]">Thanh toán thành công!</h3>
+                <p className="text-sm text-[#687787]">
                   Cabin {cabinNumber} đã tất toán số tiền{' '}
-                  <span className="font-bold text-emerald-700">
+                  <span className="font-bold font-mono text-[#102A43]">
                     {(qrData?.amount ?? amount).toLocaleString('vi-VN')} {qrData?.currency || 'đ'}
                   </span>
                 </p>
               </div>
               <div className="pt-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-800 border border-emerald-200">
                   ✓ Đã nhận thanh toán thành công! Folio đã được tất toán.
                 </span>
               </div>
@@ -271,11 +271,11 @@ export const SettlementCheckoutModal: React.FC<SettlementCheckoutModalProps> = (
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-[#E5E0D7] bg-[#F7F4ED]/50 px-6 py-4">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl bg-gray-200 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-300 transition"
+            className="rounded-xl border border-[#E5E0D7] bg-white px-4 py-2 text-xs font-semibold text-[#687787] hover:bg-[#F7F4ED] hover:text-[#102A43] transition shadow-xs"
           >
             Đóng
           </button>

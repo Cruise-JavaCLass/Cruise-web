@@ -85,10 +85,10 @@ export const MarineSatelliteSignalIndicator: React.FC<MarineSatelliteSignalIndic
         };
       case 'FAIR':
         return {
-          color: 'bg-blue-500',
-          textColor: 'text-blue-700',
-          bgColor: 'bg-blue-50',
-          borderColor: 'border-blue-200',
+          color: 'bg-[#397C80]',
+          textColor: 'text-[#397C80]',
+          bgColor: 'bg-[#397C80]/10',
+          borderColor: 'border-[#397C80]/30',
           label: 'Vệ tinh ổn định',
         };
       case 'POOR':
@@ -129,12 +129,12 @@ export const MarineSatelliteSignalIndicator: React.FC<MarineSatelliteSignalIndic
         <span className={badge.textColor}>{badge.label}</span>
       </div>
 
-      <div className="h-3 w-[1px] bg-gray-300" />
+      <div className="h-3 w-[1px] bg-[#E5E0D7]" />
 
-      <div className="flex items-center gap-2 text-[11px] text-gray-600 font-mono">
+      <div className="flex items-center gap-2 text-[11px] text-[#687787] font-mono">
         <span>{stats.latencyMs}ms</span>
         {stats.packetLossPercent > 0 && (
-          <span className="text-amber-600 font-semibold">
+          <span className="text-amber-700 font-semibold">
             (Mất gói {stats.packetLossPercent}%)
           </span>
         )}
@@ -142,8 +142,8 @@ export const MarineSatelliteSignalIndicator: React.FC<MarineSatelliteSignalIndic
 
       {syncQueueLength > 0 && (
         <>
-          <div className="h-3 w-[1px] bg-gray-300" />
-          <span className="text-[11px] font-bold text-indigo-700">
+          <div className="h-3 w-[1px] bg-[#E5E0D7]" />
+          <span className="text-[11px] font-bold text-[#102A43]">
             Hàng đợi: {syncQueueLength}
             {isSyncing && <span className="ml-1 text-[10px] animate-spin">⟳</span>}
           </span>

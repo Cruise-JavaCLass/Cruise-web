@@ -720,23 +720,23 @@ export const PosRegister: React.FC = () => {
     <div className="flex flex-col lg:flex-row gap-5 h-full">
       {/* Toast Notification */}
       {scanNotification && (
-        <div className="fixed top-5 right-5 z-50 bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 animate-in slide-in-from-top-3">
-          <Sparkles className="w-4 h-4" />
+        <div className="fixed top-5 right-5 z-50 bg-[#102A43] text-white border border-[#C5A572]/40 px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 animate-in slide-in-from-top-3">
+          <Sparkles className="w-4 h-4 text-[#C5A572]" />
           <span className="text-sm font-medium">{scanNotification}</span>
         </div>
       )}
 
       {/* LEFT COLUMN: Catalog & Visual Tiles Grid */}
-      <div className="flex-1 flex flex-col bg-slate-900 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-sm overflow-hidden min-h-[600px]">
+      <div className="flex-1 flex flex-col bg-white border border-[#E5E0D7] rounded-2xl p-4 lg:p-5 shadow-xs overflow-hidden min-h-[600px]">
         {/* Top Controls: Outlet selector, Voyage status, Barcode Scanner */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E5E0D7]">
           {/* Outlet Switcher */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase text-slate-400">Điểm bán:</span>
+            <span className="text-xs font-semibold uppercase text-[#687787]">Điểm bán:</span>
             <select
               value={selectedOutletId || ''}
               onChange={(e) => setSelectedOutletId(e.target.value ? Number(e.target.value) : undefined)}
-              className="bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-sm text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-white border border-[#E5E0D7] rounded-xl px-3 py-1.5 text-sm text-[#252B32] font-medium focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
             >
               {outlets.map((o) => (
                 <option key={o.id} value={o.id}>
@@ -757,8 +757,8 @@ export const PosRegister: React.FC = () => {
               }
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
                 voyageLocation === 'INTERNATIONAL_WATERS'
-                  ? 'bg-emerald-950/70 border-emerald-500/60 text-emerald-300'
-                  : 'bg-blue-950/70 border-blue-500/60 text-blue-300'
+                  ? 'bg-[#397C80]/10 border-[#397C80]/30 text-[#397C80]'
+                  : 'bg-[#102A43]/10 border-[#102A43]/20 text-[#102A43]'
               }`}
             >
               <Ship className="w-3.5 h-3.5" />
@@ -772,8 +772,8 @@ export const PosRegister: React.FC = () => {
               onClick={() => setIsHappyHourActive((prev) => !prev)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
                 isHappyHourActive
-                  ? 'bg-amber-950/80 border-amber-500 text-amber-300 shadow-sm animate-pulse'
-                  : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#C5A572]/20 border-[#C5A572] text-[#8C6D37] shadow-xs'
+                  : 'bg-white border-[#E5E0D7] text-[#687787] hover:text-[#102A43] hover:bg-[#F7F4ED]'
               }`}
             >
               <Flame className="w-3.5 h-3.5" />
@@ -785,13 +785,13 @@ export const PosRegister: React.FC = () => {
         {/* Search Bar & Barcode Scanner Input */}
         <div className="flex gap-3 py-4">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+            <Search className="w-4 h-4 text-[#687787] absolute left-3.5 top-3" />
             <input
               type="text"
               value={searchItem}
               onChange={(e) => setSearchItem(e.target.value)}
               placeholder="Tìm kiếm theo tên món hoặc mã SKU..."
-              className="w-full bg-slate-800/80 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white border border-[#E5E0D7] rounded-xl pl-10 pr-4 py-2 text-sm text-[#252B32] placeholder-[#687787]/60 focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
             />
           </div>
 
@@ -802,16 +802,16 @@ export const PosRegister: React.FC = () => {
             }}
             className="relative w-56 flex"
           >
-            <Barcode className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+            <Barcode className="w-4 h-4 text-[#687787] absolute left-3 top-3" />
             <input
               type="text"
               value={barcodeInput}
               onChange={(e) => setBarcodeInput(e.target.value)}
               placeholder="Quét mã vạch..."
-              className="w-full bg-slate-800/80 border border-slate-700 rounded-xl pl-9 pr-8 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+              className="w-full bg-white border border-[#E5E0D7] rounded-xl pl-9 pr-8 py-2 text-sm text-[#252B32] placeholder-[#687787]/60 focus:outline-none focus:border-[#397C80] focus:ring-1 focus:ring-[#397C80] font-mono"
             />
             {isScanning && (
-              <span className="absolute right-3 top-2.5 text-xs text-emerald-400 animate-spin">⟳</span>
+              <span className="absolute right-3 top-2.5 text-xs text-[#397C80] animate-spin">⟳</span>
             )}
           </form>
         </div>
@@ -823,8 +823,8 @@ export const PosRegister: React.FC = () => {
             onClick={() => setSelectedCategory('ALL')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
               selectedCategory === 'ALL'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-slate-800 text-slate-300 hover:bg-slate-750'
+                ? 'bg-[#102A43] text-white shadow-xs'
+                : 'bg-[#F7F4ED] border border-[#E5E0D7] text-[#687787] hover:text-[#102A43] hover:bg-white'
             }`}
           >
             Tất Cả
@@ -836,8 +836,8 @@ export const PosRegister: React.FC = () => {
               onClick={() => setSelectedCategory(String(c.id))}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
                 selectedCategory === String(c.id)
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-750'
+                  ? 'bg-[#102A43] text-white shadow-xs'
+                  : 'bg-[#F7F4ED] border border-[#E5E0D7] text-[#687787] hover:text-[#102A43] hover:bg-white'
               }`}
             >
               {c.name}
@@ -848,7 +848,7 @@ export const PosRegister: React.FC = () => {
         {/* Visual Product Tiles Grid */}
         <div className="flex-1 overflow-y-auto pr-1">
           {filteredProducts.length === 0 ? (
-            <div className="h-64 flex flex-col items-center justify-center text-slate-500">
+            <div className="h-64 flex flex-col items-center justify-center text-[#687787]">
               <Search className="w-8 h-8 mb-2 opacity-50" />
               <p className="text-sm">Không tìm thấy món nào phù hợp</p>
             </div>
@@ -864,12 +864,12 @@ export const PosRegister: React.FC = () => {
                     onClick={() => void handleProductTileClick(p)}
                     className={`group relative flex flex-col justify-between p-3 rounded-2xl border text-left transition-all duration-150 ${
                       is86ed
-                        ? 'bg-slate-900/60 border-rose-900/40 opacity-50 cursor-not-allowed'
-                        : 'bg-slate-800/70 border-slate-700/80 hover:bg-slate-800 hover:border-blue-500/60 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0'
+                        ? 'bg-[#F7F4ED]/60 border-[#E5E0D7] opacity-60 cursor-not-allowed'
+                        : 'bg-white border-[#E5E0D7] hover:border-[#102A43]/40 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0'
                     }`}
                   >
                     {/* Image / Thumbnail */}
-                    <div className="w-full h-24 rounded-xl overflow-hidden bg-slate-950 mb-2 relative">
+                    <div className="w-full h-24 rounded-xl overflow-hidden bg-[#F7F4ED] mb-2 relative">
                       {p.imageUrl ? (
                         <img
                           src={p.imageUrl}
@@ -877,15 +877,15 @@ export const PosRegister: React.FC = () => {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-600">
+                        <div className="w-full h-full flex items-center justify-center text-[#687787]">
                           <ShoppingCart className="w-6 h-6" />
                         </div>
                       )}
 
                       {/* 86'd Out of stock badge */}
                       {is86ed && (
-                        <div className="absolute inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center">
-                          <span className="px-2 py-1 rounded bg-rose-600 text-white font-bold text-xs uppercase flex items-center gap-1 shadow-sm">
+                        <div className="absolute inset-0 bg-[#0B1F33]/70 backdrop-blur-xs flex items-center justify-center">
+                          <span className="px-2 py-1 rounded bg-rose-600 text-white font-bold text-xs uppercase flex items-center gap-1 shadow-xs">
                             <Ban className="w-3 h-3" />
                             86'd / Hết
                           </span>
@@ -894,7 +894,7 @@ export const PosRegister: React.FC = () => {
 
                       {/* Happy Hour Badge */}
                       {!is86ed && p.happyHourEligible && isHappyHourActive && (
-                        <div className="absolute top-1.5 right-1.5 bg-amber-500 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-0.5">
+                        <div className="absolute top-1.5 right-1.5 bg-[#C5A572] text-[#0B1F33] text-[10px] font-extrabold px-1.5 py-0.5 rounded shadow-xs flex items-center gap-0.5">
                           <Flame className="w-3 h-3" />
                           -{p.happyHourDiscountPercent ?? 20}%
                         </div>
@@ -903,33 +903,33 @@ export const PosRegister: React.FC = () => {
 
                     {/* Product Info */}
                     <div>
-                      <h4 className="font-semibold text-white text-xs sm:text-sm line-clamp-1 mb-0.5">
+                      <h4 className="font-semibold text-[#102A43] text-xs sm:text-sm line-clamp-1 mb-0.5">
                         {p.name}
                       </h4>
-                      <p className="text-[11px] text-slate-400 font-mono line-clamp-1">
+                      <p className="text-[11px] text-[#687787] font-mono line-clamp-1">
                         {p.sku} {p.barcode ? `• ${p.barcode}` : ''}
                       </p>
                     </div>
 
                     {/* Price and Add button */}
-                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-700/50">
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#E5E0D7]">
                       <div>
                         {isHappyHourActive && p.happyHourEligible ? (
                           <div className="flex items-baseline gap-1.5">
-                            <span className="text-sm font-bold text-amber-400">
+                            <span className="text-sm font-bold text-[#8C6D37]">
                               ${(p.basePrice * (1 - (p.happyHourDiscountPercent ?? 20) / 100)).toFixed(2)}
                             </span>
-                            <span className="text-xs text-slate-500 line-through">
+                            <span className="text-xs text-[#687787] line-through">
                               ${p.basePrice.toFixed(2)}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-sm font-bold text-emerald-400">
+                          <span className="text-sm font-bold text-[#102A43]">
                             ${p.basePrice.toFixed(2)}
                           </span>
                         )}
                       </div>
-                      <span className="px-2 py-1 rounded-lg bg-blue-600/30 text-blue-400 group-hover:bg-blue-600 group-hover:text-white flex items-center gap-1 text-xs font-semibold transition">
+                      <span className="px-2 py-1 rounded-lg bg-[#102A43]/10 text-[#102A43] group-hover:bg-[#102A43] group-hover:text-white flex items-center gap-1 text-xs font-semibold transition">
                         <Plus className="w-3.5 h-3.5" />
                         <span>Thêm</span>
                       </span>
@@ -943,12 +943,12 @@ export const PosRegister: React.FC = () => {
       </div>
 
       {/* RIGHT COLUMN: Active Order Slip & Cart Management */}
-      <div className="w-full lg:w-96 flex flex-col bg-slate-900 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-sm">
+      <div className="w-full lg:w-96 flex flex-col bg-white border border-[#E5E0D7] rounded-2xl p-4 lg:p-5 shadow-xs">
         {/* Header Order Slip */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-3 border-b border-[#E5E0D7]">
           <div className="flex items-center gap-2">
-            <ShoppingCart className="w-5 h-5 text-blue-400" />
-            <h3 className="font-bold text-white text-base">
+            <ShoppingCart className="w-5 h-5 text-[#102A43]" />
+            <h3 className="font-serif font-bold text-[#102A43] text-base">
               Giỏ Hàng ({cart.reduce((a, b) => a + b.quantity, 0)})
             </h3>
           </div>
@@ -959,7 +959,7 @@ export const PosRegister: React.FC = () => {
                 <button
                   type="button"
                   onClick={holdOrder}
-                  className="p-1.5 text-slate-400 hover:text-amber-400 rounded-lg hover:bg-slate-800 transition"
+                  className="p-1.5 text-[#687787] hover:text-[#C5A572] rounded-lg hover:bg-[#F7F4ED] transition"
                   title="Lưu tạm đơn (Hold Order)"
                 >
                   <PauseCircle className="w-4 h-4" />
@@ -967,7 +967,7 @@ export const PosRegister: React.FC = () => {
                 <button
                   type="button"
                   onClick={clearCart}
-                  className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition"
+                  className="p-1.5 text-[#687787] hover:text-rose-600 rounded-lg hover:bg-[#F7F4ED] transition"
                   title="Xóa toàn bộ giỏ hàng"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -979,10 +979,10 @@ export const PosRegister: React.FC = () => {
 
         {/* Held Orders Quick Drawer */}
         {heldOrders.length > 0 && (
-          <div className="py-2.5 px-3 my-2 bg-amber-950/30 border border-amber-800/50 rounded-xl">
-            <div className="flex items-center justify-between text-xs text-amber-300 font-semibold mb-1.5">
+          <div className="py-2.5 px-3 my-2 bg-[#F7F4ED] border border-[#C5A572]/40 rounded-xl">
+            <div className="flex items-center justify-between text-xs text-[#8C6D37] font-semibold mb-1.5">
               <span className="flex items-center gap-1.5">
-                <PauseCircle className="w-3.5 h-3.5 text-amber-400" />
+                <PauseCircle className="w-3.5 h-3.5 text-[#C5A572]" />
                 Đơn tạm giữ ({heldOrders.length})
               </span>
             </div>
@@ -990,11 +990,11 @@ export const PosRegister: React.FC = () => {
               {heldOrders.map((h) => (
                 <div
                   key={h.id}
-                  className="flex items-center justify-between bg-slate-900/80 px-2.5 py-1.5 rounded-lg border border-slate-800 text-xs"
+                  className="flex items-center justify-between bg-white px-2.5 py-1.5 rounded-lg border border-[#E5E0D7] text-xs"
                 >
                   <div>
-                    <span className="font-mono text-white text-[11px] font-semibold">{h.id}</span>
-                    <span className="text-[10px] text-slate-400 ml-1.5">
+                    <span className="font-mono text-[#102A43] text-[11px] font-semibold">{h.id}</span>
+                    <span className="text-[10px] text-[#687787] ml-1.5">
                       {h.count} món • ${h.total.toFixed(2)} ({h.time})
                     </span>
                   </div>
@@ -1002,14 +1002,14 @@ export const PosRegister: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => restoreHeldOrder(h.id)}
-                      className="px-2 py-0.5 bg-blue-600/80 hover:bg-blue-600 text-white rounded text-[11px] font-medium transition cursor-pointer"
+                      className="px-2 py-0.5 bg-[#102A43] hover:bg-[#183B5B] text-white rounded text-[11px] font-medium transition cursor-pointer"
                     >
                       Phục hồi
                     </button>
                     <button
                       type="button"
                       onClick={() => removeHeldOrder(h.id)}
-                      className="p-1 text-slate-400 hover:text-rose-400 rounded transition cursor-pointer"
+                      className="p-1 text-[#687787] hover:text-rose-600 rounded transition cursor-pointer"
                       title="Xóa đơn tạm"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -1022,7 +1022,7 @@ export const PosRegister: React.FC = () => {
         )}
 
         {/* Guest Folio Lookup Bar */}
-        <div className="py-3 border-b border-slate-800">
+        <div className="py-3 border-b border-[#E5E0D7]">
           <div className="flex gap-2">
             <input
               type="text"
@@ -1034,39 +1034,39 @@ export const PosRegister: React.FC = () => {
                 setCapturedSignatureBase64(undefined);
               }}
               placeholder="Nhập số Cabin (vd: CABIN-7012)"
-              className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="flex-1 bg-white border border-[#E5E0D7] rounded-xl px-3 py-1.5 text-xs text-[#252B32] placeholder-[#687787]/60 font-mono focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
             />
             <button
               type="button"
               onClick={() => void handleLookupFolio()}
               disabled={isLookingUpFolio}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1 transition"
+              className="px-3 py-1.5 rounded-xl bg-[#F7F4ED] hover:bg-[#E5E0D7]/60 text-[#102A43] text-xs font-semibold border border-[#E5E0D7] flex items-center gap-1 transition"
             >
-              <UserCheck className="w-3.5 h-3.5 text-blue-400" />
+              <UserCheck className="w-3.5 h-3.5 text-[#397C80]" />
               <span>{isLookingUpFolio ? '...' : 'Kiểm tra'}</span>
             </button>
           </div>
 
           {folioError && (
-            <p className="text-[11px] text-rose-400 mt-1 flex items-center gap-1">
+            <p className="text-[11px] text-rose-600 mt-1 flex items-center gap-1">
               <AlertCircle className="w-3 h-3" />
               {folioError}
             </p>
           )}
 
           {folioAccount && (
-            <div className="mt-2 p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-xs flex items-center justify-between">
+            <div className="mt-2 p-2.5 rounded-xl bg-[#F7F4ED] border border-[#E5E0D7] text-xs flex items-center justify-between">
               <div>
-                <p className="font-semibold text-white">
+                <p className="font-semibold text-[#102A43]">
                   {(folioAccount as unknown as { guestName?: string }).guestName || folioAccount.primaryGuestName}
                 </p>
-                <p className="text-[11px] text-slate-400">
-                  Phòng: <span className="font-mono text-slate-300">{folioAccount.cabinNumber}</span>
+                <p className="text-[11px] text-[#687787]">
+                  Phòng: <span className="font-mono text-[#252B32]">{folioAccount.cabinNumber}</span>
                 </p>
               </div>
               <div className="text-right">
-                <span className="text-[10px] text-slate-400 block">Hạn mức khả dụng</span>
-                <span className="font-bold text-emerald-400">
+                <span className="text-[10px] text-[#687787] block">Hạn mức khả dụng</span>
+                <span className="font-bold text-[#102A43] font-mono">
                   ${(folioAccount.availableLimit ?? (folioAccount as unknown as { availableBalance?: number }).availableBalance ?? 0).toFixed(2)}
                 </span>
               </div>
@@ -1077,26 +1077,26 @@ export const PosRegister: React.FC = () => {
         {/* Cart Item List */}
         <div className="flex-1 overflow-y-auto py-3 space-y-2.5 min-h-[220px]">
           {cart.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-slate-500 text-xs py-8">
+            <div className="h-full flex flex-col items-center justify-center text-[#687787] text-xs py-8">
               <ShoppingCart className="w-8 h-8 mb-2 opacity-30" />
               <span>Chưa có món nào trong giỏ hàng</span>
-              <span className="text-[11px] text-slate-600 mt-1">Chạm vào sản phẩm hoặc quét mã vạch</span>
+              <span className="text-[11px] text-[#687787]/80 mt-1">Chạm vào sản phẩm hoặc quét mã vạch</span>
             </div>
           ) : (
             cart.map((item) => (
               <div
                 key={item.cartId}
-                className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-800 hover:border-slate-700 text-xs flex flex-col gap-1.5 transition"
+                className="p-2.5 rounded-xl bg-[#F7F4ED]/50 border border-[#E5E0D7] hover:border-[#102A43]/30 text-xs flex flex-col gap-1.5 transition"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
-                    <span className="font-semibold text-white block">{item.product.name}</span>
+                    <span className="font-semibold text-[#102A43] block">{item.product.name}</span>
                     {item.selectedModifiers.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-0.5">
                         {item.selectedModifiers.map((m, idx) => (
                           <span
                             key={idx}
-                            className="text-[10px] px-1.5 py-0.2 rounded bg-blue-950/80 text-blue-300 border border-blue-800/60"
+                            className="text-[10px] px-1.5 py-0.2 rounded bg-white text-[#102A43] border border-[#E5E0D7]"
                           >
                             +{m.name}
                           </span>
@@ -1104,43 +1104,43 @@ export const PosRegister: React.FC = () => {
                       </div>
                     )}
                     {item.notes && (
-                      <span className="text-[10px] text-slate-400 italic block mt-0.5">
+                      <span className="text-[10px] text-[#687787] italic block mt-0.5">
                         Ghi chú: {item.notes}
                       </span>
                     )}
                   </div>
 
-                  <span className="font-bold text-white whitespace-nowrap">
+                  <span className="font-bold text-[#102A43] font-mono whitespace-nowrap">
                     ${(item.unitPrice * item.quantity).toFixed(2)}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 border-t border-slate-800/80">
-                  <span className="text-[11px] text-slate-400">
+                <div className="flex items-center justify-between pt-1 border-t border-[#E5E0D7]">
+                  <span className="text-[11px] text-[#687787]">
                     ${item.unitPrice.toFixed(2)}/món
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => updateQuantity(item.cartId, -1)}
-                      className="w-5 h-5 rounded bg-slate-700 text-slate-300 hover:bg-slate-600 flex items-center justify-center transition"
+                      className="w-5 h-5 rounded bg-white border border-[#E5E0D7] text-[#102A43] hover:bg-[#F7F4ED] flex items-center justify-center transition"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <span className="font-bold text-white min-w-4 text-center">
+                    <span className="font-bold text-[#102A43] min-w-4 text-center">
                       {item.quantity}
                     </span>
                     <button
                       type="button"
                       onClick={() => updateQuantity(item.cartId, 1)}
-                      className="w-5 h-5 rounded bg-slate-700 text-slate-300 hover:bg-slate-600 flex items-center justify-center transition"
+                      className="w-5 h-5 rounded bg-white border border-[#E5E0D7] text-[#102A43] hover:bg-[#F7F4ED] flex items-center justify-center transition"
                     >
                       <Plus className="w-3 h-3" />
                     </button>
                     <button
                       type="button"
                       onClick={() => removeFromCart(item.cartId)}
-                      className="text-slate-500 hover:text-rose-400 ml-1 transition"
+                      className="text-[#687787] hover:text-rose-600 ml-1 transition"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -1152,37 +1152,37 @@ export const PosRegister: React.FC = () => {
         </div>
 
         {/* Real-time Maritime Financial Breakdown */}
-        <div className="pt-3 border-t border-slate-800 space-y-1.5 text-xs">
-          <div className="flex justify-between text-slate-400">
+        <div className="pt-3 border-t border-[#E5E0D7] space-y-1.5 text-xs">
+          <div className="flex justify-between text-[#687787]">
             <span>Tạm tính (Subtotal):</span>
-            <span className="text-slate-200 font-mono">${cartCalculations.subtotal.toFixed(2)}</span>
+            <span className="text-[#252B32] font-mono">${cartCalculations.subtotal.toFixed(2)}</span>
           </div>
 
           {cartCalculations.happyHourDiscount > 0 && (
-            <div className="flex justify-between text-amber-400 font-medium">
+            <div className="flex justify-between text-[#8C6D37] font-medium">
               <span className="flex items-center gap-1">
-                <Flame className="w-3 h-3" />
+                <Flame className="w-3 h-3 text-[#C5A572]" />
                 Giảm giá Happy Hour:
               </span>
               <span className="font-mono">-${cartCalculations.happyHourDiscount.toFixed(2)}</span>
             </div>
           )}
 
-          <div className="flex justify-between text-slate-400">
+          <div className="flex justify-between text-[#687787]">
             <span>Thuế hải phận ({cartCalculations.taxRatePercent}%):</span>
-            <span className="text-slate-200 font-mono">
+            <span className="text-[#252B32] font-mono">
               {cartCalculations.isDutyFree ? 'Miễn thuế (0%)' : `$${cartCalculations.maritimeTax.toFixed(2)}`}
             </span>
           </div>
 
-          <div className="flex justify-between text-slate-400">
+          <div className="flex justify-between text-[#687787]">
             <span>Phí phục vụ hàng hải (18% Gratuity):</span>
-            <span className="text-slate-200 font-mono">${cartCalculations.serviceCharge.toFixed(2)}</span>
+            <span className="text-[#252B32] font-mono">${cartCalculations.serviceCharge.toFixed(2)}</span>
           </div>
 
-          <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-800">
+          <div className="flex justify-between text-sm font-bold text-[#102A43] pt-2 border-t border-[#E5E0D7]">
             <span>Tổng thanh toán:</span>
-            <span className="text-emerald-400 text-base font-mono">
+            <span className="text-[#102A43] text-base font-mono">
               ${cartCalculations.grandTotal.toFixed(2)}
             </span>
           </div>
@@ -1197,8 +1197,8 @@ export const PosRegister: React.FC = () => {
               onClick={() => setPaymentMethod('CABIN_FOLIO')}
               className={`py-2 rounded-xl text-xs font-semibold border flex flex-col items-center gap-1 transition ${
                 paymentMethod === 'CABIN_FOLIO'
-                  ? 'bg-blue-600/20 border-blue-500 text-blue-300'
-                  : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#102A43] border-[#102A43] text-white shadow-xs'
+                  : 'bg-white border-[#E5E0D7] text-[#687787] hover:bg-[#F7F4ED] hover:text-[#102A43]'
               }`}
             >
               <CreditCard className="w-3.5 h-3.5" />
@@ -1210,8 +1210,8 @@ export const PosRegister: React.FC = () => {
               onClick={() => setPaymentMethod('CREDIT_CARD')}
               className={`py-2 rounded-xl text-xs font-semibold border flex flex-col items-center gap-1 transition ${
                 paymentMethod === 'CREDIT_CARD'
-                  ? 'bg-blue-600/20 border-blue-500 text-blue-300'
-                  : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#102A43] border-[#102A43] text-white shadow-xs'
+                  : 'bg-white border-[#E5E0D7] text-[#687787] hover:bg-[#F7F4ED] hover:text-[#102A43]'
               }`}
             >
               <CreditCard className="w-3.5 h-3.5" />
@@ -1223,8 +1223,8 @@ export const PosRegister: React.FC = () => {
               onClick={() => setPaymentMethod('CASH')}
               className={`py-2 rounded-xl text-xs font-semibold border flex flex-col items-center gap-1 transition ${
                 paymentMethod === 'CASH'
-                  ? 'bg-blue-600/20 border-blue-500 text-blue-300'
-                  : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#102A43] border-[#102A43] text-white shadow-xs'
+                  : 'bg-white border-[#E5E0D7] text-[#687787] hover:bg-[#F7F4ED] hover:text-[#102A43]'
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -1235,7 +1235,7 @@ export const PosRegister: React.FC = () => {
 
         {/* Submit Error */}
         {submitError && (
-          <div className="mt-2.5 p-2 rounded-xl bg-rose-950/60 border border-rose-800 text-[11px] text-rose-300 flex items-center gap-1.5">
+          <div className="mt-2.5 p-2 rounded-xl bg-rose-50 border border-rose-200 text-[11px] text-rose-800 flex items-center gap-1.5">
             <AlertCircle className="w-3.5 h-3.5 shrink-0" />
             <span>{submitError}</span>
           </div>
@@ -1247,9 +1247,9 @@ export const PosRegister: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsSplitWizardOpen(true)}
-              className="flex-1 py-2 px-3 rounded-xl bg-indigo-900/40 hover:bg-indigo-900/60 border border-indigo-700/60 text-indigo-300 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition"
+              className="flex-1 py-2 px-3 rounded-xl bg-[#F7F4ED] hover:bg-[#E5E0D7]/60 border border-[#E5E0D7] text-[#102A43] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition"
             >
-              <Users className="w-3.5 h-3.5" />
+              <Users className="w-3.5 h-3.5 text-[#397C80]" />
               <span>Chia Bill Phòng</span>
             </button>
             <button
@@ -1257,11 +1257,11 @@ export const PosRegister: React.FC = () => {
               onClick={() => setIsSignatureModalOpen(true)}
               className={`py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition ${
                 capturedSignatureBase64
-                  ? 'bg-emerald-950/50 border-emerald-600 text-emerald-300'
-                  : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                  : 'bg-white hover:bg-[#F7F4ED] border-[#E5E0D7] text-[#102A43]'
               }`}
             >
-              <PenTool className="w-3.5 h-3.5" />
+              <PenTool className="w-3.5 h-3.5 text-[#397C80]" />
               <span>{capturedSignatureBase64 ? 'Đã Ký Chữ Ký Số' : 'Ký Số Trước'}</span>
             </button>
           </div>
@@ -1272,7 +1272,7 @@ export const PosRegister: React.FC = () => {
           type="button"
           disabled={isSubmitting || isPricing || cart.length === 0}
           onClick={() => void handleCheckout()}
-          className="mt-3 w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white font-bold text-sm shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2"
+          className="mt-3 w-full py-3 rounded-xl bg-[#102A43] hover:bg-[#183B5B] disabled:bg-[#F7F4ED] disabled:text-[#687787] disabled:border disabled:border-[#E5E0D7] text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2"
         >
           {isSubmitting ? (
             <span className="animate-pulse">Đang xử lý thanh toán...</span>

@@ -93,50 +93,50 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
   const isVoid = mode === 'VOID';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl w-full max-w-lg shadow-xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/70">
+        <div className="px-6 py-4 border-b border-[#E5E0D7] flex items-center justify-between bg-[#F7F4ED]">
           <div className="flex items-center gap-2">
             {isVoid ? (
-              <AlertTriangle className="w-5 h-5 text-rose-400" />
+              <AlertTriangle className="w-5 h-5 text-rose-600" />
             ) : (
-              <RotateCcw className="w-5 h-5 text-amber-400" />
+              <RotateCcw className="w-5 h-5 text-[#397C80]" />
             )}
-            <h3 className="font-bold text-white text-base">
+            <h3 className="font-serif font-bold text-[#102A43] text-base">
               {isVoid ? 'Ủy Quyền Hủy Giao Dịch (Void)' : 'Ủy Quyền Hoàn Tiền (Refund)'}
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1 rounded-lg text-[#687787] hover:text-[#102A43] hover:bg-[#E5E0D7]/60 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs text-slate-300">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs text-[#252B32]">
           {/* Target transaction summary */}
-          <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-2">
+          <div className="bg-[#F7F4ED] p-3.5 rounded-xl border border-[#E5E0D7] space-y-2">
             <div className="flex justify-between items-center text-xs">
-              <span className="text-slate-400">Mã giao dịch:</span>
-              <span className="font-mono text-white">{transaction.transactionUuid}</span>
+              <span className="text-[#687787]">Mã giao dịch:</span>
+              <span className="font-mono text-[#252B32]">{transaction.transactionUuid}</span>
             </div>
             <div className="flex justify-between items-center text-xs">
-              <span className="text-slate-400">Phòng / Khách hàng:</span>
-              <span className="font-semibold text-white">
+              <span className="text-[#687787]">Phòng / Khách hàng:</span>
+              <span className="font-semibold text-[#102A43]">
                 {transaction.cabinNumber || 'N/A'} - {transaction.guestName || 'Khách vãng lai'}
               </span>
             </div>
             <div className="flex justify-between items-center text-xs">
-              <span className="text-slate-400">Tổng tiền ban đầu:</span>
-              <span className="font-bold text-emerald-400">${transaction.totalAmount?.toFixed(2)}</span>
+              <span className="text-[#687787]">Tổng tiền ban đầu:</span>
+              <span className="font-bold font-mono text-[#102A43]">${transaction.totalAmount?.toFixed(2)}</span>
             </div>
             {!isVoid && (
-              <div className="flex justify-between items-center text-xs pt-1 border-t border-slate-800">
-                <span className="text-slate-400">Số dư có thể hoàn lại:</span>
-                <span className="font-bold text-amber-400 font-mono">
+              <div className="flex justify-between items-center text-xs pt-1 border-t border-[#E5E0D7]">
+                <span className="text-[#687787]">Số dư có thể hoàn lại:</span>
+                <span className="font-bold text-[#8C6D37] font-mono">
                   ${(transaction.remainingRefundableAmount ?? transaction.totalAmount).toFixed(2)}
                 </span>
               </div>
@@ -146,11 +146,11 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
           {/* Refund Amount input */}
           {!isVoid && (
             <div>
-              <label htmlFor="modal-refund-amount" className="font-semibold text-white block mb-1">
+              <label htmlFor="modal-refund-amount" className="font-semibold text-[#102A43] block mb-1">
                 Số Tiền Hoàn ($):
               </label>
               <div className="relative">
-                <DollarSign className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <DollarSign className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#687787]" />
                 <input
                   id="modal-refund-amount"
                   type="number"
@@ -159,7 +159,7 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
                   max={transaction.remainingRefundableAmount ?? transaction.totalAmount}
                   value={refundAmount}
                   onChange={(e) => setRefundAmount(Number(e.target.value))}
-                  className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-amber-500 font-mono"
+                  className="w-full pl-9 pr-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43] font-mono"
                   required
                 />
               </div>
@@ -168,8 +168,8 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
 
           {/* Reason */}
           <div>
-            <label htmlFor="modal-reason" className="font-semibold text-white block mb-1">
-              Lý Do {isVoid ? 'Hủy' : 'Hoàn Tiền'} <span className="text-rose-400">*</span>:
+            <label htmlFor="modal-reason" className="font-semibold text-[#102A43] block mb-1">
+              Lý Do {isVoid ? 'Hủy' : 'Hoàn Tiền'} <span className="text-rose-600">*</span>:
             </label>
             <textarea
               id="modal-reason"
@@ -177,7 +177,7 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder={isVoid ? 'VD: Thu ngân nhập sai món ăn, khách đổi ý ngay tại bàn' : 'VD: Khách khiếu nại chất lượng dịch vụ, trả lại hàng duty-free'}
-              className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-amber-500 resize-none"
+              className="w-full p-2.5 bg-white border border-[#E5E0D7] rounded-xl text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43] resize-none"
               required
             />
           </div>
@@ -185,8 +185,8 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
           {/* Manager Authorization PIN */}
           <div className="grid grid-cols-2 gap-3 pt-1">
             <div>
-              <label htmlFor="modal-manager-pin" className="font-semibold text-white block mb-1 flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" /> Mã PIN Quản Lý:
+              <label htmlFor="modal-manager-pin" className="font-semibold text-[#102A43] block mb-1 flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#397C80]" /> Mã PIN Quản Lý:
               </label>
               <input
                 id="modal-manager-pin"
@@ -195,45 +195,45 @@ export const ManagerVoidRefundModal: React.FC<ManagerVoidRefundModalProps> = ({
                 value={managerPin}
                 onChange={(e) => setManagerPin(e.target.value)}
                 placeholder="4-6 chữ số (VD: 8888)"
-                className="w-full p-2 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-amber-500 font-mono text-center tracking-widest"
+                className="w-full p-2 bg-white border border-[#E5E0D7] rounded-xl text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43] font-mono text-center tracking-widest"
                 required
               />
             </div>
             <div>
-              <label htmlFor="modal-performed-by" className="font-semibold text-white block mb-1">Người Duyệt / Quản Lý:</label>
+              <label htmlFor="modal-performed-by" className="font-semibold text-[#102A43] block mb-1">Người Duyệt / Quản Lý:</label>
               <input
                 id="modal-performed-by"
                 type="text"
                 value={performedBy}
                 onChange={(e) => setPerformedBy(e.target.value)}
-                className="w-full p-2 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-amber-500"
+                className="w-full p-2 bg-white border border-[#E5E0D7] rounded-xl text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
                 required
               />
             </div>
           </div>
 
           {errorMsg && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs">
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs">
               {errorMsg}
             </div>
           )}
 
           {/* Actions */}
-          <div className="pt-3 border-t border-slate-800 flex justify-end gap-3">
+          <div className="pt-3 border-t border-[#E5E0D7] flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold transition-colors cursor-pointer"
+              className="px-4 py-2 bg-white hover:bg-[#F7F4ED] text-[#687787] hover:text-[#102A43] border border-[#E5E0D7] rounded-xl font-semibold transition-colors cursor-pointer shadow-xs"
             >
               Hủy Bỏ
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`px-5 py-2 text-white font-extrabold rounded-xl shadow-lg transition-all cursor-pointer ${
+              className={`px-5 py-2 text-white font-bold rounded-xl shadow-xs transition-all cursor-pointer ${
                 isVoid
-                  ? 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/20'
-                  : 'bg-amber-600 hover:bg-amber-500 shadow-amber-600/20'
+                  ? 'bg-rose-600 hover:bg-rose-700'
+                  : 'bg-[#102A43] hover:bg-[#183B5B]'
               }`}
             >
               {isSubmitting ? 'Đang xử lý...' : isVoid ? 'Xác Nhận Hủy (Void)' : 'Xác Nhận Hoàn Tiền'}
