@@ -15,6 +15,7 @@ vi.mock('./services/api', async (importOriginal) => {
       get: vi.fn().mockResolvedValue({ data: { success: true, data: null } }),
       post: vi.fn().mockResolvedValue({ data: { success: true, data: null } }),
       put: vi.fn().mockResolvedValue({ data: { success: true, data: null } }),
+      patch: vi.fn().mockResolvedValue({ data: { success: true, data: null } }),
       delete: vi.fn().mockResolvedValue({ data: { success: true, data: null } }),
     }
   };
@@ -194,5 +195,15 @@ describe('App Routing Integration Tests', () => {
       expect(screen.getByText(/FLEET OPERATIONS & CREW CONSOLE/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Đăng nhập Vận Hành/i })).toBeInTheDocument();
     });
+  });
+
+  it('provides a defined apiClient export with standard HTTP methods to prevent child render failures', async () => {
+    const { apiClient } = await import('./services/api');
+    expect(apiClient).toBeDefined();
+    expect(typeof apiClient.get).toBe('function');
+    expect(typeof apiClient.post).toBe('function');
+    expect(typeof apiClient.put).toBe('function');
+    expect(typeof apiClient.patch).toBe('function');
+    expect(typeof apiClient.delete).toBe('function');
   });
 });
