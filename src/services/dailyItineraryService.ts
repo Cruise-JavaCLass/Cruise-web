@@ -332,7 +332,7 @@ export const INITIAL_DAILY_ITINERARIES: Record<number, TourDailyItinerary> = {
   },
 };
 
-let localDailyItineraries: Record<number, TourDailyItinerary> = { ...INITIAL_DAILY_ITINERARIES };
+let localDailyItineraries: Record<number, TourDailyItinerary> = {};
 
 export async function getDailyItinerary(tourId: number): Promise<TourDailyItinerary | null> {
   try {

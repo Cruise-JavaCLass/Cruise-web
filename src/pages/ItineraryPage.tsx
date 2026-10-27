@@ -86,7 +86,7 @@ export function ItineraryPage() {
 
   const loadData = async () => {
     const [tourList, shipList, portList] = await Promise.all([getTours(), getShips(), getPorts()]);
-    setTours(tourList && tourList.length > 0 ? tourList : INITIAL_TOURS);
+    setTours(tourList ?? []);
     setShips(shipList);
     setPorts(portList);
   };

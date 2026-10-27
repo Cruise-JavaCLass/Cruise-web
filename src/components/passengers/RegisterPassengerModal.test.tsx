@@ -39,8 +39,46 @@ describe('RegisterPassengerModal Component Tests (KAN-151)', () => {
 
     expect(screen.getByText(/Họ và tên không được để trống/i)).toBeInTheDocument();
     expect(screen.getByText(/Số phòng cabin không được để trống/i)).toBeInTheDocument();
-    expect(screen.getByText(/Mã thẻ RFID không được để trống/i)).toBeInTheDocument();
     expect(defaultProps.onSuccess).not.toHaveBeenCalled();
+  });
+
+  it('generates a new random RFID tag when clicking random button', async () => {
+    const user = userEvent.setup();
+    render(<RegisterPassengerModal {...defaultProps} />);
+
+    const randomBtn = screen.getByRole('button', { name: /Tạo mã ngẫu nhiên/i });
+    await user.click(randomBtn);
+
+    const rfidInput = screen.getByLabelText(/Mã thẻ RFID/i) as HTMLInputElement;
+    expect(rfidInput.value).toMatch(/^RFID-\d{5}$/);
+  });
+
+  it('auto-generates random RFID tag if user clears and leaves it empty', async () => {
+    const user = userEvent.setup();
+    const onSuccess = vi.fn().mockResolvedValue(undefined);
+    const onClose = vi.fn();
+
+    render(<RegisterPassengerModal {...defaultProps} onSuccess={onSuccess} onClose={onClose} />);
+
+    await user.type(screen.getByLabelText(/Họ và tên hành khách/i), 'Trần Văn B');
+    await user.type(screen.getByLabelText(/Số cabin/i), 'Cabin-101');
+
+    const rfidInput = screen.getByLabelText(/Mã thẻ RFID/i);
+    await user.clear(rfidInput);
+
+    const submitBtn = screen.getByRole('button', { name: /Lưu Hành Khách/i });
+    await user.click(submitBtn);
+
+    expect(onSuccess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tourId: 1,
+        fullName: 'Trần Văn B',
+        cabinNumber: 'Cabin-101',
+        rfidTag: expect.stringMatching(/^RFID-\d{5}$/),
+        qrCode: expect.stringMatching(/^QR-RFID-\d{5}$/),
+      })
+    );
+    expect(onClose).toHaveBeenCalled();
   });
 
   it('submits valid passenger form successfully and calls onSuccess', async () => {
@@ -54,6 +92,7 @@ describe('RegisterPassengerModal Component Tests (KAN-151)', () => {
     await user.type(screen.getByLabelText(/Email/i), 'dang.nguyen@cruise.com');
     await user.type(screen.getByLabelText(/Số điện thoại/i), '0919998888');
     await user.type(screen.getByLabelText(/Số cabin/i), 'Cabin-888');
+    await user.clear(screen.getByLabelText(/Mã thẻ RFID/i));
     await user.type(screen.getByLabelText(/Mã thẻ RFID/i), 'RFID-88888');
 
     const submitBtn = screen.getByRole('button', { name: /Lưu Hành Khách/i });

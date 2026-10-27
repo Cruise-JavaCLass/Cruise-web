@@ -29,7 +29,7 @@ export const BoardingPassPage: React.FC = () => {
       }
     } catch {
       if (!signal?.aborted) {
-        setError('Không thể tải thông tin thẻ lên tàu. Vui lòng thử lại.');
+        setError('Không tìm thấy thông tin hành khách trong hệ thống. Thẻ lên tàu chỉ hiển thị khi có dữ liệu đặt phòng hợp lệ.');
       }
     } finally {
       if (!signal?.aborted) {

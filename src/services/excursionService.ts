@@ -336,7 +336,7 @@ export const INITIAL_EXCURSIONS: ShoreExcursion[] = [
   },
 ];
 
-let localExcursions: ShoreExcursion[] = [...INITIAL_EXCURSIONS];
+let localExcursions: ShoreExcursion[] = [];
 
 export function validateExcursionForm(data: ExcursionFormData): ExcursionFormErrors {
   const errors: ExcursionFormErrors = {};
@@ -444,7 +444,7 @@ export async function fetchExcursions(params?: {
     );
     if (res.data?.data) {
       const list = Array.isArray(res.data.data) ? res.data.data : res.data.data.content;
-      if (list && list.length > 0) return list;
+      if (list) return list;
     }
   } catch {
     // fallback to local mock

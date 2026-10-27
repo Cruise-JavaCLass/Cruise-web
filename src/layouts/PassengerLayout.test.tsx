@@ -31,9 +31,9 @@ describe('PassengerLayout Component & Accessibility Tests', () => {
     expect(screen.getByText('VOYAGER')).toBeInTheDocument();
     expect(screen.getByText('Guest Experience Portal')).toBeInTheDocument();
 
-    // Verify guest cabin info
-    expect(screen.getByText('Alexander Wright')).toBeInTheDocument();
-    expect(screen.getByText(/Phòng 8012 • Suite Class/i)).toBeInTheDocument();
+    // Verify guest cabin info defaults to unauthenticated state
+    expect(screen.getByText('Chưa đăng nhập')).toBeInTheDocument();
+    expect(screen.getByText(/Khách vãng lai/i)).toBeInTheDocument();
 
     // Verify all passenger navigation links exist
     expect(screen.getAllByText('Trang Chủ').length).toBeGreaterThan(0);

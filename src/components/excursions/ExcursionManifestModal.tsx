@@ -43,7 +43,7 @@ export function ExcursionManifestModal({
   const [passengers, setPassengers] = useState<ExcursionPassenger[]>(
     excursion.passengers && excursion.passengers.length > 0
       ? excursion.passengers
-      : INITIAL_EXCURSION_PASSENGERS
+      : []
   );
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGroup, setSelectedGroup] = useState<string>('ALL');

@@ -29,8 +29,8 @@ import { ActivityModal } from '../components/activities/ActivityModal';
 import { ActivityStatusModal } from '../components/activities/ActivityStatusModal';
 
 export function ActivitiesPage() {
-  const [tours, setTours] = useState<CruiseTour[]>(INITIAL_TOURS);
-  const [selectedTourId, setSelectedTourId] = useState<number>(1);
+  const [tours, setTours] = useState<CruiseTour[]>([]);
+  const [selectedTourId, setSelectedTourId] = useState<number | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | 'ALL'>('ALL');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -49,8 +49,11 @@ export function ActivitiesPage() {
 
   useEffect(() => {
     void getTours().then((list) => {
+      setTours(list);
       if (list.length > 0) {
-        setTours(list);
+        setSelectedTourId((prev) => (prev && list.some((t) => t.id === prev) ? prev : list[0].id));
+      } else {
+        setSelectedTourId(null);
       }
     });
   }, []);
@@ -61,6 +64,12 @@ export function ActivitiesPage() {
   };
 
   const fetchActivityList = useCallback(async () => {
+    if (!selectedTourId) {
+      setActivities([]);
+      setTotalCount(0);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const filterParams = {
       dayNumber: selectedDay === 'ALL' ? undefined : selectedDay,

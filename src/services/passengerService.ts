@@ -169,7 +169,7 @@ export const INITIAL_PASSENGERS: Passenger[] = [
   },
 ];
 
-let localPassengers: Passenger[] = [...INITIAL_PASSENGERS];
+let localPassengers: Passenger[] = [];
 
 export const resetLocalPassengers = () => {
   localPassengers = [...INITIAL_PASSENGERS];
@@ -370,7 +370,7 @@ export async function exportPassengersCsv(
   }
 }
 
-export async function getPassengerBookingSummary(passengerId: number = 1): Promise<PassengerBookingSummary> {
+export async function getPassengerBookingSummary(passengerId: number = 1): Promise<PassengerBookingSummary | null> {
   try {
     const res = await apiClient.get<{ success: boolean; data: PassengerBookingSummary }>(
       `/activities/passengers/${passengerId}/summary`
@@ -383,6 +383,9 @@ export async function getPassengerBookingSummary(passengerId: number = 1): Promi
   }
 
   const p = localPassengers.find((item) => item.id === passengerId) || localPassengers[0];
+  if (!p) {
+    return null;
+  }
   return {
     passengerId: p.id,
     tourId: p.tourId,

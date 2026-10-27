@@ -74,7 +74,6 @@ export interface HealthDeclarationPayload {
 
 const isMockEnabled = (): boolean => {
   return (
-    import.meta.env.DEV ||
     import.meta.env.VITE_EMBARKATION_MOCK === 'true' ||
     import.meta.env.VITE_USE_MOCK_DATA === 'true'
   );

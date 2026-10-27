@@ -15,6 +15,7 @@ import {
   type SystemCancellationPolicy,
   cruiseAreaPolicyService,
 } from '../../services/cruiseAreaPolicyService';
+import { getActiveShips, type Ship } from '../../services/shipService';
 
 interface CruiseAreaPolicyManagerProps {
   shipId?: number;
@@ -25,6 +26,7 @@ export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = (
   const [zones, setZones] = useState<ShipDeckZone[]>([]);
   const [zonesShipId, setZonesShipId] = useState<number | null>(null);
   const [policies, setPolicies] = useState<SystemCancellationPolicy[]>([]);
+  const [availableShips, setAvailableShips] = useState<Ship[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [shipId, setShipId] = useState<number>(initialShipId);
@@ -64,16 +66,18 @@ export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = (
     setLoading(true);
     setError(null);
     try {
-      const [zList, pList] = await Promise.all([
+      const [zList, pList, shipList] = await Promise.all([
         cruiseAreaPolicyService.getDeckZones(shipId),
         cruiseAreaPolicyService.getCancellationPolicies(),
+        getActiveShips().catch(() => []),
       ]);
       if (loadId === latestLoadId.current) {
         setZones(zList);
         setZonesShipId(shipId);
-      }
-      if (loadId === latestLoadId.current) {
         setPolicies(pList);
+        if (shipList && shipList.length > 0) {
+          setAvailableShips(shipList);
+        }
       }
     } catch (err: any) {
       if (loadId === latestLoadId.current) {
@@ -169,9 +173,15 @@ export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = (
               aria-label="Chọn du thuyền"
               className="bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl px-3 py-1.5 text-xs font-semibold text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10"
             >
-              <option value={1}>Tàu 1 (Halong Grand Pearl)</option>
-              <option value={2}>Tàu 2 (Emerald Princess)</option>
-              <option value={3}>Tàu 3 (Imperial Sapphire)</option>
+              {availableShips.length > 0 ? (
+                availableShips.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} ({s.code})
+                  </option>
+                ))
+              ) : (
+                <option value={shipId}>Tàu #{shipId}</option>
+              )}
             </select>
           </div>
           <button

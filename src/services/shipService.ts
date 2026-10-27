@@ -181,6 +181,11 @@ export async function getShips(): Promise<Ship[]> {
   }
 }
 
+export async function getActiveShips(): Promise<Ship[]> {
+  const res = await apiClient.get<{ success: boolean; data: Ship[] }>('/itinerary/ships/active');
+  return res.data?.data || [];
+}
+
 export function formatShipPayload(data: ShipFormData) {
   return {
     ...data,

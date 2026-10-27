@@ -38,8 +38,8 @@ import { PassengerBookingModal } from '../components/excursions/PassengerBooking
 import { ExcursionStatusCards } from '../components/excursions/ExcursionStatusCards';
 
 export function ExcursionsPage() {
-  const [tours, setTours] = useState<CruiseTour[]>(INITIAL_TOURS);
-  const [ports, setPorts] = useState<Port[]>(INITIAL_PORTS);
+  const [tours, setTours] = useState<CruiseTour[]>([]);
+  const [ports, setPorts] = useState<Port[]>([]);
   const [selectedTourId, setSelectedTourId] = useState<number | 'ALL'>('ALL');
   const [selectedPortId, setSelectedPortId] = useState<number | 'ALL'>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
@@ -66,8 +66,8 @@ export function ExcursionsPage() {
 
   useEffect(() => {
     void Promise.all([getTours(), getPorts()]).then(([tourList, portList]) => {
-      if (tourList.length > 0) setTours(tourList);
-      if (portList.length > 0) setPorts(portList);
+      setTours(tourList ?? []);
+      setPorts(portList ?? []);
     });
   }, []);
 

@@ -61,7 +61,7 @@ export function ExcursionDetailPage() {
         setPassengers(
           data.passengers && data.passengers.length > 0
             ? data.passengers
-            : INITIAL_EXCURSION_PASSENGERS
+            : []
         );
       } else {
         setExcursion(null);

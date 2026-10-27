@@ -19,6 +19,7 @@ import {
   Radio,
 } from 'lucide-react';
 import { resolvePassengerId } from '../services/passengerIdentity';
+import { getPassengerBookingSummary } from '../services/passengerService';
 
 interface GuestProfile {
   name: string;
@@ -28,15 +29,11 @@ interface GuestProfile {
 
 export function PassengerLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [guestProfile, setGuestProfile] = useState<GuestProfile>({
-    name: 'Alexander Wright',
-    cabin: '8012',
-    category: 'Suite Class',
-  });
+  const [guestProfile, setGuestProfile] = useState<GuestProfile | null>(null);
   const location = useLocation();
 
   useEffect(() => {
-    // Read stored passenger profile if available
+    // 1. Read stored passenger profile from localStorage immediately if present
     try {
       const stored = localStorage.getItem('currentPassenger') || sessionStorage.getItem('currentPassenger');
       if (stored) {
@@ -44,15 +41,38 @@ export function PassengerLayout() {
         if (parsed?.fullName || parsed?.name) {
           setGuestProfile({
             name: parsed.fullName || parsed.name,
-            cabin: parsed.cabinNumber || parsed.cabin || '8012',
-            category: parsed.cabinCategory || parsed.category || 'Suite Class',
+            cabin: parsed.cabinNumber || parsed.cabin || 'Chưa gán',
+            category: parsed.cabinCategory || parsed.category || 'Tiêu chuẩn',
           });
+          return;
         }
       }
     } catch {
-      // Fallback to default guest profile
+      // ignore
     }
-  }, []);
+
+    // 2. Refresh from backend API
+    const pId = resolvePassengerId();
+    if (pId) {
+      getPassengerBookingSummary(pId)
+        .then((summary) => {
+          if (summary) {
+            setGuestProfile({
+              name: summary.fullName,
+              cabin: summary.cabinNumber,
+              category: summary.cabinCategory || 'Tiêu chuẩn',
+            });
+          } else {
+            setGuestProfile(null);
+          }
+        })
+        .catch(() => {
+          setGuestProfile(null);
+        });
+    } else {
+      setGuestProfile(null);
+    }
+  }, [location.search]);
 
   // Close mobile drawer on route change
   useEffect(() => {
@@ -68,7 +88,7 @@ export function PassengerLayout() {
     { to: '/catalog', label: 'Khám Phá Dịch Vụ', icon: Sparkles },
   ];
 
-  const passengerId = resolvePassengerId() ?? 1;
+  const passengerId = resolvePassengerId();
 
   return (
     <div
@@ -153,10 +173,10 @@ export function PassengerLayout() {
                 </div>
                 <div className="text-left hidden sm:block">
                   <p className="text-xs font-semibold text-[#102A43] leading-tight truncate max-w-[140px]">
-                    {guestProfile.name}
+                    {guestProfile ? guestProfile.name : 'Chưa đăng nhập'}
                   </p>
                   <p className="text-[10px] font-mono text-[#397C80] font-semibold uppercase tracking-wider">
-                    Phòng {guestProfile.cabin} • {guestProfile.category}
+                    {guestProfile ? `Phòng ${guestProfile.cabin} • ${guestProfile.category}` : 'Khách vãng lai'}
                   </p>
                 </div>
               </div>
@@ -179,9 +199,13 @@ export function PassengerLayout() {
           <div className="lg:hidden border-t border-[#E5E0D7] bg-white px-4 py-4 space-y-3 shadow-xl">
             <div className="p-3 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl flex items-center justify-between">
               <div>
-                <p className="text-xs font-bold text-[#102A43] uppercase tracking-wider">{guestProfile.name}</p>
+                <p className="text-xs font-bold text-[#102A43] uppercase tracking-wider">
+                  {guestProfile ? guestProfile.name : 'Chưa đăng nhập'}
+                </p>
                 <p className="text-[10px] font-mono text-[#397C80] font-semibold uppercase">
-                  Phòng {guestProfile.cabin} • {guestProfile.category} (ID: #{passengerId})
+                  {guestProfile
+                    ? `Phòng ${guestProfile.cabin} • ${guestProfile.category}${passengerId ? ` (ID: #${passengerId})` : ''}`
+                    : 'Khách vãng lai'}
                 </p>
               </div>
               <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-[#EAF2F2] text-[#397C80] border border-[#397C80]/30 flex items-center gap-1">
