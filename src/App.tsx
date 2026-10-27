@@ -36,6 +36,7 @@ function CruiseAreaPolicyRoute() {
   return <CruiseAreaPolicyManager shipId={shipId} />;
 }
 import { OperationalReportsPage } from './pages/OperationalReportsPage';
+import { VoyagePhaseControlCenter } from './components/voyage/VoyagePhaseControlCenter';
 
 export function App() {
   return (
@@ -50,6 +51,7 @@ export function App() {
         <Route path="ships/:id" element={<ShipDetailPage />} />
         <Route path="admin/cruise-area-policies" element={<CruiseAreaPolicyRoute />} />
         <Route path="itinerary" element={<ItineraryPage />} />
+        <Route path="voyage" element={<VoyagePhaseControlCenter />} />
         <Route path="excursions" element={<ExcursionsPage />} />
         <Route path="excursions/:id" element={<ExcursionDetailPage />} />
         <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />

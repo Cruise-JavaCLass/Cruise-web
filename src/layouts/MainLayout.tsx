@@ -68,6 +68,7 @@ export function MainLayout() {
     { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship },
     { to: '/admin/cruise-area-policies', label: 'Quản lý Khu vực & Chính sách', icon: Ship },
     { to: '/itinerary', label: 'Hải trình & Cảng dừng', icon: MapPin },
+    { to: '/voyage', label: 'Vận hành Hải trình (Lifecycle)', icon: Compass },
     { to: '/excursions', label: 'Tour Trên Bờ (Excursion)', icon: Navigation },
     { to: '/excursion-attendance', label: 'Điểm Danh Tour Bờ', icon: Users },
     { to: '/activities', label: 'Hoạt động & Excursion', icon: Activity },
