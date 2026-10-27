@@ -191,6 +191,7 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
         {ports && ports.length > 0 && (
           <div className="flex items-center">
             <select
+              aria-label="Lọc theo cảng dừng"
               value={filters.portId || ''}
               onChange={handlePortSelect}
               className="rounded-xl border border-[#E5E0D7] bg-[#F7F4ED] px-3 py-2 text-xs text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43] cursor-pointer"

@@ -109,8 +109,8 @@ export const INITIAL_STOPS: Record<number, CruiseStop[]> = {
   ],
 };
 
-let localPorts: Port[] = [];
-let localStops: Record<number, CruiseStop[]> = {};
+let localPorts = [...INITIAL_PORTS];
+let localStops: Record<number, CruiseStop[]> = { ...INITIAL_STOPS };
 
 export async function getPorts(): Promise<Port[]> {
   try {

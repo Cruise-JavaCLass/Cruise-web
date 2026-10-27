@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
+import { Routes, Route, Navigate, useSearchParams, useLocation } from 'react-router-dom';
 import { MainLayout } from './layouts/MainLayout';
 import { PassengerLayout } from './layouts/PassengerLayout';
 import { AdminAuthGuard } from './components/auth/AdminAuthGuard';
@@ -39,6 +39,11 @@ function CruiseAreaPolicyRoute() {
   return <CruiseAreaPolicyManager shipId={shipId} />;
 }
 
+function PassengerRedirect() {
+  const location = useLocation();
+  return <Navigate to={{ pathname: '/passenger-home', search: location.search }} replace />;
+}
+
 export function App() {
   return (
     <Routes>
@@ -50,7 +55,7 @@ export function App() {
         <Route path="passenger/folio" element={<PassengerFolioPage />} />
         <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />
         <Route path="catalog" element={<PassengerCatalogPage />} />
-        <Route path="passenger" element={<Navigate to="/passenger-home" replace />} />
+        <Route path="passenger" element={<PassengerRedirect />} />
       </Route>
 
       {/* Crew & Admin Authentication */}

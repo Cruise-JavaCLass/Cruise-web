@@ -24,7 +24,6 @@ import {
   EXCURSION_STATUS_MAP,
   EXCURSION_CATEGORY_LABELS,
   EXCURSION_DIFFICULTY_LABELS,
-  INITIAL_EXCURSION_PASSENGERS,
 } from '../services/excursionService';
 import { ExcursionModal } from '../components/excursions/ExcursionModal';
 import { ExcursionStatusModal } from '../components/excursions/ExcursionStatusModal';
@@ -216,7 +215,7 @@ export function ExcursionDetailPage() {
             <h4 className="font-bold text-amber-950 uppercase text-sm">CẢNH BÁO: CHUYẾN TOUR ĐANG BỊ TRỄ GIỜ</h4>
             <p className="text-[#252B32]">
               Lý do ghi nhận:{' '}
-              <strong className="text-amber-800">{excursion.delayReason || 'Xe trung chuyển bị kẹt do thời tiết mưa lớn cục bộ'}</strong>
+              <strong className="text-amber-800">{excursion.delayReason || 'Chưa ghi nhận lý do trễ giờ'}</strong>
             </p>
             <p className="text-[11px] text-[#687787]">
               Bộ phận hải trình và trưởng tàu đã nhận được cảnh báo để điều phối phao tiêu cập cảng an toàn.

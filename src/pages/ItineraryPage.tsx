@@ -28,7 +28,6 @@ import {
   updateTourStatus,
   deleteTour,
   formatTourPayload,
-  INITIAL_TOURS,
 } from '../services/tourService';
 import type { Ship as ShipType } from '../services/shipService';
 import { getShips } from '../services/shipService';
@@ -81,7 +80,7 @@ export function ItineraryPage() {
   const [selectedDailyTour, setSelectedDailyTour] = useState<CruiseTour | null>(null);
 
   const [isDeleting, setIsDeleting] = useState<CruiseTour | null>(null);
-  const [notification, setNotification] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loadData = async () => {
@@ -95,8 +94,8 @@ export function ItineraryPage() {
     void loadData();
   }, []);
 
-  const showNotification = (msg: string) => {
-    setNotification(msg);
+  const showNotification = (msg: string, type: 'success' | 'error' = 'success') => {
+    setNotification({ message: msg, type });
     setTimeout(() => setNotification(null), 4000);
   };
 
@@ -130,7 +129,7 @@ export function ItineraryPage() {
       }
       setIsFormModalOpen(false);
     } catch {
-      showNotification('Có lỗi xảy ra khi lưu thông tin tour.');
+      showNotification('Có lỗi xảy ra khi lưu thông tin tour.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -144,7 +143,7 @@ export function ItineraryPage() {
       showNotification(`Đã chuyển trạng thái tour ${statusTour?.code || id} sang ${targetStatus}!`);
       setIsStatusModalOpen(false);
     } catch {
-      showNotification('Không thể chuyển trạng thái tour.');
+      showNotification('Không thể chuyển trạng thái tour.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -158,7 +157,7 @@ export function ItineraryPage() {
       showNotification(`Đã xóa tour ${isDeleting.name} thành công!`);
       setIsDeleting(null);
     } catch {
-      showNotification('Không thể xóa tour này.');
+      showNotification('Không thể xóa tour này.', 'error');
     }
   };
 
@@ -203,9 +202,20 @@ export function ItineraryPage() {
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Toast Notification */}
       {notification && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium px-4 py-3 rounded-xl shadow-sm text-xs">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>{notification}</span>
+        <div
+          role="status"
+          className={`fixed bottom-6 right-6 z-[70] flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg text-xs font-medium border ${
+            notification.type === 'error'
+              ? 'bg-rose-50 border-rose-200 text-rose-800'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+          }`}
+        >
+          {notification.type === 'error' ? (
+            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+          ) : (
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          )}
+          <span>{notification.message}</span>
         </div>
       )}
 

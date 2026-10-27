@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import {
   Search,
   Compass,
@@ -138,6 +139,9 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(isOpen, modalRef, onClose);
 
   const filteredItems = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -188,11 +192,15 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
 
   return (
     <div
+      ref={modalRef}
       data-testid="command-palette-modal"
       className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-[#20242C]/50 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Tìm nhanh phân hệ"
         className="w-full max-w-2xl rounded-[18px] bg-white border border-[#E5E7EB] shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >

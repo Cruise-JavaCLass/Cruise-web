@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   FileQuestion,
   Search,
@@ -8,6 +8,7 @@ import {
   type DisputeCase,
   type ResolveDisputePayload,
 } from '../../services/reconciliationService';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface DisputeManagementWorkspaceProps {
   disputes: DisputeCase[];
@@ -26,6 +27,9 @@ export const DisputeManagementWorkspace: React.FC<DisputeManagementWorkspaceProp
   const [reviewNote, setReviewNote] = useState('');
   const [approvedAmount, setApprovedAmount] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(!!selectedDispute, modalRef, () => setSelectedDispute(null));
 
   const filteredDisputes = disputes.filter((d) => {
     const matchStatus = filterStatus === 'ALL' || d.status === filterStatus;
@@ -199,13 +203,15 @@ export const DisputeManagementWorkspace: React.FC<DisputeManagementWorkspaceProp
       {/* Dispute Review Modal */}
       {selectedDispute && (
         <div
+          ref={modalRef}
           role="dialog"
           aria-modal="true"
+          aria-labelledby="dispute-review-modal-title"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs animate-in fade-in duration-200"
         >
           <div className="relative w-full max-w-xl bg-white border border-[#E5E0D7] rounded-2xl p-6 sm:p-8 shadow-xl space-y-5 text-[#252B32]">
             <div className="flex items-center justify-between pb-3 border-b border-[#E5E0D7]">
-              <h3 className="text-base font-serif font-bold text-[#102A43] flex items-center gap-2">
+              <h3 id="dispute-review-modal-title" className="text-base font-serif font-bold text-[#102A43] flex items-center gap-2">
                 <FileQuestion className="w-5 h-5 text-[#397C80]" /> Thẩm Định Khiếu Nại #{selectedDispute.disputeNumber}
               </h3>
               <button

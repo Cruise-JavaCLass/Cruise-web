@@ -146,9 +146,9 @@ describe('App Routing Integration Tests', () => {
     });
   });
 
-  it('redirects "/passenger" route to "/passenger-home" inside PassengerLayout', async () => {
+  it('redirects "/passenger" route to "/passenger-home" inside PassengerLayout and preserves search params', async () => {
     render(
-      <MemoryRouter initialEntries={['/passenger']}>
+      <MemoryRouter initialEntries={['/passenger?passengerId=42']}>
         <App />
       </MemoryRouter>
     );

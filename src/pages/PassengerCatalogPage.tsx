@@ -101,7 +101,7 @@ export const PassengerCatalogPage: React.FC = () => {
               <div className="rounded-2xl border border-[#E5E0D7] bg-[#F7F4ED] p-4 text-center shadow-xs min-w-[130px]">
                 <span className="block text-3xl font-display font-bold text-[#102A43] tabular-nums">{items.length}</span>
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-[#252B32]/60">
-                  Hoạt động khả dụng
+                  Mục trên trang này
                 </span>
               </div>
             </div>

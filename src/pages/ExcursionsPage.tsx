@@ -29,8 +29,8 @@ import {
   EXCURSION_CATEGORY_LABELS,
   EXCURSION_DIFFICULTY_LABELS,
 } from '../services/excursionService';
-import { getTours, INITIAL_TOURS, type CruiseTour } from '../services/tourService';
-import { getPorts, INITIAL_PORTS, type Port } from '../services/portStopService';
+import { getTours, type CruiseTour } from '../services/tourService';
+import { getPorts, type Port } from '../services/portStopService';
 import { ExcursionModal } from '../components/excursions/ExcursionModal';
 import { ExcursionStatusModal } from '../components/excursions/ExcursionStatusModal';
 import { ExcursionManifestModal } from '../components/excursions/ExcursionManifestModal';

@@ -36,7 +36,7 @@ export const LoginPage: React.FC = () => {
 
     try {
       await authService.login({ username, password });
-      navigate(decodeURIComponent(redirectUrl), { replace: true });
+      navigate(redirectUrl, { replace: true });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Đăng nhập thất bại. Vui lòng thử lại.';
       setErrorMessage(msg);

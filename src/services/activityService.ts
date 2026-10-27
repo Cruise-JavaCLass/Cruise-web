@@ -224,7 +224,7 @@ export const INITIAL_ACTIVITIES: OnboardActivity[] = [
   },
 ];
 
-let inMemoryActivities: OnboardActivity[] = [];
+let inMemoryActivities: OnboardActivity[] = [...INITIAL_ACTIVITIES];
 
 export const fetchActivitiesByTour = async (tourId: number): Promise<OnboardActivity[]> => {
   try {
@@ -235,7 +235,7 @@ export const fetchActivitiesByTour = async (tourId: number): Promise<OnboardActi
   } catch {
     // fallback to local mock
   }
-  return [];
+  return inMemoryActivities.filter((a) => a.tourId === tourId && a.active);
 };
 
 export const fetchActivities = async (): Promise<OnboardActivity[]> => {
@@ -252,7 +252,7 @@ export const fetchActivities = async (): Promise<OnboardActivity[]> => {
   } catch {
     // fallback to local mock
   }
-  return [];
+  return inMemoryActivities.filter((a) => a.active);
 };
 
 export const fetchActivitiesPaged = async (

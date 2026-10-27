@@ -141,7 +141,7 @@ export function DashboardPage() {
               </div>
               <div className="p-3.5 bg-[#F7F4ED]/60 rounded-xl border border-[#E5E0D7]">
                 <span className="text-3xl font-serif font-bold text-[#397C80] block tabular-nums">
-                  &lt;45ms
+                  --
                 </span>
                 <span className="text-[10px] font-mono uppercase font-medium text-[#5A6578] block mt-0.5">
                   pos sync latency
@@ -233,7 +233,7 @@ export function DashboardPage() {
                 </div>
               </div>
               <p className="text-3xl font-serif font-bold text-[#102A43] tabular-nums">
-                $0 <span className="text-xs font-mono text-[#5A6578] font-normal">USD</span>
+                -- <span className="text-xs font-mono text-[#5A6578] font-normal">USD</span>
               </p>
               <div className="mt-3 text-[10px] font-mono font-medium text-emerald-700">
                 Cashless Onboard Accounts
@@ -258,9 +258,9 @@ export function DashboardPage() {
                   <ShieldCheck className="w-4 h-4" />
                 </div>
               </div>
-              <p className="text-3xl font-serif font-bold text-emerald-700">100% Onboard</p>
+              <p className="text-3xl font-serif font-bold text-emerald-700">--</p>
               <div className="mt-3 text-[10px] font-mono font-medium text-[#5A6578]">
-                0 khách trễ giờ nhổ neo
+                Đang đồng bộ cổng an ninh
               </div>
             </SpotlightCard>
           </TiltedCard>

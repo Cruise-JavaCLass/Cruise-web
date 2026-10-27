@@ -414,7 +414,7 @@ export const DailyItineraryTimeline: React.FC<DailyItineraryTimelineProps> = ({ 
                         {act.time}
                       </span>
                       <span
-                        className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${catBadge.bg} ${catBadge.color} ${catBadge.border}`}
+                        className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${catBadge.bg} ${catBadge.border} text-[#102A43]`}
                       >
                         {catBadge.label}
                       </span>

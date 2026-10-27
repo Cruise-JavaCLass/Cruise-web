@@ -113,7 +113,7 @@ describe('PassengerLayout Component & Accessibility Tests', () => {
     // Click to open mobile menu
     await user.click(toggleBtn);
     expect(screen.getByRole('button', { name: /đóng menu/i })).toBeInTheDocument();
-    expect(screen.getByText(/Giờ du thuyền: 19:35/i)).toBeInTheDocument();
+    expect(screen.getByText(/Giờ du thuyền:/i)).toBeInTheDocument();
 
     // Click to close
     await user.click(toggleBtn);

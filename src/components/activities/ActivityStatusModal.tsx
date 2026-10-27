@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 import type { OnboardActivity, ActivityStatus } from '../../services/activityService';
 import { updateActivityStatus } from '../../services/activityService';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface ActivityStatusModalProps {
   isOpen: boolean;
@@ -20,6 +21,9 @@ export function ActivityStatusModal({
   const [cancellationReason, setCancellationReason] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(isOpen, modalRef, onClose);
 
   if (!isOpen || !activity) return null;
 
@@ -82,14 +86,16 @@ export function ActivityStatusModal({
 
   return (
     <div
+      ref={modalRef}
       role="dialog"
       aria-modal="true"
+      aria-labelledby="activity-status-modal-title"
       className="fixed inset-0 z-50 bg-[#0B1F33]/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
     >
       <div className="bg-white border border-[#E5E0D7] rounded-2xl w-full max-w-md shadow-xl overflow-hidden text-[#252B32]">
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E0D7] bg-[#F7F4ED]">
           <div>
-            <h3 className="font-serif text-base font-bold text-[#102A43]">Chuyển Trạng Thái Hoạt Động</h3>
+            <h3 id="activity-status-modal-title" className="font-serif text-base font-bold text-[#102A43]">Chuyển Trạng Thái Hoạt Động</h3>
             <p className="text-xs text-[#252B32]/70 truncate max-w-xs mt-0.5">{activity.title}</p>
           </div>
           <button

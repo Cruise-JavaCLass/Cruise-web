@@ -100,12 +100,20 @@ export const authService = {
       // Backend offline or unreachable: fall back to authorized demo crew verification
     }
 
-    // 2. Check demo accounts fallback
-    const match = DEMO_STAFF_ACCOUNTS[username];
-    if (match && match.pass === password) {
-      const mockToken = `mock-crew-jwt-${match.user.role.toLowerCase()}-${Date.now()}`;
-      authService.setSession(mockToken, match.user);
-      return match.user;
+    // 2. Check demo accounts fallback in development / test environments
+    const isDevOrTest =
+      typeof import.meta !== 'undefined' &&
+      (import.meta.env?.DEV ||
+        import.meta.env?.MODE === 'test' ||
+        import.meta.env?.VITE_ENABLE_DEMO_ACCOUNTS === 'true');
+
+    if (isDevOrTest) {
+      const match = DEMO_STAFF_ACCOUNTS[username];
+      if (match && match.pass === password) {
+        const mockToken = `mock-crew-jwt-${match.user.role.toLowerCase()}-${Date.now()}`;
+        authService.setSession(mockToken, match.user);
+        return match.user;
+      }
     }
 
     throw new Error('Tên đăng nhập hoặc mật khẩu không chính xác.');
@@ -159,7 +167,10 @@ export const authService = {
    * Check if a valid session exists
    */
   isAuthenticated: (): boolean => {
-    return authService.getCurrentUser() !== null;
+    const hasToken =
+      typeof window !== 'undefined' &&
+      Boolean(localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+    return Boolean(authService.getCurrentUser() && hasToken);
   },
 
   /**
@@ -167,7 +178,10 @@ export const authService = {
    */
   isStaff: (): boolean => {
     const user = authService.getCurrentUser();
-    if (!user) return false;
+    const hasToken =
+      typeof window !== 'undefined' &&
+      Boolean(localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
+    if (!user || !hasToken) return false;
     return user.role !== 'PASSENGER';
   },
 };

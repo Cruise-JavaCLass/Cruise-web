@@ -18,7 +18,7 @@ export const BoardingPassPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const passengerId = resolvePassengerId(1);
+      const passengerId = resolvePassengerId();
       if (!passengerId) {
         throw new Error('Không xác định được danh tính hành khách (Passenger ID is missing)');
       }
@@ -80,7 +80,7 @@ export const BoardingPassPage: React.FC = () => {
 
           {/* Technical Diagnostic Header */}
           <div className="inline-block px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-[10px] font-bold text-amber-900 tracking-wider uppercase mb-3">
-            [LỖI ĐỒNG BỘ THẺ // TERMINAL NGOẠI TUYẾN]
+            [THÔNG BÁO HỆ THỐNG // ĐỒNG BỘ THẺ]
           </div>
 
           <h3 className="text-base font-bold text-[#102A43] mb-2 font-display">

@@ -88,6 +88,9 @@ export function PassengerLayout() {
     { to: '/catalog', label: 'Khám Phá Dịch Vụ', icon: Sparkles },
   ];
 
+  const createNavTarget = (path: string) =>
+    location.search ? { pathname: path, search: location.search } : path;
+
   const passengerId = resolvePassengerId();
 
   return (
@@ -101,7 +104,7 @@ export function PassengerLayout() {
           <div className="flex items-center justify-between h-18 sm:h-20">
             {/* Resort Brand & Ship Name */}
             <Link
-              to="/passenger-home"
+              to={createNavTarget('/passenger-home')}
               className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A572] p-1"
             >
               <div className="w-10 h-10 sm:w-11 sm:h-11 bg-[#102A43] text-[#C5A572] border border-[#C5A572]/40 rounded-xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-all">
@@ -134,7 +137,7 @@ export function PassengerLayout() {
                 return (
                   <NavLink
                     key={item.to}
-                    to={item.to}
+                    to={createNavTarget(item.to)}
                     className={({ isActive }) =>
                       `flex items-center gap-2 px-3.5 py-2 text-xs font-mono font-semibold uppercase tracking-wider rounded-lg transition-all ${
                         isActive
@@ -219,7 +222,7 @@ export function PassengerLayout() {
                 return (
                   <NavLink
                     key={item.to}
-                    to={item.to}
+                    to={createNavTarget(item.to)}
                     className={({ isActive }) =>
                       `flex items-center gap-2 px-3 py-2 text-xs font-mono font-semibold uppercase rounded-lg transition-all ${
                         isActive
@@ -245,7 +248,7 @@ export function PassengerLayout() {
 
             <div className="pt-2 border-t border-[#E5E0D7] flex items-center justify-between text-[11px] font-mono text-[#627D98]">
               <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-[#C5A572]" /> Giờ du thuyền: 19:35 UTC+7
+                <Clock className="w-3.5 h-3.5 text-[#C5A572]" /> Giờ du thuyền: {new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} (UTC+7)
               </span>
               <Link
                 to="/login"
@@ -264,7 +267,7 @@ export function PassengerLayout() {
       </main>
 
       {/* Five-Star Luxury Concierge Footer */}
-      <footer className="border-t border-[#E5E0D7] bg-[#0B1F33] py-6 px-4 sm:px-6 lg:px-8 text-xs text-[#E5E0D7]">
+      <footer className="border-t border-[#E5E0D7] bg-[#0B1F33] py-6 pb-24 md:pb-6 px-4 sm:px-6 lg:px-8 text-xs text-[#E5E0D7]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-center md:text-left">
             <div className="w-7 h-7 bg-[#102A43] border border-[#C5A572]/40 rounded-lg flex items-center justify-center shrink-0 text-[#C5A572]">
@@ -296,7 +299,7 @@ export function PassengerLayout() {
           return (
             <NavLink
               key={item.to}
-              to={item.to}
+              to={createNavTarget(item.to)}
               className={({ isActive }) =>
                 `flex flex-col items-center justify-center py-1 px-2 text-[10px] font-mono font-medium uppercase rounded-lg transition-all min-w-[56px] ${
                   isActive

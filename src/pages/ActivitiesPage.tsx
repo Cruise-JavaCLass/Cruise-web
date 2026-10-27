@@ -24,7 +24,7 @@ import {
   deleteActivity,
   getActivityStatusConfig,
 } from '../services/activityService';
-import { getTours, INITIAL_TOURS, type CruiseTour } from '../services/tourService';
+import { getTours, type CruiseTour } from '../services/tourService';
 import { ActivityModal } from '../components/activities/ActivityModal';
 import { ActivityStatusModal } from '../components/activities/ActivityStatusModal';
 
@@ -204,7 +204,7 @@ export function ActivitiesPage() {
             </label>
             <select
               id="filter-tour-select"
-              value={selectedTourId}
+              value={selectedTourId ?? ''}
               onChange={(e) => setSelectedTourId(Number(e.target.value))}
               className="w-full text-xs font-semibold bg-[#F7F4ED]/50 hover:bg-white focus:bg-white border border-[#E5E0D7] rounded-xl text-[#252B32] px-3 py-2 focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
             >
@@ -430,7 +430,7 @@ export function ActivitiesPage() {
         isOpen={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
         activityToEdit={activityToEdit}
-        defaultTourId={selectedTourId}
+        defaultTourId={selectedTourId ?? undefined}
         onSuccess={() => {
           showToast(
             activityToEdit

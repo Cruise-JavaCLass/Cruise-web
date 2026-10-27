@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "animate.css";
 
 @theme {
   --font-sans: 'Be Vietnam Pro', 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;

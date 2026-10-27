@@ -49,6 +49,11 @@ export function PassengersPage() {
     void getTours().then((list) => {
       if (list.length > 0) {
         setTours(list);
+        setSelectedTourId((prev) => {
+          if (list.some((t) => t.id === prev)) return prev;
+          setPage(0);
+          return list[0].id;
+        });
       }
     });
   }, []);

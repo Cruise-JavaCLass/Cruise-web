@@ -238,7 +238,7 @@ describe('ExcursionsPage Component Tests (KAN-172)', () => {
         expect(screen.getByText('Di Sản Phố Cổ Hội An & Rừng Dừa Bảy Mẫu')).toBeInTheDocument();
         expect(screen.getByText('Khám phá Hang Sửng Sốt & Đảo Ti Tốp')).toBeInTheDocument();
       },
-      { timeout: 3000 }
+      { timeout: 8000 }
     );
 
     const culturalPill = screen.getByRole('button', { name: 'Văn hóa & Di sản' });

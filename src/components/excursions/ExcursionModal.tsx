@@ -78,11 +78,27 @@ export function ExcursionModal({
   useEffect(() => {
     if (isOpen) {
       void Promise.all([getTours(), getPorts()]).then(([tourList, portList]) => {
-        if (tourList.length > 0) setTours(tourList);
-        if (portList.length > 0) setPorts(portList);
+        if (tourList.length > 0) {
+          setTours(tourList);
+          if (!excursionToEdit) {
+            setFormData((prev) => ({
+              ...prev,
+              tourId: tourList.some((t) => t.id === prev.tourId) ? prev.tourId : tourList[0].id,
+            }));
+          }
+        }
+        if (portList.length > 0) {
+          setPorts(portList);
+          if (!excursionToEdit) {
+            setFormData((prev) => ({
+              ...prev,
+              portId: portList.some((p) => p.id === prev.portId) ? prev.portId : portList[0].id,
+            }));
+          }
+        }
       });
     }
-  }, [isOpen]);
+  }, [isOpen, excursionToEdit]);
 
   useEffect(() => {
     if (excursionToEdit) {

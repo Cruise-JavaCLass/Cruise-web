@@ -98,19 +98,19 @@ export const CatalogDetailModal: React.FC<CatalogDetailModalProps> = ({
 
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="border border-[#E5E0D7] bg-white p-3 rounded-xl shadow-xs">
-                <span className="block text-xs font-medium uppercase text-[#5A6B7C]">Giờ tập trung</span>
+                <span className="block text-xs font-medium uppercase text-[#5A6B7C] dark:text-[#9FB3C8]">Giờ tập trung</span>
                 <span className="text-sm font-bold font-mono text-[#102A43]">
                   {item.gatheringTime || item.startTime}
                 </span>
               </div>
               <div className="border border-[#E5E0D7] bg-white p-3 rounded-xl shadow-xs">
-                <span className="block text-xs font-medium uppercase text-[#5A6B7C]">Giờ khởi hành</span>
+                <span className="block text-xs font-medium uppercase text-[#5A6B7C] dark:text-[#9FB3C8]">Giờ khởi hành</span>
                 <span className="text-sm font-bold font-mono text-[#397C80]">
                   {item.departureTime || item.startTime}
                 </span>
               </div>
               <div className="border border-[#E5E0D7] bg-white p-3 rounded-xl shadow-xs">
-                <span className="block text-xs font-medium uppercase text-[#5A6B7C]">Giờ quay lại tàu</span>
+                <span className="block text-xs font-medium uppercase text-[#5A6B7C] dark:text-[#9FB3C8]">Giờ quay lại tàu</span>
                 <span className="text-sm font-bold font-mono text-rose-600">
                   {item.returnToShipTime || item.endTime}
                 </span>

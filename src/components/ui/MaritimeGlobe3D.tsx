@@ -1,118 +1,51 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import WORLD_DOTS from './worldDots.json';
+import { Compass, Globe, Radio, Sparkles } from 'lucide-react';
 
-// Major destinations with luxurious labels & coordinates
-const HUBS = [
-  { name: 'ĐÀ NẴNG', sub: '16°07′N 108°13′E', lat: 16.12, lng: 108.22, primary: true },
-  { name: 'HẠ LONG', sub: 'Tuần Châu Port', lat: 20.95, lng: 107.07, primary: true },
-  { name: 'NHA TRANG', sub: 'Heritage Bay', lat: 12.23, lng: 109.19, primary: true },
-  { name: 'PHÚ QUỐC', sub: 'An Thới Terminal', lat: 10.02, lng: 104.0, primary: true },
-  { name: 'TOKYO', sub: 'Pacific Gateway', lat: 35.68, lng: 139.76 },
-  { name: 'SINGAPORE', sub: 'Marina Bay Cruise', lat: 1.35, lng: 103.82 },
-  { name: 'SYDNEY', sub: 'Port Jackson', lat: -33.87, lng: 151.21 },
-  { name: 'DUBAI', sub: 'Mina Rashid', lat: 25.2, lng: 55.27 },
-  { name: 'LONDON', sub: 'Thames Gateway', lat: 51.5, lng: -0.12 },
-  { name: 'NEW YORK', sub: 'Manhattan Pier', lat: 40.71, lng: -74.0 },
-  { name: 'SAN FRANCISCO', sub: 'Bay Terminal', lat: 37.77, lng: -122.42 },
-  { name: 'RIO DE JANEIRO', sub: 'Guanabara Pier', lat: -22.9, lng: -43.17 },
-  { name: 'CAPE TOWN', sub: 'Table Bay', lat: -33.92, lng: 18.42 },
+export interface WaypointPort {
+  id: string;
+  name: string;
+  coords: string;
+  status: 'COMPLETED' | 'ACTIVE' | 'NEXT' | 'SCHEDULED';
+  eta: string;
+}
+
+const CRUISE_WAYPOINTS: WaypointPort[] = [
+  {
+    id: 'halong',
+    name: 'Hạ Long (Tuần Châu)',
+    coords: '20°57′N 107°04′E',
+    status: 'COMPLETED',
+    eta: 'Departed 16:00',
+  },
+  {
+    id: 'danang',
+    name: 'Đà Nẵng (Tiên Sa)',
+    coords: '16°07′N 108°13′E',
+    status: 'ACTIVE',
+    eta: 'Docked • All-Aboard 19:30',
+  },
+  {
+    id: 'nhatrang',
+    name: 'Vịnh Nha Trang',
+    coords: '12°14′N 109°11′E',
+    status: 'NEXT',
+    eta: 'ETA Tomorrow 07:30',
+  },
+  {
+    id: 'phuquoc',
+    name: 'Phú Quốc (An Thới)',
+    coords: '10°01′N 104°00′E',
+    status: 'SCHEDULED',
+    eta: 'Day 4 • 09:00',
+  },
 ];
-
-function latLngToVector3(lat: number, lng: number, radius: number): THREE.Vector3 {
-  const phi = (90 - lat) * (Math.PI / 180);
-  const theta = (lng + 180) * (Math.PI / 180);
-
-  const x = -radius * Math.sin(phi) * Math.cos(theta);
-  const z = radius * Math.sin(phi) * Math.sin(theta);
-  const y = radius * Math.cos(phi);
-
-  return new THREE.Vector3(x, y, z);
-}
-
-function createCurvedArc(
-  p1: THREE.Vector3,
-  p2: THREE.Vector3,
-  radius: number,
-  maxElevation = 0.32
-): THREE.CatmullRomCurve3 {
-  const mid = p1.clone().add(p2).multiplyScalar(0.5);
-  const distance = p1.distanceTo(p2);
-  const elevation = radius + Math.min(distance * 0.22, maxElevation);
-  mid.normalize().multiplyScalar(elevation);
-
-  const p1Mid = p1.clone().lerp(mid, 0.5).normalize().multiplyScalar(radius + (elevation - radius) * 0.7);
-  const p2Mid = p2.clone().lerp(mid, 0.5).normalize().multiplyScalar(radius + (elevation - radius) * 0.7);
-
-  return new THREE.CatmullRomCurve3([p1, p1Mid, mid, p2Mid, p2]);
-}
-
-// Generate luxury typographic labels onto a Three.js Sprite
-function createTextSprite(text: string, subText?: string, isPrimary = false): THREE.Sprite {
-  const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 160;
-  const ctx = canvas.getContext('2d');
-
-  if (ctx) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Subtle luxury badge background
-    ctx.fillStyle = isPrimary ? 'rgba(7, 24, 43, 0.82)' : 'rgba(10, 20, 34, 0.65)';
-    const x = 10, y = 10, w = 492, h = 140, r = 16;
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
-    ctx.closePath();
-    ctx.fill();
-
-    // Border
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = isPrimary ? 'rgba(197, 165, 114, 0.85)' : 'rgba(100, 181, 246, 0.45)';
-    ctx.stroke();
-
-    // Primary Port Icon / Dot
-    ctx.fillStyle = isPrimary ? '#C5A572' : '#64B5F6';
-    ctx.beginPath();
-    ctx.arc(42, 60, 10, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Main Destination Title (Serif Luxury)
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 36px "Cinzel", "Playfair Display", "Times New Roman", serif';
-    ctx.letterSpacing = '2px';
-    ctx.fillText(text, 68, 70);
-
-    // Subtitle / Coordinates (Technical Monospace)
-    if (subText) {
-      ctx.fillStyle = isPrimary ? '#FDE047' : '#90CAF9';
-      ctx.font = '500 22px "SF Mono", "Fira Code", monospace';
-      ctx.letterSpacing = '1px';
-      ctx.fillText(subText, 68, 112);
-    }
-  }
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.minFilter = THREE.LinearFilter;
-  texture.generateMipmaps = false;
-
-  const spriteMat = new THREE.SpriteMaterial({
-    map: texture,
-    transparent: true,
-    depthTest: false,
-    opacity: 0.95,
-  });
-
-  const sprite = new THREE.Sprite(spriteMat);
-  sprite.scale.set(0.65, 0.2, 1);
-  return sprite;
-}
 
 export const MaritimeGlobe3D: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const [viewMode, setViewMode] = useState<'GLOBE' | 'RADAR'>('GLOBE');
+  const [selectedPort, setSelectedPort] = useState<WaypointPort>(CRUISE_WAYPOINTS[1]);
+  const [webglSupported, setWebglSupported] = useState<boolean>(true);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -120,217 +53,160 @@ export const MaritimeGlobe3D: React.FC = () => {
 
     const isJsdom =
       typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent || '');
-    if (isJsdom) return;
+    if (isJsdom) {
+      setWebglSupported(false);
+      return;
+    }
 
+    // Detect if WebGL is supported (gracefully skipped in jsdom unit tests)
     let renderer: THREE.WebGLRenderer | null = null;
     try {
+      const testCanvas = document.createElement('canvas');
+      const gl =
+        testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+      if (!gl) {
+        setWebglSupported(false);
+        return;
+      }
       renderer = new THREE.WebGLRenderer({
         antialias: true,
         alpha: true,
         powerPreference: 'high-performance',
       });
     } catch {
+      setWebglSupported(false);
       return;
     }
 
-    const width = container.clientWidth || 440;
-    const height = container.clientHeight || 420;
+    const width = container.clientWidth || 320;
+    const height = container.clientHeight || 260;
 
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(0, 0, 4.4);
+    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+    camera.position.set(0, 0.4, 4.4);
 
     const rootGroup = new THREE.Group();
     scene.add(rootGroup);
 
-    // Initial orientation: Center on Vietnam & East Asia
-    rootGroup.rotation.y = -Math.PI / 1.7;
-    rootGroup.rotation.x = 0.22;
-
-    const globeRadius = 1.44;
-
-    // 1. Deep Midnight Ocean Sphere with Subtle Inner Glow
-    const oceanGeo = new THREE.SphereGeometry(globeRadius * 0.994, 50, 50);
-    const oceanMat = new THREE.MeshBasicMaterial({
-      color: 0x091424,
+    // 1. Holographic Inner Core Sphere
+    const coreGeo = new THREE.SphereGeometry(1.22, 32, 32);
+    const coreMat = new THREE.MeshBasicMaterial({
+      color: 0x041628,
       transparent: true,
-      opacity: 0.97,
+      opacity: 0.72,
     });
-    const oceanSphere = new THREE.Mesh(oceanGeo, oceanMat);
-    rootGroup.add(oceanSphere);
+    const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+    rootGroup.add(coreMesh);
 
-    // Subtle atmospheric rim
-    const atmGeo = new THREE.SphereGeometry(globeRadius * 1.018, 40, 40);
-    const atmMat = new THREE.MeshBasicMaterial({
-      color: 0x1d3557,
-      transparent: true,
-      opacity: 0.2,
+    // 2. Geodesic Wireframe Maritime Mesh
+    const wireGeo = new THREE.IcosahedronGeometry(1.25, 3);
+    const wireMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
       wireframe: true,
-    });
-    const atmSphere = new THREE.Mesh(atmGeo, atmMat);
-    rootGroup.add(atmSphere);
-
-    // 2. Continents represented by Dot-Matrix Grid
-    const dotCount = WORLD_DOTS.length;
-    const dotPositions = new Float32Array(dotCount * 3);
-
-    for (let i = 0; i < dotCount; i++) {
-      const [lat, lng] = WORLD_DOTS[i];
-      const vec = latLngToVector3(lat, lng, globeRadius);
-      dotPositions[i * 3] = vec.x;
-      dotPositions[i * 3 + 1] = vec.y;
-      dotPositions[i * 3 + 2] = vec.z;
-    }
-
-    const dotGeo = new THREE.BufferGeometry();
-    dotGeo.setAttribute('position', new THREE.BufferAttribute(dotPositions, 3));
-    const dotMat = new THREE.PointsMaterial({
-      color: 0x41658a, // Crisp elegant dot matrix
-      size: 0.027,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.22,
     });
-    const dotPoints = new THREE.Points(dotGeo, dotMat);
-    rootGroup.add(dotPoints);
+    const wireMesh = new THREE.Mesh(wireGeo, wireMat);
+    rootGroup.add(wireMesh);
 
-    // 3. Elevated Arcs
-    const arcDisposables: { dispose: () => void }[] = [];
+    // 3. Outer Orbital Telemetry Rings
+    const ring1Geo = new THREE.TorusGeometry(1.55, 0.008, 16, 100);
+    const ring1Mat = new THREE.MeshBasicMaterial({
+      color: 0x22d3ee,
+      transparent: true,
+      opacity: 0.45,
+    });
+    const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
+    ring1.rotation.x = Math.PI / 2.3;
+    rootGroup.add(ring1);
 
-    const arcPairs = [
-      { from: HUBS[1], to: HUBS[0], highlight: true }, // Ha Long -> Da Nang
-      { from: HUBS[0], to: HUBS[2], highlight: true }, // Da Nang -> Nha Trang
-      { from: HUBS[2], to: HUBS[3], highlight: true }, // Nha Trang -> Phu Quoc
-      { from: HUBS[0], to: HUBS[5], highlight: false }, // Da Nang -> Singapore
-      { from: HUBS[1], to: HUBS[4], highlight: false }, // Ha Long -> Tokyo
-      { from: HUBS[5], to: HUBS[12], highlight: false }, // Singapore -> Cape Town
-      { from: HUBS[5], to: HUBS[6], highlight: false }, // Singapore -> Sydney
-      { from: HUBS[5], to: HUBS[7], highlight: false }, // Singapore -> Dubai
-      { from: HUBS[7], to: HUBS[8], highlight: false }, // Dubai -> London
-      { from: HUBS[8], to: HUBS[9], highlight: false }, // London -> New York
-      { from: HUBS[9], to: HUBS[10], highlight: false }, // New York -> SF
-      { from: HUBS[10], to: HUBS[4], highlight: false }, // SF -> Tokyo
-      { from: HUBS[9], to: HUBS[11], highlight: false }, // NY -> Rio
-      { from: HUBS[11], to: HUBS[12], highlight: false }, // Rio -> Cape Town
+    const ring2Geo = new THREE.TorusGeometry(1.74, 0.006, 16, 100);
+    const ring2Mat = new THREE.MeshBasicMaterial({
+      color: 0x34d399,
+      transparent: true,
+      opacity: 0.28,
+    });
+    const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+    ring2.rotation.x = -Math.PI / 3;
+    ring2.rotation.y = Math.PI / 5;
+    rootGroup.add(ring2);
+
+    // 4. 3D Nautical Route Curve & Waypoint Nodes
+    const routePoints = [
+      new THREE.Vector3(0.45, 0.85, 0.82).normalize().multiplyScalar(1.28),
+      new THREE.Vector3(0.62, 0.42, 1.02).normalize().multiplyScalar(1.28),
+      new THREE.Vector3(0.72, -0.05, 1.05).normalize().multiplyScalar(1.28),
+      new THREE.Vector3(0.35, -0.45, 1.14).normalize().multiplyScalar(1.28),
     ];
 
-    arcPairs.forEach(({ from, to, highlight }) => {
-      const p1 = latLngToVector3(from.lat, from.lng, globeRadius);
-      const p2 = latLngToVector3(to.lat, to.lng, globeRadius);
-      const curve = createCurvedArc(p1, p2, globeRadius, highlight ? 0.18 : 0.38);
+    const routeCurve = new THREE.CatmullRomCurve3(routePoints);
+    const tubeGeo = new THREE.TubeGeometry(routeCurve, 48, 0.018, 8, false);
+    const tubeMat = new THREE.MeshBasicMaterial({
+      color: 0x34d399,
+      transparent: true,
+      opacity: 0.85,
+    });
+    const routeTube = new THREE.Mesh(tubeGeo, tubeMat);
+    rootGroup.add(routeTube);
 
-      const points = curve.getPoints(60);
-      const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-      const lineMat = new THREE.LineBasicMaterial({
-        color: highlight ? 0x90caf9 : 0x607d8b,
-        transparent: true,
-        opacity: highlight ? 0.95 : 0.45,
+    // Port markers
+    routePoints.forEach((pt, idx) => {
+      const markerGeo = new THREE.SphereGeometry(idx === 1 ? 0.055 : 0.038, 16, 16);
+      const markerMat = new THREE.MeshBasicMaterial({
+        color: idx === 1 ? 0x38bdf8 : idx === 0 ? 0x34d399 : 0xfbbf24,
       });
-      const arcLine = new THREE.Line(lineGeo, lineMat);
-      rootGroup.add(arcLine);
-
-      arcDisposables.push(lineGeo, lineMat);
+      const marker = new THREE.Mesh(markerGeo, markerMat);
+      marker.position.copy(pt);
+      rootGroup.add(marker);
     });
 
-    // 4. Elegant Markers & Typography Text Sprites
-    const labelSprites: { sprite: THREE.Sprite; pos: THREE.Vector3 }[] = [];
+    // Moving Vessel Beacon along the curve
+    const vesselGeo = new THREE.OctahedronGeometry(0.065, 0);
+    const vesselMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const vesselMesh = new THREE.Mesh(vesselGeo, vesselMat);
+    rootGroup.add(vesselMesh);
 
-    HUBS.forEach((hub) => {
-      const pos = latLngToVector3(hub.lat, hub.lng, globeRadius * 1.002);
-
-      // Outer Ring
-      const ringGeo = new THREE.RingGeometry(0.026, 0.042, 20);
-      const ringMat = new THREE.MeshBasicMaterial({
-        color: hub.primary ? 0xc5a572 : 0xffffff,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.9,
-      });
-      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-      ringMesh.position.copy(pos);
-      ringMesh.lookAt(pos.clone().multiplyScalar(2));
-      rootGroup.add(ringMesh);
-
-      // Inner Center Pin
-      const pinGeo = new THREE.SphereGeometry(0.02, 12, 12);
-      const pinMat = new THREE.MeshBasicMaterial({
-        color: hub.primary ? 0xfef08a : 0xffffff,
-      });
-      const pinMesh = new THREE.Mesh(pinGeo, pinMat);
-      pinMesh.position.copy(pos);
-      rootGroup.add(pinMesh);
-
-      // Luxury Floating Text Label Sprite
-      const sprite = createTextSprite(hub.name, hub.sub, hub.primary);
-      const labelOffset = pos.clone().normalize().multiplyScalar(globeRadius * 1.07);
-      labelOffset.y += 0.06;
-      sprite.position.copy(labelOffset);
-      rootGroup.add(sprite);
-
-      labelSprites.push({ sprite, pos });
-      arcDisposables.push(ringGeo, ringMat, pinGeo, pinMat, sprite.material);
+    // 5. Starfield / Ocean Telemetry Particles
+    const particleCount = 140;
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      const r = 1.85 + Math.random() * 0.9;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = r * Math.cos(phi);
+    }
+    const particleGeo = new THREE.BufferGeometry();
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const particleMat = new THREE.PointsMaterial({
+      color: 0x67e8f9,
+      size: 0.028,
+      transparent: true,
+      opacity: 0.65,
     });
+    const particleSystem = new THREE.Points(particleGeo, particleMat);
+    rootGroup.add(particleSystem);
 
-    // 5. Active Vessel beacon gliding along the Vietnam route
-    const vietnamCurve = createCurvedArc(
-      latLngToVector3(HUBS[1].lat, HUBS[1].lng, globeRadius),
-      latLngToVector3(HUBS[3].lat, HUBS[3].lng, globeRadius),
-      globeRadius,
-      0.18
-    );
-
-    const vesselGeo = new THREE.SphereGeometry(0.038, 16, 16);
-    const vesselMat = new THREE.MeshBasicMaterial({
-      color: 0xffd54f, // Gold vessel beacon
-    });
-    const vessel = new THREE.Mesh(vesselGeo, vesselMat);
-    rootGroup.add(vessel);
-    arcDisposables.push(vesselGeo, vesselMat);
-
-    // Interactive Drag / Parallax
-    let isDragging = false;
-    let prevMouseX = 0;
-    let prevMouseY = 0;
-    let autoRotate = true;
-
-    const onMouseDown = (e: MouseEvent) => {
-      isDragging = true;
-      autoRotate = false;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
+    let mouseX = 0;
+    let mouseY = 0;
+    const handlePointerMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      mouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 1.1;
+      mouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 0.8;
     };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      const deltaX = e.clientX - prevMouseX;
-      const deltaY = e.clientY - prevMouseY;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-
-      rootGroup.rotation.y += deltaX * 0.005;
-      rootGroup.rotation.x += deltaY * 0.005;
-    };
-
-    const onMouseUp = () => {
-      isDragging = false;
-      setTimeout(() => {
-        autoRotate = true;
-      }, 2500);
-    };
-
-    container.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
+    container.addEventListener('mousemove', handlePointerMove);
 
     const handleResize = () => {
       if (!container || !renderer) return;
-      const w = container.clientWidth || 440;
-      const h = container.clientHeight || 420;
+      const w = container.clientWidth || 320;
+      const h = container.clientHeight || 260;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
@@ -343,28 +219,22 @@ export const MaritimeGlobe3D: React.FC = () => {
     const animate = () => {
       clock += 0.008;
 
-      if (autoRotate) {
-        rootGroup.rotation.y += 0.002;
+      if (viewMode === 'RADAR') {
+        rootGroup.rotation.x += (0.85 - rootGroup.rotation.x) * 0.06;
+        rootGroup.rotation.y += 0.012;
+      } else {
+        rootGroup.rotation.y += 0.0045 + mouseX * 0.02;
+        rootGroup.rotation.x += (mouseY * 0.4 - rootGroup.rotation.x) * 0.05;
       }
 
-      // Hide or fade labels that are on the back side of the sphere to keep it super clean!
-      const cameraDir = new THREE.Vector3(0, 0, 1);
-      labelSprites.forEach(({ sprite, pos }) => {
-        const worldPos = pos.clone().applyEuler(rootGroup.rotation);
-        const dot = worldPos.dot(cameraDir);
-        // Only visible when facing towards camera
-        if (dot > 0.15) {
-          sprite.visible = true;
-          sprite.material.opacity = Math.min(1, (dot - 0.15) * 2.5);
-        } else {
-          sprite.visible = false;
-        }
-      });
+      ring1.rotation.z = clock * 0.7;
+      ring2.rotation.z = -clock * 0.5;
+      particleSystem.rotation.y = -clock * 0.2;
 
-      // Vessel movement
-      const t = (Math.sin(clock * 0.6) * 0.5 + 0.5);
-      const vPos = vietnamCurve.getPointAt(t);
-      vessel.position.copy(vPos);
+      const t = (Math.sin(clock * 0.9) + 1) / 2;
+      const posOnCurve = routeCurve.getPointAt(t);
+      vesselMesh.position.copy(posOnCurve);
+      vesselMesh.rotation.y = clock * 3;
 
       renderer?.render(scene, camera);
       animId = requestAnimationFrame(animate);
@@ -374,32 +244,121 @@ export const MaritimeGlobe3D: React.FC = () => {
 
     return () => {
       cancelAnimationFrame(animId);
-      container.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
+      container.removeEventListener('mousemove', handlePointerMove);
       window.removeEventListener('resize', handleResize);
       renderer?.dispose();
-
-      oceanGeo.dispose();
-      oceanMat.dispose();
-      atmGeo.dispose();
-      atmMat.dispose();
-      dotGeo.dispose();
-      dotMat.dispose();
-      arcDisposables.forEach((d) => d.dispose());
+      coreGeo.dispose();
+      coreMat.dispose();
+      wireGeo.dispose();
+      wireMat.dispose();
+      ring1Geo.dispose();
+      ring1Mat.dispose();
+      ring2Geo.dispose();
+      ring2Mat.dispose();
+      tubeGeo.dispose();
+      tubeMat.dispose();
+      particleGeo.dispose();
+      particleMat.dispose();
     };
-  }, []);
+  }, [viewMode]);
 
   return (
     <div
       data-testid="maritime-globe-3d"
-      className="relative w-full h-[380px] sm:h-[440px] flex items-center justify-center overflow-hidden select-none"
+      className="relative rounded-2xl bg-[#0B1F33] border border-[#102A43] p-4 backdrop-blur-md shadow-xl overflow-hidden flex flex-col justify-between min-h-[320px]"
     >
-      <div
-        ref={mountRef}
-        className="w-full h-full cursor-grab active:cursor-grabbing"
-        aria-label="Luxury 3D Maritime Globe with Typography Labels"
-      />
+      {/* Top HUD Bar */}
+      <div className="relative z-10 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#397C80] animate-ping" />
+          <span className="text-[10px] font-mono uppercase tracking-widest text-[#C5A572] font-semibold flex items-center gap-1.5">
+            <Globe className="w-3.5 h-3.5 text-[#397C80]" />
+            Three.js 3D Fleet Holodeck
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1 bg-[#102A43]/80 border border-[#183B5B] rounded-lg p-0.5">
+          <button
+            type="button"
+            onClick={() => setViewMode('GLOBE')}
+            className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all cursor-pointer ${
+              viewMode === 'GLOBE'
+                ? 'bg-[#397C80]/30 text-[#F7F4ED] border border-[#397C80]/60 font-semibold'
+                : 'text-[#8C9BA5] hover:text-[#F7F4ED]'
+            }`}
+          >
+            3D Orbit
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('RADAR')}
+            className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all cursor-pointer ${
+              viewMode === 'RADAR'
+                ? 'bg-[#397C80]/30 text-[#F7F4ED] border border-[#397C80]/60 font-semibold'
+                : 'text-[#8C9BA5] hover:text-[#F7F4ED]'
+            }`}
+          >
+            Polar Radar
+          </button>
+        </div>
+      </div>
+
+      {/* 3D WebGL Viewport or Fallback SVG Radar */}
+      <div className="relative my-1 flex-1 min-h-[195px] flex items-center justify-center">
+        <div
+          ref={mountRef}
+          className="w-full h-[200px] cursor-grab active:cursor-grabbing"
+          aria-label="Interactive 3D Maritime Globe"
+        />
+        {!webglSupported && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <div className="w-32 h-32 rounded-full border border-[#397C80]/30 bg-[#397C80]/5 flex items-center justify-center relative">
+              <div className="w-20 h-20 rounded-full border border-[#C5A572]/30 animate-pulse flex items-center justify-center">
+                <Compass className="w-8 h-8 text-[#397C80]" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Floating Live Telemetry Overlay */}
+        <div className="pointer-events-none absolute bottom-1 left-1 right-1 flex items-center justify-between text-[10px] font-mono text-[#8C9BA5] bg-[#102A43]/80 backdrop-blur-md px-2.5 py-1.5 rounded-xl border border-[#183B5B]">
+          <span className="flex items-center gap-1 text-[#F7F4ED]">
+            <Radio className="w-3 h-3 text-[#397C80] animate-pulse" />
+            {selectedPort.name}
+          </span>
+          <span className="text-[#C5A572]">{selectedPort.coords}</span>
+        </div>
+      </div>
+
+      {/* Interactive Port Waypoint Selector Pills */}
+      <div className="relative z-10 grid grid-cols-2 gap-1.5 pt-1">
+        {CRUISE_WAYPOINTS.map((wp) => {
+          const isSelected = selectedPort.id === wp.id;
+          return (
+            <button
+              key={wp.id}
+              type="button"
+              onClick={() => setSelectedPort(wp)}
+              className={`text-left px-2.5 py-1.5 rounded-xl border text-[10px] font-mono transition-all cursor-pointer flex items-center justify-between ${
+                isSelected
+                  ? 'bg-[#102A43] border-[#C5A572] text-[#F7F4ED] shadow-sm'
+                  : 'bg-[#0B1F33]/60 border-[#183B5B]/50 text-[#8C9BA5] hover:text-[#F7F4ED] hover:bg-[#102A43]/50'
+              }`}
+            >
+              <span className="truncate font-semibold">{wp.name}</span>
+              <Sparkles
+                className={`w-2.5 h-2.5 shrink-0 ml-1 ${
+                  wp.status === 'ACTIVE'
+                    ? 'text-[#C5A572]'
+                    : wp.status === 'COMPLETED'
+                    ? 'text-[#397C80]'
+                    : 'text-[#486581]'
+                }`}
+              />
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };

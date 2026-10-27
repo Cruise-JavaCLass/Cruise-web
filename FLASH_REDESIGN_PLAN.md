@@ -150,7 +150,7 @@ cmd /c npx vitest run src/pages/passenger/MySchedulePage.test.tsx src/pages/pass
 ### Files to Edit in Wave 3:
 1. **`src/layouts/MainLayout.tsx`**
    - Apply `data-theme="admin-editorial"` with `min-h-screen bg-[#F6F7F9] text-[#20242C]`.
-   - Sidebar (`aside`): `bg-white border-r border-[#E5E7EB]` with clean typography, subtle active nav state (`bg-[#EEF2FF] text-[#5277D9] font-semibold rounded-[10px]`), and soft hover (` text-[#687080] hover:text-[#20242C] hover:bg-[#F6F7F9]`).
+   - Sidebar (`aside`): `bg-white border-r border-[#E5E7EB]` with clean typography, subtle active nav state (`bg-[#EEF2FF] text-[#5277D9] font-semibold rounded-[10px]`), and soft hover (`text-[#687080] hover:text-[#20242C] hover:bg-[#F6F7F9]`).
    - Top Header (`header`): `bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] text-[#20242C]`.
    - **MUST PRESERVE FOR TESTS (`MainLayout.test.tsx`):**
      - `'CRUISE MANAGER'`, `'Grand Pearl Voyager'`, `'Dashboard Tổng quan'`, `'Quản lý Đội tàu'`, `'Hải trình & Cảng dừng'`, `'Tour Trên Bờ (Excursion)'`, `'Hoạt động & Excursion'`, `'POS & Chi tiêu Onboard'`, `'Hành khách & Check-in'`
@@ -211,7 +211,7 @@ cmd /c npx vitest run src/pages/ActivitiesPage.test.tsx src/pages/ActivityDetail
 2. **`src/pages/PassengersPage.tsx`** (Preserve h2 `'Danh Sách Hành Khách & Định Vị BLE'`)
 3. **`src/pages/TerminalEmbarkationPage.tsx`**
 4. **`src/pages/SettlementPage.tsx`**
-5. **`src/pages/OperationalReportsPage.tsx`**
+5. **`src/components/reports/OperationalReportDashboard.tsx`**
 6. **`src/pages/ProviderSettlementDashboard.tsx`**
 
 Apply Soft Editorial styling (`bg-white border border-[#E5E7EB] rounded-[14px]`, `#20242C` text, `#687080` secondary labels, `tabular-nums` for financial columns, `#5277D9` primary actions).

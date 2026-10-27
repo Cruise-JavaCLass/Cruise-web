@@ -26,6 +26,10 @@ export const TiltedCard: React.FC<TiltedCardProps> = ({
   const [glarePos, setGlarePos] = useState({ x: 50, y: 50, opacity: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
+      return;
+    }
+
     const el = cardRef.current;
     if (!el) return;
 

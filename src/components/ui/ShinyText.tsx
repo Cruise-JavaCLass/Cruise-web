@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export interface ShinyTextProps {
   text: string;
@@ -40,6 +40,11 @@ const CIPHER_CHARS = '0123456789ABCDEF°′″NSWE◈◇▲';
 export const DecryptedText: React.FC<DecryptedTextProps> = ({ text, className = '' }) => {
   const [displayText, setDisplayText] = useState(text);
   const [isScrambling, setIsScrambling] = useState(false);
+
+  useEffect(() => {
+    setDisplayText(text);
+    setIsScrambling(false);
+  }, [text]);
 
   const triggerScramble = () => {
     if (isScrambling) return;

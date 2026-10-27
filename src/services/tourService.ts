@@ -217,7 +217,10 @@ export async function getTours(params?: {
     const res = await apiClient.get<{ success: boolean; data: { content: CruiseTour[] } }>('/itinerary/tours', {
       params,
     });
-    return res.data?.data?.content ?? [];
+    if (res.data?.data?.content && res.data.data.content.length > 0) {
+      return res.data.data.content;
+    }
+    return INITIAL_TOURS;
   } catch {
     return INITIAL_TOURS;
   }

@@ -71,9 +71,8 @@ export const MaritimeLottie: React.FC<MaritimeLottieProps> = ({
     }
 
     let isMounted = true;
-    const pkgName = 'lottie-react';
 
-    import(/* @vite-ignore */ pkgName)
+    import('lottie-react')
       .then((mod) => {
         const rawComp =
           (mod as { default?: ComponentType<LottieComponentProps> }).default ||
@@ -129,7 +128,7 @@ export const MaritimeLottie: React.FC<MaritimeLottieProps> = ({
             role="img"
             aria-label={title || 'Nautical Radar Diagnostic'}
           >
-            <Compass className="w-full h-full animate-pulse opacity-90" />
+            <Compass className="w-full h-full motion-safe:animate-pulse opacity-90" />
           </div>
         );
       case 'waves':

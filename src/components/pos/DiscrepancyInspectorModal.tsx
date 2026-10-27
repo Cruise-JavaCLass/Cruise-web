@@ -9,6 +9,7 @@ import {
   type DiscrepancyRecord,
   type ResolveDiscrepancyPayload,
 } from '../../services/reconciliationService';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface DiscrepancyInspectorModalProps {
   isOpen: boolean;
@@ -25,6 +26,9 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
 }) => {
   const [resolutionNotes, setResolutionNotes] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const modalRef = React.useRef<HTMLDivElement>(null);
+
+  useFocusTrap(isOpen, modalRef, onClose);
 
   React.useEffect(() => {
     if (record) {
@@ -58,6 +62,7 @@ export const DiscrepancyInspectorModal: React.FC<DiscrepancyInspectorModalProps>
 
   return (
     <div
+      ref={modalRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="discrepancy-inspector-title"
