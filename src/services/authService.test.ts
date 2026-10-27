@@ -43,4 +43,45 @@ describe('authService Unit Tests', () => {
     expect(authService.isAuthenticated()).toBe(true);
     expect(authService.isStaff()).toBe(false);
   });
+
+  it('rejects PASSENGER role at crew login boundary', async () => {
+    const { apiClient } = await import('./api');
+    vi.spyOn(apiClient, 'post').mockResolvedValueOnce({
+      data: {
+        success: true,
+        data: {
+          token: 'passenger-token',
+          user: {
+            id: 200,
+            username: 'passenger1',
+            fullName: 'Passenger One',
+            role: 'PASSENGER',
+          },
+        },
+      },
+    });
+
+    await expect(authService.login({ username: 'passenger1', password: 'password' })).rejects.toThrow(
+      'Tài khoản hành khách không có quyền truy cập hệ thống vận hành.'
+    );
+    expect(authService.isAuthenticated()).toBe(false);
+  });
+
+  it('does not create admin session when login response lacks user', async () => {
+    const { apiClient } = await import('./api');
+    vi.spyOn(apiClient, 'post').mockResolvedValueOnce({
+      data: {
+        success: true,
+        data: {
+          token: 'token-without-user',
+          user: undefined,
+        },
+      },
+    });
+
+    await expect(authService.login({ username: 'random_user', password: 'password' })).rejects.toThrow(
+      'Tên đăng nhập hoặc mật khẩu không chính xác.'
+    );
+    expect(authService.isAuthenticated()).toBe(false);
+  });
 });

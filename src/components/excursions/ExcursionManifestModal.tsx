@@ -699,7 +699,15 @@ export function ExcursionManifestModal({
                     }`}
                   >
                     <span className="font-semibold">{group.groupName}:</span>
-                    <span className={isFull ? 'text-amber-300 font-bold' : isSelected ? 'text-white' : 'text-[#252B32]'}>
+                    <span
+                      className={
+                        isFull
+                          ? `font-bold ${isSelected ? 'text-amber-300' : 'text-amber-700'}`
+                          : isSelected
+                          ? 'text-white'
+                          : 'text-[#252B32]'
+                      }
+                    >
                       {group.currentCount}/{group.maxSeats} chỗ
                     </span>
                     <span className={`text-[10px] hidden sm:inline ${isSelected ? 'text-[#E5E0D7]' : 'text-[#252B32]/60'}`}>({group.busNumber})</span>

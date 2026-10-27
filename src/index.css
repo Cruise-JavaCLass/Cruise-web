@@ -192,8 +192,8 @@
   background: linear-gradient(
     135deg,
     #102A43 0%,
-    #C5A572 45%,
-    #397C80 80%,
+    #8C6D37 45%,
+    #2E6568 80%,
     #102A43 100%
   );
   background-size: 200% auto;
@@ -201,6 +201,12 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: maritime-shimmer 4s ease infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .maritime-shimmer-text {
+    animation: none;
+  }
 }
 
 @keyframes maritime-shimmer {

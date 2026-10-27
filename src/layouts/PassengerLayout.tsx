@@ -33,12 +33,16 @@ export function PassengerLayout() {
   const location = useLocation();
 
   useEffect(() => {
-    // 1. Read stored passenger profile from localStorage immediately if present
+    const pId = resolvePassengerId();
+
+    // 1. Read stored passenger profile from localStorage immediately if matching selected passenger ID
     try {
       const stored = localStorage.getItem('currentPassenger') || sessionStorage.getItem('currentPassenger');
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed?.fullName || parsed?.name) {
+        const storedId = parsed?.id ?? parsed?.passengerId;
+        const matchesSelected = !pId || storedId === undefined || Number(storedId) === pId;
+        if (matchesSelected && (parsed?.fullName || parsed?.name)) {
           setGuestProfile({
             name: parsed.fullName || parsed.name,
             cabin: parsed.cabinNumber || parsed.cabin || 'Chưa gán',
@@ -52,7 +56,6 @@ export function PassengerLayout() {
     }
 
     // 2. Refresh from backend API
-    const pId = resolvePassengerId();
     if (pId) {
       getPassengerBookingSummary(pId)
         .then((summary) => {
@@ -248,7 +251,7 @@ export function PassengerLayout() {
 
             <div className="pt-2 border-t border-[#E5E0D7] flex items-center justify-between text-[11px] font-mono text-[#627D98]">
               <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-[#C5A572]" /> Giờ du thuyền: {new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} (UTC+7)
+                <Clock className="w-3.5 h-3.5 text-[#C5A572]" /> Giờ du thuyền: {new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Ho_Chi_Minh' })} (UTC+7)
               </span>
               <Link
                 to="/login"

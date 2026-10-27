@@ -173,15 +173,14 @@ export const CruiseAreaPolicyManager: React.FC<CruiseAreaPolicyManagerProps> = (
               aria-label="Chọn du thuyền"
               className="bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl px-3 py-1.5 text-xs font-semibold text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10"
             >
-              {availableShips.length > 0 ? (
-                availableShips.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} ({s.code})
-                  </option>
-                ))
-              ) : (
+              {!availableShips.some((s) => s.id === shipId) && (
                 <option value={shipId}>Tàu #{shipId}</option>
               )}
+              {availableShips.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name} ({s.code})
+                </option>
+              ))}
             </select>
           </div>
           <button

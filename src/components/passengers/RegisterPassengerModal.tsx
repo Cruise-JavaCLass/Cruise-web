@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, UserPlus, AlertCircle, RefreshCw } from 'lucide-react';
 import type { RegisterPassengerPayload } from '../../services/passengerService';
 
@@ -27,6 +27,21 @@ export const RegisterPassengerModal: React.FC<RegisterPassengerModalProps> = ({
   const [registrationStatus, setRegistrationStatus] = useState<'CONFIRMED' | 'PENDING' | 'CANCELLED'>('CONFIRMED');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFullName('');
+      setEmail('');
+      setPhoneNumber('');
+      setCabinNumber('');
+      setRfidTag(generateRandomRfidTag());
+      setTourPackage('Classic Cruise');
+      setBleZone('Zone A - Sky Lounge');
+      setRegistrationStatus('CONFIRMED');
+      setErrors({});
+      setIsSubmitting(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

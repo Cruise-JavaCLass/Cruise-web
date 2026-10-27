@@ -142,7 +142,7 @@ cmd /c npx vitest run src/pages/passenger/MySchedulePage.test.tsx src/pages/pass
 - Primary Surface / Cards: `#FFFFFF` (`bg-white border border-[#E5E7EB] shadow-xs rounded-[14px]`)
 - Secondary Surface: `#F1F3F7` (`bg-[#F1F3F7]`)
 - Primary Text: `#20242C` | Secondary Text: `#687080`
-- Primary Accent: Muted Blue `#5277D9` (`bg-[#5277D9] text-white hover:bg-[#4364C2]`) | Subtle Accent Surface: `#EEF2FF` (`bg-[#EEF2FF] text-[#5277D9]`)
+- Primary Accent (WCAG AA Compliant): Navy/Indigo `#2A52BE` (`bg-[#2A52BE] text-white hover:bg-[#1E3A8A]`) | Subtle Accent Surface: `#EEF2FF` (`bg-[#EEF2FF] text-[#1E40AF]`) (Accent `#5277D9` reserved strictly for non-text indicators or large display text >= 18pt)
 - Corner Radii: Badges/Small Controls `rounded-[6px]`, Buttons/Inputs `rounded-[10px]`, Cards/Panels `rounded-[14px]`, Large Sections/Dialogs `rounded-[18px]`.
 - Transitions: `transition-all duration-150`
 - Numbers: `tabular-nums` on all KPI, capacity, and currency figures.
@@ -150,7 +150,7 @@ cmd /c npx vitest run src/pages/passenger/MySchedulePage.test.tsx src/pages/pass
 ### Files to Edit in Wave 3:
 1. **`src/layouts/MainLayout.tsx`**
    - Apply `data-theme="admin-editorial"` with `min-h-screen bg-[#F6F7F9] text-[#20242C]`.
-   - Sidebar (`aside`): `bg-white border-r border-[#E5E7EB]` with clean typography, subtle active nav state (`bg-[#EEF2FF] text-[#5277D9] font-semibold rounded-[10px]`), and soft hover (`text-[#687080] hover:text-[#20242C] hover:bg-[#F6F7F9]`).
+   - Sidebar (`aside`): `bg-white border-r border-[#E5E7EB]` with clean typography, subtle active nav state (`bg-[#EEF2FF] text-[#1E40AF] font-semibold rounded-[10px]`), and soft hover (`text-[#687080] hover:text-[#20242C] hover:bg-[#F6F7F9]`).
    - Top Header (`header`): `bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] text-[#20242C]`.
    - **MUST PRESERVE FOR TESTS (`MainLayout.test.tsx`):**
      - `'CRUISE MANAGER'`, `'Grand Pearl Voyager'`, `'Dashboard Tổng quan'`, `'Quản lý Đội tàu'`, `'Hải trình & Cảng dừng'`, `'Tour Trên Bờ (Excursion)'`, `'Hoạt động & Excursion'`, `'POS & Chi tiêu Onboard'`, `'Hành khách & Check-in'`

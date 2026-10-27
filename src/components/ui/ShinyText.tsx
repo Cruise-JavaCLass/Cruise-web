@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export interface ShinyTextProps {
   text: string;
@@ -40,10 +40,20 @@ const CIPHER_CHARS = '0123456789ABCDEF°′″NSWE◈◇▲';
 export const DecryptedText: React.FC<DecryptedTextProps> = ({ text, className = '' }) => {
   const [displayText, setDisplayText] = useState(text);
   const [isScrambling, setIsScrambling] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearScramble = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
 
   useEffect(() => {
+    clearScramble();
     setDisplayText(text);
     setIsScrambling(false);
+    return clearScramble;
   }, [text]);
 
   const triggerScramble = () => {
@@ -52,6 +62,7 @@ export const DecryptedText: React.FC<DecryptedTextProps> = ({ text, className = 
     let iteration = 0;
     const totalIterations = Math.min(text.length, 14);
 
+    clearScramble();
     const interval = setInterval(() => {
       setDisplayText(
         text
@@ -68,11 +79,12 @@ export const DecryptedText: React.FC<DecryptedTextProps> = ({ text, className = 
 
       iteration += 1;
       if (iteration > totalIterations) {
-        clearInterval(interval);
+        clearScramble();
         setDisplayText(text);
         setIsScrambling(false);
       }
     }, 32);
+    intervalRef.current = interval;
   };
 
   return (

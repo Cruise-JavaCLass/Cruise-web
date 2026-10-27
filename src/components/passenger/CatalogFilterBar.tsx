@@ -171,7 +171,7 @@ export const CatalogFilterBar: React.FC<CatalogFilterBarProps> = ({
           >
             Mọi ngày
           </button>
-          {[1, 2, 3, 4].map((day) => (
+          {[1, 2, 3, 4, 5].map((day) => (
             <button
               key={`day-${day}`}
               type="button"

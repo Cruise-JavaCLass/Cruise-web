@@ -64,6 +64,7 @@ export function DashboardPage() {
   const checkedInPassengers = kpis?.checkedInPassengers ?? 0;
   const embarkationRate = kpis?.embarkationRate ?? 0;
   const totalActivities = (kpis?.totalActivitiesScheduled ?? 0) + (kpis?.departingExcursionsToday ?? 0);
+  const hasKpis = kpis !== null;
 
   return (
     <div ref={dashboardRef} className="space-y-8 animate-in fade-in duration-300">
@@ -125,7 +126,7 @@ export function DashboardPage() {
             <div className="pt-6 mt-8 border-t border-[#E5E0D7] grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
               <div className="p-3.5 bg-[#F7F4ED]/60 rounded-xl border border-[#E5E0D7]">
                 <span className="text-3xl font-serif font-bold text-[#102A43] block tabular-nums">
-                  {checkedInPassengers.toLocaleString('vi-VN')}
+                  {hasKpis ? checkedInPassengers.toLocaleString('vi-VN') : '--'}
                 </span>
                 <span className="text-[10px] font-mono uppercase font-medium text-[#5A6578] block mt-0.5">
                   passengers onboard
@@ -133,7 +134,7 @@ export function DashboardPage() {
               </div>
               <div className="p-3.5 bg-[#F7F4ED]/60 rounded-xl border border-[#E5E0D7]">
                 <span className="text-3xl font-serif font-bold text-[#102A43] block tabular-nums">
-                  {embarkationRate > 0 ? `${embarkationRate.toFixed(1)}%` : '0%'}
+                  {hasKpis ? (embarkationRate > 0 ? `${embarkationRate.toFixed(1)}%` : '0%') : '--'}
                 </span>
                 <span className="text-[10px] font-mono uppercase font-medium text-[#5A6578] block mt-0.5">
                   on-time all-aboard
@@ -178,13 +179,19 @@ export function DashboardPage() {
                 </div>
               </div>
               <p className="text-3xl font-serif font-bold text-[#102A43] tabular-nums">
-                {checkedInPassengers}{' '}
-                <span className="text-xs font-mono text-[#5A6578] font-normal">
-                  / {totalPassengers}
-                </span>
+                {hasKpis ? (
+                  <>
+                    {checkedInPassengers}{' '}
+                    <span className="text-xs font-mono text-[#5A6578] font-normal">
+                      / {totalPassengers}
+                    </span>
+                  </>
+                ) : (
+                  '--'
+                )}
               </p>
               <div className="mt-3 flex items-center text-[10px] font-mono font-medium text-emerald-700">
-                <TrendingUp className="w-3.5 h-3.5 mr-1 text-emerald-600" /> {embarkationRate.toFixed(1)}% tỉ lệ lên tàu
+                <TrendingUp className="w-3.5 h-3.5 mr-1 text-emerald-600" /> {hasKpis ? `${embarkationRate.toFixed(1)}% tỉ lệ lên tàu` : '--'}
               </div>
             </SpotlightCard>
           </TiltedCard>
@@ -207,10 +214,12 @@ export function DashboardPage() {
                 </div>
               </div>
               <p className="text-3xl font-serif font-bold text-[#102A43]">
-                {totalActivities} Sự kiện
+                {hasKpis ? `${totalActivities} Sự kiện` : '--'}
               </p>
               <div className="mt-3 text-[10px] font-mono font-medium text-[#397C80]">
-                {kpis?.totalActivitiesScheduled ?? 0} Onboard • {kpis?.departingExcursionsToday ?? 0} Shore Excursion
+                {kpis
+                  ? `${kpis.totalActivitiesScheduled} Onboard • ${kpis.departingExcursionsToday} Shore Excursion`
+                  : '--'}
               </div>
             </SpotlightCard>
           </TiltedCard>

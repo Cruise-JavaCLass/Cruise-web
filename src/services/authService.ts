@@ -86,17 +86,18 @@ export const authService = {
         '/auth/login',
         { username, password }
       );
-      if (res.data?.data?.token) {
-        const user: AuthUser = res.data.data.user || {
-          id: 1,
-          username,
-          fullName: username.toUpperCase(),
-          role: 'SYSTEM_ADMIN',
-        };
+      const user = res.data?.data?.user;
+      if (res.data?.data?.token && user) {
+        if (user.role === 'PASSENGER') {
+          throw new Error('Tài khoản hành khách không có quyền truy cập hệ thống vận hành.');
+        }
         authService.setSession(res.data.data.token, user);
         return user;
       }
-    } catch {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes('không có quyền truy cập')) {
+        throw err;
+      }
       // Backend offline or unreachable: fall back to authorized demo crew verification
     }
 
