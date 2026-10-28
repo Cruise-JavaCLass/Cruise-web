@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, useSearchParams, useLocation } from 'react-rou
 import { MainLayout } from './layouts/MainLayout';
 import { PassengerLayout } from './layouts/PassengerLayout';
 import { AdminAuthGuard } from './components/auth/AdminAuthGuard';
+import { RoleGuard } from './components/auth/RoleGuard';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ActivitiesPage } from './pages/ActivitiesPage';
@@ -70,8 +71,10 @@ export function App() {
           <Route index element={<DashboardPage />} />
           <Route path="ships" element={<ShipsPage />} />
           <Route path="ships/:id" element={<ShipDetailPage />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="users/:id" element={<UserDetailPage />} />
+          <Route element={<RoleGuard allowedRoles={['SYSTEM_ADMIN']} />}>
+            <Route path="users" element={<UsersPage />} />
+            <Route path="users/:id" element={<UserDetailPage />} />
+          </Route>
           <Route path="admin/cruise-area-policies" element={<CruiseAreaPolicyRoute />} />
           <Route path="itinerary" element={<ItineraryPage />} />
           <Route path="voyage" element={<VoyagePhaseControlCenter />} />
