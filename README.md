@@ -1,6 +1,6 @@
 <div align="center">
 
-![Cruise Hospitality Technology Banner](./docs/assets/hero-banner.svg)
+![Cruise Hospitality Technology Banner](https://raw.githubusercontent.com/Cruise-JavaCLass/.github/main/profile/assets/hero-banner.svg)
 
 <br />
 

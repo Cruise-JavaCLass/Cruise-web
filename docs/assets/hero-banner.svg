@@ -52,40 +52,40 @@
 
   <!-- Technical Watermark Coordinates -->
   <text x="1140" y="45" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#C5A572" fill-opacity="0.4" text-anchor="end" letter-spacing="2">SYS.LAT 25&#176;46'31&quot;N &#8226; LNG 80&#176;11'06&quot;W</text>
-  <text x="1140" y="385" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#C5A572" fill-opacity="0.3" text-anchor="end" letter-spacing="2">CRUISE-WEB &#8226; LUXURY MARITIME SUITE v4.0</text>
+  <text x="1140" y="385" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#C5A572" fill-opacity="0.3" text-anchor="end" letter-spacing="2">ENTERPRISE MARITIME ARCHITECTURE v4.0</text>
 
   <!-- Content Group -->
   <g transform="translate(100, 75)">
     <!-- Pill Tag -->
     <rect x="0" y="0" width="220" height="28" rx="14" fill="#C5A572" fill-opacity="0.12" stroke="#C5A572" stroke-opacity="0.35" stroke-width="1"/>
     <circle cx="14" cy="14" r="4" fill="#C5A572"/>
-    <text x="28" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#E5C793" letter-spacing="1.5">MARITIME WEB SUITE</text>
+    <text x="28" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#E5C793" letter-spacing="1.5">MARITIME CLOUD SUITE</text>
 
     <!-- Main Title -->
-    <text x="0" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="52" font-weight="800" fill="url(#goldText)" letter-spacing="-1">Cruise-web</text>
-    <text x="0" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="34" font-weight="300" fill="#A0AEC0" letter-spacing="-0.5">Operations Deck &amp; Guest Portal</text>
+    <text x="0" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="52" font-weight="800" fill="url(#goldText)" letter-spacing="-1">Cruise Hospitality</text>
+    <text x="0" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="34" font-weight="300" fill="#A0AEC0" letter-spacing="-0.5">Technology Ecosystem</text>
 
     <!-- Tagline (Inspired by Appwrite's 'Build like a team of hundreds') -->
     <text x="0" y="185" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="21" font-weight="400" fill="#E2E8F0">
       <tspan fill="#C5A572" font-weight="700">Navigate</tspan> like a fleet of hundreds.
     </text>
     <text x="0" y="215" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#8898AA">
-      Interactive 3D vessel digital twin, voyage state machine &amp; luxury guest portal.
+      Distributed microservices &amp; edge POS engineered for luxury cruise liners.
     </text>
 
     <!-- Tech specs chips inside banner -->
     <g transform="translate(0, 245)">
-      <rect x="0" y="0" width="88" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
-      <text x="44" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#61DAFB" text-anchor="middle">REACT 19</text>
+      <rect x="0" y="0" width="82" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
+      <text x="41" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#64B5F6" text-anchor="middle">JAVA 21</text>
 
-      <rect x="98" y="0" width="105" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
-      <text x="150" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#3178C6" text-anchor="middle">TYPESCRIPT</text>
+      <rect x="92" y="0" width="105" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
+      <text x="144" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#81C784" text-anchor="middle">SPRING BOOT 4</text>
 
-      <rect x="213" y="0" width="85" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
-      <text x="255" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">THREE.JS</text>
+      <rect x="207" y="0" width="92" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
+      <text x="253" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#4FC3F7" text-anchor="middle">REACT 19</text>
 
-      <rect x="308" y="0" width="115" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
-      <text x="365" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#38BDF8" text-anchor="middle">TAILWIND CSS 4</text>
+      <rect x="309" y="0" width="100" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
+      <text x="359" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#BA68C8" text-anchor="middle">KOTLIN POS</text>
     </g>
   </g>
 
