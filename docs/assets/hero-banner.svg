@@ -1,0 +1,125 @@
+<svg width="1200" height="420" viewBox="0 0 1200 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050B14"/>
+      <stop offset="50%" stop-color="#081426"/>
+      <stop offset="100%" stop-color="#02060D"/>
+    </linearGradient>
+
+    <radialGradient id="glowTopRight" cx="90%" cy="10%" r="55%">
+      <stop offset="0%" stop-color="#C5A572" stop-opacity="0.18"/>
+      <stop offset="50%" stop-color="#C5A572" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#081426" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="glowBottomLeft" cx="15%" cy="90%" r="60%">
+      <stop offset="0%" stop-color="#1E3A5F" stop-opacity="0.4"/>
+      <stop offset="70%" stop-color="#081426" stop-opacity="0.0"/>
+      <stop offset="100%" stop-color="#02060D" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="goldText" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FDFBF7"/>
+      <stop offset="50%" stop-color="#E5C793"/>
+      <stop offset="100%" stop-color="#C5A572"/>
+    </linearGradient>
+
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C5A572" stop-opacity="0.4"/>
+      <stop offset="50%" stop-color="#C5A572" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#C5A572" stop-opacity="0.3"/>
+    </linearGradient>
+
+    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+
+    <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#C5A572" stroke-width="0.75" stroke-opacity="0.035"/>
+    </pattern>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1200" height="420" rx="16" fill="url(#bgGradient)"/>
+  <rect width="1200" height="420" rx="16" fill="url(#gridPattern)"/>
+
+  <!-- Lighting Halos -->
+  <rect width="1200" height="420" rx="16" fill="url(#glowTopRight)"/>
+  <rect width="1200" height="420" rx="16" fill="url(#glowBottomLeft)"/>
+
+  <!-- Sleek Outer Border -->
+  <rect x="1" y="1" width="1198" height="418" rx="15" stroke="url(#goldBorder)" stroke-width="1.5" fill="none"/>
+
+  <!-- Technical Watermark Coordinates -->
+  <text x="1140" y="45" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#C5A572" fill-opacity="0.4" text-anchor="end" letter-spacing="2">SYS.LAT 25&#176;46'31&quot;N &#8226; LNG 80&#176;11'06&quot;W</text>
+  <text x="1140" y="385" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#C5A572" fill-opacity="0.3" text-anchor="end" letter-spacing="2">CRUISE-WEB &#8226; LUXURY MARITIME SUITE v4.0</text>
+
+  <!-- Content Group -->
+  <g transform="translate(100, 75)">
+    <!-- Pill Tag -->
+    <rect x="0" y="0" width="220" height="28" rx="14" fill="#C5A572" fill-opacity="0.12" stroke="#C5A572" stroke-opacity="0.35" stroke-width="1"/>
+    <circle cx="14" cy="14" r="4" fill="#C5A572"/>
+    <text x="28" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#E5C793" letter-spacing="1.5">MARITIME WEB SUITE</text>
+
+    <!-- Main Title -->
+    <text x="0" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="52" font-weight="800" fill="url(#goldText)" letter-spacing="-1">Cruise-web</text>
+    <text x="0" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="34" font-weight="300" fill="#A0AEC0" letter-spacing="-0.5">Operations Deck &amp; Guest Portal</text>
+
+    <!-- Tagline (Inspired by Appwrite's 'Build like a team of hundreds') -->
+    <text x="0" y="185" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="21" font-weight="400" fill="#E2E8F0">
+      <tspan fill="#C5A572" font-weight="700">Navigate</tspan> like a fleet of hundreds.
+    </text>
+    <text x="0" y="215" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#8898AA">
+      Interactive 3D vessel digital twin, voyage state machine &amp; luxury guest portal.
+    </text>
+
+    <!-- Tech specs chips inside banner -->
+    <g transform="translate(0, 245)">
+      <rect x="0" y="0" width="88" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
+      <text x="44" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#61DAFB" text-anchor="middle">REACT 19</text>
+
+      <rect x="98" y="0" width="105" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
+      <text x="150" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#3178C6" text-anchor="middle">TYPESCRIPT</text>
+
+      <rect x="213" y="0" width="85" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
+      <text x="255" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">THREE.JS</text>
+
+      <rect x="308" y="0" width="115" height="24" rx="4" fill="#0E2439" stroke="#1E3E61" stroke-width="1"/>
+      <text x="365" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#38BDF8" text-anchor="middle">TAILWIND CSS 4</text>
+    </g>
+  </g>
+
+  <!-- Official Logo Crest on Right Side -->
+  <g transform="translate(850, 85)" filter="url(#subtleShadow)">
+    <!-- Decorative Gold Rings -->
+    <circle cx="125" cy="125" r="130" stroke="#C5A572" stroke-width="1" stroke-opacity="0.15" stroke-dasharray="6 6"/>
+    <circle cx="125" cy="125" r="115" stroke="#C5A572" stroke-width="1.5" stroke-opacity="0.3"/>
+    
+    <!-- Outer Shield / Container -->
+    <rect x="15" y="15" width="220" height="220" rx="40" fill="#0A1826" stroke="#C5A572" stroke-width="2" stroke-opacity="0.5"/>
+    <rect x="23" y="23" width="204" height="204" rx="32" fill="#06101D"/>
+
+    <!-- Geometric Wave Lines (Stylized Maritime Crest) -->
+    <path d="M 50 165 C 80 155, 110 175, 140 165 C 170 155, 190 170, 200 165" stroke="#C5A572" stroke-width="2" stroke-linecap="round" fill="none" stroke-opacity="0.6"/>
+    <path d="M 60 180 C 85 172, 115 188, 145 180 C 170 172, 185 182, 190 180" stroke="#C5A572" stroke-width="1.5" stroke-linecap="round" fill="none" stroke-opacity="0.3"/>
+
+    <!-- Cruise Ship Hull Vector -->
+    <path d="M 65 145 L 185 145 L 165 160 L 85 160 Z" fill="#C5A572" fill-opacity="0.9"/>
+    
+    <!-- Superstructure Deck -->
+    <path d="M 80 125 L 170 125 L 160 142 L 75 142 Z" fill="#E5C793"/>
+    <path d="M 95 105 L 155 105 L 150 122 L 90 122 Z" fill="#FFFFFF"/>
+    
+    <!-- Portholes / Windows -->
+    <circle cx="105" cy="133" r="3" fill="#0A1826"/>
+    <circle cx="125" cy="133" r="3" fill="#0A1826"/>
+    <circle cx="145" cy="133" r="3" fill="#0A1826"/>
+
+    <!-- Funnel / Mast -->
+    <path d="M 112 88 L 122 88 L 120 102 L 110 102 Z" fill="#C5A572"/>
+    <path d="M 125 75 L 128 75 L 126 102 L 123 102 Z" fill="#FFFFFF"/>
+
+    <!-- Radiating Compass Star at Zenith -->
+    <path d="M 125 45 L 128 55 L 138 58 L 128 61 L 125 71 L 122 61 L 112 58 L 122 55 Z" fill="#E5C793"/>
+  </g>
+</svg>
