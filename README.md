@@ -1,5 +1,11 @@
 <div align="center">
 
+<a href="https://github.com/Cruise-JavaCLass">
+  <img src="./docs/assets/logo.png" alt="Cruise Hospitality Technology Logo" width="110" height="110" />
+</a>
+
+<br /><br />
+
 ![Cruise Hospitality Technology Banner](./docs/assets/hero-banner.svg)
 
 <br />
@@ -264,6 +270,10 @@ Development strictly adheres to **GitHub Flow** and **Conventional Commits**:
 <br />
 
 <div align="center">
+
+<img src="./docs/assets/logo.png" alt="Cruise Hospitality Technology Logo" width="48" height="48" />
+
+<br />
 
 **[Cruise Hospitality Technology](https://github.com/Cruise-JavaCLass)** &bull; Engineered for Luxury Maritime Operations  
 <sub>Cruise Management System &copy; 2026. Distributed under the MIT License.</sub>
