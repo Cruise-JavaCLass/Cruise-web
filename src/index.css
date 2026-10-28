@@ -1,122 +1,260 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Be Vietnam Pro', 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Be Vietnam Pro', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-retro: 'Space Grotesk', 'Be Vietnam Pro', sans-serif;
+
+  --color-maritime-ivory: #F7F4ED;
+  --color-maritime-navy: #102A43;
+  --color-maritime-gold: #C5A572;
+  --color-maritime-deep: #0B1F33;
+  --color-maritime-teal: #397C80;
+  --color-maritime-charcoal: #252B32;
+  --color-maritime-border: #E5E0D7;
+  --color-maritime-muted: #627D98;
+
+  --color-ivory: #F7F4ED;
+  --color-navy: #102A43;
+  --color-gold: #C5A572;
+  --color-deep: #0B1F33;
+  --color-teal: #397C80;
+  --color-charcoal: #252B32;
+  --color-soft-border: #E5E0D7;
+}
+
 @layer base {
   :root {
-    --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-    --font-display: 'Plus Jakarta Sans', 'Instrument Sans', sans-serif;
-    --font-serif: 'Instrument Serif', Georgia, serif;
+    --font-sans: 'Be Vietnam Pro', 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-display: 'Plus Jakarta Sans', 'Be Vietnam Pro', sans-serif;
+    --font-retro: 'Space Grotesk', 'Be Vietnam Pro', sans-serif;
+    --font-serif: 'Playfair Display', Georgia, Cambria, 'Times New Roman', Times, serif;
 
-    --background: #000000;
-    --foreground: #f8fafc;
-    --card: #050505;
-    --card-foreground: #f8fafc;
-    --border: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(56, 189, 248, 0.35);
+    /* Luxury Maritime Design System Tokens */
+    --maritime-ivory: #F7F4ED;
+    --maritime-navy: #102A43;
+    --maritime-gold: #C5A572;
+    --maritime-deep: #0B1F33;
+    --maritime-teal: #397C80;
+    --maritime-charcoal: #252B32;
+    --maritime-border: #E5E0D7;
+    --maritime-muted: #627D98;
+
+    --bg-warm: #F7F4ED;
+    --ink: #252B32;
+    --cobalt: #102A43;
+    --neutral-muted: #E5E0D7;
+    --danger-red: #DC2626;
+
+    --background: #F7F4ED;
+    --foreground: #252B32;
+    --card: #FFFFFF;
+    --card-foreground: #252B32;
+    --border: #E5E0D7;
+    --border-hover: #C5A572;
   }
 
   body {
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
-    letter-spacing: -0.011em;
+    letter-spacing: normal;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-feature-settings: "locl" 1, "calt" 1, "liga" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    text-rendering: optimizeLegibility;
   }
 
   ::selection {
-    background-color: rgba(56, 189, 248, 0.25);
-    color: #38bdf8;
+    background-color: #102A43;
+    color: #F7F4ED;
   }
 
-  /* Sleek modern scrollbars */
+  /* Tactile scrollbars */
   ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #F7F4ED;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
+    background: #C5A572;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: #102A43;
   }
 }
 
-/* Reference Typography Classes */
-.font-display {
-  font-family: var(--font-display);
-  letter-spacing: -0.025em;
-}
-.font-serif {
-  font-family: var(--font-serif);
-}
-.font-mono {
-  font-family: var(--font-mono);
-  letter-spacing: -0.01em;
-}
-
-/* Reference Surface & Grid Elements */
-.noise-overlay {
-  position: relative;
-}
-.noise-overlay::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.025;
-  pointer-events: none;
-  z-index: 1;
+/* =========================================================================
+   Scope A: Executive Fleet Console (Admin Operations)
+   ========================================================================= */
+[data-theme="admin-editorial"] {
+  --bg-app: #F7F4ED;
+  --bg-surface: #FFFFFF;
+  --bg-surface-muted: #F7F4ED;
+  --text-primary: #252B32;
+  --text-secondary: #627D98;
+  --border-subtle: #E5E0D7;
+  --accent-primary: #102A43;
+  --accent-surface: #F7F4ED;
+  --accent-gold: #C5A572;
+  --accent-teal: #397C80;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
 }
 
-.ref-card {
-  background: rgba(3, 3, 3, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.7);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.ref-card:hover {
-  background: rgba(8, 8, 8, 0.75);
-  border-color: rgba(56, 189, 248, 0.35);
-  box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.8), 0 0 20px -2px rgba(56, 189, 248, 0.15);
-  transform: translateY(-2px);
+[data-theme="admin-editorial"] ::selection {
+  background-color: #102A43;
+  color: #F7F4ED;
 }
 
-.ref-kpi {
-  background: rgba(5, 5, 5, 0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+/* Luxury Maritime Editorial Card Utilities */
+.editorial-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E0D7;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px -1px rgba(11, 31, 51, 0.05);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.editorial-card-interactive:hover {
+  border-color: #C5A572;
+  box-shadow: 0 8px 24px -4px rgba(16, 42, 67, 0.12);
 }
 
-/* Animated gradient text from reference */
-.word-gradient {
+.editorial-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  background-color: #102A43;
+  color: #FFFFFF;
+  border: 1px solid #102A43;
+  transition: all 0.15s ease;
+}
+.editorial-btn-primary:hover {
+  background-color: #0B1F33;
+  border-color: #0B1F33;
+}
+
+/* =========================================================================
+   Scope B: Five-Star Luxury Concierge (Passenger Portal)
+   ========================================================================= */
+[data-theme="passenger-retro"] {
+  --bg-app: #F7F4ED;
+  --bg-secondary: #FFFFFF;
+  --bg-surface: #FFFFFF;
+  --text-primary: #252B32;
+  --text-secondary: #627D98;
+  --accent-gold: #C5A572;
+  --accent-navy: #102A43;
+  --accent-teal: #397C80;
+  --border-subtle: #E5E0D7;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+[data-theme="passenger-retro"] ::selection {
+  background-color: #102A43;
+  color: #F7F4ED;
+}
+
+[data-theme="passenger-retro"] ::-webkit-scrollbar-track {
+  background: #F7F4ED;
+}
+[data-theme="passenger-retro"] ::-webkit-scrollbar-thumb {
+  background: #C5A572;
+  border-radius: 9999px;
+}
+[data-theme="passenger-retro"] ::-webkit-scrollbar-thumb:hover {
+  background: #102A43;
+}
+
+/* Animated gradient text (Luxury Maritime Gold-Navy shimmer) */
+.maritime-shimmer-text {
   background: linear-gradient(
-    45deg,
-    #eca8d6 0%,
-    #a78bfa 25%,
-    #67e8f9 50%,
-    #fbbf24 75%,
-    #eca8d6 100%
+    135deg,
+    #102A43 0%,
+    #8C6D37 45%,
+    #2E6568 80%,
+    #102A43 100%
   );
-  background-size: 300% 300%;
+  background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: gradient-shift 3s ease infinite;
+  animation: maritime-shimmer 4s ease infinite;
 }
 
-@keyframes gradient-shift {
+@media (prefers-reduced-motion: reduce) {
+  .maritime-shimmer-text {
+    animation: none;
+  }
+}
+
+@keyframes maritime-shimmer {
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+@keyframes shiny-sweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* =========================================================================
+   Standard Luxury Maritime Modal & Overlay Utilities
+   ========================================================================= */
+.maritime-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(11, 31, 51, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.maritime-modal-card {
+  background-color: #ffffff;
+  border: 1px solid #E5E0D7;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(11, 31, 51, 0.2), 0 8px 10px -6px rgba(11, 31, 51, 0.1);
+  overflow: hidden;
+  width: 100%;
+  color: #252B32;
+}
+
+.maritime-modal-header {
+  background-color: #F7F4ED;
+  border-bottom: 1px solid #E5E0D7;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #102A43;
 }

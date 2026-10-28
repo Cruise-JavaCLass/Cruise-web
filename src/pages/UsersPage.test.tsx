@@ -93,6 +93,29 @@ describe('UsersPage component tests', () => {
   });
 });
 
+describe('UsersPage status modal error isolation', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it('does not show a previous error when opening the modal for another user', async () => {
+    const user = userEvent.setup();
+    vi.mocked(userService.getUsers).mockResolvedValue(users);
+    vi.mocked(userService.setUserActive).mockRejectedValue(new Error('Lỗi máy chủ'));
+    renderPage();
+    await screen.findByText('An Nguyễn');
+
+    await user.click(screen.getByRole('button', { name: /Vô hiệu hóa An Nguyễn/i }));
+    await user.click(screen.getByRole('button', { name: 'Vô hiệu hóa' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Lỗi máy chủ');
+
+    await user.click(screen.getByRole('button', { name: 'Hủy' }));
+    await user.click(screen.getByRole('button', { name: /Kích hoạt Bình Trần/i }));
+
+    expect(screen.queryByText('Lỗi máy chủ')).not.toBeInTheDocument();
+  });
+});
+
 describe('UsersPage loading, empty and error states', () => {
   beforeEach(() => {
     vi.resetAllMocks();

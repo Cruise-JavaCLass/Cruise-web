@@ -37,36 +37,26 @@ import { TourFormModal } from '../components/tours/TourFormModal';
 import { StatusTransitionModal } from '../components/tours/StatusTransitionModal';
 import { TourStopsModal } from '../components/tours/TourStopsModal';
 
-const STATUS_BADGES: Record<TourStatus, { label: string; bg: string; text: string; border: string }> = {
+const STATUS_BADGES: Record<TourStatus, { label: string; cls: string }> = {
   DRAFT: {
     label: 'Bản nháp',
-    bg: 'bg-slate-500/10',
-    text: 'text-slate-300',
-    border: 'border-slate-500/20',
+    cls: 'bg-[#F7F4ED] text-[#252B32]/70 border border-[#E5E0D7]',
   },
   PUBLISHED: {
     label: 'Mở bán',
-    bg: 'bg-emerald-500/10',
-    text: 'text-emerald-400',
-    border: 'border-emerald-500/20',
+    cls: 'bg-emerald-50 text-emerald-800 border border-emerald-200/80',
   },
   IN_PROGRESS: {
     label: 'Đang hành trình',
-    bg: 'bg-cyan-500/10',
-    text: 'text-cyan-400',
-    border: 'border-cyan-500/20',
+    cls: 'bg-[#102A43]/10 text-[#102A43] border border-[#102A43]/20',
   },
   COMPLETED: {
     label: 'Hoàn thành',
-    bg: 'bg-blue-500/10',
-    text: 'text-blue-400',
-    border: 'border-blue-500/20',
+    cls: 'bg-sky-50 text-sky-800 border border-sky-200/80',
   },
   CANCELLED: {
     label: 'Đã hủy',
-    bg: 'bg-rose-500/10',
-    text: 'text-rose-400',
-    border: 'border-rose-500/20',
+    cls: 'bg-rose-50 text-rose-800 border border-rose-200/80',
   },
 };
 
@@ -90,12 +80,12 @@ export function ItineraryPage() {
   const [selectedDailyTour, setSelectedDailyTour] = useState<CruiseTour | null>(null);
 
   const [isDeleting, setIsDeleting] = useState<CruiseTour | null>(null);
-  const [notification, setNotification] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loadData = async () => {
     const [tourList, shipList, portList] = await Promise.all([getTours(), getShips(), getPorts()]);
-    setTours(tourList);
+    setTours(tourList ?? []);
     setShips(shipList);
     setPorts(portList);
   };
@@ -104,8 +94,8 @@ export function ItineraryPage() {
     void loadData();
   }, []);
 
-  const showNotification = (msg: string) => {
-    setNotification(msg);
+  const showNotification = (msg: string, type: 'success' | 'error' = 'success') => {
+    setNotification({ message: msg, type });
     setTimeout(() => setNotification(null), 4000);
   };
 
@@ -127,30 +117,19 @@ export function ItineraryPage() {
   const handleFormSubmit = async (formData: TourFormData) => {
     setIsSubmitting(true);
     try {
-      const formatted = formatTourPayload(formData);
-      const assignedShip = ships.find((s) => s.id === formatted.shipId);
-
+      const payload = formatTourPayload(formData);
       if (editingTour) {
-        const updated = await updateTour(editingTour.id, formData).catch(() => ({
-          ...editingTour,
-          ...formatted,
-          shipName: assignedShip?.name,
-          shipCode: assignedShip?.code,
-          active: true,
-        }));
+        const updated = await updateTour(editingTour.id, payload);
         setTours((prev) => prev.map((t) => (t.id === editingTour.id ? updated : t)));
-        showNotification(`Đã cập nhật tour "${updated.name}" thành công`);
+        showNotification(`Đã cập nhật tour ${formData.name} (${formData.code}) thành công!`);
       } else {
-        const newTour = await createTour(formData).catch(() => ({
-          ...formatted,
-          id: Date.now(),
-          shipName: assignedShip?.name,
-          shipCode: assignedShip?.code,
-          active: true,
-        }));
-        setTours((prev) => [newTour, ...prev]);
-        showNotification(`Đã tạo mới tour "${newTour.name}" thành công`);
+        const created = await createTour(payload);
+        setTours((prev) => [created, ...prev]);
+        showNotification(`Đã tạo mới tour ${formData.name} (${formData.code}) thành công!`);
       }
+      setIsFormModalOpen(false);
+    } catch {
+      showNotification('Có lỗi xảy ra khi lưu thông tin tour.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -159,17 +138,12 @@ export function ItineraryPage() {
   const handleStatusChange = async (id: number, targetStatus: TourStatus, reason?: string) => {
     setIsSubmitting(true);
     try {
-      const updated = await updateTourStatus(id, targetStatus, reason).catch(() => {
-        const current = tours.find((t) => t.id === id);
-        if (!current) throw new Error('Not found');
-        return {
-          ...current,
-          status: targetStatus,
-          cancellationReason: reason,
-        };
-      });
+      const updated = await updateTourStatus(id, targetStatus, reason);
       setTours((prev) => prev.map((t) => (t.id === id ? updated : t)));
-      showNotification(`Chuyển trạng thái tour thành "${STATUS_BADGES[targetStatus].label}" thành công`);
+      showNotification(`Đã chuyển trạng thái tour ${statusTour?.code || id} sang ${targetStatus}!`);
+      setIsStatusModalOpen(false);
+    } catch {
+      showNotification('Không thể chuyển trạng thái tour.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -178,15 +152,15 @@ export function ItineraryPage() {
   const handleDeleteConfirm = async () => {
     if (!isDeleting) return;
     try {
-      await deleteTour(isDeleting.id).catch(() => {});
+      await deleteTour(isDeleting.id);
       setTours((prev) => prev.filter((t) => t.id !== isDeleting.id));
-      showNotification(`Đã xóa tour "${isDeleting.name}" thành công`);
-    } finally {
+      showNotification(`Đã xóa tour ${isDeleting.name} thành công!`);
       setIsDeleting(null);
+    } catch {
+      showNotification('Không thể xóa tour này.', 'error');
     }
   };
 
-  // Filtered tours
   const filteredTours = tours.filter((tour) => {
     const matchesSearch =
       tour.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -196,7 +170,7 @@ export function ItineraryPage() {
       (tour.shipName && tour.shipName.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchesStatus = statusFilter === 'ALL' || tour.status === statusFilter;
-    const matchesShip = shipFilter === 'ALL' || String(tour.shipId) === shipFilter;
+    const matchesShip = shipFilter === 'ALL' || (tour.shipId && tour.shipId.toString() === shipFilter);
 
     return matchesSearch && matchesStatus && matchesShip;
   });
@@ -207,15 +181,15 @@ export function ItineraryPage() {
 
   if (selectedDailyTour) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-6 animate-in fade-in duration-300">
+        <div className="flex items-center justify-between pb-4 border-b border-[#E5E0D7]">
           <button
             onClick={() => setSelectedDailyTour(null)}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-semibold cursor-pointer transition-colors"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-[#E5E0D7] hover:bg-[#F7F4ED] text-[#102A43] text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer"
           >
-            <ArrowLeft className="w-4 h-4" /> Quay Lại Danh Sách Hải Trình
+            <ArrowLeft className="w-4 h-4 text-[#C5A572]" /> Quay Lại Danh Sách Hải Trình
           </button>
-          <span className="text-xs text-cyan-400 font-semibold bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 rounded-full">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7]">
             Giao diện Lịch Trình Hàng Ngày (Daily Itinerary)
           </span>
         </div>
@@ -225,86 +199,103 @@ export function ItineraryPage() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* Toast Notification */}
       {notification && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-xl animate-fade-in text-sm">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>{notification}</span>
+        <div
+          role="status"
+          className={`fixed bottom-6 right-6 z-[70] flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg text-xs font-medium border ${
+            notification.type === 'error'
+              ? 'bg-rose-50 border-rose-200 text-rose-800'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+          }`}
+        >
+          {notification.type === 'error' ? (
+            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+          ) : (
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          )}
+          <span>{notification.message}</span>
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header — Luxury Maritime */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E5E0D7]">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Compass className="w-5 h-5 text-cyan-400" /> Quản Lý Tour Du Lịch Du Thuyền (Cruise Tour)
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] tracking-wider">
+              VOYAGE MANAGEMENT
+            </span>
+            <span className="text-[11px] font-medium text-[#5A6578]">• MULTI-DAY ITINERARY</span>
+          </div>
+          <h2 className="text-2xl font-bold font-serif text-[#102A43] flex items-center gap-2.5 tracking-tight">
+            <Compass className="w-6 h-6 text-[#102A43]" /> Quản Lý Tour Du Lịch Du Thuyền (Cruise Tour)
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[#5A6578] mt-1">
             Điều phối hải trình • Quản lý tour nhiều ngày, tàu phân bổ, sức chứa và trạng thái hoạt động
           </p>
         </div>
         <button
           onClick={handleCreateOpen}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#102A43] hover:bg-[#0B1F33] text-white text-xs font-semibold rounded-xl shadow-xs transition-colors self-start sm:self-auto cursor-pointer"
         >
-          <Plus className="w-4 h-4" /> Tạo Hải Trình Mới
+          <Plus className="w-4 h-4 text-[#C5A572]" /> Tạo Hải Trình Mới
         </button>
       </div>
 
-      {/* Stats Cards — Translucent Glass */}
+      {/* Stats Cards — Luxury Maritime Blocks */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-xl hover:border-cyan-500/30 transition-all">
+        <div className="bg-white border border-[#E5E0D7] rounded-2xl p-4.5 shadow-xs flex items-center justify-between">
           <div>
-            <span className="text-xs text-slate-400 font-mono">Tổng tour đang quản lý</span>
-            <p className="text-2xl font-display text-white mt-1">{totalActiveTours}</p>
+            <span className="text-[11px] font-medium text-[#5A6578] uppercase tracking-wider">Tổng tour đang quản lý</span>
+            <p className="text-2xl font-bold tabular-nums text-[#102A43] mt-1">{totalActiveTours}</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-            <Compass className="w-5 h-5" />
+          <div className="w-10 h-10 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl flex items-center justify-center text-[#102A43]">
+            <Compass className="w-5 h-5 text-[#102A43]" />
           </div>
         </div>
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-xl hover:border-cyan-500/30 transition-all">
+        <div className="bg-white border border-[#E5E0D7] rounded-2xl p-4.5 shadow-xs flex items-center justify-between">
           <div>
-            <span className="text-xs text-slate-400 font-mono">Tour đang hành trình</span>
-            <p className="text-2xl font-display text-cyan-400 mt-1">{inProgressTours}</p>
+            <span className="text-[11px] font-medium text-[#5A6578] uppercase tracking-wider">Tour đang hành trình</span>
+            <p className="text-2xl font-bold tabular-nums text-[#397C80] mt-1">{inProgressTours}</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+          <div className="w-10 h-10 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl flex items-center justify-center text-[#397C80]">
             <Ship className="w-5 h-5" />
           </div>
         </div>
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-xl hover:border-emerald-500/30 transition-all">
+        <div className="bg-white border border-[#E5E0D7] rounded-2xl p-4.5 shadow-xs flex items-center justify-between">
           <div>
-            <span className="text-xs text-slate-400 font-mono">Tour đang mở bán</span>
-            <p className="text-2xl font-display text-emerald-400 mt-1">{publishedTours}</p>
+            <span className="text-[11px] font-medium text-[#5A6578] uppercase tracking-wider">Tour đang mở bán</span>
+            <p className="text-2xl font-bold tabular-nums text-emerald-700 mt-1">{publishedTours}</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="w-10 h-10 bg-emerald-50 border border-emerald-200/80 rounded-xl flex items-center justify-center text-emerald-700">
             <Tag className="w-5 h-5" />
           </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between shadow-xl">
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl p-4 shadow-xs flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#5A6578] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Tìm theo tên tour, mã, cảng, tàu..."
-            className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+            className="w-full pl-9 pr-4 py-2 text-xs bg-[#F7F4ED]/50 hover:bg-white focus:bg-white border border-[#E5E0D7] rounded-xl text-[#252B32] focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-all"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
+            <Filter className="w-4 h-4 text-[#5A6578]" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               aria-label="Lọc theo trạng thái"
-              className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-cyan-500 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium bg-[#F7F4ED]/50 hover:bg-white border border-[#E5E0D7] rounded-xl text-[#252B32] focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
             >
               <option value="ALL">Tất cả trạng thái</option>
               <option value="DRAFT">Bản nháp</option>
@@ -320,7 +311,7 @@ export function ItineraryPage() {
             value={shipFilter}
             onChange={(e) => setShipFilter(e.target.value)}
             aria-label="Lọc theo tàu"
-            className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-cyan-500 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium bg-[#F7F4ED]/50 hover:bg-white border border-[#E5E0D7] rounded-xl text-[#252B32] focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
           >
             <option value="ALL">Tất cả tàu</option>
             {ships.map((s) => (
@@ -334,10 +325,10 @@ export function ItineraryPage() {
 
       {/* Tour Cards Grid */}
       {filteredTours.length === 0 ? (
-        <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-12 text-center">
-          <Compass className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-slate-300">Không tìm thấy tour du lịch nào</h3>
-          <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+        <div className="bg-white border border-dashed border-[#E5E0D7] rounded-2xl p-12 text-center">
+          <Compass className="w-12 h-12 text-[#5A6578]/40 mx-auto mb-3" />
+          <h3 className="text-base font-bold font-serif text-[#102A43]">Không tìm thấy tour du lịch nào</h3>
+          <p className="text-xs text-[#5A6578] mt-1 max-w-md mx-auto">
             Không có tour nào phù hợp với bộ lọc tìm kiếm hiện tại. Hãy thử thay đổi từ khóa hoặc bộ lọc trạng thái.
           </p>
         </div>
@@ -348,40 +339,33 @@ export function ItineraryPage() {
             return (
               <div
                 key={tour.id}
-                className="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700/80 transition-all flex flex-col justify-between group shadow-lg"
+                className="bg-white border border-[#E5E0D7] rounded-2xl shadow-xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group"
               >
                 <div>
                   {/* Image header if available */}
                   {tour.imageUrl ? (
-                    <div className="h-40 w-full overflow-hidden relative">
+                    <div className="h-40 w-full overflow-hidden relative border-b border-[#E5E0D7]">
                       <img
                         src={tour.imageUrl}
                         alt={tour.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
                       <div className="absolute top-3 right-3">
-                        <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border backdrop-blur-md ${badge.bg} ${badge.text} ${badge.border}`}
-                        >
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${badge.cls}`}>
                           {badge.label}
                         </span>
                       </div>
-                      <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-xs text-cyan-300 font-semibold bg-slate-950/70 px-2.5 py-1 rounded-lg backdrop-blur-md border border-slate-800">
-                        <Clock className="w-3.5 h-3.5" />
+                      <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-xs font-medium bg-white/95 backdrop-blur-xs text-[#252B32] px-2.5 py-1 rounded-lg border border-[#E5E0D7] shadow-xs">
+                        <Clock className="w-3.5 h-3.5 text-[#397C80]" />
                         <span>
                           {tour.durationDays}N{tour.durationNights}Đ
                         </span>
                       </div>
                     </div>
                   ) : (
-                    <div className="p-4 border-b border-slate-800/60 flex items-center justify-between bg-slate-800/20">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider">{tour.code}</span>
-                      </div>
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${badge.bg} ${badge.text} ${badge.border}`}
-                      >
+                    <div className="p-3.5 border-b border-[#E5E0D7] flex items-center justify-between bg-[#F7F4ED]">
+                      <span className="text-xs font-mono font-semibold text-[#397C80] tracking-wider">{tour.code}</span>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${badge.cls}`}>
                         {badge.label}
                       </span>
                     </div>
@@ -389,44 +373,44 @@ export function ItineraryPage() {
 
                   <div className="p-5 space-y-3">
                     <div>
-                      <span className="text-[10px] text-cyan-400 font-mono font-semibold uppercase">{tour.code}</span>
-                      <h3 className="font-bold text-base text-slate-100 line-clamp-2 mt-0.5">{tour.name}</h3>
+                      <span className="text-[11px] text-[#397C80] font-mono font-semibold">{tour.code}</span>
+                      <h3 className="font-bold font-serif text-base text-[#102A43] line-clamp-2 mt-0.5 tracking-tight">{tour.name}</h3>
                     </div>
 
                     {/* Ship allocation */}
-                    <div className="flex items-center gap-2 text-xs text-slate-300 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
-                      <Ship className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <div className="flex items-center gap-2 text-xs font-medium text-[#252B32] bg-[#F7F4ED]/50 p-2.5 rounded-xl border border-[#E5E0D7]">
+                      <Ship className="w-4 h-4 text-[#102A43] shrink-0" />
                       <span className="truncate">
                         {tour.shipName ? `${tour.shipName} (${tour.shipCode})` : 'Chưa gán tàu du lịch'}
                       </span>
                     </div>
 
                     {/* Ports & Duration */}
-                    <div className="space-y-1.5 text-xs text-slate-400">
+                    <div className="space-y-1.5 text-xs text-[#5A6578]">
                       <p className="flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <MapPin className="w-3.5 h-3.5 text-[#397C80] shrink-0" />
                         <span className="truncate">Xuất phát: {tour.departurePort}</span>
                       </p>
                       <p className="flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                        <MapPin className="w-3.5 h-3.5 text-[#5A6578] shrink-0" />
                         <span className="truncate">Đích đến: {tour.destinationPort}</span>
                       </p>
                       <p className="flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <Calendar className="w-3.5 h-3.5 text-[#5A6578] shrink-0" />
                         <span>
                           {tour.startDate} → {tour.endDate}
                         </span>
                       </p>
                       <p className="flex items-center gap-2">
-                        <Users className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                        <Users className="w-3.5 h-3.5 text-amber-700 shrink-0" />
                         <span>Sức chứa: {tour.maxCapacity.toLocaleString()} hành khách</span>
                       </p>
                     </div>
 
                     {/* Cancellation reason warning */}
                     {tour.status === 'CANCELLED' && tour.cancellationReason && (
-                      <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-[11px] flex items-start gap-1.5">
-                        <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                      <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-medium rounded-xl flex items-start gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
                         <span>Lý do hủy: {tour.cancellationReason}</span>
                       </div>
                     )}
@@ -434,10 +418,10 @@ export function ItineraryPage() {
                 </div>
 
                 {/* Footer and Actions */}
-                <div className="p-5 pt-3 border-t border-slate-800 bg-slate-950/40 flex items-center justify-between gap-2">
+                <div className="p-4 pt-3 border-t border-[#E5E0D7] bg-[#F7F4ED]/50 flex items-center justify-between gap-2">
                   <div>
-                    <span className="text-[10px] text-slate-400 block">Giá cơ bản</span>
-                    <span className="text-xs font-bold text-emerald-400">
+                    <span className="text-[10px] font-medium text-[#5A6578] block uppercase">Giá cơ bản</span>
+                    <span className="text-xs font-bold tabular-nums text-[#102A43]">
                       {tour.basePrice.toLocaleString()} {tour.currency}
                     </span>
                   </div>
@@ -445,7 +429,7 @@ export function ItineraryPage() {
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => setSelectedDailyTour(tour)}
-                      className="p-1.5 bg-cyan-950/60 hover:bg-cyan-900/60 text-cyan-400 border border-cyan-500/30 rounded-lg transition-colors cursor-pointer"
+                      className="p-1.5 bg-white hover:bg-[#F7F4ED] text-[#252B32] hover:text-[#102A43] border border-[#E5E0D7] rounded-lg transition-colors shadow-xs cursor-pointer"
                       title="Xem lịch trình hàng ngày"
                       aria-label="Xem lịch trình hàng ngày"
                     >
@@ -456,28 +440,28 @@ export function ItineraryPage() {
                         setStopsTour(tour);
                         setIsStopsModalOpen(true);
                       }}
-                      className="p-1.5 bg-slate-800 hover:bg-slate-700 text-teal-400 rounded-lg transition-colors cursor-pointer"
+                      className="p-1.5 bg-white hover:bg-[#F7F4ED] text-[#252B32] hover:text-[#102A43] border border-[#E5E0D7] rounded-lg transition-colors shadow-xs cursor-pointer"
                       title="Quản lý điểm dừng hải trình"
                     >
                       <Anchor className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleStatusModalOpen(tour)}
-                      className="p-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg transition-colors cursor-pointer"
+                      className="p-1.5 bg-white hover:bg-[#F7F4ED] text-[#252B32] hover:text-[#102A43] border border-[#E5E0D7] rounded-lg transition-colors shadow-xs cursor-pointer"
                       title="Chuyển trạng thái tour"
                     >
-                      <ArrowRightCircle className="w-4 h-4" />
+                      <ArrowRightCircle className="w-4 h-4 text-[#397C80]" />
                     </button>
                     <button
                       onClick={() => handleEditOpen(tour)}
-                      className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors cursor-pointer"
+                      className="p-1.5 bg-white hover:bg-[#F7F4ED] text-[#252B32] hover:text-[#102A43] border border-[#E5E0D7] rounded-lg transition-colors shadow-xs cursor-pointer"
                       title="Chỉnh sửa tour"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setIsDeleting(tour)}
-                      className="p-1.5 bg-slate-800 hover:bg-rose-900/40 text-slate-400 hover:text-rose-400 rounded-lg transition-colors cursor-pointer"
+                      className="p-1.5 bg-white hover:bg-rose-50 hover:text-rose-600 text-[#252B32] border border-[#E5E0D7] rounded-lg transition-colors shadow-xs cursor-pointer"
                       title="Xóa tour"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -517,28 +501,28 @@ export function ItineraryPage() {
         isSubmitting={isSubmitting}
       />
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal — Luxury Maritime */}
       {isDeleting && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
         >
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 max-w-sm w-full text-slate-100">
-            <h3 className="text-base font-bold text-white mb-2">Xác Nhận Xóa Tour</h3>
-            <p className="text-xs text-slate-400 mb-5">
-              Bạn có chắc chắn muốn xóa tour <span className="text-white font-semibold">{isDeleting.name}</span> ({isDeleting.code}) không? Thao tác này không thể hoàn tác.
+          <div className="bg-white rounded-2xl border border-[#E5E0D7] p-6 max-w-sm w-full text-[#252B32] shadow-xl">
+            <h3 className="text-base font-bold font-serif text-[#102A43] mb-2">Xác Nhận Xóa Tour</h3>
+            <p className="text-xs text-[#5A6578] mb-5 leading-relaxed">
+              Bạn có chắc chắn muốn xóa tour <span className="font-semibold text-[#102A43]">{isDeleting.name}</span> ({isDeleting.code}) không? Thao tác này không thể hoàn tác.
             </p>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setIsDeleting(null)}
-                className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 text-xs font-medium text-[#102A43] bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl hover:bg-[#ECE7DC] transition-colors cursor-pointer"
               >
                 Hủy
               </button>
               <button
                 onClick={handleDeleteConfirm}
-                className="px-4 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-rose-600/20"
+                className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-xs transition-colors cursor-pointer"
               >
                 Xóa Tour
               </button>
@@ -549,3 +533,5 @@ export function ItineraryPage() {
     </div>
   );
 }
+
+export default ItineraryPage;

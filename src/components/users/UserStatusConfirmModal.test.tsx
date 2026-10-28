@@ -59,4 +59,16 @@ describe('UserStatusConfirmModal', () => {
     await user.click(screen.getByRole('button', { name: 'Vô hiệu hóa' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Không có quyền');
   });
+
+  it('clears the old error after cancelling', async () => {
+    const user = userEvent.setup();
+    const onConfirm = vi.fn().mockRejectedValue(new Error('Không có quyền'));
+    render(<UserStatusConfirmModal user={activeUser} onClose={vi.fn()} onConfirm={onConfirm} />);
+
+    await user.click(screen.getByRole('button', { name: 'Vô hiệu hóa' }));
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Hủy' }));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });

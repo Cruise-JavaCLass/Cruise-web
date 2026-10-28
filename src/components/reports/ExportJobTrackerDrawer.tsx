@@ -128,27 +128,27 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/40 backdrop-blur-sm transition-opacity flex justify-end">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-[#0B1F33]/60 backdrop-blur-xs transition-opacity flex justify-end">
       <div 
         ref={drawerRef}
-        className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col transform transition-transform"
+        className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col transform transition-transform border-l border-[#E5E0D7]"
         role="dialog"
         aria-modal="true"
         aria-label="Export Jobs Tracker"
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+        <div className="px-6 py-4 border-b border-[#E5E0D7] flex items-center justify-between bg-[#F7F4ED] shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <Download className="w-5 h-5 text-indigo-600" /> Export Downloads
+            <h2 className="text-lg font-serif font-bold text-[#102A43] flex items-center gap-2">
+              <Download className="w-5 h-5 text-[#102A43]" /> Export Downloads
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">Track background report generation status</p>
+            <p className="text-xs text-[#687787] mt-0.5">Track background report generation status</p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => void fetchJobs()}
               disabled={loading}
-              className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded-md transition-colors"
+              className="p-1.5 text-[#687787] hover:text-[#102A43] hover:bg-[#E5E0D7]/50 rounded-lg transition-colors cursor-pointer"
               title="Refresh status"
               aria-label="Refresh status"
             >
@@ -156,7 +156,7 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded-md transition-colors"
+              className="p-1.5 text-[#687787] hover:text-[#102A43] hover:bg-[#E5E0D7]/50 rounded-lg transition-colors cursor-pointer"
               title="Close drawer"
               aria-label="Close drawer"
             >
@@ -168,22 +168,22 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
         {/* Content list */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {error && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-500 mt-0.5" />
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-800 flex items-start gap-2 font-medium">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
           {loading && jobs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-slate-400">
-              <RefreshCw className="w-8 h-8 animate-spin mb-3 text-indigo-500" />
-              <p className="text-sm">Loading background exports...</p>
+            <div className="flex flex-col items-center justify-center py-16 text-[#687787]">
+              <RefreshCw className="w-8 h-8 animate-spin mb-3 text-[#102A43]" />
+              <p className="text-sm font-medium">Loading background exports...</p>
             </div>
           ) : jobs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-slate-400 text-center">
-              <FileSpreadsheet className="w-10 h-10 mb-2 stroke-slate-300" />
-              <p className="text-sm font-medium text-slate-600">No export jobs queued</p>
-              <p className="text-xs text-slate-400 mt-1 max-w-xs">
+            <div className="flex flex-col items-center justify-center py-16 text-[#687787] text-center">
+              <FileSpreadsheet className="w-10 h-10 mb-2 text-[#102A43]/40" />
+              <p className="text-sm font-serif font-bold text-[#102A43]">No export jobs queued</p>
+              <p className="text-xs text-[#687787] mt-1 max-w-xs">
                 Generated reports in CSV, Excel, or PDF formats will be available here for download.
               </p>
             </div>
@@ -191,35 +191,35 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
             jobs.map((job) => (
               <div 
                 key={job.id} 
-                className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-sm hover:shadow-md transition-shadow relative"
+                className="bg-white border border-[#E5E0D7] rounded-xl p-3.5 shadow-xs relative"
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
                     {renderFormatBadge(job.format)}
-                    <span className="text-xs font-semibold text-slate-700">
+                    <span className="text-xs font-semibold text-[#252B32]">
                       {job.reportTitle || `Job #${job.jobId.substring(0, 8)}`}
                     </span>
                   </div>
                   {renderStatus(job.status)}
                 </div>
 
-                <div className="text-xs text-slate-500 space-y-1 mb-3">
+                <div className="text-xs text-[#687787] space-y-1 mb-3">
                   <div className="flex justify-between">
                     <span>Created:</span>
-                    <span className="font-mono text-slate-600">
+                    <span className="font-mono text-[#252B32]">
                       {new Date(job.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                   {job.fileSizeBytes && (
                     <div className="flex justify-between">
                       <span>Size:</span>
-                      <span className="font-semibold text-slate-800">
+                      <span className="font-semibold text-[#102A43]">
                         {(job.fileSizeBytes / 1024).toFixed(1)} KB
                       </span>
                     </div>
                   )}
                   {job.errorMessage && (
-                    <div className="text-rose-600 bg-rose-50 p-2 rounded text-[11px] mt-1 border border-rose-100">
+                    <div className="text-rose-700 bg-rose-50 p-2 rounded-lg text-[11px] mt-1 border border-rose-200">
                       {job.errorMessage}
                     </div>
                   )}
@@ -228,10 +228,10 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
                 {job.status === 'COMPLETED' && Boolean(job.downloadUrl) && (
                   <button
                     onClick={() => handleDownload(job)}
-                    className="w-full py-1.5 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium text-xs rounded-lg flex items-center justify-center gap-1.5 transition-colors border border-indigo-200"
+                    className="w-full py-1.5 px-3 bg-[#F7F4ED] hover:bg-[#E5E0D7] text-[#102A43] font-semibold text-xs rounded-lg flex items-center justify-center gap-1.5 transition-colors border border-[#E5E0D7] cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" /> Download File
-                    <ExternalLink className="w-3 h-3 text-indigo-400 ml-0.5" />
+                    <ExternalLink className="w-3 h-3 text-[#102A43] ml-0.5" />
                   </button>
                 )}
               </div>
@@ -240,8 +240,8 @@ export const ExportJobTrackerDrawer: React.FC<ExportJobTrackerDrawerProps> = ({
         </div>
 
         {/* Footer info */}
-        <div className="p-4 border-t border-slate-200 bg-slate-50 text-center shrink-0">
-          <p className="text-[11px] text-slate-400">
+        <div className="p-4 border-t border-[#E5E0D7] bg-[#F7F4ED] text-center shrink-0">
+          <p className="text-[11px] text-[#687787]">
             Export files are stored temporarily and expire after 24 hours.
           </p>
         </div>

@@ -163,23 +163,23 @@ export function ActivityModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="activity-modal-title"
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-[#0B1F33]/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200"
     >
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col my-auto">
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-xl flex flex-col my-auto text-[#252B32]">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-800 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E0D7] bg-[#F7F4ED] shrink-0">
           <div>
-            <h3 id="activity-modal-title" className="text-lg font-bold text-white">
+            <h3 id="activity-modal-title" className="font-serif text-lg font-bold text-[#102A43]">
               {isEditing ? 'Cập Nhật Hoạt Động Du Thuyền' : 'Tạo Hoạt Động Du Thuyền Mới'}
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-[#252B32]/70 mt-0.5">
               Thiết lập khung giờ, địa điểm, sức chứa và chính sách dịch vụ
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-[#252B32]/60 hover:text-[#102A43] hover:bg-[#ECE7DC] transition-colors"
             aria-label="Đóng"
           >
             <X className="w-5 h-5" />
@@ -187,9 +187,9 @@ export function ActivityModal({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 flex-1">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 flex-1 bg-white">
           {errors.form && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errors.form}</span>
             </div>
@@ -197,8 +197,8 @@ export function ActivityModal({
 
           {/* Title */}
           <div>
-            <label htmlFor="activity-form-title" className="block text-xs font-semibold text-slate-300 mb-1.5">
-              Tên hoạt động <span className="text-rose-400">*</span>
+            <label htmlFor="activity-form-title" className="block text-xs font-semibold text-[#102A43] mb-1.5">
+              Tên hoạt động <span className="text-rose-600">*</span>
             </label>
             <input
               id="activity-form-title"
@@ -209,22 +209,22 @@ export function ActivityModal({
                 if (errors.title) setErrors((prev) => ({ ...prev, title: '' }));
               }}
               placeholder="VD: Yoga Bình Minh Trên Boong Tàu"
-              className="w-full px-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+              className="w-full px-3.5 py-2.5 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-colors"
             />
-            {errors.title && <p className="text-[11px] text-rose-400 mt-1">{errors.title}</p>}
+            {errors.title && <p className="text-[11px] text-rose-600 mt-1">{errors.title}</p>}
           </div>
 
           {/* Category & Location */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label htmlFor="activity-form-category" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Danh mục <span className="text-rose-400">*</span>
+              <label htmlFor="activity-form-category" className="block text-xs font-semibold text-[#102A43] mb-1.5">
+                Danh mục <span className="text-rose-600">*</span>
               </label>
               <select
                 id="activity-form-category"
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                className="w-full px-3.5 py-2.5 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-colors"
               >
                 <option value="Wellness & Sức Khỏe">Wellness & Sức Khỏe</option>
                 <option value="Dining & Dạ Tiệc">Dining & Dạ Tiệc</option>
@@ -237,11 +237,11 @@ export function ActivityModal({
             </div>
 
             <div>
-              <label htmlFor="activity-form-location" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Địa điểm tổ chức <span className="text-rose-400">*</span>
+              <label htmlFor="activity-form-location" className="block text-xs font-semibold text-[#102A43] mb-1.5">
+                Địa điểm tổ chức <span className="text-rose-600">*</span>
               </label>
               <div className="relative">
-                <MapPin className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <MapPin className="w-4 h-4 text-[#397C80] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="activity-form-location"
                   type="text"
@@ -251,17 +251,17 @@ export function ActivityModal({
                     if (errors.location) setErrors((prev) => ({ ...prev, location: '' }));
                   }}
                   placeholder="VD: Tầng 12 - Sundeck"
-                  className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-colors"
                 />
               </div>
-              {errors.location && <p className="text-[11px] text-rose-400 mt-1">{errors.location}</p>}
+              {errors.location && <p className="text-[11px] text-rose-600 mt-1">{errors.location}</p>}
             </div>
           </div>
 
           {/* Day & Date */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label htmlFor="activity-form-day-number" className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label htmlFor="activity-form-day-number" className="block text-xs font-semibold text-[#102A43] mb-1.5">
                 Ngày số trong Tour
               </label>
               <input
@@ -271,16 +271,16 @@ export function ActivityModal({
                 max="30"
                 value={formData.dayNumber}
                 onChange={(e) => setFormData({ ...formData, dayNumber: Number(e.target.value) })}
-                className="w-full px-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                className="w-full px-3.5 py-2.5 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-colors"
               />
             </div>
 
             <div>
-              <label htmlFor="activity-form-date" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Ngày diễn ra <span className="text-rose-400">*</span>
+              <label htmlFor="activity-form-date" className="block text-xs font-semibold text-[#102A43] mb-1.5">
+                Ngày diễn ra <span className="text-rose-600">*</span>
               </label>
               <div className="relative">
-                <Calendar className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Calendar className="w-4 h-4 text-[#397C80] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="activity-form-date"
                   type="date"
@@ -289,21 +289,21 @@ export function ActivityModal({
                     setFormData({ ...formData, activityDate: e.target.value });
                     if (errors.activityDate) setErrors((prev) => ({ ...prev, activityDate: '' }));
                   }}
-                  className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-colors"
                 />
               </div>
-              {errors.activityDate && <p className="text-[11px] text-rose-400 mt-1">{errors.activityDate}</p>}
+              {errors.activityDate && <p className="text-[11px] text-rose-600 mt-1">{errors.activityDate}</p>}
             </div>
           </div>
 
           {/* Time Slot */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label htmlFor="activity-form-start-time" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Giờ bắt đầu <span className="text-rose-400">*</span>
+              <label htmlFor="activity-form-start-time" className="block text-xs font-semibold text-[#102A43] mb-1.5">
+                Giờ bắt đầu <span className="text-rose-600">*</span>
               </label>
               <div className="relative">
-                <Clock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Clock className="w-4 h-4 text-[#397C80] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="activity-form-start-time"
                   type="time"
@@ -312,18 +312,18 @@ export function ActivityModal({
                     setFormData({ ...formData, startTime: e.target.value });
                     if (errors.startTime) setErrors((prev) => ({ ...prev, startTime: '' }));
                   }}
-                  className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-colors"
                 />
               </div>
-              {errors.startTime && <p className="text-[11px] text-rose-400 mt-1">{errors.startTime}</p>}
+              {errors.startTime && <p className="text-[11px] text-rose-600 mt-1">{errors.startTime}</p>}
             </div>
 
             <div>
-              <label htmlFor="activity-form-end-time" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Giờ kết thúc <span className="text-rose-400">*</span>
+              <label htmlFor="activity-form-end-time" className="block text-xs font-semibold text-[#102A43] mb-1.5">
+                Giờ kết thúc <span className="text-rose-600">*</span>
               </label>
               <div className="relative">
-                <Clock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Clock className="w-4 h-4 text-[#397C80] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="activity-form-end-time"
                   type="time"
@@ -332,21 +332,21 @@ export function ActivityModal({
                     setFormData({ ...formData, endTime: e.target.value });
                     if (errors.endTime) setErrors((prev) => ({ ...prev, endTime: '' }));
                   }}
-                  className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-colors"
                 />
               </div>
-              {errors.endTime && <p className="text-[11px] text-rose-400 mt-1">{errors.endTime}</p>}
+              {errors.endTime && <p className="text-[11px] text-rose-600 mt-1">{errors.endTime}</p>}
             </div>
           </div>
 
           {/* Capacity & Price */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label htmlFor="activity-form-capacity" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Sức chứa tối đa (Khách) <span className="text-rose-400">*</span>
+              <label htmlFor="activity-form-capacity" className="block text-xs font-semibold text-[#102A43] mb-1.5">
+                Sức chứa tối đa (Khách) <span className="text-rose-600">*</span>
               </label>
               <div className="relative">
-                <Users className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Users className="w-4 h-4 text-[#397C80] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="activity-form-capacity"
                   type="number"
@@ -357,18 +357,18 @@ export function ActivityModal({
                     setFormData({ ...formData, maxCapacity: Number(e.target.value) });
                     if (errors.maxCapacity) setErrors((prev) => ({ ...prev, maxCapacity: '' }));
                   }}
-                  className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-colors"
                 />
               </div>
-              {errors.maxCapacity && <p className="text-[11px] text-rose-400 mt-1">{errors.maxCapacity}</p>}
+              {errors.maxCapacity && <p className="text-[11px] text-rose-600 mt-1">{errors.maxCapacity}</p>}
             </div>
 
             <div>
-              <span className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <span className="block text-xs font-semibold text-[#102A43] mb-1.5">
                 Gói dịch vụ & Chi phí
               </span>
               <div className="flex items-center gap-2 mt-2">
-                <label htmlFor="activity-form-included" className="inline-flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <label htmlFor="activity-form-included" className="inline-flex items-center gap-2 text-xs text-[#252B32] cursor-pointer">
                   <input
                     id="activity-form-included"
                     type="checkbox"
@@ -380,7 +380,7 @@ export function ActivityModal({
                         price: e.target.checked ? 0 : formData.price || 150000,
                       })
                     }
-                    className="w-4 h-4 rounded text-cyan-600 bg-slate-800 border-slate-700 focus:ring-cyan-500"
+                    className="w-4 h-4 rounded text-[#102A43] border-[#E5E0D7] focus:ring-[#102A43]"
                   />
                   <span>Bao gồm trong tour (Miễn phí)</span>
                 </label>
@@ -390,11 +390,11 @@ export function ActivityModal({
 
           {!formData.isIncluded && (
             <div>
-              <label htmlFor="activity-form-price" className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Mức phí tham gia (VNĐ) <span className="text-rose-400">*</span>
+              <label htmlFor="activity-form-price" className="block text-xs font-semibold text-[#102A43] mb-1.5">
+                Mức phí tham gia (VNĐ) <span className="text-rose-600">*</span>
               </label>
               <div className="relative">
-                <DollarSign className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <DollarSign className="w-4 h-4 text-[#397C80] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="activity-form-price"
                   type="number"
@@ -406,16 +406,16 @@ export function ActivityModal({
                     if (errors.price) setErrors((prev) => ({ ...prev, price: '' }));
                   }}
                   placeholder="VD: 250000"
-                  className="w-full pl-9 pr-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-colors"
                 />
               </div>
-              {errors.price && <p className="text-[11px] text-rose-400 mt-1">{errors.price}</p>}
+              {errors.price && <p className="text-[11px] text-rose-600 mt-1">{errors.price}</p>}
             </div>
           )}
 
           {/* Description */}
           <div>
-            <label htmlFor="activity-form-desc" className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label htmlFor="activity-form-desc" className="block text-xs font-semibold text-[#102A43] mb-1.5">
               Mô tả chi tiết hoạt động
             </label>
             <textarea
@@ -424,24 +424,24 @@ export function ActivityModal({
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Thông tin chi tiết về nội dung hoạt động, yêu cầu trang phục hoặc lưu ý an toàn..."
-              className="w-full px-3.5 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors resize-none"
+              className="w-full px-3.5 py-2.5 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] transition-colors resize-none"
             />
           </div>
 
           {/* Buttons */}
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2.5 shrink-0">
+          <div className="pt-4 border-t border-[#E5E0D7] flex items-center justify-end gap-2.5 shrink-0">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition-colors"
+              className="px-4 py-2.5 bg-[#F7F4ED] hover:bg-[#ECE7DC] text-[#102A43] border border-[#E5E0D7] rounded-xl text-xs font-semibold transition-colors"
             >
               Hủy bỏ
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/20 transition-all disabled:opacity-50"
+              className="px-5 py-2.5 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-xs font-semibold shadow-xs transition-colors disabled:opacity-50"
             >
               {submitting ? 'Đang lưu...' : isEditing ? 'Cập Nhật' : 'Tạo Mới'}
             </button>

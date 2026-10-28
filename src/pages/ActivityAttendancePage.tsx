@@ -207,23 +207,23 @@ export const ActivityAttendancePage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in duration-300">
       {/* Top Header & Breadcrumb */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E5E0D7] pb-5">
         <div className="flex items-center space-x-3">
           <Link
             to="/activities"
-            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
+            className="p-2 rounded-xl bg-[#F7F4ED] hover:bg-[#ECE7DC] text-[#102A43] border border-[#E5E0D7] transition-colors"
             title="Quay lại danh sách hoạt động"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
             <div className="flex items-center space-x-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#102A43]/10 text-[#102A43] border border-[#102A43]/15">
                 Staff Ops Dashboard
               </span>
-              <span className="text-xs text-slate-400">ID: #{selectedActivityId}</span>
+              <span className="text-xs text-[#252B32]/60">ID: #{selectedActivityId}</span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+            <h1 className="text-2xl font-serif font-bold text-[#102A43] mt-1">
               Điểm Danh & Quét Vé Hoạt Động
             </h1>
           </div>
@@ -234,7 +234,7 @@ export const ActivityAttendancePage: React.FC = () => {
           <select
             value={selectedActivityId}
             onChange={(e) => handleActivityChange(Number(e.target.value))}
-            className="px-3.5 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+            className="px-3.5 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-sm font-semibold text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] shadow-xs"
           >
             {activities.length > 0 ? (
               activities.map((a) => (
@@ -250,7 +250,7 @@ export const ActivityAttendancePage: React.FC = () => {
           <button
             onClick={() => void loadData(selectedActivityId)}
             disabled={isLoading}
-            className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-50"
+            className="p-2.5 rounded-xl bg-white hover:bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] transition-colors disabled:opacity-50 shadow-xs"
             title="Làm mới dữ liệu"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -261,79 +261,79 @@ export const ActivityAttendancePage: React.FC = () => {
       {/* Real-time KPI Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Registered */}
-        <div className="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-[#E5E0D7] shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-[#252B32]/70 uppercase tracking-wider">
               Đã Đăng Ký
             </p>
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+            <h3 className="text-2xl font-serif font-extrabold text-[#102A43] mt-1">
               {summary ? summary.totalRegistered : 0}
-              <span className="text-sm font-normal text-slate-400 ml-1">
+              <span className="text-sm font-normal text-[#252B32]/50 ml-1">
                 / {summary?.maxCapacity || selectedActivity?.maxCapacity || 100}
               </span>
             </h3>
-            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 flex items-center">
+            <p className="text-xs text-[#397C80] mt-1 flex items-center font-medium">
               <Users className="w-3.5 h-3.5 mr-1" /> Danh sách dự kiến
             </p>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+          <div className="w-12 h-12 rounded-xl bg-[#F7F4ED] border border-[#E5E0D7] flex items-center justify-center text-[#102A43]">
             <Users className="w-6 h-6" />
           </div>
         </div>
 
         {/* Checked In */}
-        <div className="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-[#E5E0D7] shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-[#252B32]/70 uppercase tracking-wider">
               Đã Vào Cửa
             </p>
-            <h3 className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">
+            <h3 className="text-2xl font-serif font-extrabold text-emerald-700 mt-1">
               {summary ? summary.checkedInCount : 0}
-              <span className="text-xs font-semibold px-2 py-0.5 ml-2 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-full">
+              <span className="text-xs font-semibold px-2 py-0.5 ml-2 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200">
                 {summary?.attendanceRatePercentage || 0}%
               </span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center">
-              <UserCheck className="w-3.5 h-3.5 mr-1 text-emerald-500" /> Tỉ lệ có mặt
+            <p className="text-xs text-[#252B32]/70 mt-1 flex items-center">
+              <UserCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" /> Tỉ lệ có mặt
             </p>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
             <CheckCircle2 className="w-6 h-6" />
           </div>
         </div>
 
         {/* Walk-in Guests */}
-        <div className="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-[#E5E0D7] shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-[#252B32]/70 uppercase tracking-wider">
               Khách Vãng Lai
             </p>
-            <h3 className="text-2xl font-extrabold text-amber-500 dark:text-amber-400 mt-1">
+            <h3 className="text-2xl font-serif font-extrabold text-amber-700 mt-1">
               {summary ? summary.walkInCount : 0}
             </h3>
-            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center">
+            <p className="text-xs text-amber-700 mt-1 flex items-center font-medium">
               <DollarSign className="w-3.5 h-3.5 mr-0.5" /> Ghi nợ tài khoản cabin
             </p>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-amber-500 dark:text-amber-400">
+          <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
             <UserPlus className="w-6 h-6" />
           </div>
         </div>
 
         {/* Remaining Capacity */}
-        <div className="bg-white dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-[#E5E0D7] shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-[#252B32]/70 uppercase tracking-wider">
               Chỗ Trống Còn Lại
             </p>
-            <h3 className="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">
+            <h3 className="text-2xl font-serif font-extrabold text-[#397C80] mt-1">
               {summary ? summary.remainingCapacity : 0}
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center">
-              <ShieldCheck className="w-3.5 h-3.5 mr-1 text-indigo-500" /> Sức chứa tối đa
+            <p className="text-xs text-[#252B32]/70 mt-1 flex items-center">
+              <ShieldCheck className="w-3.5 h-3.5 mr-1 text-[#397C80]" /> Sức chứa tối đa
             </p>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+          <div className="w-12 h-12 rounded-xl bg-[#F7F4ED] border border-[#E5E0D7] flex items-center justify-center text-[#397C80]">
             <ShieldCheck className="w-6 h-6" />
           </div>
         </div>
@@ -342,10 +342,10 @@ export const ActivityAttendancePage: React.FC = () => {
       {/* Notification Toast Banner */}
       {notification && (
         <div
-          className={`p-4 rounded-xl border flex items-start justify-between shadow-sm animate-in fade-in slide-in-from-top-2 ${
+          className={`p-4 rounded-xl border flex items-start justify-between shadow-xs animate-in fade-in slide-in-from-top-2 ${
             notification.type === 'success'
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
-              : 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              : 'bg-rose-50 border-rose-200 text-rose-800'
           }`}
         >
           <div className="flex items-center space-x-3">
@@ -358,7 +358,7 @@ export const ActivityAttendancePage: React.FC = () => {
           </div>
           <button
             onClick={() => setNotification(null)}
-            className="p-1 hover:bg-black/5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className="p-1 hover:bg-black/5 rounded-lg text-[#252B32]/50 hover:text-[#252B32]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -366,14 +366,14 @@ export const ActivityAttendancePage: React.FC = () => {
       )}
 
       {/* Quick Scanner & Gate Actions Card */}
-      <div className="bg-white dark:bg-slate-800/80 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-sm space-y-4">
+      <div className="bg-white p-6 rounded-2xl border border-[#E5E0D7] shadow-xs space-y-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <QrCode className="w-5 h-5 text-blue-600" />
+            <h2 className="font-serif text-lg font-bold text-[#102A43] flex items-center gap-2">
+              <QrCode className="w-5 h-5 text-[#397C80]" />
               Soát Vé & Điểm Danh Tại Cửa
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-[#252B32]/70 mt-0.5">
               Hỗ trợ máy quét mã vạch/QR siêu tốc, chạm thẻ RFID NFC hoặc nhập số Cabin
             </p>
           </div>
@@ -382,7 +382,7 @@ export const ActivityAttendancePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsScannerModalOpen(true)}
-              className="inline-flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md transition-all active:scale-95"
+              className="inline-flex items-center space-x-2 px-4 py-2.5 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-sm font-semibold shadow-xs transition-colors"
             >
               <QrCode className="w-4 h-4" />
               <span>Bật Camera Quét QR</span>
@@ -391,7 +391,7 @@ export const ActivityAttendancePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsWalkInModalOpen(true)}
-              className="inline-flex items-center space-x-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold shadow-md transition-all active:scale-95"
+              className="inline-flex items-center space-x-2 px-4 py-2.5 bg-[#397C80] hover:bg-[#2e6467] text-white rounded-xl text-sm font-semibold shadow-xs transition-colors"
             >
               <UserPlus className="w-4 h-4" />
               <span>Khách Vãng Lai (+ Walk-in)</span>
@@ -402,14 +402,14 @@ export const ActivityAttendancePage: React.FC = () => {
         {/* Quick Input Bar Form */}
         <form onSubmit={handleQuickCheckInSubmit} className="flex flex-col sm:flex-row gap-3 pt-2">
           {/* Method selector */}
-          <div className="flex rounded-xl bg-slate-100 dark:bg-slate-700/60 p-1 shrink-0">
+          <div className="flex rounded-xl bg-[#F7F4ED] border border-[#E5E0D7] p-1 shrink-0">
             <button
               type="button"
               onClick={() => setQuickInputType('QR')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 quickInputType === 'QR'
-                  ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                  ? 'bg-white text-[#102A43] shadow-xs'
+                  : 'text-[#252B32]/70 hover:text-[#102A43]'
               }`}
             >
               Mã QR
@@ -419,8 +419,8 @@ export const ActivityAttendancePage: React.FC = () => {
               onClick={() => setQuickInputType('RFID')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 quickInputType === 'RFID'
-                  ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                  ? 'bg-white text-[#102A43] shadow-xs'
+                  : 'text-[#252B32]/70 hover:text-[#102A43]'
               }`}
             >
               Thẻ RFID
@@ -430,8 +430,8 @@ export const ActivityAttendancePage: React.FC = () => {
               onClick={() => setQuickInputType('CABIN')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 quickInputType === 'CABIN'
-                  ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                  ? 'bg-white text-[#102A43] shadow-xs'
+                  : 'text-[#252B32]/70 hover:text-[#102A43]'
               }`}
             >
               Số Cabin
@@ -450,14 +450,14 @@ export const ActivityAttendancePage: React.FC = () => {
                   ? 'Chạm thẻ RFID hoặc nhập mã thẻ (VD: RFID-101)...'
                   : 'Nhập số phòng Cabin (VD: 101, A-204)...'
               }
-              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              className="w-full px-4 py-2.5 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43] font-mono"
             />
           </div>
 
           <button
             type="submit"
             disabled={isSubmittingCheckIn || !quickInput.trim()}
-            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50 shrink-0"
+            className="px-6 py-2.5 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50 shrink-0 shadow-xs"
           >
             {isSubmittingCheckIn ? 'Đang điểm danh...' : 'Điểm danh ngay'}
           </button>
@@ -465,21 +465,21 @@ export const ActivityAttendancePage: React.FC = () => {
       </div>
 
       {/* Attendance Roster Table Section */}
-      <div className="bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#E5E0D7] shadow-xs overflow-hidden">
         {/* Table Filter Controls */}
-        <div className="p-5 border-b border-slate-200 dark:border-slate-700/60 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="p-5 border-b border-[#E5E0D7] flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center space-x-2">
-            <h3 className="font-bold text-slate-900 dark:text-white text-base">
+            <h3 className="font-serif font-bold text-[#102A43] text-base">
               Danh Sách Điểm Danh (Roster)
             </h3>
-            <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full font-semibold">
+            <span className="text-xs bg-[#F7F4ED] border border-[#E5E0D7] text-[#102A43] px-2.5 py-0.5 rounded-full font-semibold">
               {filteredRoster.length} hành khách
             </span>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             {/* Status Filter Tabs */}
-            <div className="flex rounded-xl bg-slate-100 dark:bg-slate-700/60 p-1">
+            <div className="flex rounded-xl bg-[#F7F4ED] border border-[#E5E0D7] p-1">
               {(['ALL', 'REGISTERED', 'CHECKED_IN'] as const).map((st) => (
                 <button
                   key={st}
@@ -487,8 +487,8 @@ export const ActivityAttendancePage: React.FC = () => {
                   onClick={() => setStatusFilter(st)}
                   className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                     statusFilter === st
-                      ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+                      ? 'bg-white text-[#102A43] shadow-xs'
+                      : 'text-[#252B32]/70 hover:text-[#102A43]'
                   }`}
                 >
                   {st === 'ALL' ? 'Tất cả' : st === 'REGISTERED' ? 'Chưa quét' : 'Đã vào cửa'}
@@ -498,13 +498,13 @@ export const ActivityAttendancePage: React.FC = () => {
 
             {/* Search Input */}
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="w-4 h-4 text-[#252B32]/40 absolute left-3 top-2.5" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm tên, cabin, RFID..."
-                className="w-full sm:w-56 pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full sm:w-56 pl-9 pr-3 py-1.5 bg-white border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
               />
             </div>
           </div>
@@ -514,7 +514,7 @@ export const ActivityAttendancePage: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/75 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700/60 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <tr className="bg-[#F7F4ED] border-b border-[#E5E0D7] text-xs font-semibold text-[#102A43] uppercase tracking-wider">
                 <th className="py-3 px-4">Hành khách</th>
                 <th className="py-3 px-4">Số Cabin</th>
                 <th className="py-3 px-4">Thẻ RFID</th>
@@ -525,57 +525,57 @@ export const ActivityAttendancePage: React.FC = () => {
                 <th className="py-3 px-4 text-right">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+            <tbody className="divide-y divide-[#E5E0D7] text-sm text-[#252B32]">
               {filteredRoster.length > 0 ? (
                 filteredRoster.map((p) => {
                   const isChecked = p.status === 'CHECKED_IN';
                   return (
                     <tr
                       key={p.attendanceId || p.passengerId}
-                      className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
+                      className="hover:bg-[#F7F4ED]/50 transition-colors"
                     >
-                      <td className="py-3 px-4 font-semibold text-slate-900 dark:text-white">
+                      <td className="py-3 px-4 font-semibold text-[#102A43]">
                         <div className="flex items-center space-x-2">
                           <span>{p.passengerName}</span>
                           {p.isWalkIn && (
-                            <span className="text-[10px] bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 px-1.5 py-0.2 rounded font-bold">
+                            <span className="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded font-bold">
                               Walk-in
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-slate-600 dark:text-slate-300 font-medium">
+                      <td className="py-3 px-4 text-[#252B32] font-medium">
                         {p.cabinNumber}
                       </td>
-                      <td className="py-3 px-4 text-slate-500 dark:text-slate-400 font-mono text-xs">
+                      <td className="py-3 px-4 text-[#252B32]/70 font-mono text-xs">
                         {p.rfidTag || '-'}
                       </td>
                       <td className="py-3 px-4">
                         <span
                           className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                             isChecked
-                              ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
-                              : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : 'bg-[#F7F4ED] text-[#252B32]/70 border border-[#E5E0D7]'
                           }`}
                         >
                           {isChecked ? (
                             <>
-                              <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-500" /> Đã vào cửa
+                              <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-600" /> Đã vào cửa
                             </>
                           ) : (
                             <>
-                              <Clock className="w-3 h-3 mr-1 text-slate-400" /> Chưa quét
+                              <Clock className="w-3 h-3 mr-1 text-[#252B32]/40" /> Chưa quét
                             </>
                           )}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-xs text-slate-600 dark:text-slate-300">
+                      <td className="py-3 px-4 text-xs text-[#252B32]/70">
                         {p.checkInMethod || '-'}
                       </td>
-                      <td className="py-3 px-4 text-xs text-slate-500 dark:text-slate-400">
+                      <td className="py-3 px-4 text-xs text-[#252B32]/70">
                         {p.checkedInAt ? new Date(p.checkedInAt).toLocaleTimeString('vi-VN') : '-'}
                       </td>
-                      <td className="py-3 px-4 text-xs text-slate-500 dark:text-slate-400 font-mono">
+                      <td className="py-3 px-4 text-xs text-[#252B32]/70 font-mono">
                         {p.checkedInByStaffId || '-'}
                       </td>
                       <td className="py-3 px-4 text-right">
@@ -593,12 +593,12 @@ export const ActivityAttendancePage: React.FC = () => {
                                 alert(err instanceof Error ? err.message : 'Điểm danh lỗi');
                               }
                             }}
-                            className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-300 rounded-lg text-xs font-semibold transition-colors"
+                            className="px-2.5 py-1 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-lg text-xs font-semibold transition-colors shadow-xs"
                           >
                             Quét ngay
                           </button>
                         ) : (
-                          <span className="text-xs text-emerald-600 font-medium">Hoàn tất</span>
+                          <span className="text-xs text-emerald-700 font-semibold">Hoàn tất</span>
                         )}
                       </td>
                     </tr>
@@ -606,7 +606,7 @@ export const ActivityAttendancePage: React.FC = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400 text-sm">
+                  <td colSpan={8} className="py-12 text-center text-[#252B32]/60 text-sm">
                     {isLoading ? 'Đang tải dữ liệu điểm danh...' : 'Không tìm thấy hành khách nào phù hợp.'}
                   </td>
                 </tr>
@@ -619,20 +619,20 @@ export const ActivityAttendancePage: React.FC = () => {
       {/* Camera QR Scanner Simulation Modal */}
       {isScannerModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
         >
-          <div className="relative w-full max-w-lg bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
+          <div className="relative w-full max-w-lg bg-white text-[#252B32] rounded-2xl shadow-xl border border-[#E5E0D7] overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-slate-800">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E0D7] bg-[#F7F4ED]">
               <div className="flex items-center space-x-2">
-                <QrCode className="w-5 h-5 text-blue-400" />
-                <h3 className="font-bold text-base">Camera Quét Mã QR Vé Hoạt Động</h3>
+                <QrCode className="w-5 h-5 text-[#397C80]" />
+                <h3 className="font-serif font-bold text-base text-[#102A43]">Camera Quét Mã QR Vé Hoạt Động</h3>
               </div>
               <button
                 onClick={() => setIsScannerModalOpen(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-white hover:bg-slate-800"
+                className="p-1 rounded-lg text-[#252B32]/60 hover:text-[#102A43] hover:bg-[#ECE7DC] transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -640,18 +640,18 @@ export const ActivityAttendancePage: React.FC = () => {
 
             {/* Viewport Simulation */}
             <div className="p-6 flex flex-col items-center">
-              <div className="relative w-64 h-64 bg-slate-950 rounded-2xl border-2 border-dashed border-blue-500/60 overflow-hidden flex items-center justify-center">
+              <div className="relative w-64 h-64 bg-[#F7F4ED] rounded-2xl border-2 border-dashed border-[#102A43]/40 overflow-hidden flex items-center justify-center">
                 {/* Laser scan animation line */}
-                <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-bounce shadow-lg shadow-cyan-500/50" />
+                <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-[#C5A572] to-transparent animate-bounce shadow-xs" />
 
                 {/* Corner reticle markers */}
-                <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-cyan-400" />
-                <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-cyan-400" />
-                <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-cyan-400" />
-                <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-cyan-400" />
+                <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-[#102A43]" />
+                <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-[#102A43]" />
+                <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-[#102A43]" />
+                <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-[#102A43]" />
 
-                <div className="text-center text-slate-500 text-xs px-4">
-                  <QrCode className="w-12 h-12 mx-auto mb-2 text-slate-600 animate-pulse" />
+                <div className="text-center text-[#252B32]/60 text-xs px-4">
+                  <QrCode className="w-12 h-12 mx-auto mb-2 text-[#102A43] animate-pulse" />
                   Hướng camera vào mã QR trên điện thoại của hành khách
                 </div>
               </div>
@@ -659,7 +659,7 @@ export const ActivityAttendancePage: React.FC = () => {
               {/* Simulation Quick Trigger Buttons (Dev Only) */}
               {Boolean(import.meta.env.DEV) && (
                 <div className="w-full mt-6 space-y-2">
-                  <p className="text-xs font-semibold text-slate-400 text-center uppercase tracking-wider">
+                  <p className="text-xs font-semibold text-[#102A43] text-center uppercase tracking-wider">
                     Giả Lập Tín Hiệu Quét Nhanh (DEV)
                   </p>
                   <div className="grid grid-cols-2 gap-2 text-xs">
@@ -681,7 +681,7 @@ export const ActivityAttendancePage: React.FC = () => {
                           alert(err instanceof Error ? err.message : 'Lỗi quét QR');
                         }
                       }}
-                      className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors"
+                      className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors shadow-xs"
                     >
                       ✓ Quét Vé Hợp Lệ
                     </button>
@@ -704,7 +704,7 @@ export const ActivityAttendancePage: React.FC = () => {
                           setIsScannerModalOpen(false);
                         }
                       }}
-                      className="p-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-medium transition-colors"
+                      className="p-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold transition-colors shadow-xs"
                     >
                       ⚠ Thử Quét Trùng Lặp
                     </button>
@@ -719,44 +719,44 @@ export const ActivityAttendancePage: React.FC = () => {
       {/* Walk-in Registration Modal */}
       {isWalkInModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
         >
-          <div className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <div className="bg-amber-500 px-6 py-4 text-white flex items-center justify-between">
+          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl border border-[#E5E0D7] overflow-hidden text-[#252B32]">
+            <div className="bg-[#F7F4ED] border-b border-[#E5E0D7] px-6 py-4 text-[#102A43] flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <UserPlus className="w-5 h-5" />
-                <h3 className="font-bold text-lg">Đăng Ký Khách Vãng Lai (Walk-in)</h3>
+                <UserPlus className="w-5 h-5 text-[#397C80]" />
+                <h3 className="font-serif font-bold text-lg text-[#102A43]">Đăng Ký Khách Vãng Lai (Walk-in)</h3>
               </div>
               <button
                 onClick={() => setIsWalkInModalOpen(false)}
-                className="p-1 rounded-full text-white/80 hover:text-white"
+                className="p-1 rounded-lg text-[#252B32]/60 hover:text-[#102A43] hover:bg-[#ECE7DC] transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleWalkInSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleWalkInSubmit} className="p-6 space-y-4 bg-white">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-[#102A43] mb-1">
                   Số Phòng Cabin (*)
                 </label>
                 <div className="relative">
-                  <Building className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                  <Building className="w-4 h-4 text-[#397C80] absolute left-3 top-3" />
                   <input
                     type="text"
                     required
                     value={walkInCabin}
                     onChange={(e) => setWalkInCabin(e.target.value)}
                     placeholder="VD: 101, A-204..."
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full pl-9 pr-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-[#102A43] mb-1">
                   Họ Tên Khách Hàng (Tùy chọn)
                 </label>
                 <input
@@ -764,31 +764,31 @@ export const ActivityAttendancePage: React.FC = () => {
                   value={walkInName}
                   onChange={(e) => setWalkInName(e.target.value)}
                   placeholder="Nhập họ tên nếu có..."
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-[#102A43] mb-1">
                   Phụ Phí Tham Gia (VNĐ)
                 </label>
                 <div className="relative">
-                  <CreditCard className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                  <CreditCard className="w-4 h-4 text-[#397C80] absolute left-3 top-3" />
                   <input
                     type="number"
                     min="0"
                     value={walkInFee}
                     onChange={(e) => setWalkInFee(Number(e.target.value))}
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full pl-9 pr-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                   />
                 </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                <p className="text-[11px] text-[#252B32]/60 mt-1">
                   Hệ thống tự động ghi nợ vào hóa đơn Folio của Cabin này
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-[#102A43] mb-1">
                   Ghi Chú
                 </label>
                 <textarea
@@ -796,22 +796,22 @@ export const ActivityAttendancePage: React.FC = () => {
                   value={walkInNote}
                   onChange={(e) => setWalkInNote(e.target.value)}
                   placeholder="Ghi chú thêm về khách..."
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E0D7] rounded-xl text-sm text-[#252B32] placeholder-[#252B32]/40 focus:outline-none focus:ring-2 focus:ring-[#102A43]/20 focus:border-[#102A43]"
                 />
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-[#E5E0D7]">
                 <button
                   type="button"
                   onClick={() => setIsWalkInModalOpen(false)}
-                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors"
+                  className="px-4 py-2 bg-[#F7F4ED] hover:bg-[#ECE7DC] text-[#102A43] border border-[#E5E0D7] rounded-xl text-xs font-semibold transition-colors"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingWalkIn || !walkInCabin.trim()}
-                  className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold transition-colors disabled:opacity-50"
+                  className="px-5 py-2 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-xs font-semibold transition-colors disabled:opacity-50 shadow-xs"
                 >
                   {isSubmittingWalkIn ? 'Đang đăng ký...' : 'Xác nhận vào cửa'}
                 </button>

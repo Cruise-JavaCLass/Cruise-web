@@ -250,20 +250,20 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="bg-white border border-[#E5E0D7] rounded-2xl w-full max-w-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
-            <div className="flex items-center gap-2 text-indigo-400">
-              <Users className="w-5 h-5" />
-              <h3 className="font-bold text-white text-base">
+          <div className="px-6 py-4 border-b border-[#E5E0D7] flex items-center justify-between bg-[#F7F4ED]">
+            <div className="flex items-center gap-2 text-[#102A43]">
+              <Users className="w-5 h-5 text-[#397C80]" />
+              <h3 className="font-serif font-bold text-[#102A43] text-base">
                 Phân Bổ Hóa Đơn Phòng (Cabin Bill Splitting Wizard)
               </h3>
             </div>
             <button
               onClick={onClose}
               disabled={isSubmitting}
-              className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="p-1 rounded-lg text-[#687787] hover:text-[#102A43] hover:bg-[#E5E0D7]/60 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -272,17 +272,17 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
           {/* Body */}
           <div className="p-6 space-y-5 overflow-y-auto flex-1">
             {/* Cabin & Total Info */}
-            <div className="grid grid-cols-3 gap-3 bg-slate-950/50 p-4 rounded-xl border border-slate-800">
+            <div className="grid grid-cols-3 gap-3 bg-[#F7F4ED] p-4 rounded-xl border border-[#E5E0D7]">
               <div>
-                <p className="text-xs text-slate-400">Phòng / Cabin:</p>
-                <p className="text-sm font-bold text-white mt-0.5">{cabinNumber}</p>
+                <p className="text-xs text-[#687787]">Phòng / Cabin:</p>
+                <p className="text-sm font-bold text-[#102A43] font-mono mt-0.5">{cabinNumber}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Tổng hóa đơn:</p>
-                <p className="text-sm font-bold text-emerald-400 mt-0.5">${totalAmount.toFixed(2)}</p>
+                <p className="text-xs text-[#687787]">Tổng hóa đơn:</p>
+                <p className="text-sm font-bold text-[#102A43] font-mono mt-0.5">${totalAmount.toFixed(2)}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Chế độ chia:</p>
+                <p className="text-xs text-[#687787]">Chế độ chia:</p>
                 <div className="flex gap-1.5 mt-1">
                   <button
                     type="button"
@@ -292,8 +292,8 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
                     }}
                     className={`px-2 py-0.5 text-xs rounded font-medium cursor-pointer transition-colors ${
                       splitMode === 'EVEN'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-800 text-slate-400 hover:text-white'
+                        ? 'bg-[#102A43] text-white shadow-xs'
+                        : 'bg-white border border-[#E5E0D7] text-[#687787] hover:text-[#102A43]'
                     }`}
                   >
                     Chia Đều
@@ -303,8 +303,8 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
                     onClick={() => setSplitMode('CUSTOM')}
                     className={`px-2 py-0.5 text-xs rounded font-medium cursor-pointer transition-colors ${
                       splitMode === 'CUSTOM'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-800 text-slate-400 hover:text-white'
+                        ? 'bg-[#102A43] text-white shadow-xs'
+                        : 'bg-white border border-[#E5E0D7] text-[#687787] hover:text-[#102A43]'
                     }`}
                   >
                     Tùy Chỉnh
@@ -315,7 +315,7 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
 
             {/* Error banner */}
             {errorMsg && (
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs">
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{errorMsg}</span>
               </div>
@@ -323,15 +323,15 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
 
             {/* Member List */}
             <div>
-              <p className="text-xs font-semibold text-slate-300 mb-2 flex items-center justify-between">
+              <p className="text-xs font-semibold text-[#687787] mb-2 flex items-center justify-between">
                 <span>Thành viên trong phòng ({members.length} khách):</span>
-                <span className="text-slate-500 font-normal">
+                <span className="text-[#687787]/80 font-normal">
                   {splitMode === 'EVEN' ? 'Chia đều tự động làm tròn cent' : 'Nhập số tiền cho từng khách'}
                 </span>
               </p>
 
               {isLoadingMembers ? (
-                <div className="py-8 text-center text-slate-500 text-sm">Đang tải danh sách thành viên...</div>
+                <div className="py-8 text-center text-[#687787] text-sm">Đang tải danh sách thành viên...</div>
               ) : (
                 <div className="space-y-2">
                   {splitRows.map((row, idx) => {
@@ -346,10 +346,10 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
                         key={row.member.passengerId}
                         className={`p-3 rounded-xl border transition-colors ${
                           isMinorLocked
-                            ? 'bg-slate-950/30 border-slate-800/50 opacity-60'
+                            ? 'bg-[#F7F4ED]/50 border-[#E5E0D7] opacity-60'
                             : row.isSelected
-                            ? 'bg-indigo-950/20 border-indigo-500/50'
-                            : 'bg-slate-950/40 border-slate-800/80 hover:border-slate-700'
+                            ? 'bg-[#F7F4ED] border-[#102A43]/40'
+                            : 'bg-white border-[#E5E0D7] hover:border-[#102A43]/20'
                         }`}
                       >
                         <div className="flex items-center justify-between gap-3">
@@ -359,24 +359,24 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
                               checked={row.isSelected}
                               disabled={isMinorLocked || isSubmitting}
                               onChange={() => handleToggleMember(idx)}
-                              className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-900 border-slate-700 cursor-pointer disabled:cursor-not-allowed"
+                              className="w-4 h-4 rounded text-[#102A43] focus:ring-[#102A43] border-[#E5E0D7] cursor-pointer disabled:cursor-not-allowed"
                             />
                             <div>
                               <div className="flex items-center gap-1.5">
-                                <span className="text-xs font-semibold text-white">{row.member.guestName}</span>
+                                <span className="text-xs font-semibold text-[#102A43]">{row.member.guestName}</span>
                                 {isMinorLocked ? (
-                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-400 text-[10px] font-medium border border-amber-800/50">
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 text-[10px] font-medium border border-amber-200">
                                     <Lock className="w-2.5 h-2.5" />
                                     {row.member.isMinor ? 'Trẻ em' : 'Chưa cấp quyền ký'}
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-0.5 text-emerald-400 text-[10px]">
+                                  <span className="inline-flex items-center gap-0.5 text-emerald-700 text-[10px] font-medium">
                                     <UserCheck className="w-3 h-3" />
                                     Người ký hợp lệ
                                   </span>
                                 )}
                               </div>
-                              <p className="text-[11px] text-slate-500 mt-0.5">
+                              <p className="text-[11px] text-[#687787] mt-0.5">
                                 ID: {row.member.passengerId}
                                 {avail !== undefined && ` • Hạn mức khả dụng: $${avail.toFixed(2)}`}
                               </p>
@@ -388,18 +388,18 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
                               <>
                                 {splitMode === 'CUSTOM' ? (
                                   <div className="relative">
-                                    <span className="absolute left-2.5 top-1.5 text-xs text-slate-500">$</span>
+                                    <span className="absolute left-2.5 top-1.5 text-xs text-[#687787]">$</span>
                                     <input
                                       type="number"
                                       step="0.01"
                                       min="0"
                                       value={row.amount || ''}
                                       onChange={(e) => handleCustomAmountChange(idx, parseFloat(e.target.value) || 0)}
-                                      className="w-24 pl-6 pr-2 py-1 text-xs bg-slate-900 border border-slate-700 rounded-lg text-white font-mono focus:outline-none focus:border-indigo-500"
+                                      className="w-24 pl-6 pr-2 py-1 text-xs bg-white border border-[#E5E0D7] rounded-lg text-[#252B32] font-mono focus:outline-none focus:border-[#102A43]"
                                     />
                                   </div>
                                 ) : (
-                                  <span className="text-xs font-bold text-white font-mono bg-slate-900 px-3 py-1 rounded-lg border border-slate-800">
+                                  <span className="text-xs font-bold text-[#102A43] font-mono bg-white px-3 py-1 rounded-lg border border-[#E5E0D7]">
                                     ${row.amount.toFixed(2)}
                                   </span>
                                 )}
@@ -409,8 +409,8 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
                                   onClick={() => setActiveSignerIndex(idx)}
                                   className={`px-2 py-1 text-[11px] rounded-lg border transition-colors cursor-pointer flex items-center gap-1 ${
                                     row.signatureBase64
-                                      ? 'bg-emerald-950/40 border-emerald-700 text-emerald-300'
-                                      : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+                                      ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                                      : 'bg-white hover:bg-[#F7F4ED] border-[#E5E0D7] text-[#102A43]'
                                   }`}
                                 >
                                   {row.signatureBase64 ? (
@@ -427,7 +427,7 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
                         </div>
 
                         {row.error && (
-                          <div className="mt-2 text-[11px] text-red-400 flex items-center gap-1">
+                          <div className="mt-2 text-[11px] text-rose-600 flex items-center gap-1">
                             <AlertTriangle className="w-3 h-3 shrink-0" />
                             <span>{row.error}</span>
                           </div>
@@ -440,20 +440,20 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
             </div>
 
             {/* Split Balance Summary */}
-            <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+            <div className="bg-[#F7F4ED] p-3.5 rounded-xl border border-[#E5E0D7] flex justify-between items-center text-xs">
               <div className="space-y-0.5">
-                <span className="text-slate-400">Đã phân bổ / Tổng hóa đơn:</span>
-                <p className="font-mono text-sm font-bold text-white">
+                <span className="text-[#687787]">Đã phân bổ / Tổng hóa đơn:</span>
+                <p className="font-mono text-sm font-bold text-[#102A43]">
                   ${currentTotalAssigned.toFixed(2)} / ${totalAmount.toFixed(2)}
                 </p>
               </div>
               <div className="text-right">
                 {isBalanced ? (
-                  <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold">
+                  <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold">
                     <Check className="w-4 h-4" /> Khớp 100%
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-amber-400 font-semibold">
+                  <span className="inline-flex items-center gap-1 text-amber-800 font-semibold">
                     <AlertTriangle className="w-4 h-4" />
                     Chênh lệch: ${roundedDiff.toFixed(2)}
                   </span>
@@ -463,12 +463,12 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-3 bg-slate-950/60 border-t border-slate-800 flex justify-end gap-3">
+          <div className="px-6 py-3 bg-[#F7F4ED]/50 border-t border-[#E5E0D7] flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
+              className="px-4 py-2 text-xs font-medium text-[#687787] hover:text-[#102A43] bg-white hover:bg-[#F7F4ED] border border-[#E5E0D7] rounded-lg transition-colors cursor-pointer shadow-xs"
             >
               Hủy bỏ
             </button>
@@ -476,7 +476,7 @@ export const CabinBillSplittingWizard: React.FC<CabinBillSplittingWizardProps> =
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting || !isBalanced || splitRows.filter((r) => r.isSelected).length === 0}
-              className="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2 text-xs font-semibold text-white bg-[#102A43] hover:bg-[#183B5B] rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-xs"
             >
               <Divide className="w-4 h-4" />
               {isSubmitting ? 'Đang thực hiện phân bổ...' : 'Hoàn Tất Phân Bổ Hóa Đơn'}

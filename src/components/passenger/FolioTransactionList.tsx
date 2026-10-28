@@ -56,9 +56,9 @@ export const FolioTransactionList: React.FC<FolioTransactionListProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#E5E0D7] overflow-hidden shadow-sm text-[#252B32]">
       {/* Category Tabs */}
-      <div className="flex border-b border-gray-100 overflow-x-auto p-2 gap-1 bg-gray-50/50">
+      <div className="flex border-b border-[#E5E0D7] overflow-x-auto p-2 gap-1.5 bg-[#F7F4ED]">
         {CATEGORY_TABS.map((tab) => (
           <button
             key={tab.key}
@@ -66,10 +66,10 @@ export const FolioTransactionList: React.FC<FolioTransactionListProps> = ({
               onSelectCategory(tab.key);
               onPageChange(0);
             }}
-            className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-xl whitespace-nowrap transition-all cursor-pointer ${
               selectedCategory === tab.key
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                ? 'bg-[#102A43] text-white shadow-xs'
+                : 'text-[#5A6B7C] hover:text-[#102A43] hover:bg-white'
             }`}
           >
             {tab.label}
@@ -79,17 +79,19 @@ export const FolioTransactionList: React.FC<FolioTransactionListProps> = ({
 
       {/* Transaction Table */}
       {isLoading ? (
-        <div className="p-8 text-center text-gray-500">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+        <div className="p-8 text-center text-[#5A6B7C] text-xs">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#397C80] mx-auto mb-2"></div>
           Đang tải nhật ký giao dịch...
         </div>
       ) : transactions.length === 0 ? (
-        <div className="p-8 text-center text-gray-400">Không có giao dịch nào trong danh mục này.</div>
+        <div className="p-8 text-center text-[#5A6B7C] text-xs">
+          Không có giao dịch nào trong danh mục này.
+        </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-sm">
+          <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-gray-50/75 text-gray-600 border-b border-gray-100 font-medium">
+              <tr className="bg-[#F7F4ED] text-[#102A43] border-b border-[#E5E0D7] uppercase text-[11px] font-semibold">
                 <th className="py-3 px-4">Thời gian</th>
                 <th className="py-3 px-4">Địa điểm / Quầy</th>
                 <th className="py-3 px-4">Mã POS</th>
@@ -98,32 +100,32 @@ export const FolioTransactionList: React.FC<FolioTransactionListProps> = ({
                 <th className="py-3 px-4 text-center">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-[#E5E0D7]">
               {transactions.map((tx) => (
                 <React.Fragment key={tx.id}>
-                  <tr className="hover:bg-blue-50/30 transition-colors">
-                    <td className="py-3 px-4 text-gray-600">
-                      <div>{formatDate(tx.time)}</div>
-                      <div className="text-xs text-gray-400 font-mono">{tx.transactionUuid}</div>
+                  <tr className="hover:bg-[#F7F4ED]/50 transition-colors">
+                    <td className="py-3 px-4 text-[#5A6B7C]">
+                      <div className="text-[#102A43] font-medium">{formatDate(tx.time)}</div>
+                      <div className="text-[10px] text-[#5A6B7C]/70 font-mono">{tx.transactionUuid}</div>
                     </td>
-                    <td className="py-3 px-4 font-medium text-gray-800">
+                    <td className="py-3 px-4 font-medium text-[#252B32]">
                       <div>{tx.locationCounter}</div>
-                      <span className="inline-block text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 mt-0.5">
+                      <span className="inline-block text-[10px] px-2 py-0.5 rounded-lg bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] mt-0.5 font-medium">
                         {tx.category}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-gray-600 font-mono text-xs">{tx.posCode}</td>
-                    <td className="py-3 px-4 text-gray-700">{tx.swipedBy}</td>
-                    <td className="py-3 px-4 text-right font-semibold">
+                    <td className="py-3 px-4 text-[#5A6B7C] font-mono text-[11px]">{tx.posCode}</td>
+                    <td className="py-3 px-4 text-[#252B32]">{tx.swipedBy}</td>
+                    <td className="py-3 px-4 text-right font-mono font-bold tabular-nums">
                       {tx.complimentary || tx.amount === 0 ? (
                         <div className="inline-flex flex-col items-end">
-                          <span className="text-emerald-600 font-bold">$0.00</span>
-                          <span className="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-200">
+                          <span className="text-[#397C80] font-bold">$0.00</span>
+                          <span className="text-[9px] bg-[#397C80]/10 text-[#397C80] px-1.5 py-0.5 rounded border border-[#397C80]/30 font-sans">
                             Gói tặng kèm
                           </span>
                         </div>
                       ) : (
-                        <span className="text-gray-900">{formatCurrency(tx.amount)}</span>
+                        <span className="text-[#102A43]">{formatCurrency(tx.amount)}</span>
                       )}
                     </td>
                     <td className="py-3 px-4 text-center">
@@ -131,7 +133,7 @@ export const FolioTransactionList: React.FC<FolioTransactionListProps> = ({
                         {tx.items && tx.items.length > 0 && (
                           <button
                             onClick={() => toggleExpand(tx.id)}
-                            className="text-xs text-blue-600 hover:text-blue-800 underline px-1.5 py-1"
+                            className="text-xs font-semibold text-[#397C80] hover:text-[#2D6468] hover:underline px-1.5 py-1 cursor-pointer"
                           >
                             {expandedTxId === tx.id ? 'Ẩn món' : `Chi tiết (${tx.items.length})`}
                           </button>
@@ -139,7 +141,7 @@ export const FolioTransactionList: React.FC<FolioTransactionListProps> = ({
                         {!tx.complimentary && tx.amount > 0 && (
                           <button
                             onClick={() => onOpenDispute(tx)}
-                            className="text-xs bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-md font-medium transition"
+                            className="text-[11px] font-semibold uppercase bg-[#C5A572]/15 hover:bg-[#C5A572]/25 text-[#9E7A3E] border border-[#C5A572]/40 px-2.5 py-1 rounded-lg transition cursor-pointer"
                           >
                             Khiếu nại
                           </button>
@@ -150,35 +152,35 @@ export const FolioTransactionList: React.FC<FolioTransactionListProps> = ({
 
                   {/* Expanded Itemized Breakdown */}
                   {expandedTxId === tx.id && tx.items && tx.items.length > 0 && (
-                    <tr className="bg-gray-50/70">
+                    <tr className="bg-[#F7F4ED]/40">
                       <td colSpan={6} className="px-6 py-3">
-                        <div className="bg-white rounded-lg border border-gray-200 p-3 shadow-inner">
-                          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                        <div className="bg-[#F7F4ED] rounded-xl border border-[#E5E0D7] p-4 shadow-xs">
+                          <div className="text-[11px] font-bold text-[#102A43] uppercase tracking-wider mb-2">
                             Danh sách món / dịch vụ chi tiết
                           </div>
                           <table className="w-full text-xs">
                             <thead>
-                              <tr className="text-gray-400 border-b border-gray-100 pb-1">
+                              <tr className="text-[#5A6B7C] border-b border-[#E5E0D7] text-[10px] uppercase pb-1 font-semibold">
                                 <th className="text-left py-1">Tên món</th>
                                 <th className="text-center py-1">Số lượng</th>
                                 <th className="text-right py-1">Đơn giá</th>
                                 <th className="text-right py-1">Thành tiền</th>
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
+                            <tbody className="divide-y divide-[#E5E0D7]/60 font-mono">
                               {tx.items.map((item, idx) => (
                                 <tr key={idx} className="py-1">
-                                  <td className="py-1.5 text-gray-800 font-medium">
+                                  <td className="py-1.5 text-[#252B32] font-sans">
                                     {item.itemName}
                                     {item.complimentary && (
-                                      <span className="ml-2 text-[10px] bg-emerald-100 text-emerald-800 px-1 rounded">
+                                      <span className="ml-2 text-[9px] bg-[#397C80]/10 text-[#397C80] px-1.5 py-0.5 rounded border border-[#397C80]/30 font-sans">
                                         Miễn phí trong tour
                                       </span>
                                     )}
                                   </td>
-                                  <td className="text-center py-1.5 text-gray-600">{item.quantity}</td>
-                                  <td className="text-right py-1.5 text-gray-600">{formatCurrency(item.unitPrice)}</td>
-                                  <td className="text-right py-1.5 font-semibold text-gray-900">
+                                  <td className="text-center py-1.5 text-[#5A6B7C] tabular-nums">{item.quantity}</td>
+                                  <td className="text-right py-1.5 text-[#5A6B7C] tabular-nums">{formatCurrency(item.unitPrice)}</td>
+                                  <td className="text-right py-1.5 font-bold text-[#102A43] tabular-nums">
                                     {item.complimentary ? '$0.00' : formatCurrency(item.totalPrice)}
                                   </td>
                                 </tr>
@@ -198,22 +200,22 @@ export const FolioTransactionList: React.FC<FolioTransactionListProps> = ({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-between items-center px-4 py-3 border-t border-gray-100 bg-gray-50/30 text-xs">
-          <span className="text-gray-500">
+        <div className="flex justify-between items-center px-4 py-3 border-t border-[#E5E0D7] bg-[#F7F4ED] text-xs">
+          <span className="text-[#5A6B7C]">
             Trang {page + 1} / {totalPages}
           </span>
           <div className="flex gap-2">
             <button
               disabled={page === 0}
               onClick={() => onPageChange(page - 1)}
-              className="px-3 py-1 bg-white border border-gray-200 rounded text-gray-700 disabled:opacity-50 hover:bg-gray-50"
+              className="px-3 py-1 bg-white border border-[#E5E0D7] rounded-lg text-[#102A43] font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#ECE7DC] cursor-pointer"
             >
               Trang trước
             </button>
             <button
               disabled={page + 1 >= totalPages}
               onClick={() => onPageChange(page + 1)}
-              className="px-3 py-1 bg-white border border-gray-200 rounded text-gray-700 disabled:opacity-50 hover:bg-gray-50"
+              className="px-3 py-1 bg-white border border-[#E5E0D7] rounded-lg text-[#102A43] font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#ECE7DC] cursor-pointer"
             >
               Trang sau
             </button>
@@ -223,3 +225,5 @@ export const FolioTransactionList: React.FC<FolioTransactionListProps> = ({
     </div>
   );
 };
+
+export default FolioTransactionList;

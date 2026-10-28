@@ -17,6 +17,11 @@ export function UserStatusConfirmModal({ user, onClose, onConfirm }: UserStatusC
   if (!user) return null;
   const deactivating = user.active;
 
+  const handleClose = () => {
+    setError(null);
+    onClose();
+  };
+
   const handleConfirm = async () => {
     setBusy(true);
     setError(null);
@@ -58,7 +63,7 @@ export function UserStatusConfirmModal({ user, onClose, onConfirm }: UserStatusC
         <div className="flex justify-end gap-2">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="px-4 py-2 rounded-xl text-xs text-slate-300 border border-slate-700 hover:bg-slate-800/60"
           >
             Hủy

@@ -84,51 +84,51 @@ export const GuestReviewFeed: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Moderation Controls */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#F7F4ED] p-4 rounded-xl border border-[#E5E0D7]">
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-cyan-400" />
-          <span className="text-sm font-medium text-slate-300">Lọc Đánh Giá:</span>
-          <div className="inline-flex rounded-lg bg-slate-900/60 p-1 border border-slate-700">
+          <Filter className="w-4 h-4 text-[#102A43]" />
+          <span className="text-sm font-semibold text-[#102A43]">Lọc Đánh Giá:</span>
+          <div className="inline-flex rounded-lg bg-white p-1 border border-[#E5E0D7]">
             <button
               onClick={() => setFilterMode('flagged')}
-              className={`px-3 py-1 text-xs font-semibold rounded-md transition ${
+              className={`px-3 py-1 text-xs font-semibold rounded-md transition cursor-pointer ${
                 filterMode === 'flagged'
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                  : 'text-[#687787] hover:text-[#102A43]'
               }`}
             >
               ⚠️ Cảnh Báo An Toàn & Tiêu Cực
             </button>
             <button
               onClick={() => setFilterMode('all')}
-              className={`px-3 py-1 text-xs font-semibold rounded-md transition ${
+              className={`px-3 py-1 text-xs font-semibold rounded-md transition cursor-pointer ${
                 filterMode === 'all'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#102A43] text-white'
+                  : 'text-[#687787] hover:text-[#102A43]'
               }`}
             >
               Tất Cả Đánh Giá
             </button>
           </div>
         </div>
-        <div className="text-xs text-slate-400">
-          Hiển thị <strong>{reviews.length}</strong> / <strong>{totalElements}</strong> phản hồi
+        <div className="text-xs text-[#687787]">
+          Hiển thị <strong className="text-[#102A43]">{reviews.length}</strong> / <strong className="text-[#102A43]">{totalElements}</strong> phản hồi
         </div>
       </div>
 
       {error && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm">
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="py-12 text-center text-slate-400 text-sm">Đang tải danh sách đánh giá...</div>
+        <div className="py-12 text-center text-[#687787] text-sm font-medium">Đang tải danh sách đánh giá...</div>
       ) : reviews.length === 0 ? (
-        <div className="py-12 text-center bg-slate-800/20 border border-dashed border-slate-700 rounded-xl space-y-2">
-          <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-          <p className="text-slate-300 font-medium">Không có phản hồi nào cần xử lý khẩn</p>
-          <p className="text-slate-500 text-xs">Mọi dịch vụ tour bờ đều đang vận hành đạt tiêu chuẩn</p>
+        <div className="py-12 text-center bg-white border border-dashed border-[#E5E0D7] rounded-xl space-y-2">
+          <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
+          <p className="text-[#252B32] font-semibold">Không có phản hồi nào cần xử lý khẩn</p>
+          <p className="text-[#687787] text-xs">Mọi dịch vụ tour bờ đều đang vận hành đạt tiêu chuẩn</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -138,33 +138,33 @@ export const GuestReviewFeed: React.FC = () => {
                 key={r.id}
                 className={`p-5 rounded-xl border transition-all ${
                   r.isFlagged
-                    ? 'bg-rose-950/20 border-rose-500/40 shadow-rose-950/30'
-                    : 'bg-slate-800/60 border-slate-700/70'
-                } shadow-lg`}
+                    ? 'bg-white border-2 border-rose-300 shadow-xs'
+                    : 'bg-white border border-[#E5E0D7] shadow-xs'
+                }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm ${
+                      className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm border ${
                         r.ratingOverall <= 2
-                          ? 'bg-rose-500/20 text-rose-400'
+                          ? 'bg-rose-50 text-rose-700 border-rose-200'
                           : r.ratingOverall >= 4
-                            ? 'bg-emerald-500/20 text-emerald-400'
-                            : 'bg-amber-500/20 text-amber-400'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200'
                       }`}
                     >
                       {r.ratingOverall}★
                     </div>
                     <div>
-                      <span className="text-sm font-semibold text-white">Khách #{r.passengerId}</span>
-                      <span className="text-xs text-slate-400 block">
+                      <span className="text-sm font-semibold text-[#252B32]">Khách #{r.passengerId}</span>
+                      <span className="text-xs text-[#687787] block">
                         Tour ID: #{r.excursionId}
                       </span>
                     </div>
                   </div>
 
                   {r.isFlagged && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 animate-pulse">
                       <ShieldAlert className="w-3.5 h-3.5" />
                       CẢNH BÁO KHẨN
                     </span>
@@ -172,30 +172,30 @@ export const GuestReviewFeed: React.FC = () => {
                 </div>
 
                 {/* Sub-ratings */}
-                <div className="mt-3 grid grid-cols-3 gap-2 bg-slate-900/50 p-2.5 rounded-lg text-xs">
+                <div className="mt-3 grid grid-cols-3 gap-2 bg-[#F7F4ED] border border-[#E5E0D7] p-2.5 rounded-lg text-xs">
                   <div>
-                    <span className="text-slate-400 block">HDV:</span>
-                    <span className="text-slate-200 font-semibold">{r.ratingGuide ? `${r.ratingGuide}★` : '--'}</span>
+                    <span className="text-[#687787] block">HDV:</span>
+                    <span className="text-[#252B32] font-semibold">{r.ratingGuide ? `${r.ratingGuide}★` : '--'}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block">Xe Bus:</span>
-                    <span className="text-slate-200 font-semibold">{r.ratingBus ? `${r.ratingBus}★` : '--'}</span>
+                    <span className="text-[#687787] block">Xe Bus:</span>
+                    <span className="text-[#252B32] font-semibold">{r.ratingBus ? `${r.ratingBus}★` : '--'}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block">Giá Trị:</span>
-                    <span className="text-slate-200 font-semibold">{r.ratingValue ? `${r.ratingValue}★` : '--'}</span>
+                    <span className="text-[#687787] block">Giá Trị:</span>
+                    <span className="text-[#252B32] font-semibold">{r.ratingValue ? `${r.ratingValue}★` : '--'}</span>
                   </div>
                 </div>
 
                 {/* Comments */}
-                <div className="mt-3 text-sm text-slate-200 bg-slate-800/40 p-3 rounded-lg border border-slate-700/50">
-                  <MessageSquare className="w-3.5 h-3.5 inline mr-1 text-slate-400" />
+                <div className="mt-3 text-sm text-[#252B32] bg-[#F7F4ED]/60 p-3 rounded-lg border border-[#E5E0D7]">
+                  <MessageSquare className="w-3.5 h-3.5 inline mr-1 text-[#687787]" />
                   {r.comments || '(Không có nhận xét chi tiết)'}
                 </div>
 
                 {/* Flag Reason */}
                 {r.flagReason && (
-                  <div className="mt-2 text-xs text-rose-300 flex items-center gap-1.5 font-medium">
+                  <div className="mt-2 text-xs text-rose-700 flex items-center gap-1.5 font-medium">
                     <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
                     Lý do: {r.flagReason}
                   </div>
@@ -210,7 +210,7 @@ export const GuestReviewFeed: React.FC = () => {
               <button
                 onClick={() => void handleLoadMore()}
                 disabled={loadingMore}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 text-sm font-semibold transition disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white hover:bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] text-sm font-semibold transition-colors disabled:opacity-50 shadow-xs cursor-pointer"
               >
                 {loadingMore ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

@@ -270,6 +270,7 @@ export function UsersPage() {
         isLoading={isSubmitting}
       />
       <UserStatusConfirmModal
+        key={statusTarget?.id ?? 'none'}
         user={statusTarget}
         onClose={() => setStatusTarget(null)}
         onConfirm={handleStatusConfirm}

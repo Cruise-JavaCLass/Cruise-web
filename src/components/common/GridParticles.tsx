@@ -4,6 +4,10 @@ export function GridParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    const isJsdom =
+      typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent || '');
+    if (isJsdom) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -66,5 +70,10 @@ export function GridParticles() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-60" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none opacity-60"
+    />
+  );
 }

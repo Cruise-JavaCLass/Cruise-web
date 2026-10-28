@@ -69,8 +69,8 @@ function NumberInputField({
 }: NumberInputFieldProps) {
   return (
     <div>
-      <label htmlFor={id} className="block text-xs font-medium text-slate-300 mb-1">
-        {label} {required && <span className="text-rose-400">*</span>}
+      <label htmlFor={id} className="block text-xs font-medium text-[#252B32] mb-1">
+        {label} {required && <span className="text-rose-600">*</span>}
       </label>
       <input
         id={id}
@@ -81,11 +81,11 @@ function NumberInputField({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 focus:outline-none ${
-          error ? 'border-rose-500' : 'border-slate-800 focus:border-cyan-500'
+        className={`w-full px-3 py-2 bg-[#F7F4ED]/50 border rounded-xl text-xs text-[#252B32] focus:outline-none transition-colors ${
+          error ? 'border-rose-400 focus:border-rose-500' : 'border-[#E5E0D7] focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10'
         }`}
       />
-      {error && <p className="text-[11px] text-rose-400 mt-1">{error}</p>}
+      {error && <p className="text-[11px] text-rose-600 mt-1">{error}</p>}
     </div>
   );
 }
@@ -148,20 +148,20 @@ export function ShipFormModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="ship-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200"
     >
-      <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden my-8">
+      <div className="bg-white border border-[#E5E0D7] w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden my-8 text-[#252B32]">
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div className="p-5 border-b border-[#E5E0D7] flex items-center justify-between bg-[#F7F4ED]">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center shadow-md shadow-cyan-600/20">
-              <ShipIcon className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 rounded-xl bg-[#102A43] flex items-center justify-center shadow-xs">
+              <ShipIcon className="w-5 h-5 text-[#C5A572]" />
             </div>
             <div>
-              <h3 id="ship-modal-title" className="text-base font-bold text-white">
+              <h3 id="ship-modal-title" className="text-base font-bold font-serif text-[#102A43]">
                 {isEdit ? 'Chỉnh Sửa Thông Tin Tàu' : 'Thêm Tàu Du Lịch Mới'}
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[#5A6578]">
                 {isEdit
                   ? `Cập nhật thông số và trạng thái hoạt động của tàu ${initialData?.code}`
                   : 'Đăng ký du thuyền mới vào hệ thống quản lý hải trình'}
@@ -171,7 +171,7 @@ export function ShipFormModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-[#5A6578] hover:text-[#102A43] hover:bg-[#E5E0D7]/50 transition-colors cursor-pointer"
             aria-label="Đóng form"
           >
             <X className="w-5 h-5" />
@@ -180,8 +180,8 @@ export function ShipFormModal({
 
         {/* API Error Alert */}
         {apiError && (
-          <div className="m-5 mb-0 p-3 bg-rose-950/40 border border-rose-800/60 rounded-xl flex items-center gap-2 text-rose-300 text-xs">
-            <ShieldAlert className="w-4 h-4 shrink-0 text-rose-400" />
+          <div className="m-5 mb-0 p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-800 text-xs">
+            <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{apiError}</span>
           </div>
         )}
@@ -190,13 +190,13 @@ export function ShipFormModal({
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {/* Section 1: Thông tin cơ bản */}
           <div className="space-y-3">
-            <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Anchor className="w-3.5 h-3.5" /> Thông tin định danh & Vận hành
+            <span className="text-xs font-semibold text-[#102A43] uppercase tracking-wider flex items-center gap-1.5">
+              <Anchor className="w-3.5 h-3.5 text-[#397C80]" /> Thông tin định danh & Vận hành
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="name" className="block text-xs font-medium text-slate-300 mb-1">
-                  Tên du thuyền <span className="text-rose-400">*</span>
+                <label htmlFor="name" className="block text-xs font-medium text-[#252B32] mb-1">
+                  Tên du thuyền <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="name"
@@ -205,16 +205,16 @@ export function ShipFormModal({
                   placeholder="Ví dụ: Halong Grand Harmony"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none ${
-                    errors.name ? 'border-rose-500 focus:border-rose-500' : 'border-slate-800 focus:border-cyan-500'
+                  className={`w-full px-3 py-2 bg-[#F7F4ED]/50 border rounded-xl text-xs text-[#252B32] placeholder-[#5A6578]/50 focus:outline-none transition-colors ${
+                    errors.name ? 'border-rose-400 focus:border-rose-500' : 'border-[#E5E0D7] focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10'
                   }`}
                 />
-                {errors.name && <p className="text-[11px] text-rose-400 mt-1">{errors.name}</p>}
+                {errors.name && <p className="text-[11px] text-rose-600 mt-1">{errors.name}</p>}
               </div>
 
               <div>
-                <label htmlFor="code" className="block text-xs font-medium text-slate-300 mb-1">
-                  Mã định danh tàu <span className="text-rose-400">*</span>
+                <label htmlFor="code" className="block text-xs font-medium text-[#252B32] mb-1">
+                  Mã định danh tàu <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="code"
@@ -223,16 +223,16 @@ export function ShipFormModal({
                   placeholder="Ví dụ: SHIP-001"
                   value={formData.code}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none uppercase ${
-                    errors.code ? 'border-rose-500 focus:border-rose-500' : 'border-slate-800 focus:border-cyan-500'
+                  className={`w-full px-3 py-2 bg-[#F7F4ED]/50 border rounded-xl text-xs text-[#252B32] placeholder-[#5A6578]/50 focus:outline-none uppercase transition-colors ${
+                    errors.code ? 'border-rose-400 focus:border-rose-500' : 'border-[#E5E0D7] focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10'
                   }`}
                 />
-                {errors.code && <p className="text-[11px] text-rose-400 mt-1">{errors.code}</p>}
+                {errors.code && <p className="text-[11px] text-rose-600 mt-1">{errors.code}</p>}
               </div>
 
               <div>
-                <label htmlFor="operator" className="block text-xs font-medium text-slate-300 mb-1">
-                  Đơn vị khai thác <span className="text-rose-400">*</span>
+                <label htmlFor="operator" className="block text-xs font-medium text-[#252B32] mb-1">
+                  Đơn vị khai thác <span className="text-rose-600">*</span>
                 </label>
                 <input
                   id="operator"
@@ -241,15 +241,15 @@ export function ShipFormModal({
                   placeholder="Ví dụ: Paradise Vietnam Cruises"
                   value={formData.operator}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none ${
-                    errors.operator ? 'border-rose-500 focus:border-rose-500' : 'border-slate-800 focus:border-cyan-500'
+                  className={`w-full px-3 py-2 bg-[#F7F4ED]/50 border rounded-xl text-xs text-[#252B32] placeholder-[#5A6578]/50 focus:outline-none transition-colors ${
+                    errors.operator ? 'border-rose-400 focus:border-rose-500' : 'border-[#E5E0D7] focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10'
                   }`}
                 />
-                {errors.operator && <p className="text-[11px] text-rose-400 mt-1">{errors.operator}</p>}
+                {errors.operator && <p className="text-[11px] text-rose-600 mt-1">{errors.operator}</p>}
               </div>
 
               <div>
-                <label htmlFor="status" className="block text-xs font-medium text-slate-300 mb-1">
+                <label htmlFor="status" className="block text-xs font-medium text-[#252B32] mb-1">
                   Trạng thái hoạt động
                 </label>
                 <select
@@ -257,7 +257,7 @@ export function ShipFormModal({
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10"
                 >
                   <option value="ACTIVE">ACTIVE (Sẵn sàng hoạt động)</option>
                   <option value="DOCKED">DOCKED (Đang neo đậu cảng)</option>
@@ -270,9 +270,9 @@ export function ShipFormModal({
           </div>
 
           {/* Section 2: Sức chứa & Buồng phòng */}
-          <div className="space-y-3 pt-2 border-t border-slate-800/80">
-            <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5" /> Sức chứa & Cơ cấu phòng
+          <div className="space-y-3 pt-2 border-t border-[#E5E0D7]">
+            <span className="text-xs font-semibold text-[#102A43] uppercase tracking-wider flex items-center gap-1.5">
+              <Users className="w-3.5 h-3.5 text-[#397C80]" /> Sức chứa & Cơ cấu phòng
             </span>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <NumberInputField
@@ -319,9 +319,9 @@ export function ShipFormModal({
           </div>
 
           {/* Section 3: Kích thước kỹ thuật */}
-          <div className="space-y-3 pt-2 border-t border-slate-800/80">
-            <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Compass className="w-3.5 h-3.5" /> Thông số kích thước hàng hải
+          <div className="space-y-3 pt-2 border-t border-[#E5E0D7]">
+            <span className="text-xs font-semibold text-[#102A43] uppercase tracking-wider flex items-center gap-1.5">
+              <Compass className="w-3.5 h-3.5 text-[#397C80]" /> Thông số kích thước hàng hải
             </span>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <NumberInputField
@@ -363,9 +363,9 @@ export function ShipFormModal({
           </div>
 
           {/* Section 4: Tiện ích & Mô tả */}
-          <div className="space-y-3 pt-2 border-t border-slate-800/80">
+          <div className="space-y-3 pt-2 border-t border-[#E5E0D7]">
             <div>
-              <label htmlFor="amenities" className="block text-xs font-medium text-slate-300 mb-1">
+              <label htmlFor="amenities" className="block text-xs font-medium text-[#252B32] mb-1">
                 Tiện nghi nổi bật
               </label>
               <input
@@ -375,12 +375,12 @@ export function ShipFormModal({
                 placeholder="Sky Pool, Luxury Spa, Grand Ballroom, VIP Helipad"
                 value={formData.amenities}
                 onChange={handleChange}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#5A6578]/50 focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10"
               />
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-xs font-medium text-slate-300 mb-1">
+              <label htmlFor="description" className="block text-xs font-medium text-[#252B32] mb-1">
                 Mô tả chi tiết
               </label>
               <textarea
@@ -390,27 +390,27 @@ export function ShipFormModal({
                 placeholder="Giới thiệu điểm nổi bật và phân khúc của du thuyền..."
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 resize-none"
+                className="w-full px-3 py-2 bg-[#F7F4ED]/50 border border-[#E5E0D7] rounded-xl text-xs text-[#252B32] placeholder-[#5A6578]/50 focus:outline-none focus:border-[#102A43] focus:ring-2 focus:ring-[#102A43]/10 resize-none"
               />
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E5E0D7]">
             <button
               type="button"
               onClick={onClose}
               disabled={isLoading}
-              className="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-medium bg-[#F7F4ED] hover:bg-[#ECE7DC] text-[#102A43] border border-[#E5E0D7] transition-colors cursor-pointer"
             >
               Hủy bỏ
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-60 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-600/25 transition-all"
+              className="inline-flex items-center gap-2 px-5 py-2 bg-[#102A43] hover:bg-[#0B1F33] disabled:opacity-60 text-white rounded-xl text-xs font-semibold shadow-xs transition-colors cursor-pointer"
             >
-              {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C5A572]" />}
               <span>{isEdit ? 'Lưu Thay Đổi' : 'Thêm Tàu Du Lịch'}</span>
             </button>
           </div>
@@ -419,3 +419,5 @@ export function ShipFormModal({
     </div>
   );
 }
+
+export default ShipFormModal;

@@ -58,49 +58,49 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B1F33]/60 backdrop-blur-xs p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="dispute-modal-title"
     >
-      <div className="bg-[#0b0f19] border border-white/10 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-4">
-        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+      <div className="bg-white border border-[#E5E0D7] rounded-2xl w-full max-w-lg p-6 shadow-xl space-y-4">
+        <div className="flex items-center justify-between border-b border-[#E5E0D7] pb-3">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-amber-400" />
-            <h2 id="dispute-modal-title" className="text-base font-semibold text-white">
+            <AlertTriangle className="w-5 h-5 text-amber-600" />
+            <h2 id="dispute-modal-title" className="text-base font-serif font-bold text-[#102A43]">
               Ghi Nhận Điều Chỉnh / Tranh Chấp Chi Phí
             </h2>
           </div>
           <button
             onClick={onClose}
             disabled={submitting}
-            className="text-slate-400 hover:text-white p-1 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-[#687787] hover:text-[#102A43] p-1 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             aria-label="Đóng dialog"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <p className="text-xs text-slate-400">
-          Tour đối soát: <span className="text-cyan-300 font-medium">{settlementTitle}</span>
+        <p className="text-xs text-[#687787]">
+          Tour đối soát: <span className="text-[#102A43] font-semibold">{settlementTitle}</span>
         </p>
 
         {error && (
-          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label htmlFor="adjustment-type" className="block text-slate-300 mb-1 font-medium">
+            <label htmlFor="adjustment-type" className="block text-[#252B32] mb-1 font-semibold">
               Loại Điều Chỉnh
             </label>
             <select
               id="adjustment-type"
               value={adjustmentType}
               onChange={(e) => setAdjustmentType(e.target.value as AdjustmentType)}
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-[#252B32] focus:outline-none focus:border-[#102A43]"
             >
               <option value="PENALTY_WEATHER_DELAY">Phạt Trễ Do Thời Tiết (Khấu trừ)</option>
               <option value="PENALTY_VEHICLE_DEFECT">Phạt Phương Tiện Không Đạt Chuẩn (Khấu trừ)</option>
@@ -111,7 +111,7 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
           </div>
 
           <div>
-            <label htmlFor="adjustment-amount" className="block text-slate-300 mb-1 font-medium">
+            <label htmlFor="adjustment-amount" className="block text-[#252B32] mb-1 font-semibold">
               Số Tiền ({currency})
             </label>
             <input
@@ -123,12 +123,12 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
               onChange={(e) => setAmount(e.target.value === '' ? '' : Number(e.target.value))}
               placeholder="VD: 150.00"
               required
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-[#252B32] focus:outline-none focus:border-[#102A43]"
             />
           </div>
 
           <div>
-            <label htmlFor="invoice-reference" className="block text-slate-300 mb-1 font-medium">
+            <label htmlFor="invoice-reference" className="block text-[#252B32] mb-1 font-semibold">
               Mã Hóa Đơn / Chứng Từ Đối Soát
             </label>
             <input
@@ -137,12 +137,12 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
               value={invoiceReference}
               onChange={(e) => setInvoiceReference(e.target.value)}
               placeholder="VD: INV-DISPUTE-2026-09"
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-[#252B32] focus:outline-none focus:border-[#102A43]"
             />
           </div>
 
           <div>
-            <label htmlFor="adjustment-explanation" className="block text-slate-300 mb-1 font-medium">
+            <label htmlFor="adjustment-explanation" className="block text-[#252B32] mb-1 font-semibold">
               Lý Do Giải Trình Chi Tiết *
             </label>
             <textarea
@@ -152,23 +152,23 @@ export const DisputeAdjustmentModal: React.FC<DisputeAdjustmentModalProps> = ({
               onChange={(e) => setExplanation(e.target.value)}
               placeholder="Giải trình cụ thể sự cố, chênh lệch thực tế so với hợp đồng..."
               required
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-cyan-500 resize-none"
+              className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-[#252B32] focus:outline-none focus:border-[#102A43] resize-none"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-white/5">
+          <div className="flex justify-end gap-2 pt-2 border-t border-[#E5E0D7]">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 rounded-xl bg-white/5 text-slate-300 hover:bg-white/10"
+              className="px-4 py-2 rounded-xl bg-white hover:bg-[#F7F4ED] text-[#102A43] border border-[#E5E0D7] font-semibold transition cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-medium flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-[#102A43] hover:bg-[#183B5B] text-white font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
             >
               <Plus className="w-4 h-4" />
               {submitting ? 'Đang lưu...' : 'Lưu Điều Chỉnh'}

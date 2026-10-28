@@ -30,12 +30,12 @@ export const SettlementLineItemTable: React.FC<SettlementLineItemTableProps> = (
   return (
     <section
       aria-label="Chi tiết khoản mục folio"
-      className="bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden shadow-xl"
+      className="bg-white border border-[#E5E0D7] rounded-2xl overflow-hidden shadow-xs"
     >
-      <div className="px-5 py-4 border-b border-white/5 flex items-center gap-2">
-        <Receipt className="w-4 h-4 text-cyan-400" />
-        <h3 className="text-sm font-semibold text-white">Chi tiết khoản mục</h3>
-        <span className="ml-auto text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+      <div className="px-5 py-4 border-b border-[#E5E0D7] flex items-center gap-2 bg-[#F7F4ED]">
+        <Receipt className="w-4 h-4 text-[#102A43]" />
+        <h3 className="text-sm font-serif font-bold text-[#102A43]">Chi tiết khoản mục</h3>
+        <span className="ml-auto text-[10px] font-semibold text-[#687787] uppercase tracking-wider">
           {sortedItems.length} mục
         </span>
       </div>
@@ -43,17 +43,17 @@ export const SettlementLineItemTable: React.FC<SettlementLineItemTableProps> = (
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
-            <tr className="text-left text-slate-400 border-b border-white/5">
-              <th className="px-5 py-3 font-medium">Mô tả</th>
-              <th className="px-5 py-3 font-medium">Khu vực</th>
-              <th className="px-5 py-3 font-medium">Thời điểm</th>
-              <th className="px-5 py-3 font-medium text-right">Số tiền</th>
+            <tr className="text-left text-[#687787] border-b border-[#E5E0D7] bg-[#F7F4ED] text-[10px] font-semibold uppercase tracking-wider">
+              <th className="px-5 py-3">Mô tả</th>
+              <th className="px-5 py-3">Khu vực</th>
+              <th className="px-5 py-3">Thời điểm</th>
+              <th className="px-5 py-3 text-right">Số tiền</th>
             </tr>
           </thead>
           <tbody>
             {sortedItems.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-5 py-8 text-center text-slate-500">
+                <td colSpan={4} className="px-5 py-8 text-center text-[#687787]">
                   Chưa có khoản mục nào trong folio.
                 </td>
               </tr>
@@ -63,25 +63,25 @@ export const SettlementLineItemTable: React.FC<SettlementLineItemTableProps> = (
                 return (
                   <tr
                     key={`${item.postedAt}-${item.description}-${index}`}
-                    className="border-b border-white/5 last:border-b-0 text-slate-300"
+                    className="border-b border-[#E5E0D7] last:border-b-0 text-[#252B32] hover:bg-[#F7F4ED]/50 transition-colors"
                   >
                     <td className="px-5 py-3">
-                      <span className={item.isReversal ? 'text-rose-400' : 'text-slate-200'}>
+                      <span className={item.isReversal ? 'text-rose-600 font-semibold' : 'text-[#252B32] font-medium'}>
                         {item.description}
                       </span>
                       {item.isReversal && (
-                        <span className="ml-2 text-[10px] font-mono uppercase text-rose-400/80">
+                        <span className="ml-2 text-[10px] font-mono font-bold uppercase text-rose-600">
                           Reversal
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-3 text-slate-400">{item.serviceArea}</td>
-                    <td className="px-5 py-3 text-slate-400 font-mono">
+                    <td className="px-5 py-3 text-[#687787]">{item.serviceArea}</td>
+                    <td className="px-5 py-3 text-[#687787] font-mono">
                       {formatPostedAt(item.postedAt)}
                     </td>
                     <td
-                      className={`px-5 py-3 text-right font-mono ${
-                        item.isReversal ? 'text-rose-400' : 'text-slate-200'
+                      className={`px-5 py-3 text-right font-mono font-semibold ${
+                        item.isReversal ? 'text-rose-600' : 'text-[#252B32]'
                       }`}
                     >
                       {formatCurrency(displayAmount, currency)}

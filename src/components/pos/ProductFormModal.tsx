@@ -174,17 +174,17 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="product-form-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B1F33]/60 backdrop-blur-xs p-4 animate-in fade-in"
     >
-      <div className="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="bg-white border border-[#E5E0D7] w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-800 bg-slate-950/70">
-          <h3 id="product-form-title" className="text-base font-bold text-white flex items-center gap-2">
+        <div className="flex items-center justify-between p-5 border-b border-[#E5E0D7] bg-[#F7F4ED]">
+          <h3 id="product-form-title" className="text-base font-serif font-bold text-[#102A43] flex items-center gap-2">
             <span>{product ? 'Chỉnh Sửa Sản Phẩm' : 'Thêm Sản Phẩm Mới'}</span>
           </h3>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-[#687787] hover:text-[#102A43] rounded-lg hover:bg-[#E5E0D7]/60 transition"
             aria-label="Đóng biểu mẫu"
           >
             <X className="w-5 h-5" />
@@ -194,7 +194,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 space-y-4">
           {error && (
-            <div className="p-3 rounded-xl bg-rose-950/60 border border-rose-800 text-xs text-rose-300 flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
@@ -203,8 +203,8 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Name */}
             <div className="sm:col-span-2">
-              <label htmlFor="prod-name-input" className="text-xs font-semibold text-slate-400 block mb-1">
-                Tên món / Sản phẩm <span className="text-rose-400">*</span>
+              <label htmlFor="prod-name-input" className="text-xs font-semibold text-[#687787] block mb-1">
+                Tên món / Sản phẩm <span className="text-rose-600">*</span>
               </label>
               <input
                 id="prod-name-input"
@@ -212,15 +212,15 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="VD: Pacific Sunset Mojito"
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-sm text-[#252B32] placeholder-[#687787]/60 focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
                 required
               />
             </div>
 
             {/* SKU */}
             <div>
-              <label htmlFor="prod-sku-input" className="text-xs font-semibold text-slate-400 block mb-1">
-                Mã SKU <span className="text-rose-400">*</span>
+              <label htmlFor="prod-sku-input" className="text-xs font-semibold text-[#687787] block mb-1">
+                Mã SKU <span className="text-rose-600">*</span>
               </label>
               <input
                 id="prod-sku-input"
@@ -229,32 +229,32 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 disabled={!!product}
                 onChange={(e) => setSku(e.target.value)}
                 placeholder="VD: BEV-MOJ-001"
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-sm text-[#252B32] font-mono focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43] disabled:bg-[#F7F4ED] disabled:opacity-60"
                 required
               />
             </div>
 
             {/* Barcode */}
             <div>
-              <label htmlFor="prod-barcode-input" className="text-xs font-semibold text-slate-400 block mb-1">Mã vạch (Barcode)</label>
+              <label htmlFor="prod-barcode-input" className="text-xs font-semibold text-[#687787] block mb-1">Mã vạch (Barcode)</label>
               <input
                 id="prod-barcode-input"
                 type="text"
                 value={barcode}
                 onChange={(e) => setBarcode(e.target.value)}
                 placeholder="VD: 893850123401"
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-sm text-[#252B32] font-mono placeholder-[#687787]/60 focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
               />
             </div>
 
             {/* Outlet */}
             <div>
-              <label htmlFor="prod-outlet-input" className="text-xs font-semibold text-slate-400 block mb-1">Điểm bán (Outlet)</label>
+              <label htmlFor="prod-outlet-input" className="text-xs font-semibold text-[#687787] block mb-1">Điểm bán (Outlet)</label>
               <select
                 id="prod-outlet-input"
                 value={outletId || ''}
                 onChange={(e) => setOutletId(e.target.value ? Number(e.target.value) : undefined)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-sm text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
               >
                 <option value="">Tất cả điểm bán (Chung)</option>
                 {outlets.map((o) => (
@@ -267,12 +267,12 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
             {/* Category */}
             <div>
-              <label htmlFor="prod-category-input" className="text-xs font-semibold text-slate-400 block mb-1">Danh mục</label>
+              <label htmlFor="prod-category-input" className="text-xs font-semibold text-[#687787] block mb-1">Danh mục</label>
               <select
                 id="prod-category-input"
                 value={categoryId}
                 onChange={(e) => setCategoryId(Number(e.target.value))}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-sm text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
               >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -284,8 +284,8 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
             {/* Base Price */}
             <div>
-              <label htmlFor="prod-base-price-input" className="text-xs font-semibold text-slate-400 block mb-1">
-                Giá bán cơ sở ($) <span className="text-rose-400">*</span>
+              <label htmlFor="prod-base-price-input" className="text-xs font-semibold text-[#687787] block mb-1">
+                Giá bán cơ sở ($) <span className="text-rose-600">*</span>
               </label>
               <input
                 id="prod-base-price-input"
@@ -294,14 +294,14 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 min="0.01"
                 value={basePrice}
                 onChange={(e) => setBasePrice(Number.parseFloat(e.target.value) || 0)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-sm text-[#252B32] font-mono focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
                 required
               />
             </div>
 
             {/* Cost Price */}
             <div>
-              <label htmlFor="prod-cost-price-input" className="text-xs font-semibold text-slate-400 block mb-1">Giá vốn ($)</label>
+              <label htmlFor="prod-cost-price-input" className="text-xs font-semibold text-[#687787] block mb-1">Giá vốn ($)</label>
               <input
                 id="prod-cost-price-input"
                 type="number"
@@ -309,18 +309,18 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 min="0"
                 value={costPrice}
                 onChange={(e) => setCostPrice(Number.parseFloat(e.target.value) || 0)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-sm text-[#252B32] font-mono focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
               />
             </div>
 
             {/* Tax Category */}
             <div>
-              <label htmlFor="prod-tax-category-input" className="text-xs font-semibold text-slate-400 block mb-1">Phân loại thuế (VAT)</label>
+              <label htmlFor="prod-tax-category-input" className="text-xs font-semibold text-[#687787] block mb-1">Phân loại thuế (VAT)</label>
               <select
                 id="prod-tax-category-input"
                 value={taxCategory}
                 onChange={(e) => setTaxCategory(e.target.value as TaxCategory)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-sm text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
               >
                 <option value="STANDARD_VAT">Tiêu chuẩn (10% Port VAT)</option>
                 <option value="REDUCED_VAT">Giảm nhẹ (5% Port VAT)</option>
@@ -331,48 +331,48 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
             {/* Stock Quantity */}
             <div>
-              <label htmlFor="prod-stock-quantity-input" className="text-xs font-semibold text-slate-400 block mb-1">Tồn kho</label>
+              <label htmlFor="prod-stock-quantity-input" className="text-xs font-semibold text-[#687787] block mb-1">Tồn kho</label>
               <input
                 id="prod-stock-quantity-input"
                 type="number"
                 min="0"
                 value={stockQuantity}
                 onChange={(e) => setStockQuantity(Number.parseInt(e.target.value, 10) || 0)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-sm text-[#252B32] font-mono focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
               />
             </div>
 
             {/* Image URL */}
             <div className="sm:col-span-2">
-              <label htmlFor="prod-image-url-input" className="text-xs font-semibold text-slate-400 block mb-1">URL Hình ảnh</label>
+              <label htmlFor="prod-image-url-input" className="text-xs font-semibold text-[#687787] block mb-1">URL Hình ảnh</label>
               <input
                 id="prod-image-url-input"
                 type="url"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-sm text-[#252B32] placeholder-[#687787]/60 focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
               />
             </div>
 
             {/* Description */}
             <div className="sm:col-span-2">
-              <label htmlFor="prod-description-input" className="text-xs font-semibold text-slate-400 block mb-1">Mô tả chi tiết</label>
+              <label htmlFor="prod-description-input" className="text-xs font-semibold text-[#687787] block mb-1">Mô tả chi tiết</label>
               <textarea
                 id="prod-description-input"
                 rows={2}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Thành phần, hương vị, lưu ý dị ứng thực phẩm..."
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-[#E5E0D7] rounded-xl px-3 py-2 text-sm text-[#252B32] placeholder-[#687787]/60 focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
               />
             </div>
 
             {/* Happy Hour eligibility */}
-            <div className="sm:col-span-2 flex items-center justify-between p-3 rounded-xl bg-slate-800/60 border border-slate-700/80">
+            <div className="sm:col-span-2 flex items-center justify-between p-3 rounded-xl bg-[#F7F4ED] border border-[#E5E0D7]">
               <div>
-                <label htmlFor="prod-happy-hour-checkbox" className="text-xs font-semibold text-white block cursor-pointer">Áp dụng Happy Hour</label>
-                <span className="text-[11px] text-slate-400">
+                <label htmlFor="prod-happy-hour-checkbox" className="text-xs font-semibold text-[#102A43] block cursor-pointer">Áp dụng Happy Hour</label>
+                <span className="text-[11px] text-[#687787]">
                   Tự động giảm giá theo khung giờ vàng quy định
                 </span>
               </div>
@@ -381,21 +381,21 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 type="checkbox"
                 checked={happyHourEligible}
                 onChange={(e) => setHappyHourEligible(e.target.checked)}
-                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 bg-slate-900 border-slate-700 cursor-pointer"
+                className="w-4 h-4 rounded text-[#102A43] focus:ring-[#102A43] border-[#E5E0D7] cursor-pointer"
               />
             </div>
           </div>
 
           {/* Modifiers List Section */}
-          <div className="pt-3 border-t border-slate-800">
+          <div className="pt-3 border-t border-[#E5E0D7]">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#687787]">
                 Tùy chọn & Topping (Modifiers)
               </span>
               <button
                 type="button"
                 onClick={handleAddModifier}
-                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-400 text-xs font-semibold flex items-center gap-1 transition"
+                className="px-2.5 py-1 rounded-lg bg-[#F7F4ED] hover:bg-[#E5E0D7]/60 text-[#102A43] text-xs font-semibold flex items-center gap-1 border border-[#E5E0D7] transition shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Thêm tùy chọn</span>
@@ -403,23 +403,23 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
             </div>
 
             {modifiers.length === 0 ? (
-              <p className="text-xs text-slate-500 italic py-2 text-center">Chưa có modifier nào.</p>
+              <p className="text-xs text-[#687787] italic py-2 text-center">Chưa có modifier nào.</p>
             ) : (
               <div className="space-y-2">
                 {modifiers.map((mod, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-2 p-2 rounded-xl bg-slate-800/80 border border-slate-700/60"
+                    className="flex items-center gap-2 p-2 rounded-xl bg-[#F7F4ED]/50 border border-[#E5E0D7]"
                   >
                     <input
                       type="text"
                       placeholder="Tên tùy chọn (vd: Thêm rum)"
                       value={mod.name}
                       onChange={(e) => handleUpdateModifier(idx, 'name', e.target.value)}
-                      className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="flex-1 bg-white border border-[#E5E0D7] rounded-lg px-2.5 py-1.5 text-xs text-[#252B32] focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
                     />
                     <div className="flex items-center gap-1">
-                      <span className="text-xs text-slate-400">+$</span>
+                      <span className="text-xs text-[#687787]">+$</span>
                       <input
                         type="number"
                         step="0.1"
@@ -428,13 +428,13 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                         onChange={(e) =>
                           handleUpdateModifier(idx, 'priceDelta', Number.parseFloat(e.target.value) || 0)
                         }
-                        className="w-20 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-20 bg-white border border-[#E5E0D7] rounded-lg px-2 py-1.5 text-xs text-[#252B32] font-mono focus:outline-none focus:border-[#102A43] focus:ring-1 focus:ring-[#102A43]"
                       />
                     </div>
                     <button
                       type="button"
                       onClick={() => handleRemoveModifier(idx)}
-                      className="text-slate-500 hover:text-rose-400 p-1"
+                      className="text-[#687787] hover:text-rose-600 p-1"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -445,18 +445,18 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           </div>
 
           {/* Form Actions */}
-          <div className="pt-4 border-t border-slate-800 flex justify-end gap-2">
+          <div className="pt-4 border-t border-[#E5E0D7] flex justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-semibold transition"
+              className="px-4 py-2 rounded-xl border border-[#E5E0D7] text-[#687787] hover:bg-[#F7F4ED] hover:text-[#102A43] text-xs font-semibold transition shadow-xs"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-blue-600/30 transition"
+              className="px-5 py-2 rounded-xl bg-[#102A43] hover:bg-[#183B5B] disabled:opacity-50 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition"
             >
               <Save className="w-3.5 h-3.5" />
               <span>{isSubmitting ? 'Đang lưu...' : 'Lưu sản phẩm'}</span>

@@ -113,61 +113,61 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
     <div className="space-y-6">
       {/* Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+        <div className="bg-white border border-[#E5E0D7] p-5 rounded-2xl flex items-center justify-between shadow-xs">
           <div>
-            <span className="text-xs text-slate-400 font-medium">Hàng Đợi Ngoại Tuyến</span>
-            <div className="text-2xl font-black text-amber-400 mt-1">{queue.length} GD</div>
-            <span className="text-[11px] text-slate-500">Chờ kết nối máy chủ</span>
+            <span className="text-xs text-[#687787] font-medium">Hàng Đợi Ngoại Tuyến</span>
+            <div className="text-2xl font-black text-[#102A43] font-mono mt-1">{queue.length} GD</div>
+            <span className="text-[11px] text-[#687787]">Chờ kết nối máy chủ</span>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-            <Database className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-xl bg-[#F7F4ED] border border-[#E5E0D7] flex items-center justify-center text-[#8C6D37]">
+            <Database className="w-6 h-6 text-[#C5A572]" />
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+        <div className="bg-white border border-[#E5E0D7] p-5 rounded-2xl flex items-center justify-between shadow-xs">
           <div>
-            <span className="text-xs text-slate-400 font-medium">Lịch Sử Đợt Đồng Bộ</span>
-            <div className="text-2xl font-black text-white mt-1">{history.length} Lần</div>
-            <span className="text-[11px] text-slate-500">Ghi nhận nhật ký</span>
+            <span className="text-xs text-[#687787] font-medium">Lịch Sử Đợt Đồng Bộ</span>
+            <div className="text-2xl font-black text-[#102A43] font-mono mt-1">{history.length} Lần</div>
+            <span className="text-[11px] text-[#687787]">Ghi nhận nhật ký</span>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-            <Clock className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-xl bg-[#F7F4ED] border border-[#E5E0D7] flex items-center justify-center text-[#102A43]">
+            <Clock className="w-6 h-6 text-[#397C80]" />
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+        <div className="bg-white border border-[#E5E0D7] p-5 rounded-2xl flex items-center justify-between shadow-xs">
           <div>
-            <span className="text-xs text-slate-400 font-medium">Chiến Lược Thử Lại (Retry)</span>
-            <div className="text-sm font-bold text-emerald-400 mt-1">Exponential Backoff</div>
-            <span className="text-[11px] text-slate-500">3 Lần thử (300ms → 600ms)</span>
+            <span className="text-xs text-[#687787] font-medium">Chiến Lược Thử Lại (Retry)</span>
+            <div className="text-sm font-bold text-emerald-800 mt-1">Exponential Backoff</div>
+            <span className="text-[11px] text-[#687787]">3 Lần thử (300ms → 600ms)</span>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
             <Zap className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex items-center justify-between">
+        <div className="bg-white border border-[#E5E0D7] p-5 rounded-2xl flex items-center justify-between shadow-xs">
           <div>
-            <span className="text-xs text-slate-400 font-medium">Vệ Tinh Hải Trình</span>
-            <div className="text-sm font-bold text-cyan-400 mt-1 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span className="text-xs text-[#687787] font-medium">Vệ Tinh Hải Trình</span>
+            <div className="text-sm font-bold text-[#102A43] mt-1 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#397C80] animate-pulse"></span>
               POS-TERMINAL-DECK-9
             </div>
-            <span className="text-[11px] text-slate-500">Cơ chế khử trùng lặp (Idempotent)</span>
+            <span className="text-[11px] text-[#687787]">Cơ chế khử trùng lặp (Idempotent)</span>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+          <div className="w-12 h-12 rounded-xl bg-[#397C80]/10 border border-[#397C80]/20 flex items-center justify-center text-[#397C80]">
             <Server className="w-6 h-6" />
           </div>
         </div>
       </div>
 
       {/* Control Actions Bar */}
-      <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-white border border-[#E5E0D7] p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center gap-3">
           <button
             onClick={handleManualSync}
             disabled={isSyncing}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-lg shadow-amber-600/20 transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#102A43] hover:bg-[#183B5B] disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Đang Đồng Bộ...' : 'Đồng Bộ Thủ Công Ngay'}
@@ -175,10 +175,10 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
 
           <button
             onClick={handleCreateMockOfflineTx}
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-2 bg-[#F7F4ED] hover:bg-[#E5E0D7]/60 text-[#102A43] border border-[#E5E0D7] rounded-xl text-xs font-semibold transition-colors cursor-pointer shadow-xs"
             title="Thêm một đơn hàng mẫu vào hàng đợi ngoại tuyến để kiểm thử"
           >
-            <Radio className="w-3.5 h-3.5 text-amber-400" />+ Giả Lập Giao Dịch Offline
+            <Radio className="w-3.5 h-3.5 text-[#C5A572]" />+ Giả Lập Giao Dịch Offline
           </button>
         </div>
 
@@ -186,7 +186,7 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
           {queue.length > 0 && (
             <button
               onClick={handleClearQueue}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Xóa Hàng Đợi ({queue.length})
@@ -196,7 +196,7 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
           {history.length > 0 && (
             <button
               onClick={handleClearHistory}
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-[#F7F4ED] text-[#687787] hover:text-[#102A43] border border-[#E5E0D7] rounded-xl text-xs font-semibold transition-colors cursor-pointer shadow-xs"
             >
               Xóa Nhật Ký Lịch Sử
             </button>
@@ -209,14 +209,14 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
         <div
           className={`p-4 rounded-2xl text-xs flex items-center gap-3 animate-in fade-in ${
             syncStatusMsg.isError
-              ? 'bg-rose-500/10 border border-rose-500/30 text-rose-300'
-              : 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-300'
+              ? 'bg-rose-50 border border-rose-200 text-rose-800'
+              : 'bg-emerald-50 border border-emerald-200 text-emerald-800'
           }`}
         >
           {syncStatusMsg.isError ? (
-            <AlertCircle className="w-5 h-5 shrink-0 text-rose-400" />
+            <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
           ) : (
-            <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-400" />
+            <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
           )}
           <span className="font-medium">{syncStatusMsg.text}</span>
         </div>
@@ -225,50 +225,50 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
       {/* Two-column layout: Queue Table & History Logs */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Offline Queue Column */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col">
-          <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="bg-white border border-[#E5E0D7] rounded-2xl overflow-hidden flex flex-col shadow-xs">
+          <div className="p-4 border-b border-[#E5E0D7] bg-[#F7F4ED] flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Database className="w-4 h-4 text-amber-400" />
+              <h3 className="text-sm font-serif font-bold text-[#102A43] flex items-center gap-2">
+                <Database className="w-4 h-4 text-[#397C80]" />
                 Hàng Đợi Giao Dịch Ngoại Tuyến (Offline Queue)
               </h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-[#687787] mt-0.5">
                 Các giao dịch được lưu cục bộ trên bộ nhớ máy POS khi mất sóng
               </p>
             </div>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#C5A572]/20 text-[#8C6D37] border border-[#C5A572]/40">
               {queue.length} Đang Chờ
             </span>
           </div>
 
-          <div className="overflow-y-auto max-h-96 divide-y divide-slate-800">
+          <div className="overflow-y-auto max-h-96 divide-y divide-[#E5E0D7]">
             {queue.length === 0 ? (
-              <div className="p-12 text-center text-xs text-slate-500">
+              <div className="p-12 text-center text-xs text-[#687787]">
                 Hàng đợi ngoại tuyến trống. Mọi giao dịch POS đều đã được đồng bộ với máy chủ!
               </div>
             ) : (
               queue.map((item) => (
                 <div
                   key={item.id}
-                  className="p-3.5 hover:bg-slate-800/40 transition-colors flex items-center justify-between gap-3 text-xs"
+                  className="p-3.5 hover:bg-[#F7F4ED]/50 transition-colors flex items-center justify-between gap-3 text-xs"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-amber-400 text-[11px]">
+                      <span className="font-mono font-bold text-[#102A43] text-[11px]">
                         {item.payload?.transactionUuid || item.id}
                       </span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#F7F4ED] border border-[#E5E0D7] text-[#687787]">
                         {item.payload?.paymentMethod || 'CABIN_FOLIO'}
                       </span>
                     </div>
-                    <div className="text-[11px] text-slate-400 flex items-center gap-3">
+                    <div className="text-[11px] text-[#687787] flex items-center gap-3">
                       <span>Cabin: {item.payload?.cabinNumber || 'N/A'}</span>
                       <span>Trạm: {item.payload?.stationId || 'BAR-DECK-9'}</span>
                       <span>Mục: {item.payload?.items?.length || 1} SP</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-white text-xs">
+                    <div className="font-bold text-[#102A43] text-xs font-mono">
                       ${(item.payload?.subtotal || item.payload?.totalAmount || 0).toFixed(2)}
                     </div>
                     <button
@@ -276,7 +276,7 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
                         offlineSyncManager.removePendingTransaction(item.id);
                         reloadData();
                       }}
-                      className="text-[10px] text-rose-400 hover:text-rose-300 mt-1 cursor-pointer"
+                      className="text-[10px] text-rose-600 hover:text-rose-700 mt-1 cursor-pointer"
                     >
                       Bỏ qua
                     </button>
@@ -288,99 +288,99 @@ export const SyncControlPanel: React.FC<SyncControlPanelProps> = ({ onSyncComple
         </div>
 
         {/* Sync History Column */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col">
-          <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="bg-white border border-[#E5E0D7] rounded-2xl overflow-hidden flex flex-col shadow-xs">
+          <div className="p-4 border-b border-[#E5E0D7] bg-[#F7F4ED] flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Clock className="w-4 h-4 text-cyan-400" />
+              <h3 className="text-sm font-serif font-bold text-[#102A43] flex items-center gap-2">
+                <Clock className="w-4 h-4 text-[#397C80]" />
                 Lịch Sử Đợt Đồng Bộ & Nhật Ký Lỗi (Sync History)
               </h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-[#687787] mt-0.5">
                 Nhật ký các lần đồng bộ lô, kết quả khử trùng lặp và phản hồi server
               </p>
             </div>
             <div className="flex gap-1 text-[10px]">
               <button
                 onClick={() => setFilterMode('ALL')}
-                className={`px-2 py-0.5 rounded cursor-pointer ${filterMode === 'ALL' ? 'bg-slate-700 text-white font-bold' : 'text-slate-400'}`}
+                className={`px-2 py-0.5 rounded cursor-pointer ${filterMode === 'ALL' ? 'bg-[#102A43] text-white font-bold' : 'text-[#687787]'}`}
               >
                 Tất cả
               </button>
               <button
                 onClick={() => setFilterMode('FAILED')}
-                className={`px-2 py-0.5 rounded cursor-pointer ${filterMode === 'FAILED' ? 'bg-rose-500/20 text-rose-300 font-bold' : 'text-slate-400'}`}
+                className={`px-2 py-0.5 rounded cursor-pointer ${filterMode === 'FAILED' ? 'bg-rose-100 text-rose-800 font-bold border border-rose-200' : 'text-[#687787]'}`}
               >
                 Lỗi
               </button>
               <button
                 onClick={() => setFilterMode('SUCCESS')}
-                className={`px-2 py-0.5 rounded cursor-pointer ${filterMode === 'SUCCESS' ? 'bg-emerald-500/20 text-emerald-300 font-bold' : 'text-slate-400'}`}
+                className={`px-2 py-0.5 rounded cursor-pointer ${filterMode === 'SUCCESS' ? 'bg-emerald-100 text-emerald-800 font-bold border border-emerald-200' : 'text-[#687787]'}`}
               >
                 Thành công
               </button>
             </div>
           </div>
 
-          <div className="overflow-y-auto max-h-96 divide-y divide-slate-800">
+          <div className="overflow-y-auto max-h-96 divide-y divide-[#E5E0D7]">
             {filteredHistory.length === 0 ? (
-              <div className="p-12 text-center text-xs text-slate-500">
+              <div className="p-12 text-center text-xs text-[#687787]">
                 Chưa có nhật ký đồng bộ nào. Nhấn "Đồng Bộ Thủ Công Ngay" để kích hoạt.
               </div>
             ) : (
               filteredHistory.map((log) => (
                 <div
                   key={log.id}
-                  className="p-3.5 hover:bg-slate-800/40 transition-colors space-y-1.5 text-xs"
+                  className="p-3.5 hover:bg-[#F7F4ED]/50 transition-colors space-y-1.5 text-xs"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span
                         className={`w-2 h-2 rounded-full ${
                           log.status === 'SUCCESS'
-                            ? 'bg-emerald-400'
+                            ? 'bg-emerald-500'
                             : log.status === 'PARTIAL'
-                              ? 'bg-amber-400'
-                              : 'bg-rose-400'
+                              ? 'bg-amber-500'
+                              : 'bg-rose-500'
                         }`}
                       ></span>
-                      <span className="font-mono text-[11px] text-slate-300 font-bold">
+                      <span className="font-mono text-[11px] text-[#102A43] font-bold">
                         {log.id}
                       </span>
                       <span
                         className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${
                           log.status === 'SUCCESS'
-                            ? 'bg-emerald-500/10 text-emerald-400'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : log.status === 'PARTIAL'
-                              ? 'bg-amber-500/10 text-amber-400'
-                              : 'bg-rose-500/10 text-rose-400'
+                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                              : 'bg-rose-50 text-rose-700 border border-rose-200'
                         }`}
                       >
                         {log.status}
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-500">
+                    <span className="text-[10px] text-[#687787]">
                       {new Date(log.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-4 gap-1 text-[11px] text-slate-400 pt-1">
+                  <div className="grid grid-cols-4 gap-1 text-[11px] text-[#687787] pt-1">
                     <div>
-                      Tổng: <strong className="text-white">{log.totalReceived}</strong>
+                      Tổng: <strong className="text-[#102A43]">{log.totalReceived}</strong>
                     </div>
                     <div>
                       Đã nạp:{' '}
-                      <strong className="text-emerald-400">{log.successfullyProcessed}</strong>
+                      <strong className="text-emerald-700">{log.successfullyProcessed}</strong>
                     </div>
                     <div>
-                      Trùng: <strong className="text-cyan-400">{log.duplicateCount}</strong>
+                      Trùng: <strong className="text-[#397C80]">{log.duplicateCount}</strong>
                     </div>
                     <div>
-                      Lỗi: <strong className="text-rose-400">{log.failedCount}</strong>
+                      Lỗi: <strong className="text-rose-700">{log.failedCount}</strong>
                     </div>
                   </div>
 
                   {log.failedReasons && log.failedReasons.length > 0 && (
-                    <div className="mt-1 p-2 rounded bg-rose-500/10 border border-rose-500/20 text-[10px] text-rose-300 space-y-0.5">
+                    <div className="mt-1 p-2 rounded bg-rose-50 border border-rose-200 text-[10px] text-rose-700 space-y-0.5">
                       {log.failedReasons.map((reason, idx) => (
                         <div key={idx} className="truncate">
                           • {reason}

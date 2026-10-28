@@ -78,70 +78,70 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
       role="alertdialog"
       aria-modal="true"
       aria-labelledby="solas-alarm-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-red-950/90 backdrop-blur-md p-4 animate-in fade-in duration-300"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B1F33]/85 backdrop-blur-md p-4 animate-in fade-in duration-300"
     >
-      <div className="bg-slate-900 border-4 border-red-600 rounded-3xl shadow-[0_0_80px_rgba(220,38,38,0.8)] w-full max-w-2xl overflow-hidden text-white flex flex-col animate-pulse">
+      <div className="bg-white border-2 border-rose-600 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden text-[#252B32] flex flex-col">
         {/* Flashing Top Banner */}
-        <div className="bg-red-600 px-6 py-4 flex items-center justify-between">
+        <div className="bg-rose-700 px-6 py-4 flex items-center justify-between text-white">
           <div className="flex items-center gap-3">
             <AlertOctagon className="w-8 h-8 text-white animate-spin" />
             <div>
-              <h2 id="solas-alarm-title" className="text-xl font-black uppercase tracking-wider">
+              <h2 id="solas-alarm-title" className="text-xl font-bold uppercase tracking-wider text-white">
                 Báo Động Khẩn Cấp SOLAS Hàng Hải
               </h2>
-              <p className="text-xs font-bold text-red-100 uppercase tracking-widest">
+              <p className="text-xs font-semibold text-rose-100 uppercase tracking-widest">
                 {activeMuster.emergencyType} • TÍN HIỆU: 7 NGẮN 1 DÀI
               </p>
             </div>
           </div>
-          <div className="p-2 bg-black/30 rounded-xl">
+          <div className="p-2 bg-black/20 rounded-xl">
             <Volume2 className="w-6 h-6 text-white" />
           </div>
         </div>
 
         {/* Modal Body */}
-        <div className="p-8 space-y-6">
-          <div className="bg-red-900/40 border border-red-700/60 rounded-2xl p-5 text-center">
-            <p className="text-lg font-bold text-red-200">
+        <div className="p-6 sm:p-8 space-y-6 bg-white">
+          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-5 text-center">
+            <p className="text-lg font-bold text-rose-900">
               "{activeMuster.announcementText}"
             </p>
-            <p className="text-xs text-red-400 mt-2 font-mono">
+            <p className="text-xs text-rose-700 mt-2 font-mono">
               Chỉ huy phát lệnh: {activeMuster.triggeredBy} • Mã sự cố: {activeMuster.incidentCode}
             </p>
           </div>
 
           {/* Passenger Evacuation Instructions */}
-          <div className="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 space-y-4">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-              <LifeBuoy className="w-5 h-5 text-amber-400" />
+          <div className="bg-[#F7F4ED] border border-[#E5E0D7] rounded-2xl p-5 space-y-4">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[#102A43] flex items-center gap-2">
+              <LifeBuoy className="w-5 h-5 text-amber-600" />
               Hướng Dẫn Khẩn Cấp Dành Cho Hành Khách:
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-700/50">
-                <span className="text-xs text-slate-400 block font-semibold">Trạm Tập Trung Của Bạn:</span>
-                <span className="text-lg font-black text-amber-300 mt-0.5 block flex items-center gap-1.5">
-                  <MapPin className="w-5 h-5 text-amber-400 shrink-0" />
+              <div className="p-4 bg-white rounded-xl border border-[#E5E0D7] shadow-2xs">
+                <span className="text-xs text-[#252B32]/70 block font-semibold">Trạm Tập Trung Của Bạn:</span>
+                <span className="text-lg font-extrabold text-[#102A43] mt-0.5 block flex items-center gap-1.5">
+                  <MapPin className="w-5 h-5 text-amber-600 shrink-0" />
                   {passengerMusterStation || 'Kiểm tra trạm tập trung trên thẻ phòng của bạn'}
                 </span>
               </div>
 
-              <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-700/50">
-                <span className="text-xs text-slate-400 block font-semibold">Xuồng Cứu Sinh (Lifeboat):</span>
-                <span className="text-sm font-bold text-cyan-300 mt-1 block">
+              <div className="p-4 bg-white rounded-xl border border-[#E5E0D7] shadow-2xs">
+                <span className="text-xs text-[#252B32]/70 block font-semibold">Xuồng Cứu Sinh (Lifeboat):</span>
+                <span className="text-sm font-bold text-[#397C80] mt-1 block">
                   {assignedLifeboat || 'Theo hướng dẫn tại trạm tập trung'}
                 </span>
               </div>
             </div>
 
-            <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-700/50">
-              <span className="text-xs text-slate-400 block font-semibold">Trang Bị Bắt Buộc:</span>
-              <span className="text-sm font-bold text-emerald-400 mt-1 block">
+            <div className="p-4 bg-white rounded-xl border border-[#E5E0D7] shadow-2xs">
+              <span className="text-xs text-[#252B32]/70 block font-semibold">Trang Bị Bắt Buộc:</span>
+              <span className="text-sm font-bold text-emerald-700 mt-1 block">
                 Áo phao cứu sinh (Trong tủ cabin) + Thẻ tàu RFID
               </span>
             </div>
 
-            <ol className="list-decimal list-inside text-xs text-slate-300 space-y-1 pt-1 leading-relaxed">
+            <ol className="list-decimal list-inside text-xs text-[#252B32] space-y-1.5 pt-1 leading-relaxed">
               <li>Mặc ấm, mang theo áo phao cứu sinh và thuốc men cá nhân cần thiết.</li>
               <li>Tuyệt đối <strong>KHÔNG SỬ DỤNG THANG MÁY</strong>; chỉ di chuyển theo cầu thang bộ thoát hiểm.</li>
               <li>Tuân thủ theo chỉ dẫn của thuyền viên trực chốt tại các boong.</li>
@@ -153,7 +153,7 @@ export const SolasEmergencyAlarmModal: React.FC<SolasEmergencyAlarmModalProps> =
             <button
               ref={ackButtonRef}
               onClick={() => setAcknowledgedCode(activeMuster.incidentCode)}
-              className="w-full py-4 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-black text-base uppercase tracking-wider rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 bg-rose-700 hover:bg-rose-800 active:bg-rose-900 text-white font-bold text-base uppercase tracking-wider rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-4 focus:ring-rose-500/30"
             >
               <ShieldAlert className="w-6 h-6" />
               Tôi Đã Hiểu & Đang Di Chuyển Đến Trạm Tập Trung
