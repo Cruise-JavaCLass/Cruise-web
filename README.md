@@ -1,170 +1,271 @@
-# Cruise Activity and Service Management System - Frontend Web
+<div align="center">
 
-> **Jira Story:** [KAN-37](https://huytran20052022.atlassian.net/browse/KAN-37)  
-> **Jira Tasks:**  
-> - [KAN-35](https://huytran20052022.atlassian.net/browse/KAN-35) - *Initialize Frontend Project — Khởi tạo dự án frontend*  
-> - [KAN-36](https://huytran20052022.atlassian.net/browse/KAN-36) - *Add Basic Application Entry Point — Tạo điểm khởi chạy ứng dụng*  
-> - [KAN-50](https://huytran20052022.atlassian.net/browse/KAN-50) - *Configure Frontend Testing Tools — Thiết lập công cụ kiểm thử frontend*  
-> - [KAN-52](https://huytran20052022.atlassian.net/browse/KAN-52) - *Add Sample Frontend Test — Tạo một test mẫu cho frontend*  
-> - [KAN-54](https://huytran20052022.atlassian.net/browse/KAN-54) - *Configure Test Execution Commands — Thiết lập lệnh chạy test*  
-> - [KAN-57](https://huytran20052022.atlassian.net/browse/KAN-57) - *Configure Git Workflow and CI — Thiết lập quy trình Git và luồng CI*  
-> - [KAN-91](https://huytran20052022.atlassian.net/browse/KAN-91) - *Build Cruise Ship List and Detail Pages — Trang danh sách và chi tiết tàu du lịch*  
-> - [KAN-92](https://huytran20052022.atlassian.net/browse/KAN-92) - *Build Create and Edit Ship Forms — Form tạo và sửa thông tin tàu*  
-> - [KAN-93](https://huytran20052022.atlassian.net/browse/KAN-93) - *Write Component Tests for Ship Management — Viết component test cho quản lý tàu*  
-> - [KAN-94](https://huytran20052022.atlassian.net/browse/KAN-94) - *Test Form Validation and API Error Handling — Test validation và xử lý lỗi form*  
-> - [KAN-100](https://huytran20052022.atlassian.net/browse/KAN-100) - *Build Cruise Tour Management Interface — Giao diện quản lý tour du lịch*  
-> - [KAN-101](https://huytran20052022.atlassian.net/browse/KAN-101) - *Build Tour Create and Edit Forms — Form tạo và sửa tour du thuyền*  
-> - [KAN-102](https://huytran20052022.atlassian.net/browse/KAN-102) - *Write Component Tests for Tour Management — Test các thành phần quản lý tour*  
-> - [KAN-103](https://huytran20052022.atlassian.net/browse/KAN-103) - *Test Tour Status Changes and Validation — Test thay đổi trạng thái tour và validation*  
-> - [KAN-110](https://huytran20052022.atlassian.net/browse/KAN-110) - *Build Port and Stop Management Interface — Giao diện quản lý cảng và điểm dừng*  
-> - [KAN-111](https://huytran20052022.atlassian.net/browse/KAN-111) - *Test Arrival and Departure Time Validation — Test kiểm tra giờ cập cảng và rời bến*  
-> - [KAN-112](https://huytran20052022.atlassian.net/browse/KAN-112) - *Write Component Tests for Port and Stop Forms — Test form cảng và điểm dừng*  
-> - [KAN-119](https://huytran20052022.atlassian.net/browse/KAN-119) - *Build Daily Itinerary Interface — Giao diện lịch trình hàng ngày*  
-> - [KAN-120](https://huytran20052022.atlassian.net/browse/KAN-120) - *Implement Itinerary Update and Reordering UI — Giao diện cập nhật và sắp xếp lịch trình*  
-> - [KAN-121](https://huytran20052022.atlassian.net/browse/KAN-121) - *Write Component Tests for Itinerary Management — Test các thành phần giao diện lịch trình*  
-> - [KAN-122](https://huytran20052022.atlassian.net/browse/KAN-122) - *Test Itinerary Validation and Error States — Test kiểm tra dữ liệu và trạng thái lỗi lịch trình*  
-> - [KAN-129](https://huytran20052022.atlassian.net/browse/KAN-129) - *Display Updated Itinerary Information — Hiển thị thông tin lịch trình đã cập nhật*  
-> - [KAN-130](https://huytran20052022.atlassian.net/browse/KAN-130) - *Display Itinerary Change History — Hiển thị lịch sử thay đổi lịch trình*  
-> - [KAN-131](https://huytran20052022.atlassian.net/browse/KAN-131) - *Test Itinerary Update Display — Test hiển thị cập nhật lịch trình và lịch sử thay đổi*  
-> - [KAN-172](https://huytran20052022.atlassian.net/browse/KAN-172) - *Build Excursion Management Interface — Giao diện quản lý tour trên bờ (Shore Excursions)*  
-> - [KAN-174](https://huytran20052022.atlassian.net/browse/KAN-174) - *Write Component Tests for Excursion Management — Test các thành phần giao diện tour bờ*  
-> - [KAN-175](https://huytran20052022.atlassian.net/browse/KAN-175) - *Test Price, Capacity and Schedule Validation — Test kiểm tra giá, sức chứa và lịch trình tour trên bờ*  
+![Cruise Hospitality Technology Banner](https://raw.githubusercontent.com/Cruise-JavaCLass/.github/main/profile/assets/hero-banner.svg)
+
+<br />
+
+# ⚓ CRUISE-WEB
+### Operations Command Deck & Luxury Passenger Digital Twin
+
+**An open enterprise frontend ecosystem engineered for luxury cruise fleets.**  
+Unifying real-time fleet command telemetry, interactive 3D vessel digital twin, voyage global lifecycle orchestration, and a standalone mobile-first guest experience portal.
+
+<br />
+
+<p align="center">
+  <a href="https://react.dev/">
+    <img src="https://img.shields.io/badge/React_19-20232A?style=flat&logo=react&logoColor=61DAFB" alt="React 19" />
+  </a>
+  <a href="https://www.typescriptlang.org/">
+    <img src="https://img.shields.io/badge/TypeScript_5.8-3178C6?style=flat&logo=typescript&logoColor=white" alt="TypeScript" />
+  </a>
+  <a href="https://vite.dev/">
+    <img src="https://img.shields.io/badge/Vite_6_/_8-646CFF?style=flat&logo=vite&logoColor=white" alt="Vite" />
+  </a>
+  <a href="https://tailwindcss.com/">
+    <img src="https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?style=flat&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4" />
+  </a>
+  <a href="https://threejs.org/">
+    <img src="https://img.shields.io/badge/Three.js-000000?style=flat&logo=threedotjs&logoColor=white" alt="Three.js" />
+  </a>
+  <a href="https://vitest.dev/">
+    <img src="https://img.shields.io/badge/Vitest-6E9F18?style=flat&logo=vitest&logoColor=white" alt="Vitest" />
+  </a>
+  <a href="https://tanstack.com/query">
+    <img src="https://img.shields.io/badge/TanStack_Query-FF4154?style=flat&logo=reactquery&logoColor=white" alt="TanStack Query" />
+  </a>
+  <a href="https://github.com/Cruise-JavaCLass/Cruise-web/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-C5A572?style=flat&logo=open-source-initiative&logoColor=white" alt="License" />
+  </a>
+</p>
+
+</div>
 
 ---
 
-## 1. Công nghệ sử dụng (Modern Tech Stack)
-* **Framework:** React 19 + TypeScript (Chuẩn type-safety cao nhất)
-* **Build Tool:** Vite 6 / 8 (Tốc độ khởi động siêu tốc, Hot Module Replacement tức thì)
-* **Styling:** Tailwind CSS v4 (Thiết kế hiện đại, responsive, tông màu sang trọng chuyên cho Luxury Cruise)
-* **Icons:** Lucide React
-* **API Client:** Axios (Tích hợp sẵn cấu hình kết nối trực tiếp với Backend Gateway tại `http://localhost:8080/api`)
-* **Testing Stack:** Vitest, React Testing Library (`@testing-library/react`), `@testing-library/jest-dom`, `@testing-library/user-event`, jsdom, `@vitest/coverage-v8`
+## 🌟 Executive Summary & Dual-Portal Architecture
+
+`Cruise-web` provides a unified single-page architecture with two strictly decoupled operational domains:
+
+<table>
+  <thead>
+    <tr>
+      <th width="50%">🚢 Fleet Operations Command Deck</th>
+      <th width="50%">✨ Luxury Guest Experience Portal</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td valign="top">
+        <b>Target:</b> Captain, Chief Purser, Tour Guides & Port Coordinators.<br /><br />
+        <ul>
+          <li><b>3D Maritime Digital Twin:</b> Interactive WebGL dot-matrix globe visualizing vessel position, navigation waypoints, and port stops.</li>
+          <li><b>Voyage Global Lifecycle Stepper:</b> Phase transition coordinator enforcing strict operational gates from <code>SCHEDULED</code> to <code>CLOSED</code>.</li>
+          <li><b>Maritime Timezone Synchronizer:</b> Ship clock and port timezone offset scheduler for international boundary crossings.</li>
+          <li><b>Shore Excursion Roster:</b> Bus dispatching, capacity quotas, and real-time QR attendance check-in.</li>
+          <li><b>RFID / NFC Pool Inventory:</b> Contactless passenger badge pairing, lost-card blacklisting, and security watchdog.</li>
+        </ul>
+      </td>
+      <td valign="top">
+        <b>Target:</b> Passengers, Families, VIP Guests (Mobile-First / Tablet).<br /><br />
+        <ul>
+          <li><b>Standalone Luxury Layout:</b> Editorial neo-brutalist guest viewport isolated from internal administrative sidebars.</li>
+          <li><b>Digital Boarding Pass:</b> High-contrast QR/Aztec pass with stateroom number, emergency muster station, and boarding group.</li>
+          <li><b>Real-Time Stateroom Folio:</b> Live expense stream, itemized onboard dining charges, and instant dispute submission.</li>
+          <li><b>Daily Interactive Itinerary:</b> Personal daily schedule, gala dinners, Broadway shows, and shore excursions.</li>
+          <li><b>Touch-Friendly E-Signature:</b> Gesture-guarded canvas with <code>touch-action: none</code> for frictionless cabin charging.</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
-## 2. Cài đặt và Khởi chạy
+## 🏛️ System Architecture & Data Topology
 
-### Cài đặt thư viện:
-```bash
-npm install
+```mermaid
+graph TD
+    classDef client fill:#0B1F33,stroke:#C5A572,stroke-width:1.5px,color:#fff;
+    classDef layout fill:#102A43,stroke:#397C80,stroke-width:2px,color:#fff;
+    classDef module fill:#071727,stroke:#64B5F6,stroke-width:1.5px,color:#fff;
+    classDef gateway fill:#1E293B,stroke:#F59E0B,stroke-width:2px,color:#fff;
+
+    USER["👨‍✈️ Crew & Fleet Operators"]:::client
+    GUEST["📱 Luxury Cruise Passengers"]:::client
+
+    subgraph Presentation ["Presentation Layer (React 19 + Vite)"]
+        USER -->|Authenticated Route| MAIN_LAYOUT["🚢 MainLayout<br/>(Command Sidebar & Navigation)"]:::layout
+        GUEST -->|Guest Session Route| GUEST_LAYOUT["✨ PassengerLayout<br/>(Luxury Mobile Stateroom Dock)"]:::layout
+
+        MAIN_LAYOUT --> GLOBE["🌐 3D Maritime Globe (Three.js)"]:::module
+        MAIN_LAYOUT --> VOYAGE["⏱️ Voyage Phase Control Center"]:::module
+        MAIN_LAYOUT --> EXCURSION["🚌 Excursion & Attendance Dispatcher"]:::module
+        MAIN_LAYOUT --> FLEET["⚓ Fleet & Deck Zone Management"]:::module
+
+        GUEST_LAYOUT --> BOARDING["🎫 QR Boarding Pass & Muster"]:::module
+        GUEST_LAYOUT --> FOLIO["💳 Real-Time Folio & Dispute Engine"]:::module
+        GUEST_LAYOUT --> SCHEDULE["📅 Personal Daily Schedule"]:::module
+    end
+
+    subgraph Integration ["Transport & State Gateway"]
+        GLOBE & VOYAGE & EXCURSION & FLEET & BOARDING & FOLIO & SCHEDULE --> AXIOS["⚡ Axios HTTP Client + SSE Stream Handler"]:::gateway
+    end
+
+    subgraph Backend ["Enterprise Microservices Ecosystem"]
+        AXIOS -->|REST API :8080| API["🏢 Cruise-api (Gateway & Services)"]:::gateway
+        API <-->|Offline Delta Sync| POS["📱 Cruise-pos (Android Edge Terminals)"]:::client
+    end
 ```
 
-### Chạy môi trường phát triển (Development):
+---
+
+## 🗺️ Application Routes & Functional Matrix
+
+| Route | Viewport / Persona | Module & Core Features | State & Persistence |
+| :--- | :--- | :--- | :--- |
+| **`/`** | Crew / Desktop | **Fleet Operations Dashboard:** Live maritime radar, 3D interactive vessel globe, fleet occupancy KPI, and port weather. | TanStack Query + SSE |
+| **`/voyage`** | Crew / Desktop | **Voyage Lifecycle Control Center:** Global state machine stepper (`EMBARKATION` $\rightarrow$ `AT_SEA` $\rightarrow$ `PORT_VISIT` $\rightarrow$ `DEBARKING`), port timezone coordinator. | REST API + State Machine |
+| **`/ships`** | Crew / Desktop | **Fleet Specification Management:** Hull dimensions, beam, draft, passenger/crew ratios, and deck cabin inventories. | Modal Form + Validation |
+| **`/admin/cruise-area-policies`** | Crew / Desktop | **Maritime Area & Cancellation Policies:** Regional cruise zones, dynamic cancellation penalties, and weather advisories. | REST API + Policy Engine |
+| **`/itinerary`** | Crew / Desktop | **Voyage Itinerary & Timeline:** Chronological ports of call, docking/undocking timetables, and audit history comparison. | Timeline Drag & Audit Log |
+| **`/excursions`** | Crew / Desktop | **Shore Excursion Catalog & Dispatch:** Partner tour directory, bus allocation, pricing, and all-aboard deadlines. | Filtered Roster + Quotas |
+| **`/excursion-attendance`** | Crew / Tablet | **Excursion Roster Check-in:** Real-time QR scanner and RFID tap attendance verification for departing buses. | Camera Viewfinder + Sync |
+| **`/passengers`** | Crew / Desktop | **Passenger Identity & Card Pool:** Cabin assignments, blank RFID card batch ingestion, and lost-badge blacklisting. | Search & Batch Actions |
+| **`/pos`** | Crew / Tablet | **Web Cashless POS & Folio Tender:** Stateroom checkout, digital e-signature pad with gesture lock, and receipt printing. | Touch-Safe Canvas Pad |
+| **`/passenger-home`** | Guest / Mobile | **Luxury Guest Hub:** Personalized cabin welcome, onboard credit (OBC) balance pill, and vessel weather widget. | Standalone Luxury Theme |
+| **`/boarding-pass`** | Guest / Mobile | **Digital Boarding Pass:** High-contrast offline QR pass with muster station designation and boarding group badge. | SVG Barcode Renderer |
+| **`/my-schedule`** | Guest / Mobile | **Personal Itinerary:** Booked excursions, spa appointments, and theater reservations with countdown alerts. | Reactive Schedule Grid |
+| **`/passenger/folio`** | Guest / Mobile | **Real-Time Stateroom Folio:** Itemized transaction ledger, instant dispute filing, and split-cabin preview. | Folio Stream + E-Receipts |
+
+---
+
+## 🎨 Luxury Maritime & Soft Editorial Design System
+
+The visual identity is custom-crafted to reflect the prestige of international superyachts and luxury ocean liners:
+
+<table>
+  <thead>
+    <tr>
+      <th width="20%">Color Token</th>
+      <th width="15%">Hex Value</th>
+      <th width="20%">Swatch</th>
+      <th width="45%">Design Role & Application</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>Primary Ocean Navy</b></td>
+      <td><code>#102A43</code></td>
+      <td><img src="https://via.placeholder.com/60x20/102A43/ffffff?text=+" alt="#102A43" /></td>
+      <td>Command headers, primary action buttons, strong brand typography.</td>
+    </tr>
+    <tr>
+      <td><b>Deep Maritime Abyss</b></td>
+      <td><code>#0B1F33</code></td>
+      <td><img src="https://via.placeholder.com/60x20/0B1F33/ffffff?text=+" alt="#0B1F33" /></td>
+      <td>3D Canvas backdrop, modal overlays, high-contrast dark accents.</td>
+    </tr>
+    <tr>
+      <td><b>Champagne Gold</b></td>
+      <td><code>#C5A572</code></td>
+      <td><img src="https://via.placeholder.com/60x20/C5A572/ffffff?text=+" alt="#C5A572" /></td>
+      <td>Luxury badges, status rings, interactive icons, active navigation indicators.</td>
+    </tr>
+    <tr>
+      <td><b>Maritime Telemetry Teal</b></td>
+      <td><code>#397C80</code></td>
+      <td><img src="https://via.placeholder.com/60x20/397C80/ffffff?text=+" alt="#397C80" /></td>
+      <td>Active voyage phases, GPS indicators, onboard safety sensors, live status.</td>
+    </tr>
+    <tr>
+      <td><b>Soft Editorial Sand</b></td>
+      <td><code>#F7F4ED</code></td>
+      <td><img src="https://via.placeholder.com/60x20/F7F4ED/000000?text=+" alt="#F7F4ED" /></td>
+      <td>Warm tactile card backgrounds, secondary containers, paper-like luxury surfaces.</td>
+    </tr>
+    <tr>
+      <td><b>Crisp Travertine Border</b></td>
+      <td><code>#E5E0D7</code></td>
+      <td><img src="https://via.placeholder.com/60x20/E5E0D7/000000?text=+" alt="#E5E0D7" /></td>
+      <td>Subtle, razor-sharp structural divider borders (1px solid).</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+## 🛠️ Developer Quick Start & Tooling
+
+### Prerequisites
+* **Node.js:** v22.x or later
+* **npm:** v10.x or later
+
+### Installation & Launch
 ```bash
+# 1. Clone repository and navigate to directory
+git clone https://github.com/Cruise-JavaCLass/Cruise-web.git
+cd Cruise-web
+
+# 2. Install dependencies cleanly
+npm install
+
+# 3. Start local development server with Hot Module Replacement
 npm run dev
 ```
-Giao diện sẽ chạy tại: **http://localhost:3000**
+> The application will initialize at **`http://localhost:3000`** with immediate proxying to Backend Gateway at `http://localhost:8080`.
 
-### Đóng gói ứng dụng (Production Build):
+### Production Build & Preview
 ```bash
+# Typecheck and compile optimized production bundle into /dist
 npm run build
+
+# Preview production build locally
+npm run preview
 ```
 
-### 2.1. Thiết lập lệnh chạy test (Test Execution Commands):
-Hệ thống cung cấp đầy đủ bộ lệnh thực thi kiểm thử chuẩn hóa qua npm:
+---
 
-| Lệnh npm | Chức năng thực thi | Mô tả chi tiết |
+## 🧪 Testing Suite & Quality Assurance
+
+The codebase enforces strict unit, integration, and component testing via **Vitest** and **React Testing Library**:
+
+| Command | Target | Description |
 | :--- | :--- | :--- |
-| `npm test` | `vitest run` | Chạy toàn bộ test suites một lần duy nhất và thoát với exit code chuẩn |
-| `npm run test:watch` | `vitest` | Chế độ Interactive Watch, tự động chạy lại test khi file mã nguồn thay đổi |
-| `npm run test:coverage` | `vitest run --coverage` | Tính toán tỷ lệ bao phủ mã nguồn (V8 coverage) và xuất báo cáo HTML tại `./coverage/index.html` |
-| `npm run test:ui` | `vitest --ui` | Mở giao diện Dashboard trực quan Vitest trên trình duyệt web |
-| `npm run test:run` | `vitest run` | Lệnh headless tương đương `npm test`, tiện lợi cho scripts |
-| `npm run test:ci` | `vitest run --coverage --reporter=verbose` | Lệnh chuẩn cho CI/CD pipeline, hiển thị log chi tiết và tính coverage |
+| `npm test` | All Suites | Headless single-pass test execution with standard exit codes. |
+| `npm run test:watch` | Interactive | Hot-reloading test runner for ongoing feature development. |
+| `npm run test:coverage` | V8 Coverage | Generates statement, branch, and function coverage reports at `./coverage`. |
+| `npm run test:ui` | Browser UI | Launches interactive visual test explorer in browser. |
+| `npm run test:ci` | CI Pipeline | High-verbosity reporting with strict failure thresholds for GitHub Actions. |
 
 ```bash
-# Ví dụ chạy test với báo cáo coverage
-npm run test:coverage
-
-# Chạy riêng 1 file test cụ thể
+# Run targeted tests for a specific operational module
+npx vitest run src/components/voyage/VoyageLifecycle.test.tsx
 npx vitest run src/pages/PassengersPage.test.tsx
 ```
 
-Các bộ test mẫu chuẩn hóa bao gồm:
-* `src/App.test.tsx`: Kiểm thử tích hợp định tuyến (Routing integration) qua các trang Dashboard, Ships, Itinerary, Activities, POS, Passengers và trang 404.
-* `src/pages/PassengersPage.test.tsx`: Kiểm thử tương tác người dùng (`user-event`), tìm kiếm thời gian thực theo tên, cabin, mã RFID và hiển thị trạng thái rỗng (empty state).
-* `src/layouts/MainLayout.test.tsx`: Kiểm thử khung giao diện, link điều hướng, và cơ chế polling kiểm tra kết nối Backend Gateway trực tuyến / ngoại tuyến.
-* `src/pages/DashboardPage.test.tsx`: Kiểm thử render các chỉ số KPI vận hành, hero banner và cảng dừng.
-* `src/components/common/ErrorBoundary.test.tsx`: Kiểm thử cơ chế bắt lỗi an toàn (Fallback UI).
-* `src/components/ships/ShipFormModal.test.tsx`: Kiểm thử Form tạo và sửa thông tin tàu, kiểm tra dữ liệu bắt buộc và các quy tắc nghiệp vụ hàng hải (cabin <= capacity, crew ratio, length > beam, draft < beam, code regex).
-* `src/pages/ShipsPage.test.tsx`: Kiểm thử trang quản lý đội tàu, tìm kiếm theo từ khóa và mở Modal tạo/sửa thông tin tàu.
-* `src/pages/ItineraryPage.test.tsx`: Kiểm thử trang quản lý tour du thuyền, tìm kiếm, lọc theo trạng thái, mở modal tạo/sửa và điều hướng sang Daily Itinerary.
-* `src/components/tours/TourFormModal.test.tsx`: Kiểm thử Modal tạo/sửa tour du thuyền, validation ngày khởi hành, cảng xuất phát, cảng đích và sức chứa.
-* `src/components/tours/StatusTransitionModal.test.tsx`: Kiểm thử chuyển đổi trạng thái tour (DRAFT -> PUBLISHED -> IN_PROGRESS -> COMPLETED / CANCELLED) kèm lý do hủy.
-* `src/components/tours/StopFormModal.test.tsx` & `StopTimeValidation.test.tsx`: Kiểm thử form cảng dừng và validation thời gian cập cảng, rời bến, giờ lên tàu (`all-aboard`).
-* `src/components/itinerary/DailyItineraryTimeline.test.tsx`: Kiểm thử trục thời gian lịch trình hàng ngày, chuyển đổi ngày, thêm, cập nhật (`KAN-120`), đổi thứ tự hoạt động, hiển thị thông tin cập nhật (`KAN-129`) và modal lịch sử thay đổi (`KAN-130`).
-* `src/components/itinerary/ItineraryChangeHistoryModal.test.tsx`: Kiểm thử hiển thị danh sách lịch sử thay đổi lịch trình, trạng thái rỗng (empty state), chi tiết người thực hiện, thời gian, sự kiện thay đổi và so sánh giá trị cũ/mới (`KAN-131`).
-* `src/components/itinerary/ActivityFormModal.test.tsx`: Kiểm thử form thêm/sửa hoạt động hàng ngày, phân loại danh mục, tính phụ thu và sức chứa.
-* `src/components/itinerary/ItineraryValidationErrors.test.tsx`: Kiểm thử toàn diện các trường hợp lỗi dữ liệu, empty state và fallback skeleton.
-* `src/services/api.test.ts`, `shipService.test.ts`, `tourService.test.ts`: Kiểm thử tầng API client và logic dịch vụ dữ liệu.
+---
+
+## 🚀 Git Strategy & CI/CD Pipeline
+
+Development strictly adheres to **GitHub Flow** and **Conventional Commits**:
+
+* **Feature Branches:** `feature/<JIRA-KEY>-<short-description>`
+* **Bugfix Branches:** `bugfix/<JIRA-KEY>-<short-description>`
+* **Commit Specification:** `[<JIRA-KEY>] <type>(<scope>): <imperative summary>`
+* **Continuous Integration:** Every PR automatically triggers GitHub Actions running:
+  1. `Oxlint` static AST analysis & syntax validation.
+  2. `TypeScript` strict compiler verification (`tsc --noEmit`).
+  3. `Vitest` unit and integration test suite with coverage thresholds.
+  4. `Vite` production bundle build verification.
 
 ---
 
-## 3. Cấu trúc thư mục (Application Entry Point Architecture)
-```
-Cruise-web/
-├── public/                 # Static assets
-├── src/
-│   ├── components/
-│   │   ├── common/
-│   │   │   └── ErrorBoundary.tsx             # Xử lý lỗi UI toàn cục
-│   │   ├── itinerary/
-│   │   │   ├── ActivityFormModal.tsx         # Modal thêm & cập nhật hoạt động lịch trình
-│   │   │   ├── DailyItineraryTimeline.tsx    # Trục thời gian lịch trình hàng ngày & banner cập nhật
-│   │   │   └── ItineraryChangeHistoryModal.tsx # Modal hiển thị lịch sử thay đổi lịch trình (Audit Log - KAN-130)
-│   │   ├── ships/
-│   │   │   └── ShipFormModal.tsx             # Form tạo và cập nhật tàu kèm validation nghiệp vụ
-│   │   └── tours/
-│   │       ├── StatusTransitionModal.tsx     # Modal chuyển đổi trạng thái tour
-│   │       ├── StopFormModal.tsx             # Modal thêm & cập nhật cảng dừng
-│   │       └── TourFormModal.tsx             # Modal tạo và cập nhật tour du thuyền
-│   ├── layouts/
-│   │   └── MainLayout.tsx                 # Khung giao diện chuẩn (Sidebar, Header, Outlet)
-│   ├── pages/
-│   │   ├── DashboardPage.tsx              # Bảng điều khiển vận hành tổng quan
-│   │   ├── ItineraryPage.tsx              # Quản lý tour, cảng dừng & lịch trình chi tiết
-│   │   ├── PassengersPage.tsx             # Hành khách & Check-in QR/RFID
-│   │   ├── ShipsPage.tsx                  # Quản lý danh mục đội tàu
-│   │   ├── ActivitiesPage.tsx             # Hoạt động trên tàu & Tour trên bờ
-│   │   ├── PosPage.tsx                    # Chi tiêu phi tiền mặt & Offline Sync
-│   │   └── NotFoundPage.tsx               # Trang 404
-│   ├── services/
-│   │   ├── api.ts                         # Axios API client & backend health check
-│   │   ├── dailyItineraryService.ts       # Dịch vụ quản lý hoạt động lịch trình chi tiết
-│   │   ├── shipService.ts                 # Dịch vụ quản lý danh mục và thông số tàu
-│   │   └── tourService.ts                 # Dịch vụ quản lý tour du thuyền & cảng dừng
-│   ├── App.tsx                            # Định tuyến trung tâm (React Router)
-│   ├── index.css                          # Tailwind CSS styling
-│   └── main.tsx                           # React Root Entry Point & Bootstrap Logger
-├── .env                                   # Cấu hình biến môi trường
-├── .env.example
-├── index.html
-├── package.json
-└── vite.config.ts
-```
+<br />
 
----
+<div align="center">
 
-## 4. Danh sách các Tuyến đường (Application Routes)
-* **`/`**: Dashboard Tổng quan (Chỉ số vận hành, doanh thu, thời tiết, an toàn).
-* **`/ships`**: Quản lý Đội tàu du lịch (Danh mục tàu, Form tạo mới và chỉnh sửa thông tin tàu kèm kiểm tra tính hợp lệ nghiệp vụ — KAN-92).
-* **`/itinerary`**: Quản lý lịch trình, cảng dừng (Ports of call), giờ tàu đến/rời bến.
-* **`/excursions`**: Quản lý Tour trên bờ (Shore Excursion Management — KAN-172: Điều phối đối tác địa phương, giờ All-Aboard an toàn, danh sách đoàn & xe đưa đón).
-* **`/excursions/:id`**: Chi tiết Tour trên bờ (Lịch trình thời gian, đối tác, xe đưa đón và danh sách hành khách đoàn).
-* **`/activities`**: Quản lý hoạt động giải trí và các dịch vụ trên tàu (Onboard Activities).
-* **`/pos`**: Quản lý tài khoản chi tiêu phi tiền mặt (Cashless), đồng bộ giao dịch ngoại tuyến (Offline Sync).
-* **`/passengers`**: Danh sách hành khách, gán thẻ QR/RFID và theo dõi vùng định vị BLE.
-* **`*`**: Trang 404 (Not Found).
+**[Cruise Hospitality Technology](https://github.com/Cruise-JavaCLass)** &bull; Engineered for Luxury Maritime Operations  
+<sub>Cruise Management System &copy; 2026. Distributed under the MIT License.</sub>
 
----
-
-## 5. Quy trình Git Workflow & CI/CD Pipeline
-
-Dự án áp dụng mô hình **GitHub Flow** và kiểm thử tự động qua **GitHub Actions**:
-* **Chi tiết quy chuẩn:** Xem hướng dẫn đầy đủ tại [GIT_WORKFLOW.md](GIT_WORKFLOW.md).
-* **Quy ước nhánh:** `feature/<JIRA-KEY>-<ten-tinh-nang>`, `bugfix/...`, `hotfix/...`.
-* **Quy ước Commit:** `[<JIRA-KEY>] <type>: <description>` (theo chuẩn Conventional Commits).
-* **Bảo vệ nhánh `main`:** Cấm push trực tiếp, bắt buộc tạo Pull Request và pass 100% CI checks trước khi merge.
-* **GitHub Actions Pipeline (`.github/workflows/ci.yml`):** Tự động kích hoạt khi có Push hoặc PR vào `main`, khởi tạo Node.js 22, chạy `npm ci`, `npm run lint`, `npm run test:ci` (Vitest coverage report), và `npm run build`.
-
-
+</div>
