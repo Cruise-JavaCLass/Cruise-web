@@ -68,7 +68,13 @@ export function MainLayout() {
     navigate('/login', { replace: true });
   };
 
-  const navItems = [
+  const allNavItems: {
+    to: string;
+    label: string;
+    icon: typeof Compass;
+    code: string;
+    roles?: string[];
+  }[] = [
     { to: '/', label: 'Dashboard Tổng quan', icon: Compass, code: '01' },
     { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship, code: '02' },
     { to: '/admin/cruise-area-policies', label: 'Khu vực & Chính sách', icon: Ship, code: '03' },
@@ -82,7 +88,14 @@ export function MainLayout() {
     { to: '/embarkation', label: 'Cảng Đón Khách (Terminal)', icon: Ship, code: '11' },
     { to: '/billing/settlement', label: 'Tất toán & Hoá đơn', icon: Receipt, code: '12' },
     { to: '/reports/operational', label: 'Báo Cáo Doanh Thu (Audit)', icon: Receipt, code: '13' },
+    { to: '/users', label: 'Quản lý Người dùng', icon: Users, code: '14', roles: ['SYSTEM_ADMIN'] },
   ];
+
+  // Mục có khai báo `roles` chỉ hiện cho tài khoản thuộc các vai trò đó
+  const sessionRole = authService.getCurrentUser()?.role;
+  const navItems = allNavItems.filter(
+    (item) => !item.roles || (sessionRole !== undefined && item.roles.includes(sessionRole))
+  );
 
   return (
     <div
