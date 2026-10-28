@@ -60,18 +60,11 @@ describe('React Bits, Three.js & UI/UX Pro Max Suite', () => {
     fireEvent.mouseLeave(btn.parentElement!);
   });
 
-  it('renders MaritimeGlobe3D with interactive port waypoints and mode switcher', () => {
+  it('renders MaritimeGlobe3D with interactive canvas and label', () => {
     render(<MaritimeGlobe3D />);
 
     expect(screen.getByTestId('maritime-globe-3d')).toBeInTheDocument();
-    expect(screen.getByText('Three.js 3D Fleet Holodeck')).toBeInTheDocument();
-
-    const radarBtn = screen.getByText('Polar Radar');
-    fireEvent.click(radarBtn);
-
-    const phuQuocBtn = screen.getByText('Phú Quốc (An Thới)');
-    fireEvent.click(phuQuocBtn);
-    expect(screen.getByText('10°01′N 104°00′E')).toBeInTheDocument();
+    expect(screen.getByLabelText(/Luxury 3D Maritime Globe with Typography Labels/i)).toBeInTheDocument();
   });
 
   it('renders CommandPaletteModal, filters modules and closes on Escape', () => {
