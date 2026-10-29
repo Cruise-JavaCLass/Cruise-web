@@ -8,6 +8,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ActivitiesPage } from './pages/ActivitiesPage';
 import { ExcursionsPage } from './pages/ExcursionsPage';
 import { ExcursionDetailPage } from './pages/ExcursionDetailPage';
+import { ProviderDirectoryPage } from './pages/ProviderDirectoryPage';
 import { ActivityDetailPage } from './pages/ActivityDetailPage';
 import { PosPage } from './pages/PosPage';
 import { ItineraryPage } from './pages/ItineraryPage';
@@ -79,6 +80,7 @@ export function App() {
           <Route path="itinerary" element={<ItineraryPage />} />
           <Route path="voyage" element={<VoyagePhaseControlCenter />} />
           <Route path="excursions" element={<ExcursionsPage />} />
+          <Route path="excursions/providers" element={<ProviderDirectoryPage />} />
           <Route path="excursions/:id" element={<ExcursionDetailPage />} />
           <Route path="excursion-dispatcher" element={<ExcursionDispatcherDashboard />} />
           <Route path="excursions/:id/roster" element={<ExcursionRosterPage />} />

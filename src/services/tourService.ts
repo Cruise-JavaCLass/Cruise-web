@@ -1,5 +1,26 @@
 import { apiClient } from './api';
 
+export interface TourProvider {
+  id: string;
+  code: string;
+  name: string;
+  taxCode: string;
+  licenseNumber: string;
+  contactPerson: string;
+  email: string;
+  phone: string;
+  emergencyHotline: string;
+  portId: string;
+  status: 'ACTIVE' | 'SUSPENDED' | 'TERMINATED';
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+}
+
+const TOUR_PROVIDERS_ENDPOINT = '/v1/tour-providers';
+
 export type TourStatus = 'DRAFT' | 'PUBLISHED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
 export interface CruiseTour {
@@ -261,4 +282,30 @@ export async function updateTourStatus(
 
 export async function deleteTour(id: number): Promise<void> {
   await apiClient.delete(`/itinerary/tours/${id}`);
+}
+
+export async function getTourProviders(): Promise<TourProvider[]> {
+  const res = await apiClient.get<ApiResponse<TourProvider[]>>(TOUR_PROVIDERS_ENDPOINT);
+  if (!Array.isArray(res.data?.data)) {
+    throw new Error('Backend trả về danh sách nhà cung cấp không hợp lệ.');
+  }
+  return res.data.data;
+}
+
+export async function createTourProvider<TProvider extends object>(
+  provider: TProvider
+): Promise<TourProvider> {
+  const res = await apiClient.post<ApiResponse<TourProvider>>(TOUR_PROVIDERS_ENDPOINT, provider);
+  return res.data.data;
+}
+
+export async function updateTourProvider<TProvider extends object>(
+  id: string,
+  provider: TProvider
+): Promise<TourProvider> {
+  const res = await apiClient.put<ApiResponse<TourProvider>>(
+    `${TOUR_PROVIDERS_ENDPOINT}/${encodeURIComponent(id)}`,
+    provider
+  );
+  return res.data.data;
 }
