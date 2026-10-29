@@ -2,30 +2,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, ChevronLeft, ChevronRight, Plus, RefreshCw, Search } from 'lucide-react';
 import { getTourProviders, type TourProvider } from '../services/tourService';
 import { ProviderFormModal } from '../components/tours/ProviderFormModal';
+import { ProviderStatusBadge } from '../components/tours/ProviderStatusBadge';
+import { PROVIDER_STATUS_LABELS, type ProviderStatus } from '../components/tours/providerStatus';
 
-type ProviderStatus = TourProvider['status'];
 type StatusFilter = 'ALL' | ProviderStatus;
 
 const PAGE_SIZE = 10;
-
-const STATUS_LABELS: Record<ProviderStatus, string> = {
-  ACTIVE: 'Đang hoạt động',
-  SUSPENDED: 'Tạm ngưng',
-  TERMINATED: 'Đã chấm dứt',
-};
-
-const STATUS_STYLES: Record<ProviderStatus, string> = {
-  ACTIVE: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  SUSPENDED: 'bg-amber-50 text-amber-700 border-amber-200',
-  TERMINATED: 'bg-rose-50 text-rose-700 border-rose-200',
-};
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Không thể tải danh sách nhà cung cấp.';
 }
 
 function isStatusFilter(value: string): value is StatusFilter {
-  return value === 'ALL' || Object.hasOwn(STATUS_LABELS, value);
+  return value === 'ALL' || Object.hasOwn(PROVIDER_STATUS_LABELS, value);
 }
 
 export function ProviderDirectoryPage() {
@@ -183,7 +172,7 @@ export function ProviderDirectoryPage() {
             className="rounded-lg border border-[#E5E0D7] bg-white px-3 py-2 text-sm text-[#102A43] outline-none focus:border-[#C5A572]"
           >
             <option value="ALL">Tất cả trạng thái</option>
-            {Object.entries(STATUS_LABELS).map(([status, label]) => (
+            {Object.entries(PROVIDER_STATUS_LABELS).map(([status, label]) => (
               <option key={status} value={status}>{label}</option>
             ))}
           </select>
@@ -232,9 +221,7 @@ export function ProviderDirectoryPage() {
                     <td className="px-4 py-3">{provider.emergencyHotline || '—'}</td>
                     <td className="px-4 py-3">{provider.portId || '—'}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${STATUS_STYLES[provider.status]}`}>
-                        {STATUS_LABELS[provider.status]}
-                      </span>
+                      <ProviderStatusBadge status={provider.status} />
                     </td>
                   </tr>
                 ))
