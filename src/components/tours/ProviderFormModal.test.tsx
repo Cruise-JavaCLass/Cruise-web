@@ -1,5 +1,6 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ProviderFormModal } from './ProviderFormModal';
 import * as tourService from '../../services/tourService';
 import type { TourProvider } from '../../services/tourService';
@@ -18,37 +19,62 @@ const provider: TourProvider = {
   status: 'ACTIVE',
 };
 
-function fillRequiredFields() {
-  fireEvent.change(screen.getByLabelText(/Tên đối tác/), {
-    target: { value: 'Đối tác mới' },
-  });
-  fireEvent.change(screen.getByLabelText(/Hotline khẩn cấp/), {
-    target: { value: '0912345678' },
-  });
-  fireEvent.change(screen.getByLabelText(/Địa chỉ cảng/), {
-    target: { value: 'VN-HAN' },
-  });
+async function fillRequiredFields(user: ReturnType<typeof userEvent.setup>) {
+  await user.type(screen.getByLabelText(/Tên đối tác/), 'Đối tác mới');
+  await user.type(screen.getByLabelText(/Hotline khẩn cấp/), '0912345678');
+  await user.type(screen.getByLabelText(/Địa chỉ cảng/), 'VN-HAN');
 }
 
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
+
 describe('ProviderFormModal', () => {
-  it('shows required-field and email validation errors', async () => {
-    render(
-      <ProviderFormModal isOpen onClose={vi.fn()} />
-    );
-
-    fireEvent.change(screen.getByLabelText('Email'), {
-      target: { value: 'email-khong-hop-le' },
-    });
-    await screen.findByText('Vui lòng nhập địa chỉ email hợp lệ.');
-
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+  it('shows errors when required fields are submitted empty', async () => {
+    const user = userEvent.setup();
+    render(<ProviderFormModal isOpen onClose={vi.fn()} />);
+    await user.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(await screen.findByText('Vui lòng nhập tên đối tác.')).toBeInTheDocument();
     expect(screen.getByText('Vui lòng nhập hotline khẩn cấp.')).toBeInTheDocument();
     expect(screen.getByText('Vui lòng nhập mã cảng.')).toBeInTheDocument();
   });
 
+  it('shows format errors for invalid email and hotline values', async () => {
+    const user = userEvent.setup();
+    render(<ProviderFormModal isOpen onClose={vi.fn()} />);
+    await user.type(screen.getByLabelText(/Tên đối tác/), 'Đối tác mới');
+    await user.type(screen.getByLabelText('Email'), 'invalid-email');
+    await user.type(screen.getByLabelText(/Hotline khẩn cấp/), 'invalid-hotline');
+    await user.type(screen.getByLabelText(/Địa chỉ cảng/), 'VN-HAN');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(await screen.findByText('Vui lòng nhập địa chỉ email hợp lệ.')).toBeInTheDocument();
+    expect(screen.getByText('Vui lòng nhập số hotline hợp lệ.')).toBeInTheDocument();
+  });
+
+  it('shows the backend message when API responds with 409 duplicate tax code', async () => {
+    const user = userEvent.setup();
+    const createSpy = vi.spyOn(tourService, 'createTourProvider').mockRejectedValue({
+      response: {
+        status: 409,
+        data: { message: 'Mã số thuế đã được đăng ký.' },
+      },
+    });
+    render(<ProviderFormModal isOpen onClose={vi.fn()} />);
+    await fillRequiredFields(user);
+    await user.type(screen.getByLabelText('Mã số thuế'), '0101234567');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Mã số thuế đã được đăng ký.'
+    );
+    expect(createSpy).toHaveBeenCalledOnce();
+  });
+
   it('creates a provider and notifies the parent on success', async () => {
+    const user = userEvent.setup();
     const savedProvider = { ...provider, name: 'Đối tác mới' };
     const createSpy = vi
       .spyOn(tourService, 'createTourProvider')
@@ -63,8 +89,8 @@ describe('ProviderFormModal', () => {
         onSuccess={onSuccess}
       />
     );
-    fillRequiredFields();
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await fillRequiredFields(user);
+    await user.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => {
       expect(createSpy).toHaveBeenCalledWith({
@@ -81,22 +107,8 @@ describe('ProviderFormModal', () => {
     expect(await screen.findByText('Thêm nhà cung cấp thành công.')).toBeInTheDocument();
   });
 
-  it('shows the backend message for a conflict response', async () => {
-    vi.spyOn(tourService, 'createTourProvider').mockRejectedValue({
-      response: {
-        status: 409,
-        data: { message: 'Mã số thuế đã được đăng ký.' },
-      },
-    });
-
-    render(<ProviderFormModal isOpen onClose={vi.fn()} />);
-    fillRequiredFields();
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-
-    expect(await screen.findByText('Mã số thuế đã được đăng ký.')).toBeInTheDocument();
-  });
-
   it('prefills an existing provider and updates it', async () => {
+    const user = userEvent.setup();
     const updateSpy = vi
       .spyOn(tourService, 'updateTourProvider')
       .mockResolvedValue(provider);
@@ -104,7 +116,7 @@ describe('ProviderFormModal', () => {
     render(<ProviderFormModal isOpen provider={provider} onClose={vi.fn()} />);
 
     expect(screen.getByLabelText(/Tên đối tác/)).toHaveValue(provider.name);
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await user.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => {
       expect(updateSpy).toHaveBeenCalledWith(provider.id, {

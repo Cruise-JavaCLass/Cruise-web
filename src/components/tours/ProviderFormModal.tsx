@@ -18,7 +18,15 @@ const providerFormSchema = z.object({
     .trim()
     .email('Vui lòng nhập địa chỉ email hợp lệ.')
     .or(z.literal('')),
-  emergencyHotline: z.string().trim().min(1, 'Vui lòng nhập hotline khẩn cấp.'),
+  emergencyHotline: z
+    .string()
+    .trim()
+    .min(1, 'Vui lòng nhập hotline khẩn cấp.')
+    .refine((value) => {
+      if (!value) return true;
+      const digitCount = value.replace(/\D/g, '').length;
+      return /^\+?[0-9\s().-]+$/.test(value) && digitCount >= 7 && digitCount <= 15;
+    }, 'Vui lòng nhập số hotline hợp lệ.'),
   portId: z.string().trim().min(1, 'Vui lòng nhập mã cảng.'),
 });
 
