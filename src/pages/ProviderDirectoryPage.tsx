@@ -186,7 +186,7 @@ export function ProviderDirectoryPage() {
         )}
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1200px] border-collapse text-left text-sm">
+          <table className="w-full min-w-300 border-collapse text-left text-sm">
             <thead className="bg-[#F7F4ED] text-[11px] uppercase tracking-wide text-[#687787]">
               <tr>
                 <th scope="col" className="px-4 py-3 font-semibold">Nhà cung cấp</th>
