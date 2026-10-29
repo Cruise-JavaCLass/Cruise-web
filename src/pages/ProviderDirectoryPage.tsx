@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, ChevronLeft, ChevronRight, RefreshCw, Search } from 'lucide-react';
+import { AlertCircle, ChevronLeft, ChevronRight, Plus, RefreshCw, Search } from 'lucide-react';
 import { getTourProviders, type TourProvider } from '../services/tourService';
+import { ProviderFormModal } from '../components/tours/ProviderFormModal';
 
 type ProviderStatus = TourProvider['status'];
 type StatusFilter = 'ALL' | ProviderStatus;
@@ -35,6 +36,7 @@ export function ProviderDirectoryPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isProviderFormOpen, setIsProviderFormOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -124,15 +126,25 @@ export function ProviderDirectoryPage() {
               Danh bạ và trạng thái hoạt động của các nhà cung cấp tour trên bờ.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={refreshProviders}
-            disabled={loading}
-            className="flex items-center justify-center gap-2 rounded-lg border border-[#E5E0D7] bg-white px-3 py-2 text-xs font-semibold text-[#102A43] transition-colors hover:bg-[#F7F4ED] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-            Làm mới
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsProviderFormOpen(true)}
+              className="flex items-center justify-center gap-2 rounded-lg bg-[#102A43] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#1B3A57]"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add Provider
+            </button>
+            <button
+              type="button"
+              onClick={refreshProviders}
+              disabled={loading}
+              className="flex items-center justify-center gap-2 rounded-lg border border-[#E5E0D7] bg-white px-3 py-2 text-xs font-semibold text-[#102A43] transition-colors hover:bg-[#F7F4ED] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+              Làm mới
+            </button>
+          </div>
         </div>
       </header>
 
@@ -260,6 +272,11 @@ export function ProviderDirectoryPage() {
           </div>
         </footer>
       </section>
+      <ProviderFormModal
+        isOpen={isProviderFormOpen}
+        onClose={() => setIsProviderFormOpen(false)}
+        onSuccess={() => void refreshProviders()}
+      />
     </div>
   );
 }

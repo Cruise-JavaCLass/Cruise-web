@@ -4,7 +4,9 @@ import { getTourProviders } from '../services/tourService';
 import { ProviderDirectoryPage } from './ProviderDirectoryPage';
 
 vi.mock('../services/tourService', () => ({
+  createTourProvider: vi.fn(),
   getTourProviders: vi.fn(),
+  updateTourProvider: vi.fn(),
 }));
 
 const providers = Array.from({ length: 12 }, (_, index) => ({
@@ -65,5 +67,15 @@ describe('ProviderDirectoryPage', () => {
       expect(screen.queryByText('Tour Provider 1')).not.toBeInTheDocument();
     });
     expect(screen.getByText('11–12 / 12 nhà cung cấp')).toBeInTheDocument();
+  });
+
+  it('opens the provider form when Add Provider is clicked', async () => {
+    render(<ProviderDirectoryPage />);
+
+    await screen.findByText('Tour Provider 1');
+    fireEvent.click(screen.getByRole('button', { name: 'Add Provider' }));
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Thêm nhà cung cấp' })).toBeInTheDocument();
   });
 });
