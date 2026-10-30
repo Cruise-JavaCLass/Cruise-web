@@ -35,28 +35,28 @@ export function UserStatusConfirmModal({ user, onClose, onConfirm }: UserStatusC
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#102A43]/40 backdrop-blur-sm">
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="user-status-title"
-        className="w-full max-w-sm bg-[#030303]/95 border border-white/10 rounded-2xl p-5 space-y-4"
+        className="w-full max-w-sm bg-white border border-[#E5E0D7] rounded-2xl p-5 space-y-4"
       >
-        <h3 id="user-status-title" className="text-sm font-bold text-white flex items-center gap-2">
+        <h3 id="user-status-title" className="font-display text-sm font-bold text-[#102A43] flex items-center gap-2">
           {deactivating ? (
-            <UserX className="w-4 h-4 text-amber-400" />
+            <UserX className="w-4 h-4 text-[#C5A572]" />
           ) : (
-            <UserCheck className="w-4 h-4 text-emerald-400" />
+            <UserCheck className="w-4 h-4 text-[#397C80]" />
           )}
           {deactivating ? 'Vô hiệu hóa tài khoản' : 'Kích hoạt tài khoản'}
         </h3>
-        <p className="text-xs text-slate-300">
+        <p className="text-xs text-[#252B32]">
           {deactivating
             ? `${user.fullName} (${user.username}) sẽ không thể đăng nhập cho đến khi được kích hoạt lại.`
             : `${user.fullName} (${user.username}) sẽ có thể đăng nhập trở lại.`}
         </p>
         {error && (
-          <p role="alert" className="text-xs text-rose-400">
+          <p role="alert" className="text-xs text-rose-600">
             {error}
           </p>
         )}
@@ -64,7 +64,7 @@ export function UserStatusConfirmModal({ user, onClose, onConfirm }: UserStatusC
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 rounded-xl text-xs text-slate-300 border border-slate-700 hover:bg-slate-800/60"
+            className="px-4 py-2 rounded-lg text-xs text-[#627D98] border border-[#E5E0D7] hover:bg-[#F7F4ED]"
           >
             Hủy
           </button>
@@ -72,7 +72,7 @@ export function UserStatusConfirmModal({ user, onClose, onConfirm }: UserStatusC
             type="button"
             onClick={handleConfirm}
             disabled={busy}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-cyan-600 to-blue-600 disabled:opacity-60"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-[#102A43] hover:bg-[#1B3B5A] border border-[#C5A572]/40 disabled:opacity-60"
           >
             {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             {deactivating ? 'Vô hiệu hóa' : 'Kích hoạt'}
