@@ -23,39 +23,39 @@ export function UserDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Link to="/users" className="inline-flex items-center gap-1.5 text-xs text-cyan-400 hover:text-white">
+      <Link to="/users" className="inline-flex items-center gap-1.5 text-xs text-[#397C80] hover:text-[#102A43]">
         <ArrowLeft className="w-3.5 h-3.5" /> Quay lại danh sách người dùng
       </Link>
 
       {error ? (
-        <div role="alert" className="flex items-center gap-2 text-xs text-rose-300">
+        <div role="alert" className="flex items-center gap-2 text-xs text-rose-700">
           <AlertTriangle className="w-4 h-4" /> {error}
         </div>
       ) : !user ? (
-        <div role="status" className="flex items-center gap-2 text-xs text-slate-400">
+        <div role="status" className="flex items-center gap-2 text-xs text-[#627D98]">
           <Loader2 className="w-4 h-4 animate-spin" /> Đang tải thông tin người dùng...
         </div>
       ) : (
-        <div className="bg-[#030303]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-xl">
-          <h2 className="text-xl font-bold text-white">{user.fullName}</h2>
-          <p className="text-xs font-mono text-cyan-400 mb-4">{user.username}</p>
+        <div className="bg-white border border-[#E5E0D7] rounded-xl p-6 shadow-xs">
+          <h2 className="font-display text-xl font-bold text-[#102A43]">{user.fullName}</h2>
+          <p className="text-xs font-mono text-[#397C80] mb-4">{user.username}</p>
           <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
-              <dt className="text-slate-500">Email</dt>
-              <dd className="text-slate-200">{user.email}</dd>
+              <dt className="text-[#627D98]">Email</dt>
+              <dd className="text-[#252B32]">{user.email}</dd>
             </div>
             <div>
-              <dt className="text-slate-500">Vai trò</dt>
-              <dd className="text-slate-200">{getRoleLabel(user.role)}</dd>
+              <dt className="text-[#627D98]">Vai trò</dt>
+              <dd className="text-[#252B32]">{getRoleLabel(user.role)}</dd>
             </div>
             <div>
-              <dt className="text-slate-500">Trạng thái</dt>
-              <dd className="text-slate-200">{user.active ? 'Hoạt động' : 'Vô hiệu hóa'}</dd>
+              <dt className="text-[#627D98]">Trạng thái</dt>
+              <dd className="text-[#252B32]">{user.active ? 'Hoạt động' : 'Vô hiệu hóa'}</dd>
             </div>
             {user.cabinNumber && (
               <div>
-                <dt className="text-slate-500">Cabin</dt>
-                <dd className="text-slate-200">{user.cabinNumber}</dd>
+                <dt className="text-[#627D98]">Cabin</dt>
+                <dd className="text-[#252B32]">{user.cabinNumber}</dd>
               </div>
             )}
           </dl>
