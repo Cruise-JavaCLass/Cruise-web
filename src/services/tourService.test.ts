@@ -1,10 +1,22 @@
-import { describe, it, expect } from 'vitest';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
+import { apiClient } from './api';
 import {
   validateTourForm,
   canTransitionTourStatus,
   formatTourPayload,
+  getTourProviders,
+  createTourProvider,
+  updateTourProvider,
 } from './tourService';
 import type { TourFormData } from './tourService';
+
+vi.mock('./api', () => ({
+  apiClient: {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+  },
+}));
 
 describe('tourService - Tour Business Logic & Validation', () => {
   const validFormData: TourFormData = {
@@ -118,5 +130,44 @@ describe('tourService - Tour Business Logic & Validation', () => {
     expect(payload.code).toBe('TOUR-01');
     expect(payload.maxCapacity).toBe(500);
     expect(payload.basePrice).toBe(10000000);
+  });
+});
+
+describe('tourService - Tour provider API', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('gets tour providers from the backend', async () => {
+    const providers = [{ providerId: 'provider-1', providerName: 'Provider One' }];
+    vi.mocked(apiClient.get).mockResolvedValue({ data: { success: true, data: providers } });
+
+    await expect(getTourProviders()).resolves.toEqual(providers);
+    expect(apiClient.get).toHaveBeenCalledWith('/v1/tour-providers?page=0&size=100');
+  });
+
+  it('gets provider content from a paginated backend response', async () => {
+    const providers = [{ id: 'provider-1', name: 'Provider One' }];
+    vi.mocked(apiClient.get).mockResolvedValue({
+      data: { success: true, data: { content: providers, totalElements: 1 } },
+    });
+
+    await expect(getTourProviders()).resolves.toEqual(providers);
+  });
+
+  it('creates a tour provider through the backend', async () => {
+    const provider = { providerId: 'provider-1', providerName: 'Provider One' };
+    vi.mocked(apiClient.post).mockResolvedValue({ data: { success: true, data: provider } });
+
+    await expect(createTourProvider(provider)).resolves.toEqual(provider);
+    expect(apiClient.post).toHaveBeenCalledWith('/v1/tour-providers', provider);
+  });
+
+  it('updates a tour provider through the backend', async () => {
+    const provider = { providerId: 'provider/1', providerName: 'Updated Provider' };
+    vi.mocked(apiClient.put).mockResolvedValue({ data: { success: true, data: provider } });
+
+    await expect(updateTourProvider(provider.providerId, provider)).resolves.toEqual(provider);
+    expect(apiClient.put).toHaveBeenCalledWith('/v1/tour-providers/provider%2F1', provider);
   });
 });
