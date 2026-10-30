@@ -139,7 +139,7 @@ export function ProviderFormModal({
       {toast && (
         <div
           role="status"
-          className={`fixed right-5 top-5 z-[60] flex max-w-md items-center gap-2 rounded-xl px-4 py-3 text-white shadow-xl ${
+          className={`fixed right-5 top-5 z-60 flex max-w-md items-center gap-2 rounded-xl px-4 py-3 text-white shadow-xl ${
             toast.isError ? 'bg-rose-600' : 'bg-emerald-600'
           }`}
         >

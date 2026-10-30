@@ -45,7 +45,7 @@ export function ProviderDirectoryPage() {
   }, []);
 
   const portIds = useMemo(
-    () => [...new Set(providers.map((provider) => provider.portId))].sort(),
+    () => [...new Set(providers.map((provider) => provider.portId))].sort((a, b) => a.localeCompare(b)),
     [providers]
   );
 

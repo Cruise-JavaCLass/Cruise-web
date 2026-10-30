@@ -143,7 +143,16 @@ describe('tourService - Tour provider API', () => {
     vi.mocked(apiClient.get).mockResolvedValue({ data: { success: true, data: providers } });
 
     await expect(getTourProviders()).resolves.toEqual(providers);
-    expect(apiClient.get).toHaveBeenCalledWith('/v1/tour-providers');
+    expect(apiClient.get).toHaveBeenCalledWith('/v1/tour-providers?page=0&size=100');
+  });
+
+  it('gets provider content from a paginated backend response', async () => {
+    const providers = [{ id: 'provider-1', name: 'Provider One' }];
+    vi.mocked(apiClient.get).mockResolvedValue({
+      data: { success: true, data: { content: providers, totalElements: 1 } },
+    });
+
+    await expect(getTourProviders()).resolves.toEqual(providers);
   });
 
   it('creates a tour provider through the backend', async () => {

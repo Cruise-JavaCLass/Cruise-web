@@ -19,6 +19,10 @@ interface ApiResponse<T> {
   data: T;
 }
 
+interface PaginatedResponse<T> {
+  content: T[];
+}
+
 const TOUR_PROVIDERS_ENDPOINT = '/v1/tour-providers';
 
 export type TourStatus = 'DRAFT' | 'PUBLISHED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
@@ -285,11 +289,17 @@ export async function deleteTour(id: number): Promise<void> {
 }
 
 export async function getTourProviders(): Promise<TourProvider[]> {
-  const res = await apiClient.get<ApiResponse<TourProvider[]>>(TOUR_PROVIDERS_ENDPOINT);
-  if (!Array.isArray(res.data?.data)) {
-    throw new Error('Backend trả về danh sách nhà cung cấp không hợp lệ.');
+  const res = await apiClient.get<
+    ApiResponse<TourProvider[] | PaginatedResponse<TourProvider>>
+  >(`${TOUR_PROVIDERS_ENDPOINT}?page=0&size=100`);
+  const data = res.data?.data;
+  if (Array.isArray(data)) {
+    return data;
   }
-  return res.data.data;
+  if (data && Array.isArray(data.content)) {
+    return data.content;
+  }
+  throw new Error('Backend trả về danh sách nhà cung cấp không hợp lệ.');
 }
 
 export async function createTourProvider<TProvider extends object>(
