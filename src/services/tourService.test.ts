@@ -187,6 +187,18 @@ describe('tourService - Tour provider API', () => {
     await expect(getTourProviders()).rejects.toThrow('Backend trả về danh sách nhà cung cấp không hợp lệ.');
   });
 
+  it('filters out nullish and invalid provider items from direct array payloads', async () => {
+    const validProvider = { providerId: 'provider-1', providerName: 'Provider One' };
+    vi.mocked(apiClient.get).mockResolvedValue({
+      data: {
+        success: true,
+        data: [validProvider, null, undefined, 'invalid'] as unknown as TourProvider[],
+      },
+    });
+
+    await expect(getTourProviders()).resolves.toEqual([validProvider]);
+  });
+
   it('throws an error when subsequent tour providers page payload is invalid', async () => {
     const page0Providers = [{ providerId: 'provider-1', providerName: 'Provider One' }];
     vi.mocked(apiClient.get)
@@ -210,6 +222,21 @@ describe('tourService - Tour provider API', () => {
       });
 
     await expect(getTourProviders()).rejects.toThrow('Backend trả về danh sách nhà cung cấp không hợp lệ.');
+  });
+
+  it('filters out nullish items from paginated content', async () => {
+    const validProvider = { providerId: 'provider-1', providerName: 'Provider One' };
+    vi.mocked(apiClient.get).mockResolvedValue({
+      data: {
+        success: true,
+        data: {
+          content: [validProvider, null, undefined] as unknown as TourProvider[],
+          totalPages: 1,
+        },
+      },
+    });
+
+    await expect(getTourProviders()).resolves.toEqual([validProvider]);
   });
 
   it('creates a tour provider through the backend', async () => {

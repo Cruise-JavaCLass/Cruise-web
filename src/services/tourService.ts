@@ -294,17 +294,24 @@ export async function deleteTour(id: number): Promise<void> {
 }
 
 /**
+ * Kiểm tra một phần tử nhà cung cấp có phải đối tượng hợp lệ không rỗng.
+ */
+function isValidProviderRow(item: unknown): item is TourProvider {
+  return typeof item === 'object' && item !== null;
+}
+
+/**
  * Trích xuất danh sách nhà cung cấp và tổng số trang từ phản hồi API phân trang hoặc mảng thô.
  * @throws {Error} Nếu định dạng dữ liệu trả về từ backend không hợp lệ.
  */
 function extractProviderPage(rawData: unknown): { items: TourProvider[]; totalPages: number } {
   if (Array.isArray(rawData)) {
-    return { items: rawData, totalPages: 1 };
+    return { items: rawData.filter(isValidProviderRow), totalPages: 1 };
   }
   if (rawData && Array.isArray((rawData as PageResponse<TourProvider>).content)) {
     const pageData = rawData as PageResponse<TourProvider>;
     return {
-      items: pageData.content,
+      items: pageData.content.filter(isValidProviderRow),
       totalPages: pageData.totalPages ?? 1,
     };
   }
