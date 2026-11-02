@@ -69,7 +69,13 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
       };
     }
     return undefined;
-  }, [isOpen, voyage?.voyageNumber]);
+  }, [
+    isOpen,
+    voyage?.voyageNumber,
+    voyage?.currentPortName,
+    voyage?.currentTimezone,
+    voyage?.vesselClockOffsetMinutes,
+  ]);
 
   if (!isOpen || !voyage) return null;
 
@@ -101,24 +107,28 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 flex flex-col space-y-4 text-xs">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-[#0B1F33]/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-xl border border-[#E5E0D7] flex flex-col space-y-4 text-xs">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+        <div className="flex items-center justify-between pb-3 border-b border-[#E5E0D7]">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#397C80]/10 text-[#397C80]">
               <Globe2 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-800">
-                Maritime Port Timezone Coordinator & Master Clock
+              <h3 className="text-base font-serif font-bold text-[#102A43]">
+                Maritime Port Timezone Coordinator &amp; Master Clock
               </h3>
-              <p className="text-slate-500 text-[11px]">
-                Voyage: <strong>{voyage.voyageNumber}</strong> ({voyage.shipId})
+              <p className="text-[#687787] text-[11px] mt-0.5">
+                Voyage: <strong className="text-[#102A43] font-mono">{voyage.voyageNumber}</strong> ({voyage.shipId})
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded-lg text-slate-400">
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="p-1.5 hover:bg-[#F7F4ED] rounded-lg text-[#687787] hover:text-[#102A43] transition cursor-pointer"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -126,32 +136,32 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
         {successMsg && (
           <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex items-center gap-2">
             <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>{successMsg}</span>
+            <span className="font-medium">{successMsg}</span>
           </div>
         )}
 
         {error && (
           <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-            <span>{error}</span>
+            <span className="font-medium">{error}</span>
           </div>
         )}
 
         {scheduleError && (
           <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>{scheduleError}</span>
+            <span className="font-medium">{scheduleError}</span>
           </div>
         )}
 
-        {/* Master Clock Preview Card */}
-        <div className="bg-slate-900 text-white p-4 rounded-xl flex items-center justify-between shadow-inner">
+        {/* Master Clock Preview Card - Luxury Bridge Instrument Style */}
+        <div className="bg-[#102A43] text-white p-4 rounded-xl flex items-center justify-between border border-[#1B3A5A] shadow-inner">
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+            <span className="text-[10px] uppercase font-semibold text-[#C5A572] tracking-wider">
               Vessel Master Operating Clock
             </span>
-            <div className="text-2xl font-mono font-bold text-emerald-400 mt-1 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-emerald-400 animate-pulse" />
+            <div className="text-2xl font-mono font-bold text-white mt-1 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-[#C5A572] animate-pulse" />
               {loadingSchedule
                 ? 'Synchronizing Clock...'
                 : schedule
@@ -160,37 +170,41 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
             </div>
           </div>
           <div className="text-right">
-            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active Timezone</span>
-            <div className="font-semibold text-slate-200 text-xs mt-1">{voyage.currentTimezone}</div>
-            <div className="text-[10px] text-indigo-300 font-mono">Offset: {formatOffset(voyage.vesselClockOffsetMinutes)} mins</div>
+            <span className="text-[10px] uppercase font-semibold text-slate-300 tracking-wider">Active Timezone</span>
+            <div className="font-semibold text-white text-xs mt-1">{voyage.currentTimezone}</div>
+            <div className="text-[10px] text-[#C5A572] font-mono mt-0.5">Offset: {formatOffset(voyage.vesselClockOffsetMinutes)} mins</div>
           </div>
         </div>
 
         {/* Form: Shift Master Timezone */}
-        <form onSubmit={handleSyncSubmit} className="space-y-3 pt-2">
-          <div className="font-semibold text-slate-700 flex items-center gap-1.5">
-            <Sliders className="w-4 h-4 text-indigo-600" /> Coordinated Port Timezone Override
+        <form onSubmit={handleSyncSubmit} className="space-y-3 pt-1">
+          <div className="font-semibold text-[#102A43] flex items-center gap-1.5">
+            <Sliders className="w-4 h-4 text-[#397C80]" /> Coordinated Port Timezone Override
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="sync-port-name" className="block text-[11px] font-semibold text-slate-600 mb-1">Target Port Name</label>
+              <label htmlFor="sync-port-name" className="block text-[11px] font-semibold text-[#334E68] mb-1">
+                Target Port Name
+              </label>
               <input
                 id="sync-port-name"
                 type="text"
                 required
                 value={portName}
                 onChange={(e) => setPortName(e.target.value)}
-                className="w-full p-2 border border-slate-300 rounded-xl"
+                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none transition"
               />
             </div>
             <div>
-              <label htmlFor="sync-timezone" className="block text-[11px] font-semibold text-slate-600 mb-1">Standard IANA Timezone</label>
+              <label htmlFor="sync-timezone" className="block text-[11px] font-semibold text-[#334E68] mb-1">
+                Standard IANA Timezone
+              </label>
               <select
                 id="sync-timezone"
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="w-full p-2 border border-slate-300 rounded-xl"
+                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none transition"
               >
                 {voyage.currentTimezone &&
                   ![
@@ -215,24 +229,28 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="sync-clock-offset" className="block text-[11px] font-semibold text-slate-600 mb-1">Clock Offset Minutes (+/-)</label>
+              <label htmlFor="sync-clock-offset" className="block text-[11px] font-semibold text-[#334E68] mb-1">
+                Clock Offset Minutes (+/-)
+              </label>
               <input
                 id="sync-clock-offset"
                 type="number"
                 step="30"
                 value={clockOffsetMinutes}
                 onChange={(e) => setClockOffsetMinutes(Number(e.target.value))}
-                className="w-full p-2 border border-slate-300 rounded-xl"
+                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none font-mono transition"
               />
             </div>
             <div>
-              <label htmlFor="sync-adjustment-reason" className="block text-[11px] font-semibold text-slate-600 mb-1">Log Shift Reason</label>
+              <label htmlFor="sync-adjustment-reason" className="block text-[11px] font-semibold text-[#334E68] mb-1">
+                Log Shift Reason
+              </label>
               <input
                 id="sync-adjustment-reason"
                 type="text"
                 value={adjustmentReason}
                 onChange={(e) => setAdjustmentReason(e.target.value)}
-                className="w-full p-2 border border-slate-300 rounded-xl"
+                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none transition"
               />
             </div>
           </div>
@@ -240,7 +258,7 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition shadow flex items-center justify-center gap-2"
+            className="w-full py-2.5 bg-[#102A43] hover:bg-[#1B3A5A] text-white font-bold rounded-xl transition shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {loading ? 'Coordinating Ship Clock...' : 'Broadcast Master Clock Timezone Shift'}
           </button>
@@ -248,21 +266,21 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
 
         {/* Planned Timezone Shifts */}
         {schedule && (
-          <div className="pt-2 border-t border-slate-100">
-            <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5 mb-2">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" /> Planned Itinerary Timezone Shifts
+          <div className="pt-2 border-t border-[#E5E0D7]">
+            <span className="text-[11px] font-bold text-[#102A43] flex items-center gap-1.5 mb-2">
+              <Calendar className="w-3.5 h-3.5 text-[#397C80]" /> Planned Itinerary Timezone Shifts
             </span>
             <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
               {schedule.plannedPortShifts.map((shift, idx) => (
                 <div
                   key={idx}
-                  className="p-2 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between text-[11px]"
+                  className="p-2.5 bg-[#F7F4ED] border border-[#E5E0D7] rounded-lg flex items-center justify-between text-[11px]"
                 >
                   <div>
-                    <span className="font-semibold text-slate-800">{shift.portName}</span>
-                    <span className="text-slate-400 ml-1.5">({shift.timezone})</span>
+                    <span className="font-semibold text-[#102A43]">{shift.portName}</span>
+                    <span className="text-[#687787] ml-1.5">({shift.timezone})</span>
                   </div>
-                  <span className="font-mono text-indigo-600 font-bold">
+                  <span className="font-mono text-[#397C80] font-bold">
                     {formatOffset(shift.clockOffsetMinutes)}m offset
                   </span>
                 </div>
