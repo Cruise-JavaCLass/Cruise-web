@@ -148,6 +148,7 @@ export const DEMO_STAFF_ACCOUNTS: User[] = [
 
 let localUsers: User[] = DEMO_STAFF_ACCOUNTS.map((u) => ({ ...u }));
 let demoMode = false;
+let initialized = false;
 
 /** Lần tải gần nhất có phải dùng dữ liệu mẫu không (để hiển thị biểu ngữ) */
 export const isUsingDemoData = (): boolean => demoMode;
@@ -155,7 +156,21 @@ export const isUsingDemoData = (): boolean => demoMode;
 export const resetLocalUsers = () => {
   localUsers = DEMO_STAFF_ACCOUNTS.map((u) => ({ ...u }));
   demoMode = false;
+  initialized = false;
 };
+
+/**
+ * Khởi tạo nguồn dữ liệu trước các thao tác chi tiết hoặc tạo mới nếu chưa từng gọi getUsers.
+ */
+async function ensureSourceInitialized(): Promise<void> {
+  if (!initialized) {
+    try {
+      await getUsers();
+    } catch {
+      // Bỏ qua lỗi tại đây, các hàm gọi tiếp theo sẽ tự xử lý hoặc ném lỗi phù hợp
+    }
+  }
+}
 
 /**
  * Chỉ dùng dữ liệu mẫu khi không có phản hồi (mất kết nối) hoặc endpoint chưa tồn tại
@@ -190,23 +205,29 @@ export async function getUsers(): Promise<User[]> {
   } catch (err) {
     if (!shouldFallback(err)) throw err;
     demoMode = true;
+    initialized = true;
     return localUsers.map((u) => ({ ...u }));
   }
 
   const raw = res.data?.data;
   if (Array.isArray(raw)) {
     demoMode = false;
+    initialized = true;
     return raw;
   }
   if (raw && typeof raw === 'object' && Array.isArray((raw as { content: User[] }).content)) {
     demoMode = false;
+    initialized = true;
     return (raw as { content: User[] }).content;
   }
   demoMode = false;
+  initialized = true;
   throw new Error('Dữ liệu người dùng trả về không hợp lệ');
 }
 
 export async function getUserById(id: number): Promise<User> {
+  await ensureSourceInitialized();
+
   if (demoMode) {
     const found = localUsers.find((u) => u.id === id);
     if (!found) throw new Error('Không tìm thấy người dùng');
@@ -218,6 +239,8 @@ export async function getUserById(id: number): Promise<User> {
 }
 
 export async function createUser(form: UserFormData): Promise<User> {
+  await ensureSourceInitialized();
+
   if (demoMode) {
     assertLocalUnique(form.email, form.username);
     const created: User = {
@@ -244,6 +267,8 @@ export async function createUser(form: UserFormData): Promise<User> {
 }
 
 export async function updateUser(id: number, form: UserFormData): Promise<User> {
+  await ensureSourceInitialized();
+
   if (demoMode) {
     const current = localUsers.find((u) => u.id === id);
     if (!current) throw new Error('Không tìm thấy người dùng');
@@ -267,6 +292,8 @@ export async function updateUser(id: number, form: UserFormData): Promise<User> 
 }
 
 export async function setUserActive(id: number, active: boolean): Promise<User> {
+  await ensureSourceInitialized();
+
   if (demoMode) {
     const current = localUsers.find((u) => u.id === id);
     if (!current) throw new Error('Không tìm thấy người dùng');

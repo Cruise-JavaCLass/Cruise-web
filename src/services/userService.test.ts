@@ -85,6 +85,14 @@ describe('userService demo-data fallback', () => {
     await expect(getUserById(999)).rejects.toThrow('Không tìm thấy người dùng');
   });
 
+  it('getUserById initializes demo mode on direct visit when API is unavailable', async () => {
+    vi.mocked(apiClient.get).mockRejectedValue(httpError(404));
+
+    const user = await getUserById(1);
+    expect(user.username).toBe('admin');
+    expect(isUsingDemoData()).toBe(true);
+  });
+
   it('getUserById propagates 404 error when live accounts are active', async () => {
     vi.mocked(apiClient.get).mockResolvedValueOnce({
       data: { success: true, data: { content: [DEMO_STAFF_ACCOUNTS[0]] } },

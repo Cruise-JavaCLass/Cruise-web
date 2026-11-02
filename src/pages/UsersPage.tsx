@@ -269,7 +269,7 @@ export function UsersPage() {
         </div>
 
         {/* Content body */}
-        <div className="p-0">
+        <div className="p-0 overflow-x-auto">
           {isLoading ? (
             <div role="status" className="flex items-center justify-center p-12 text-xs text-[#687787] gap-2">
               <Loader2 className="w-4 h-4 animate-spin text-[#397C80]" />
@@ -291,7 +291,7 @@ export function UsersPage() {
               Chưa có người dùng nào được tạo trong hệ thống.
             </div>
           ) : (
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs min-w-[640px]">
               <thead className="bg-[#FAF8F5] text-[#5A6578] border-b border-[#E5E0D7]">
                 <tr>
                   <th className="p-3.5 font-semibold">Người dùng</th>
