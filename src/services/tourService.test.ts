@@ -8,7 +8,7 @@ import {
   createTourProvider,
   updateTourProvider,
 } from './tourService';
-import type { TourFormData } from './tourService';
+import type { TourFormData, TourProvider } from './tourService';
 
 vi.mock('./api', () => ({
   apiClient: {
