@@ -54,7 +54,7 @@ describe('ProviderFormModal', () => {
     expect(screen.getByText('Vui lòng nhập số hotline hợp lệ.')).toBeInTheDocument();
   });
 
-  it('shows the backend message when API responds with 409 duplicate tax code', async () => {
+  it('shows the backend message when API responds with 409 duplicate tax code and clears on input change', async () => {
     const user = userEvent.setup();
     const createSpy = vi.spyOn(tourService, 'createTourProvider').mockRejectedValue({
       response: {
@@ -67,10 +67,15 @@ describe('ProviderFormModal', () => {
     await user.type(screen.getByLabelText('Mã số thuế'), '0101234567');
     await user.click(screen.getByRole('button', { name: 'Save' }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent(
+    expect(await screen.findByRole('alert')).toHaveTextContent(
       'Mã số thuế đã được đăng ký.'
     );
     expect(createSpy).toHaveBeenCalledOnce();
+
+    await user.type(screen.getByLabelText('Mã số thuế'), '8');
+    await waitFor(() => {
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
   });
 
   it('creates a provider and notifies the parent on success', async () => {

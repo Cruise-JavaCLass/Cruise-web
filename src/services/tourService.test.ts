@@ -138,21 +138,53 @@ describe('tourService - Tour provider API', () => {
     vi.clearAllMocks();
   });
 
-  it('gets tour providers from the backend', async () => {
+  it('gets tour providers from the backend when returned as array', async () => {
     const providers = [{ providerId: 'provider-1', providerName: 'Provider One' }];
     vi.mocked(apiClient.get).mockResolvedValue({ data: { success: true, data: providers } });
 
     await expect(getTourProviders()).resolves.toEqual(providers);
-    expect(apiClient.get).toHaveBeenCalledWith('/v1/tour-providers?page=0&size=100');
+    expect(apiClient.get).toHaveBeenCalledWith('/v1/tour-providers', { params: { page: 0, size: 100 } });
   });
 
-  it('gets provider content from a paginated backend response', async () => {
-    const providers = [{ id: 'provider-1', name: 'Provider One' }];
-    vi.mocked(apiClient.get).mockResolvedValue({
-      data: { success: true, data: { content: providers, totalElements: 1 } },
-    });
+  it('fetches and merges all pages when tour providers endpoint is paginated', async () => {
+    const page0Providers = [{ providerId: 'provider-1', providerName: 'Provider One' }];
+    const page1Providers = [{ providerId: 'provider-2', providerName: 'Provider Two' }];
 
-    await expect(getTourProviders()).resolves.toEqual(providers);
+    vi.mocked(apiClient.get)
+      .mockResolvedValueOnce({
+        data: {
+          success: true,
+          data: {
+            content: page0Providers,
+            totalPages: 2,
+            totalElements: 2,
+            number: 0,
+            size: 100,
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          success: true,
+          data: {
+            content: page1Providers,
+            totalPages: 2,
+            totalElements: 2,
+            number: 1,
+            size: 100,
+          },
+        },
+      });
+
+    await expect(getTourProviders()).resolves.toEqual([...page0Providers, ...page1Providers]);
+    expect(apiClient.get).toHaveBeenNthCalledWith(1, '/v1/tour-providers', { params: { page: 0, size: 100 } });
+    expect(apiClient.get).toHaveBeenNthCalledWith(2, '/v1/tour-providers', { params: { page: 1, size: 100 } });
+  });
+
+  it('throws an error when tour providers payload is invalid', async () => {
+    vi.mocked(apiClient.get).mockResolvedValue({ data: { success: true, data: null } });
+
+    await expect(getTourProviders()).rejects.toThrow('Backend trả về danh sách nhà cung cấp không hợp lệ.');
   });
 
   it('creates a tour provider through the backend', async () => {

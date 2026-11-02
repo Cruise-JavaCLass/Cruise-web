@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { getTourProviders } from '../services/tourService';
+import { createTourProvider, getTourProviders } from '../services/tourService';
 import { ProviderDirectoryPage } from './ProviderDirectoryPage';
 
 vi.mock('../services/tourService', () => ({
@@ -124,5 +124,86 @@ describe('ProviderDirectoryPage', () => {
     expect(await screen.findByText('Tour Provider 11')).toBeInTheDocument();
     expect(screen.queryByText('Tour Provider 1')).not.toBeInTheDocument();
     expect(screen.getByText('11–12 / 12 nhà cung cấp')).toBeInTheDocument();
+  });
+
+  it('safely filters providers with nullish or missing fields without throwing', async () => {
+    const user = userEvent.setup();
+    const incompleteProviders = [
+      {
+        id: 'provider-incomplete',
+        code: 'PR-INC',
+        name: 'Incomplete Provider',
+        taxCode: null as unknown as string,
+        licenseNumber: undefined as unknown as string,
+        contactPerson: null as unknown as string,
+        email: undefined as unknown as string,
+        phone: null as unknown as string,
+        emergencyHotline: '1900000000',
+        portId: 'port-inc',
+        status: 'ACTIVE' as const,
+      },
+    ];
+    vi.mocked(getTourProviders).mockResolvedValue(incompleteProviders);
+
+    render(<ProviderDirectoryPage />);
+    expect(await screen.findByText('Incomplete Provider')).toBeInTheDocument();
+
+    const searchInput = screen.getByRole('searchbox', { name: 'Tìm kiếm nhà cung cấp' });
+    await user.type(searchInput, 'INC');
+
+    expect(screen.getByText('Incomplete Provider')).toBeInTheDocument();
+  });
+
+  it('discards stale responses when overlapping refresh requests occur', async () => {
+    const user = userEvent.setup();
+    let resolveFirst!: (value: typeof providers) => void;
+    let resolveSecond!: (value: typeof providers) => void;
+
+    const firstPromise = new Promise<typeof providers>((res) => {
+      resolveFirst = res;
+    });
+    const secondPromise = new Promise<typeof providers>((res) => {
+      resolveSecond = res;
+    });
+
+    vi.mocked(createTourProvider).mockResolvedValue(providers[0]);
+    vi.mocked(getTourProviders)
+      .mockResolvedValueOnce(providers)
+      .mockImplementationOnce(() => firstPromise)
+      .mockImplementationOnce(() => secondPromise);
+
+    render(<ProviderDirectoryPage />);
+    expect(await screen.findByText('Đối tác Hạ Long')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Add Provider' }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    const refreshButton = screen.getByRole('button', { name: 'Làm mới' });
+    fireEvent.click(refreshButton);
+
+    await user.type(screen.getByLabelText(/Tên đối tác/), 'Đối tác mới');
+    await user.type(screen.getByLabelText(/Hotline khẩn cấp/), '0912345678');
+    await user.type(screen.getByLabelText(/Địa chỉ cảng/), 'VN-HAN');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    const updatedProviders = [
+      {
+        ...providers[0],
+        name: 'Updated Provider Alpha',
+      },
+    ];
+    resolveSecond(updatedProviders);
+
+    expect(await screen.findByText('Updated Provider Alpha')).toBeInTheDocument();
+
+    resolveFirst([
+      {
+        ...providers[0],
+        name: 'Stale Provider Beta',
+      },
+    ]);
+
+    expect(screen.queryByText('Stale Provider Beta')).not.toBeInTheDocument();
+    expect(screen.getByText('Updated Provider Alpha')).toBeInTheDocument();
   });
 });

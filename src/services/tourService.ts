@@ -19,8 +19,13 @@ interface ApiResponse<T> {
   data: T;
 }
 
-interface PaginatedResponse<T> {
+interface PageResponse<T> {
   content: T[];
+  totalElements?: number;
+  totalPages?: number;
+  number?: number;
+  size?: number;
+  last?: boolean;
 }
 
 const TOUR_PROVIDERS_ENDPOINT = '/v1/tour-providers';
@@ -289,16 +294,38 @@ export async function deleteTour(id: number): Promise<void> {
 }
 
 export async function getTourProviders(): Promise<TourProvider[]> {
-  const res = await apiClient.get<
-    ApiResponse<TourProvider[] | PaginatedResponse<TourProvider>>
-  >(`${TOUR_PROVIDERS_ENDPOINT}?page=0&size=100`);
-  const data = res.data?.data;
-  if (Array.isArray(data)) {
-    return data;
+  const pageSize = 100;
+  const res = await apiClient.get<ApiResponse<TourProvider[] | PageResponse<TourProvider>>>(
+    TOUR_PROVIDERS_ENDPOINT,
+    { params: { page: 0, size: pageSize } }
+  );
+
+  const rawData = res.data?.data ?? res.data;
+  if (Array.isArray(rawData)) {
+    return rawData;
   }
-  if (data && Array.isArray(data.content)) {
-    return data.content;
+
+  if (rawData && Array.isArray((rawData as PageResponse<TourProvider>).content)) {
+    const pageData = rawData as PageResponse<TourProvider>;
+    const allProviders = [...pageData.content];
+    const totalPages = pageData.totalPages ?? 1;
+
+    for (let page = 1; page < totalPages; page++) {
+      const nextRes = await apiClient.get<ApiResponse<TourProvider[] | PageResponse<TourProvider>>>(
+        TOUR_PROVIDERS_ENDPOINT,
+        { params: { page, size: pageSize } }
+      );
+      const nextRaw = nextRes.data?.data ?? nextRes.data;
+      if (Array.isArray(nextRaw)) {
+        allProviders.push(...nextRaw);
+      } else if (nextRaw && Array.isArray((nextRaw as PageResponse<TourProvider>).content)) {
+        allProviders.push(...(nextRaw as PageResponse<TourProvider>).content);
+      }
+    }
+
+    return allProviders;
   }
+
   throw new Error('Backend trả về danh sách nhà cung cấp không hợp lệ.');
 }
 

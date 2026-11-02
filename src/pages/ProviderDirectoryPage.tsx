@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, ChevronLeft, ChevronRight, Plus, RefreshCw, Search } from 'lucide-react';
 import { getTourProviders, type TourProvider } from '../services/tourService';
 import { ProviderFormModal } from '../components/tours/ProviderFormModal';
@@ -26,26 +26,37 @@ export function ProviderDirectoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isProviderFormOpen, setIsProviderFormOpen] = useState(false);
+  const refreshRequestId = useRef(0);
 
-  useEffect(() => {
-    let active = true;
-    getTourProviders()
-      .then((data) => {
-        if (active) setProviders(data);
-      })
-      .catch((loadError: unknown) => {
-        if (active) setError(getErrorMessage(loadError));
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
+  const refreshProviders = useCallback(async () => {
+    const requestId = ++refreshRequestId.current;
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await getTourProviders();
+      if (requestId === refreshRequestId.current) {
+        setProviders(result);
+      }
+    } catch (loadError: unknown) {
+      if (requestId === refreshRequestId.current) {
+        setError(getErrorMessage(loadError));
+      }
+    } finally {
+      if (requestId === refreshRequestId.current) {
+        setLoading(false);
+      }
+    }
   }, []);
 
+  useEffect(() => {
+    void refreshProviders();
+  }, [refreshProviders]);
+
   const portIds = useMemo(
-    () => [...new Set(providers.map((provider) => provider.portId))].sort((a, b) => a.localeCompare(b)),
+    () =>
+      [...new Set(providers.map((provider) => provider.portId).filter(Boolean))].sort((a, b) =>
+        a.localeCompare(b)
+      ),
     [providers]
   );
 
@@ -65,7 +76,7 @@ export function ProviderDirectoryPage() {
           provider.phone,
           provider.emergencyHotline,
           provider.portId,
-        ].some((value) => value.toLocaleLowerCase().includes(keyword));
+        ].some((value) => String(value ?? '').toLocaleLowerCase().includes(keyword));
       const matchesPort = portFilter === 'ALL' || provider.portId === portFilter;
       const matchesStatus = statusFilter === 'ALL' || provider.status === statusFilter;
       return matchesSearch && matchesPort && matchesStatus;
@@ -88,18 +99,6 @@ export function ProviderDirectoryPage() {
   const updateStatusFilter = (value: StatusFilter) => {
     setStatusFilter(value);
     setCurrentPage(0);
-  };
-
-  const refreshProviders = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      setProviders(await getTourProviders());
-    } catch (loadError: unknown) {
-      setError(getErrorMessage(loadError));
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (

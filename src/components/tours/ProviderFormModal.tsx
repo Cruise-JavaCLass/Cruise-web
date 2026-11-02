@@ -92,10 +92,12 @@ export function ProviderFormModal({
   onSuccess,
 }: ProviderFormModalProps) {
   const [toast, setToast] = useState<ToastMessage | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ProviderFormValues>({
     resolver: zodResolver(providerFormSchema),
@@ -104,8 +106,18 @@ export function ProviderFormModal({
   });
 
   useEffect(() => {
-    if (isOpen) reset(getDefaultValues(provider));
+    if (isOpen) {
+      reset(getDefaultValues(provider));
+      setSubmitError(null);
+    }
   }, [isOpen, provider, reset]);
+
+  useEffect(() => {
+    const subscription = watch(() => {
+      setSubmitError(null);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   useEffect(() => {
     if (!toast) return;
@@ -114,13 +126,14 @@ export function ProviderFormModal({
   }, [toast]);
 
   const submitProvider = async (values: ProviderFormValues) => {
+    setSubmitError(null);
     let savedProvider: TourProvider;
     try {
       savedProvider = provider
         ? await updateTourProvider(provider.id, values)
         : await createTourProvider(values);
     } catch (error: unknown) {
-      setToast({ text: getErrorMessage(error), isError: true });
+      setSubmitError(getErrorMessage(error));
       return;
     }
 
@@ -301,6 +314,16 @@ export function ProviderFormModal({
                   )}
                 </div>
               </div>
+
+              {submitError && (
+                <div
+                  role="alert"
+                  className="mb-4 flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+                >
+                  <AlertCircle aria-hidden="true" className="h-4 w-4 shrink-0 text-rose-600" />
+                  <span>{submitError}</span>
+                </div>
+              )}
 
               <div className="flex justify-end gap-3 border-t border-[#E5E0D7] pt-5">
                 <button
