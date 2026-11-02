@@ -7,6 +7,7 @@ import { ShinyText, DecryptedText } from './ShinyText';
 import { Magnet } from './Magnet';
 import { MaritimeGlobe3D } from './MaritimeGlobe3D';
 import { CommandPaletteModal } from './CommandPaletteModal';
+import { authService } from '../../services/authService';
 
 describe('React Bits, Three.js & UI/UX Pro Max Suite', () => {
   it('renders SpotlightCard and tracks cursor hover state', () => {
@@ -68,6 +69,7 @@ describe('React Bits, Three.js & UI/UX Pro Max Suite', () => {
   });
 
   it('renders CommandPaletteModal, filters modules and closes on Escape', () => {
+    authService.setSession('domain-test-admin', { id: 1, username: 'admin', fullName: 'Test Admin', role: 'SYSTEM_ADMIN' });
     const onClose = vi.fn();
     render(
       <MemoryRouter>

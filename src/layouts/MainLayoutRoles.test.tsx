@@ -45,7 +45,7 @@ describe('MainLayout role-based menu', () => {
     async (role) => {
       signInAs(role);
       renderLayout();
-      expect(await screen.findByText('Quản lý Đội tàu')).toBeInTheDocument();
+      expect(await screen.findByText('CRUISE MANAGER')).toBeInTheDocument();
       expect(screen.queryByText('Quản lý Người dùng')).not.toBeInTheDocument();
     }
   );
@@ -53,7 +53,8 @@ describe('MainLayout role-based menu', () => {
   it('hides the menu when there is no signed-in user', async () => {
     signInAs(null);
     renderLayout();
-    expect(await screen.findByText('Quản lý Đội tàu')).toBeInTheDocument();
+    expect(await screen.findByText('CRUISE MANAGER')).toBeInTheDocument();
+    expect(screen.queryByText('Quản lý Đội tàu')).not.toBeInTheDocument();
     expect(screen.queryByText('Quản lý Người dùng')).not.toBeInTheDocument();
   });
 });

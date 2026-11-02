@@ -1,4 +1,5 @@
 import { apiClient } from './api';
+import { isKnownRole } from './accessControl';
 
 export type StaffRole =
   | 'SYSTEM_ADMIN'
@@ -82,16 +83,17 @@ export const authService = {
 
     // 1. Attempt backend authentication if available
     try {
-      const res = await apiClient.post<{ success: boolean; data: { token: string; user?: AuthUser } }>(
+      const res = await apiClient.post<{ success: boolean; data: { accessToken?: string; token?: string; user?: AuthUser } }>(
         '/auth/login',
-        { username, password }
+        { usernameOrEmail: username, password }
       );
       const user = res.data?.data?.user;
-      if (res.data?.data?.token && user) {
-        if (user.role === 'PASSENGER') {
+      const token = res.data?.data?.accessToken || res.data?.data?.token;
+      if (token && user) {
+        if (!isKnownRole(user.role) || user.role === 'PASSENGER') {
           throw new Error('Tài khoản hành khách không có quyền truy cập hệ thống vận hành.');
         }
-        authService.setSession(res.data.data.token, user);
+        authService.setSession(token, user);
         return user;
       }
     } catch (err: unknown) {
@@ -104,9 +106,8 @@ export const authService = {
     // 2. Check demo accounts fallback in development / test environments
     const isDevOrTest =
       typeof import.meta !== 'undefined' &&
-      (import.meta.env?.DEV ||
-        import.meta.env?.MODE === 'test' ||
-        import.meta.env?.VITE_ENABLE_DEMO_ACCOUNTS === 'true');
+      (import.meta.env?.MODE === 'test' ||
+        (import.meta.env?.DEV && import.meta.env?.VITE_ENABLE_DEMO_ACCOUNTS === 'true'));
 
     if (isDevOrTest) {
       const match = DEMO_STAFF_ACCOUNTS[username];
@@ -183,6 +184,6 @@ export const authService = {
       typeof window !== 'undefined' &&
       Boolean(localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
     if (!user || !hasToken) return false;
-    return user.role !== 'PASSENGER';
+    return isKnownRole(user.role) && user.role !== 'PASSENGER';
   },
 };

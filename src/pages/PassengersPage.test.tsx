@@ -1,9 +1,13 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PassengersPage } from './PassengersPage';
+import { authService } from '../services/authService';
 
 describe('PassengersPage (Component & User Interaction Tests)', () => {
+  beforeEach(() => {
+    authService.setSession('domain-test-admin', { id: 1, username: 'admin', fullName: 'Test Admin', role: 'SYSTEM_ADMIN' });
+  });
   it('renders passenger table header and all initial passengers', () => {
     render(<PassengersPage />);
 
