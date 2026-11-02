@@ -293,6 +293,24 @@ export async function deleteTour(id: number): Promise<void> {
   await apiClient.delete(`/itinerary/tours/${id}`);
 }
 
+/**
+ * Trích xuất danh sách nhà cung cấp và tổng số trang từ phản hồi API phân trang hoặc mảng thô.
+ * @throws {Error} Nếu định dạng dữ liệu trả về từ backend không hợp lệ.
+ */
+function extractProviderPage(rawData: unknown): { items: TourProvider[]; totalPages: number } {
+  if (Array.isArray(rawData)) {
+    return { items: rawData, totalPages: 1 };
+  }
+  if (rawData && Array.isArray((rawData as PageResponse<TourProvider>).content)) {
+    const pageData = rawData as PageResponse<TourProvider>;
+    return {
+      items: pageData.content,
+      totalPages: pageData.totalPages ?? 1,
+    };
+  }
+  throw new Error('Backend trả về danh sách nhà cung cấp không hợp lệ.');
+}
+
 export async function getTourProviders(): Promise<TourProvider[]> {
   const pageSize = 100;
   const res = await apiClient.get<ApiResponse<TourProvider[] | PageResponse<TourProvider>>>(
@@ -300,33 +318,19 @@ export async function getTourProviders(): Promise<TourProvider[]> {
     { params: { page: 0, size: pageSize } }
   );
 
-  const rawData = res.data?.data ?? res.data;
-  if (Array.isArray(rawData)) {
-    return rawData;
+  const firstPage = extractProviderPage(res.data?.data ?? res.data);
+  const allProviders = [...firstPage.items];
+
+  for (let page = 1; page < firstPage.totalPages; page++) {
+    const nextRes = await apiClient.get<ApiResponse<TourProvider[] | PageResponse<TourProvider>>>(
+      TOUR_PROVIDERS_ENDPOINT,
+      { params: { page, size: pageSize } }
+    );
+    const nextPage = extractProviderPage(nextRes.data?.data ?? nextRes.data);
+    allProviders.push(...nextPage.items);
   }
 
-  if (rawData && Array.isArray((rawData as PageResponse<TourProvider>).content)) {
-    const pageData = rawData as PageResponse<TourProvider>;
-    const allProviders = [...pageData.content];
-    const totalPages = pageData.totalPages ?? 1;
-
-    for (let page = 1; page < totalPages; page++) {
-      const nextRes = await apiClient.get<ApiResponse<TourProvider[] | PageResponse<TourProvider>>>(
-        TOUR_PROVIDERS_ENDPOINT,
-        { params: { page, size: pageSize } }
-      );
-      const nextRaw = nextRes.data?.data ?? nextRes.data;
-      if (Array.isArray(nextRaw)) {
-        allProviders.push(...nextRaw);
-      } else if (nextRaw && Array.isArray((nextRaw as PageResponse<TourProvider>).content)) {
-        allProviders.push(...(nextRaw as PageResponse<TourProvider>).content);
-      }
-    }
-
-    return allProviders;
-  }
-
-  throw new Error('Backend trả về danh sách nhà cung cấp không hợp lệ.');
+  return allProviders;
 }
 
 export async function createTourProvider<TProvider extends object>(

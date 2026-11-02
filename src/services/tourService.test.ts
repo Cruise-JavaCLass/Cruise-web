@@ -187,6 +187,31 @@ describe('tourService - Tour provider API', () => {
     await expect(getTourProviders()).rejects.toThrow('Backend trả về danh sách nhà cung cấp không hợp lệ.');
   });
 
+  it('throws an error when subsequent tour providers page payload is invalid', async () => {
+    const page0Providers = [{ providerId: 'provider-1', providerName: 'Provider One' }];
+    vi.mocked(apiClient.get)
+      .mockResolvedValueOnce({
+        data: {
+          success: true,
+          data: {
+            content: page0Providers,
+            totalPages: 2,
+            totalElements: 2,
+            number: 0,
+            size: 100,
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          success: true,
+          data: null,
+        },
+      });
+
+    await expect(getTourProviders()).rejects.toThrow('Backend trả về danh sách nhà cung cấp không hợp lệ.');
+  });
+
   it('creates a tour provider through the backend', async () => {
     const provider = { providerId: 'provider-1', providerName: 'Provider One' };
     vi.mocked(apiClient.post).mockResolvedValue({ data: { success: true, data: provider } });

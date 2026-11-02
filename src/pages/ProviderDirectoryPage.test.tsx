@@ -126,6 +126,31 @@ describe('ProviderDirectoryPage', () => {
     expect(screen.getByText('11–12 / 12 nhà cung cấp')).toBeInTheDocument();
   });
 
+  it('resets pagination to the first page when refresh succeeds', async () => {
+    const user = userEvent.setup();
+    const manyProviders = Array.from({ length: 12 }, (_, index) => ({
+      ...providers[index % providers.length],
+      id: `provider-${index + 1}`,
+      name: `Tour Provider ${index + 1}`,
+      code: `PR-${index + 1}`,
+      taxCode: `TAX-${index + 1}`,
+    }));
+    vi.mocked(getTourProviders).mockResolvedValue(manyProviders);
+
+    render(<ProviderDirectoryPage />);
+
+    expect(await screen.findByText('Tour Provider 1')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Trang sau' }));
+    expect(await screen.findByText('Tour Provider 11')).toBeInTheDocument();
+    expect(screen.getByText('11–12 / 12 nhà cung cấp')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Làm mới' }));
+
+    expect(await screen.findByText('Tour Provider 1')).toBeInTheDocument();
+    expect(screen.queryByText('Tour Provider 11')).not.toBeInTheDocument();
+    expect(screen.getByText('1–10 / 12 nhà cung cấp')).toBeInTheDocument();
+  });
+
   it('safely filters providers with nullish or missing fields without throwing', async () => {
     const user = userEvent.setup();
     const incompleteProviders = [

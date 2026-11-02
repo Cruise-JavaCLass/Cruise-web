@@ -36,6 +36,7 @@ export function ProviderDirectoryPage() {
       const result = await getTourProviders();
       if (requestId === refreshRequestId.current) {
         setProviders(result);
+        setCurrentPage(0);
       }
     } catch (loadError: unknown) {
       if (requestId === refreshRequestId.current) {
