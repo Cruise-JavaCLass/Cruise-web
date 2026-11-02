@@ -8,6 +8,14 @@ describe('PassengersPage (Component & User Interaction Tests)', () => {
   beforeEach(() => {
     authService.setSession('domain-test-admin', { id: 1, username: 'admin', fullName: 'Test Admin', role: 'SYSTEM_ADMIN' });
   });
+
+  it('keeps passenger mutation controls disabled for read-only staff', () => {
+    authService.setSession('token', { id: 3, username: 'activity', fullName: 'Activity', role: 'ACTIVITY_MANAGER' });
+    render(<PassengersPage />);
+    expect(screen.getByRole('button', { name: 'Đăng Ký Khách' })).toBeDisabled();
+    expect(screen.getAllByRole('combobox', { name: /Đổi trạng thái đăng ký/ })[0]).toBeDisabled();
+    expect(screen.getAllByRole('button', { name: /Đã lên tàu|Chưa check-in/ })[0]).toBeDisabled();
+  });
   it('renders passenger table header and all initial passengers', () => {
     render(<PassengersPage />);
 

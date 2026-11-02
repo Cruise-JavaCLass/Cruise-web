@@ -138,12 +138,16 @@ export const authService = {
     try {
       await apiClient.post('/auth/logout').catch(() => {});
     } finally {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('currentUser');
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('currentUser');
-      }
+      authService.clearSession();
+    }
+  },
+
+  clearSession: (): void => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('currentUser');
+      sessionStorage.removeItem('authToken');
+      sessionStorage.removeItem('currentUser');
     }
   },
 

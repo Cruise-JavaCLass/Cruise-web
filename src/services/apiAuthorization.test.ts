@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AxiosAdapter, InternalAxiosRequestConfig } from 'axios';
-import { apiClient } from './api';
+import { ACCESS_DENIED_EVENT, apiClient } from './api';
 import { authService } from './authService';
 
 describe('KAN-71 authenticated API transport', () => {
@@ -54,5 +54,18 @@ describe('KAN-71 authenticated API transport', () => {
     await expect(authService.login({ username: 'rogue', password: 'Password#123' })).rejects.toThrow();
     expect(authService.isStaff()).toBe(false);
     expect(localStorage.getItem('authToken')).toBeNull();
+  });
+
+  it('signals a server denial even when a domain service catches the HTTP error', async () => {
+    const listener = vi.fn();
+    window.addEventListener(ACCESS_DENIED_EVENT, listener);
+    apiClient.defaults.adapter = async config => Promise.reject({ response: { status: 403 }, config });
+    try {
+      await apiClient.get('/auth/roles').catch(() => 'offline fallback');
+      expect(listener).toHaveBeenCalledOnce();
+      expect((listener.mock.calls[0][0] as CustomEvent).detail.status).toBe(403);
+    } finally {
+      window.removeEventListener(ACCESS_DENIED_EVENT, listener);
+    }
   });
 });

@@ -57,4 +57,13 @@ describe('MainLayout role-based menu', () => {
     expect(screen.queryByText('Quản lý Đội tàu')).not.toBeInTheDocument();
     expect(screen.queryByText('Quản lý Người dùng')).not.toBeInTheDocument();
   });
+
+  it('limits a cashier menu to authorized workspaces', async () => {
+    signInAs('POS_STAFF');
+    renderLayout();
+    expect(await screen.findByText('POS & Chi tiêu Onboard')).toBeInTheDocument();
+    expect(screen.queryByText('Quản lý Đội tàu')).not.toBeInTheDocument();
+    expect(screen.queryByText('Tất toán & Hoá đơn')).not.toBeInTheDocument();
+    expect(screen.queryByText('Hoạt động & Excursion')).not.toBeInTheDocument();
+  });
 });
