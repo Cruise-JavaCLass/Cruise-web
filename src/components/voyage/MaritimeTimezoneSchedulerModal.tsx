@@ -40,9 +40,17 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const initializedSessionRef = React.useRef<string | null>(null);
 
   React.useEffect(() => {
-    if (isOpen && voyage) {
+    if (!isOpen || !voyage) {
+      initializedSessionRef.current = null;
+      return undefined;
+    }
+
+    const sessionKey = `${voyage.voyageNumber}-${isOpen ? 'open' : 'closed'}`;
+    if (initializedSessionRef.current !== sessionKey) {
+      initializedSessionRef.current = sessionKey;
       setPortName(voyage.currentPortName || 'Piraeus Port (Athens)');
       setTimezone(voyage.currentTimezone || 'Europe/Athens');
       setClockOffsetMinutes(voyage.vesselClockOffsetMinutes || 0);
@@ -193,7 +201,7 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
                 required
                 value={portName}
                 onChange={(e) => setPortName(e.target.value)}
-                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none transition"
+                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 focus:outline-hidden transition"
               />
             </div>
             <div>
@@ -204,7 +212,7 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
                 id="sync-timezone"
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none transition"
+                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 focus:outline-hidden transition"
               >
                 {voyage.currentTimezone &&
                   ![
@@ -238,7 +246,7 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
                 step="30"
                 value={clockOffsetMinutes}
                 onChange={(e) => setClockOffsetMinutes(Number(e.target.value))}
-                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none font-mono transition"
+                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 focus:outline-hidden font-mono transition"
               />
             </div>
             <div>
@@ -250,7 +258,7 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
                 type="text"
                 value={adjustmentReason}
                 onChange={(e) => setAdjustmentReason(e.target.value)}
-                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none transition"
+                className="w-full p-2 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 focus:outline-hidden transition"
               />
             </div>
           </div>
@@ -278,9 +286,9 @@ export const MaritimeTimezoneSchedulerModal: React.FC<MaritimeTimezoneSchedulerM
                 >
                   <div>
                     <span className="font-semibold text-[#102A43]">{shift.portName}</span>
-                    <span className="text-[#687787] ml-1.5">({shift.timezone})</span>
+                    <span className="text-[#334E68] ml-1.5 font-medium">({shift.timezone})</span>
                   </div>
-                  <span className="font-mono text-[#397C80] font-bold">
+                  <span className="font-mono text-[#1B4D50] font-bold">
                     {formatOffset(shift.clockOffsetMinutes)}m offset
                   </span>
                 </div>

@@ -362,7 +362,7 @@ export const VoyagePhaseControlCenter: React.FC = () => {
                   id="transition-target-phase"
                   value={targetPhase}
                   onChange={(e) => setTargetPhase(e.target.value as VoyageOperationalPhase)}
-                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none font-bold"
+                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 focus:outline-hidden font-bold"
                 >
                   <option value="PLANNING">PLANNING</option>
                   <option value="EMBARKING">EMBARKING (Boarding Gates Open)</option>
@@ -383,7 +383,7 @@ export const VoyagePhaseControlCenter: React.FC = () => {
                   placeholder="e.g. Mykonos Port, Greece"
                   value={currentPortName}
                   onChange={(e) => setCurrentPortName(e.target.value)}
-                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] placeholder-[#9AA3AC] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none"
+                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] placeholder-[#9AA3AC] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 focus:outline-hidden"
                 />
               </div>
 
@@ -397,7 +397,7 @@ export const VoyagePhaseControlCenter: React.FC = () => {
                   required
                   value={transitionReason}
                   onChange={(e) => setTransitionReason(e.target.value)}
-                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] placeholder-[#9AA3AC] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none"
+                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] placeholder-[#9AA3AC] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 focus:outline-hidden"
                 />
               </div>
 
@@ -447,7 +447,7 @@ export const VoyagePhaseControlCenter: React.FC = () => {
                   required
                   value={newVoyageNumber}
                   onChange={(e) => setNewVoyageNumber(e.target.value)}
-                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none font-mono"
+                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 focus:outline-hidden font-mono"
                 />
               </div>
 
@@ -461,7 +461,7 @@ export const VoyagePhaseControlCenter: React.FC = () => {
                   required
                   value={newShipId}
                   onChange={(e) => setNewShipId(e.target.value)}
-                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none"
+                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 focus:outline-hidden"
                 />
               </div>
 
@@ -475,7 +475,7 @@ export const VoyagePhaseControlCenter: React.FC = () => {
                   required
                   value={newItineraryName}
                   onChange={(e) => setNewItineraryName(e.target.value)}
-                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 outline-none"
+                  className="w-full p-2.5 border border-[#D8D2C7] bg-white rounded-xl text-[#102A43] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15 focus:outline-hidden"
                 />
               </div>
 
