@@ -31,8 +31,10 @@ function mapUserToFormData(user?: User | null): UserFormData {
 }
 
 const inputClass = (error?: string) =>
-  `w-full px-3 py-2 bg-slate-950 border rounded-xl text-xs text-slate-100 focus:outline-none ${
-    error ? 'border-rose-500' : 'border-slate-800 focus:border-cyan-500'
+  `w-full px-3.5 py-2.5 bg-white border rounded-xl text-xs text-[#102A43] outline-none transition placeholder:text-[#9AA3AC] ${
+    error
+      ? 'border-rose-500 focus:border-rose-500 focus:ring-1 focus:ring-rose-200'
+      : 'border-[#D8D2C7] focus:border-[#397C80] focus:ring-2 focus:ring-[#397C80]/15'
   }`;
 
 export function UserFormModal({
@@ -83,22 +85,22 @@ export function UserFormModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs">
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="user-form-title"
-        className="w-full max-w-lg bg-[#030303]/95 border border-white/10 rounded-2xl shadow-2xl"
+        className="w-full max-w-lg bg-white border border-[#E5E0D7] rounded-2xl shadow-xl overflow-hidden"
       >
-        <div className="flex items-center justify-between p-5 border-b border-slate-800">
-          <h3 id="user-form-title" className="text-sm font-bold text-white flex items-center gap-2">
+        <div className="flex items-center justify-between p-5 border-b border-[#E5E0D7] bg-[#FAF8F5]">
+          <h3 id="user-form-title" className="text-base font-serif font-bold text-[#102A43] flex items-center gap-2">
             {isEdit ? (
               <>
-                <UserCog className="w-4 h-4 text-cyan-400" /> Chỉnh Sửa Người Dùng
+                <UserCog className="w-4 h-4 text-[#397C80]" /> Chỉnh Sửa Người Dùng
               </>
             ) : (
               <>
-                <UserPlus className="w-4 h-4 text-cyan-400" /> Thêm Người Dùng Mới
+                <UserPlus className="w-4 h-4 text-[#397C80]" /> Thêm Người Dùng Mới
               </>
             )}
           </h3>
@@ -106,7 +108,7 @@ export function UserFormModal({
             type="button"
             onClick={onClose}
             aria-label="Đóng"
-            className="text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg text-[#687787] hover:text-[#102A43] hover:bg-[#F7F4ED] transition cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -116,16 +118,16 @@ export function UserFormModal({
           {apiError && (
             <div
               role="alert"
-              className="flex items-start gap-2 p-3 bg-rose-950/50 border border-rose-800/60 rounded-xl text-xs text-rose-300"
+              className="flex items-start gap-2 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700"
             >
-              <ShieldAlert className="w-4 h-4 shrink-0" />
-              <span>{apiError}</span>
+              <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600" />
+              <span className="font-medium">{apiError}</span>
             </div>
           )}
 
           <div>
-            <label htmlFor="username" className="block text-xs font-medium text-slate-300 mb-1">
-              Tên đăng nhập {!isEdit && <span className="text-rose-400">*</span>}
+            <label htmlFor="username" className="block text-xs font-semibold text-[#334E68] mb-1.5">
+              Tên đăng nhập {!isEdit && <span className="text-rose-500">*</span>}
             </label>
             <input
               id="username"
@@ -133,15 +135,15 @@ export function UserFormModal({
               value={formData.username}
               onChange={handleChange}
               disabled={isEdit}
-              className={`${inputClass(errors.username)} disabled:opacity-60`}
+              className={`${inputClass(errors.username)} disabled:bg-[#F7F4ED] disabled:text-[#687787]`}
             />
-            {errors.username && <p className="text-[11px] text-rose-400 mt-1">{errors.username}</p>}
+            {errors.username && <p className="text-[11px] text-rose-600 mt-1">{errors.username}</p>}
           </div>
 
           {!isEdit && (
             <div>
-              <label htmlFor="password" className="block text-xs font-medium text-slate-300 mb-1">
-                Mật khẩu <span className="text-rose-400">*</span>
+              <label htmlFor="password" className="block text-xs font-semibold text-[#334E68] mb-1.5">
+                Mật khẩu <span className="text-rose-500">*</span>
               </label>
               <input
                 id="password"
@@ -152,13 +154,13 @@ export function UserFormModal({
                 onChange={handleChange}
                 className={inputClass(errors.password)}
               />
-              {errors.password && <p className="text-[11px] text-rose-400 mt-1">{errors.password}</p>}
+              {errors.password && <p className="text-[11px] text-rose-600 mt-1">{errors.password}</p>}
             </div>
           )}
 
           <div>
-            <label htmlFor="fullName" className="block text-xs font-medium text-slate-300 mb-1">
-              Họ và tên <span className="text-rose-400">*</span>
+            <label htmlFor="fullName" className="block text-xs font-semibold text-[#334E68] mb-1.5">
+              Họ và tên <span className="text-rose-500">*</span>
             </label>
             <input
               id="fullName"
@@ -167,12 +169,12 @@ export function UserFormModal({
               onChange={handleChange}
               className={inputClass(errors.fullName)}
             />
-            {errors.fullName && <p className="text-[11px] text-rose-400 mt-1">{errors.fullName}</p>}
+            {errors.fullName && <p className="text-[11px] text-rose-600 mt-1">{errors.fullName}</p>}
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-xs font-medium text-slate-300 mb-1">
-              Email <span className="text-rose-400">*</span>
+            <label htmlFor="email" className="block text-xs font-semibold text-[#334E68] mb-1.5">
+              Email <span className="text-rose-500">*</span>
             </label>
             <input
               id="email"
@@ -182,12 +184,12 @@ export function UserFormModal({
               onChange={handleChange}
               className={inputClass(errors.email)}
             />
-            {errors.email && <p className="text-[11px] text-rose-400 mt-1">{errors.email}</p>}
+            {errors.email && <p className="text-[11px] text-rose-600 mt-1">{errors.email}</p>}
           </div>
 
           <div>
-            <label htmlFor="role" className="block text-xs font-medium text-slate-300 mb-1">
-              Vai trò <span className="text-rose-400">*</span>
+            <label htmlFor="role" className="block text-xs font-semibold text-[#334E68] mb-1.5">
+              Vai trò <span className="text-rose-500">*</span>
             </label>
             <select
               id="role"
@@ -203,21 +205,21 @@ export function UserFormModal({
                 </option>
               ))}
             </select>
-            {errors.role && <p className="text-[11px] text-rose-400 mt-1">{errors.role}</p>}
+            {errors.role && <p className="text-[11px] text-rose-600 mt-1">{errors.role}</p>}
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-3 border-t border-[#E5E0D7]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs text-slate-300 border border-slate-700 hover:bg-slate-800/60"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-[#102A43] border border-[#E5E0D7] bg-white hover:bg-[#F7F4ED] transition cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-cyan-600 to-blue-600 disabled:opacity-60"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-semibold text-white bg-[#102A43] hover:bg-[#1B3A5A] shadow-xs disabled:opacity-60 transition cursor-pointer"
             >
               {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               {isEdit ? 'Lưu thay đổi' : 'Tạo người dùng'}
