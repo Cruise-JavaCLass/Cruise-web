@@ -35,36 +35,40 @@ export function UserStatusConfirmModal({ user, onClose, onConfirm }: UserStatusC
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1F33]/60 backdrop-blur-xs">
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="user-status-title"
-        className="w-full max-w-sm bg-[#030303]/95 border border-white/10 rounded-2xl p-5 space-y-4"
+        className="w-full max-w-sm bg-white border border-[#E5E0D7] rounded-2xl p-6 shadow-xl space-y-4"
       >
-        <h3 id="user-status-title" className="text-sm font-bold text-white flex items-center gap-2">
+        <h3 id="user-status-title" className="text-base font-serif font-bold text-[#102A43] flex items-center gap-2">
           {deactivating ? (
-            <UserX className="w-4 h-4 text-amber-400" />
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+              <UserX className="w-4 h-4" />
+            </span>
           ) : (
-            <UserCheck className="w-4 h-4 text-emerald-400" />
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+              <UserCheck className="w-4 h-4" />
+            </span>
           )}
           {deactivating ? 'Vô hiệu hóa tài khoản' : 'Kích hoạt tài khoản'}
         </h3>
-        <p className="text-xs text-slate-300">
+        <p className="text-xs text-[#5A6578] leading-relaxed">
           {deactivating
             ? `${user.fullName} (${user.username}) sẽ không thể đăng nhập cho đến khi được kích hoạt lại.`
             : `${user.fullName} (${user.username}) sẽ có thể đăng nhập trở lại.`}
         </p>
         {error && (
-          <p role="alert" className="text-xs text-rose-400">
+          <p role="alert" className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg p-2.5 font-medium">
             {error}
           </p>
         )}
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 pt-2 border-t border-[#E5E0D7]">
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 rounded-xl text-xs text-slate-300 border border-slate-700 hover:bg-slate-800/60"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-[#102A43] border border-[#E5E0D7] bg-white hover:bg-[#F7F4ED] transition cursor-pointer"
           >
             Hủy
           </button>
@@ -72,7 +76,11 @@ export function UserStatusConfirmModal({ user, onClose, onConfirm }: UserStatusC
             type="button"
             onClick={handleConfirm}
             disabled={busy}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-cyan-600 to-blue-600 disabled:opacity-60"
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white shadow-xs transition disabled:opacity-60 cursor-pointer ${
+              deactivating
+                ? 'bg-amber-600 hover:bg-amber-700'
+                : 'bg-emerald-600 hover:bg-emerald-700'
+            }`}
           >
             {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             {deactivating ? 'Vô hiệu hóa' : 'Kích hoạt'}
