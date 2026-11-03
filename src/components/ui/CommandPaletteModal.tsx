@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { authService } from '../../services/authService';
+import { canAccessPath } from '../../services/accessControl';
 import {
   Search,
   Compass,
@@ -143,16 +145,18 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
 
   useFocusTrap(isOpen, modalRef, onClose);
 
+  const role = authService.getCurrentUser()?.role;
   const filteredItems = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return ADMIN_COMMAND_ITEMS;
-    return ADMIN_COMMAND_ITEMS.filter(
+    const permitted = ADMIN_COMMAND_ITEMS.filter(item => canAccessPath(role, item.to));
+    if (!q) return permitted;
+    return permitted.filter(
       (item) =>
         item.label.toLowerCase().includes(q) ||
         item.subtitle.toLowerCase().includes(q) ||
         item.category.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [query, role]);
 
   useEffect(() => {
     setActiveIndex(0);

@@ -132,7 +132,7 @@ describe('App Routing Integration Tests', () => {
     });
   });
 
-  it('renders NotFoundPage when navigating to an unknown route', async () => {
+  it('denies an unclassified protected route', async () => {
     render(
       <MemoryRouter initialEntries={['/invalid-random-route']}>
         <App />
@@ -140,9 +140,8 @@ describe('App Routing Integration Tests', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 2, name: '404' })).toBeInTheDocument();
-      expect(screen.getByText('Trang không tồn tại')).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /Về Trang Chủ/i })).toHaveAttribute('href', '/');
+      expect(screen.getByRole('heading', { name: 'Bạn không có quyền truy cập' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Về trang làm việc' })).toHaveAttribute('href', '/');
     });
   });
 
