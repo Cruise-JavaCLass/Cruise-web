@@ -1,5 +1,35 @@
 import { apiClient } from './api';
 
+export interface TourProvider {
+  id: string;
+  code: string;
+  name: string;
+  taxCode: string;
+  licenseNumber: string;
+  contactPerson: string;
+  email: string;
+  phone: string;
+  emergencyHotline: string;
+  portId: string;
+  status: 'ACTIVE' | 'SUSPENDED' | 'TERMINATED';
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+}
+
+interface PageResponse<T> {
+  content: T[];
+  totalElements?: number;
+  totalPages?: number;
+  number?: number;
+  size?: number;
+  last?: boolean;
+}
+
+const TOUR_PROVIDERS_ENDPOINT = '/v1/tour-providers';
+
 export type TourStatus = 'DRAFT' | 'PUBLISHED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
 export interface CruiseTour {
@@ -261,4 +291,69 @@ export async function updateTourStatus(
 
 export async function deleteTour(id: number): Promise<void> {
   await apiClient.delete(`/itinerary/tours/${id}`);
+}
+
+/**
+ * Kiểm tra một phần tử nhà cung cấp có phải đối tượng hợp lệ không rỗng.
+ */
+function isValidProviderRow(item: unknown): item is TourProvider {
+  return typeof item === 'object' && item !== null;
+}
+
+/**
+ * Trích xuất danh sách nhà cung cấp và tổng số trang từ phản hồi API phân trang hoặc mảng thô.
+ * @throws {Error} Nếu định dạng dữ liệu trả về từ backend không hợp lệ.
+ */
+function extractProviderPage(rawData: unknown): { items: TourProvider[]; totalPages: number } {
+  if (Array.isArray(rawData)) {
+    return { items: rawData.filter(isValidProviderRow), totalPages: 1 };
+  }
+  if (rawData && Array.isArray((rawData as PageResponse<TourProvider>).content)) {
+    const pageData = rawData as PageResponse<TourProvider>;
+    return {
+      items: pageData.content.filter(isValidProviderRow),
+      totalPages: pageData.totalPages ?? 1,
+    };
+  }
+  throw new Error('Backend trả về danh sách nhà cung cấp không hợp lệ.');
+}
+
+export async function getTourProviders(): Promise<TourProvider[]> {
+  const pageSize = 100;
+  const res = await apiClient.get<ApiResponse<TourProvider[] | PageResponse<TourProvider>>>(
+    TOUR_PROVIDERS_ENDPOINT,
+    { params: { page: 0, size: pageSize } }
+  );
+
+  const firstPage = extractProviderPage(res.data?.data ?? res.data);
+  const allProviders = [...firstPage.items];
+
+  for (let page = 1; page < firstPage.totalPages; page++) {
+    const nextRes = await apiClient.get<ApiResponse<TourProvider[] | PageResponse<TourProvider>>>(
+      TOUR_PROVIDERS_ENDPOINT,
+      { params: { page, size: pageSize } }
+    );
+    const nextPage = extractProviderPage(nextRes.data?.data ?? nextRes.data);
+    allProviders.push(...nextPage.items);
+  }
+
+  return allProviders;
+}
+
+export async function createTourProvider<TProvider extends object>(
+  provider: TProvider
+): Promise<TourProvider> {
+  const res = await apiClient.post<ApiResponse<TourProvider>>(TOUR_PROVIDERS_ENDPOINT, provider);
+  return res.data.data;
+}
+
+export async function updateTourProvider<TProvider extends object>(
+  id: string,
+  provider: TProvider
+): Promise<TourProvider> {
+  const res = await apiClient.put<ApiResponse<TourProvider>>(
+    `${TOUR_PROVIDERS_ENDPOINT}/${encodeURIComponent(id)}`,
+    provider
+  );
+  return res.data.data;
 }
