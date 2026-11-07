@@ -14,6 +14,7 @@ vi.mock('../services/userService', async (importOriginal) => {
     createUser: vi.fn(),
     updateUser: vi.fn(),
     setUserActive: vi.fn(),
+    isUsingDemoData: vi.fn(),
   };
 });
 
@@ -90,6 +91,51 @@ describe('UsersPage component tests', () => {
 
     await waitFor(() => expect(userService.setUserActive).toHaveBeenCalledWith(1, false));
     expect(await screen.findByRole('status')).toHaveTextContent(/Đã vô hiệu hóa tài khoản an.nguyen/);
+  });
+});
+
+describe('UsersPage KPI cards and demo banner', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it('computes the four KPI cards from crew accounts only', async () => {
+    vi.mocked(userService.getUsers).mockResolvedValue([
+      ...users,
+      { id: 3, username: 'guest', fullName: 'Khách Hàng', email: 'guest@cruise.vn', role: 'PASSENGER', active: true },
+    ]);
+    renderPage();
+    await screen.findByText('An Nguyễn');
+
+    // users: SYSTEM_ADMIN (active), POS_STAFF (inactive); hành khách không được tính
+    expect(screen.getByTestId('kpi-total')).toHaveTextContent('2');
+    expect(screen.getByTestId('kpi-on-duty')).toHaveTextContent('1');
+    expect(screen.getByTestId('kpi-senior')).toHaveTextContent('1');
+    expect(screen.getByTestId('kpi-locked')).toHaveTextContent('1');
+  });
+
+  it('shows the maritime rank and avatar initials for each user', async () => {
+    vi.mocked(userService.getUsers).mockResolvedValue(users);
+    renderPage();
+    await screen.findByText('An Nguyễn');
+
+    expect(screen.getByText('Chief Systems Officer')).toBeInTheDocument();
+    expect(screen.getByText('AN')).toBeInTheDocument();
+  });
+
+  it('shows the demo-data banner only when the service fell back to demo data', async () => {
+    vi.mocked(userService.getUsers).mockResolvedValue(users);
+    vi.mocked(userService.isUsingDemoData).mockReturnValue(true);
+    renderPage();
+    expect(await screen.findByRole('note')).toHaveTextContent(/dữ liệu mẫu/);
+  });
+
+  it('does not show the demo-data banner with real data', async () => {
+    vi.mocked(userService.getUsers).mockResolvedValue(users);
+    vi.mocked(userService.isUsingDemoData).mockReturnValue(false);
+    renderPage();
+    await screen.findByText('An Nguyễn');
+    expect(screen.queryByRole('note')).not.toBeInTheDocument();
   });
 });
 

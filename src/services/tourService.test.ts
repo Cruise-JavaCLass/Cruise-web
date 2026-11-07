@@ -1,10 +1,22 @@
-import { describe, it, expect } from 'vitest';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
+import { apiClient } from './api';
 import {
   validateTourForm,
   canTransitionTourStatus,
   formatTourPayload,
+  getTourProviders,
+  createTourProvider,
+  updateTourProvider,
 } from './tourService';
-import type { TourFormData } from './tourService';
+import type { TourFormData, TourProvider } from './tourService';
+
+vi.mock('./api', () => ({
+  apiClient: {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+  },
+}));
 
 describe('tourService - Tour Business Logic & Validation', () => {
   const validFormData: TourFormData = {
@@ -118,5 +130,128 @@ describe('tourService - Tour Business Logic & Validation', () => {
     expect(payload.code).toBe('TOUR-01');
     expect(payload.maxCapacity).toBe(500);
     expect(payload.basePrice).toBe(10000000);
+  });
+});
+
+describe('tourService - Tour provider API', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('gets tour providers from the backend when returned as array', async () => {
+    const providers = [{ providerId: 'provider-1', providerName: 'Provider One' }];
+    vi.mocked(apiClient.get).mockResolvedValue({ data: { success: true, data: providers } });
+
+    await expect(getTourProviders()).resolves.toEqual(providers);
+    expect(apiClient.get).toHaveBeenCalledWith('/v1/tour-providers', { params: { page: 0, size: 100 } });
+  });
+
+  it('fetches and merges all pages when tour providers endpoint is paginated', async () => {
+    const page0Providers = [{ providerId: 'provider-1', providerName: 'Provider One' }];
+    const page1Providers = [{ providerId: 'provider-2', providerName: 'Provider Two' }];
+
+    vi.mocked(apiClient.get)
+      .mockResolvedValueOnce({
+        data: {
+          success: true,
+          data: {
+            content: page0Providers,
+            totalPages: 2,
+            totalElements: 2,
+            number: 0,
+            size: 100,
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          success: true,
+          data: {
+            content: page1Providers,
+            totalPages: 2,
+            totalElements: 2,
+            number: 1,
+            size: 100,
+          },
+        },
+      });
+
+    await expect(getTourProviders()).resolves.toEqual([...page0Providers, ...page1Providers]);
+    expect(apiClient.get).toHaveBeenNthCalledWith(1, '/v1/tour-providers', { params: { page: 0, size: 100 } });
+    expect(apiClient.get).toHaveBeenNthCalledWith(2, '/v1/tour-providers', { params: { page: 1, size: 100 } });
+  });
+
+  it('throws an error when tour providers payload is invalid', async () => {
+    vi.mocked(apiClient.get).mockResolvedValue({ data: { success: true, data: null } });
+
+    await expect(getTourProviders()).rejects.toThrow('Backend trả về danh sách nhà cung cấp không hợp lệ.');
+  });
+
+  it('filters out nullish and invalid provider items from direct array payloads', async () => {
+    const validProvider = { providerId: 'provider-1', providerName: 'Provider One' };
+    vi.mocked(apiClient.get).mockResolvedValue({
+      data: {
+        success: true,
+        data: [validProvider, null, undefined, 'invalid'] as unknown as TourProvider[],
+      },
+    });
+
+    await expect(getTourProviders()).resolves.toEqual([validProvider]);
+  });
+
+  it('throws an error when subsequent tour providers page payload is invalid', async () => {
+    const page0Providers = [{ providerId: 'provider-1', providerName: 'Provider One' }];
+    vi.mocked(apiClient.get)
+      .mockResolvedValueOnce({
+        data: {
+          success: true,
+          data: {
+            content: page0Providers,
+            totalPages: 2,
+            totalElements: 2,
+            number: 0,
+            size: 100,
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          success: true,
+          data: null,
+        },
+      });
+
+    await expect(getTourProviders()).rejects.toThrow('Backend trả về danh sách nhà cung cấp không hợp lệ.');
+  });
+
+  it('filters out nullish items from paginated content', async () => {
+    const validProvider = { providerId: 'provider-1', providerName: 'Provider One' };
+    vi.mocked(apiClient.get).mockResolvedValue({
+      data: {
+        success: true,
+        data: {
+          content: [validProvider, null, undefined] as unknown as TourProvider[],
+          totalPages: 1,
+        },
+      },
+    });
+
+    await expect(getTourProviders()).resolves.toEqual([validProvider]);
+  });
+
+  it('creates a tour provider through the backend', async () => {
+    const provider = { providerId: 'provider-1', providerName: 'Provider One' };
+    vi.mocked(apiClient.post).mockResolvedValue({ data: { success: true, data: provider } });
+
+    await expect(createTourProvider(provider)).resolves.toEqual(provider);
+    expect(apiClient.post).toHaveBeenCalledWith('/v1/tour-providers', provider);
+  });
+
+  it('updates a tour provider through the backend', async () => {
+    const provider = { providerId: 'provider/1', providerName: 'Updated Provider' };
+    vi.mocked(apiClient.put).mockResolvedValue({ data: { success: true, data: provider } });
+
+    await expect(updateTourProvider(provider.providerId, provider)).resolves.toEqual(provider);
+    expect(apiClient.put).toHaveBeenCalledWith('/v1/tour-providers/provider%2F1', provider);
   });
 });

@@ -95,6 +95,18 @@ describe('App Routing Integration Tests', () => {
     });
   });
 
+  it('renders ProviderDirectoryPage when navigating to "/excursions/providers"', async () => {
+    render(
+      <MemoryRouter initialEntries={['/excursions/providers']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1, name: /Quản Lý Nhà Cung Cấp Tour/i })).toBeInTheDocument();
+    });
+  });
+
   it('renders PosPage when navigating to "/pos"', async () => {
     render(
       <MemoryRouter initialEntries={['/pos']}>
