@@ -22,6 +22,7 @@ describe('ActivityDetailPage Component Tests (KAN-141)', () => {
       <MemoryRouter initialEntries={['/activities/1']}>
         <Routes>
           <Route path="/activities/:id" element={<ActivityDetailPage />} />
+          <Route path="/activities" element={<div>Activities List</div>} />
         </Routes>
       </MemoryRouter>
     );
