@@ -21,6 +21,7 @@ import {
 import { checkBackendHealth, getBackendInfo } from '../services/api';
 import type { SystemHealth, SystemInfo } from '../services/api';
 import { authService } from '../services/authService';
+import { canAccessPath } from '../services/accessControl';
 import { CommandPaletteModal } from '../components/ui/CommandPaletteModal';
 import { SpotlightCard } from '../components/ui/SpotlightCard';
 
@@ -32,10 +33,10 @@ export function MainLayout() {
   const [isCommandOpen, setIsCommandOpen] = useState<boolean>(false);
 
   const currentUser = authService.getCurrentUser() || {
-    id: 1,
-    username: 'admin',
-    fullName: 'Huy Trần Gia',
-    role: 'SYSTEM_ADMIN' as const,
+    id: '',
+    username: '',
+    fullName: 'Chưa đăng nhập',
+    role: 'PASSENGER' as const,
   };
 
   const fetchStatus = async () => {
@@ -73,7 +74,6 @@ export function MainLayout() {
     label: string;
     icon: typeof Compass;
     code: string;
-    roles?: string[];
   }[] = [
     { to: '/', label: 'Dashboard Tổng quan', icon: Compass, code: '01' },
     { to: '/ships', label: 'Quản lý Đội tàu', icon: Ship, code: '02' },
@@ -88,14 +88,11 @@ export function MainLayout() {
     { to: '/embarkation', label: 'Cảng Đón Khách (Terminal)', icon: Ship, code: '11' },
     { to: '/billing/settlement', label: 'Tất toán & Hoá đơn', icon: Receipt, code: '12' },
     { to: '/reports/operational', label: 'Báo Cáo Doanh Thu (Audit)', icon: Receipt, code: '13' },
-    { to: '/users', label: 'Quản lý Người dùng', icon: Users, code: '14', roles: ['SYSTEM_ADMIN'] },
+    { to: '/users', label: 'Quản lý Người dùng', icon: Users, code: '14' },
   ];
 
-  // Mục có khai báo `roles` chỉ hiện cho tài khoản thuộc các vai trò đó
   const sessionRole = authService.getCurrentUser()?.role;
-  const navItems = allNavItems.filter(
-    (item) => !item.roles || (sessionRole !== undefined && item.roles.includes(sessionRole))
-  );
+  const navItems = allNavItems.filter(item => canAccessPath(sessionRole, item.to));
 
   return (
     <div
