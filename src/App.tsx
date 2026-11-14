@@ -20,7 +20,7 @@ import { ShipDetailPage } from './pages/ShipDetailPage';
 import { UsersPage } from './pages/UsersPage';
 import { UserDetailPage } from './pages/UserDetailPage';
 import { PassengerHomePage } from './pages/PassengerHomePage';
-import { ExcursionAttendancePage } from './pages/ExcursionAttendancePage';
+import { ExcursionAttendanceEntry, ExcursionHandheldPage } from './pages/ExcursionHandheldPage';
 import { ExcursionAnalyticsDashboard } from './pages/ExcursionAnalyticsDashboard';
 import { PassengerExcursionPassPage } from './pages/PassengerExcursionPassPage';
 import { ExcursionDispatcherDashboard } from './pages/ExcursionDispatcherDashboard';
@@ -68,6 +68,7 @@ export function App() {
 
       {/* Protected Maritime Operations & Administrative Fleet Console */}
       <Route element={<AdminAuthGuard />}>
+        <Route path="excursion-attendance/mobile" element={<ExcursionHandheldPage />} />
         <Route path="/" element={<MainLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="ships" element={<ShipsPage />} />
@@ -85,7 +86,7 @@ export function App() {
           <Route path="excursion-dispatcher" element={<ExcursionDispatcherDashboard />} />
           <Route path="excursions/:id/roster" element={<ExcursionRosterPage />} />
           <Route path="excursions/roster" element={<ExcursionRosterPage />} />
-          <Route path="excursion-attendance" element={<ExcursionAttendancePage />} />
+          <Route path="excursion-attendance" element={<ExcursionAttendanceEntry />} />
           <Route path="excursion-analytics" element={<ExcursionAnalyticsDashboard />} />
           <Route path="activities" element={<ActivitiesPage />} />
           <Route path="activities/:id" element={<ActivityDetailPage />} />

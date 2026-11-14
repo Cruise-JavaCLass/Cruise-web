@@ -1,12 +1,6 @@
-import React, { useState } from 'react';
-import {
-  QrCode,
-  X,
-  CheckCircle2,
-  AlertCircle,
-  Keyboard,
-  Radio,
-} from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Camera, CheckCircle2, Radio, X } from 'lucide-react';
+import { startQrCamera, startNfcReader, supportsNfc, scannerError } from '../../services/excursionScanner';
 import type { ExcursionCheckInPayload, ExcursionCheckInResult } from '../../services/excursionService';
 
 interface QrScannerModalProps {
@@ -16,158 +10,134 @@ interface QrScannerModalProps {
   targetStatus: 'CHECKED_IN' | 'ON_TOUR' | 'RETURNED_SAFE';
 }
 
-export const QrScannerModal: React.FC<QrScannerModalProps> = ({
-  isOpen,
-  onClose,
-  onScanSubmit,
-  targetStatus,
-}) => {
+const statusLabels: Record<string, string> = { REGISTERED: 'Chưa điểm danh', CHECKED_IN: 'Đã tập trung', ON_TOUR: 'Đang đi tour', RETURNED_SAFE: 'Đã về tàu an toàn' };
+
+export function QrScannerModal(props: QrScannerModalProps) {
+  return props.isOpen ? <ScannerSession {...props} key={props.targetStatus} /> : null;
+}
+
+function ScannerSession({ onClose, onScanSubmit, targetStatus }: QrScannerModalProps) {
   const [manualCode, setManualCode] = useState('');
   const [codeType, setCodeType] = useState<'TICKET' | 'RFID' | 'CABIN'>('TICKET');
-  const [isScanning, setIsScanning] = useState(false);
-  const [lastResult, setLastResult] = useState<ExcursionCheckInResult | null>(null);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [mode, setMode] = useState<'manual' | 'camera' | 'nfc'>('manual');
+  const [active, setActive] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<ExcursionCheckInResult | null>(null);
+  const [error, setError] = useState('');
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const locked = useRef(false);
+  const alive = useRef(true);
+  const resumeRef = useRef<HTMLButtonElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
 
-  if (!isOpen) return null;
+  const stop = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setActive(false);
+  };
+  useEffect(() => {
+    alive.current = true;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    titleRef.current?.focus();
+    const onHidden = () => { if (document.hidden) stop(); };
+    document.addEventListener('visibilitychange', onHidden);
+    window.addEventListener('offline', stop);
+    return () => {
+      alive.current = false;
+      abortRef.current?.abort();
+      document.removeEventListener('visibilitychange', onHidden);
+      window.removeEventListener('offline', stop);
+      document.body.style.overflow = previousOverflow;
+      previousFocus?.focus();
+    };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!manualCode.trim()) return;
-
-    setErrorMsg('');
-    setLastResult(null);
-    setIsScanning(true);
-
+  const submit = async (code: string, type: typeof codeType) => {
+    if (locked.current || !code.trim() || !alive.current) return;
+    locked.current = true;
+    stop(); // Stop before sending: repeated frames cannot submit the same passenger.
+    setBusy(true); setError(''); setResult(null);
     try {
-      const payload: ExcursionCheckInPayload = {
-        targetStatus,
-      };
-
-      if (codeType === 'TICKET') payload.ticketCode = manualCode.trim();
-      else if (codeType === 'RFID') payload.rfidTag = manualCode.trim();
-      else if (codeType === 'CABIN') payload.cabinNumber = manualCode.trim();
-
-      const result = await onScanSubmit(payload);
-      if (result) {
-        setLastResult(result);
-        setManualCode('');
-      }
-    } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : 'Điểm danh không thành công');
+      const field = type === 'TICKET' ? 'ticketCode' : type === 'RFID' ? 'rfidTag' : 'cabinNumber';
+      const response = await onScanSubmit({ targetStatus, [field]: code.trim() });
+      if (!alive.current) return;
+      if (!response) throw new Error('Chưa nhận được xác nhận điểm danh từ máy chủ.');
+      setResult(response); setManualCode('');
+    } catch (err) {
+      if (alive.current) setError(scannerError(err));
     } finally {
-      setIsScanning(false);
+      locked.current = false;
+      if (alive.current) { setBusy(false); resumeRef.current?.focus(); }
+    }
+  };
+
+  const start = async (nextMode: 'camera' | 'nfc') => {
+    if (locked.current) return;
+    stop(); setMode(nextMode); setError(''); setResult(null);
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setActive(true);
+    try {
+      if (nextMode === 'camera' && videoRef.current) {
+        await startQrCamera(videoRef.current, (code) => { if (!controller.signal.aborted) void submit(code, 'TICKET'); }, controller.signal);
+      } else {
+        await startNfcReader((code) => { if (!controller.signal.aborted) void submit(code, 'RFID'); }, (message) => {
+          if (!controller.signal.aborted) setError(message);
+        }, controller.signal);
+      }
+    } catch (err) {
+      if (!controller.signal.aborted && alive.current) { stop(); setError(scannerError(err)); }
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B1F33]/60 backdrop-blur-xs p-4" role="dialog" aria-modal="true">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-[#E5E0D7] animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="bg-[#F7F4ED] border-b border-[#E5E0D7] px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#397C80]/10 border border-[#397C80]/20 flex items-center justify-center text-[#397C80]">
-              <QrCode className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-[#102A43]">Quét Vé / Thẻ Điểm Danh</h2>
-              <p className="text-xs text-[#252B32]/70">
-                Chế độ: <strong className="text-[#102A43]">{targetStatus === 'RETURNED_SAFE' ? 'Về Tàu An Toàn' : targetStatus === 'CHECKED_IN' ? 'Tập Trung Xuất Bến' : 'Khởi Hành Tour'}</strong>
-              </p>
-            </div>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#0B1F33]/70 sm:p-4"
+      role="dialog" aria-modal="true" aria-labelledby="excursion-scanner-title"
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') onClose();
+        if (event.key === 'Tab') {
+          const items = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled)'));
+          const first = items[0]; const last = items[items.length - 1];
+          if (event.shiftKey && (document.activeElement === first || document.activeElement === titleRef.current)) {
+            event.preventDefault(); last?.focus();
+          } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+        }
+      }}>
+      <section className="max-h-[100dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-white text-[#102A43] shadow-2xl pb-[env(safe-area-inset-bottom)]">
+        <header className="flex items-center justify-between border-b border-[#E5E0D7] p-4">
+          <div><h2 ref={titleRef} tabIndex={-1} id="excursion-scanner-title" className="font-bold text-lg">Quét Vé / Thẻ Điểm Danh</h2>
+            <p className="text-sm text-[#526777]">{targetStatus === 'RETURNED_SAFE' ? 'Về Tàu An Toàn' : targetStatus === 'ON_TOUR' ? 'Khởi Hành Tour' : 'Tập Trung Xuất Bến'}</p></div>
+          <button onClick={onClose} aria-label="Đóng bộ quét" className="min-h-12 min-w-12 rounded-xl border border-[#E5E0D7] flex items-center justify-center"><X /></button>
+        </header>
+        <div className="p-4 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <button ref={resumeRef} disabled={busy} onClick={() => void start('camera')} className="min-h-14 rounded-xl bg-[#102A43] text-white flex items-center justify-center gap-2 disabled:opacity-50"><Camera size={20} />{result ? 'Quét khách tiếp' : 'Mở camera QR'}</button>
+            <button disabled={busy || !supportsNfc()} onClick={() => void start('nfc')} className="min-h-14 rounded-xl border border-[#102A43] flex items-center justify-center gap-2 disabled:opacity-50"><Radio size={20} />Chạm thẻ NFC</button>
           </div>
-          <button onClick={onClose} className="p-1.5 text-[#252B32]/60 hover:text-[#102A43] rounded-lg hover:bg-slate-100 transition cursor-pointer" title="Đóng">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Simulated Camera Viewfinder */}
-        <div className="p-6 text-center bg-[#0B1F33] relative flex flex-col items-center justify-center min-h-[220px]">
-          <div className="w-48 h-48 border-2 border-dashed border-[#C5A572] rounded-2xl relative flex items-center justify-center bg-[#C5A572]/10">
-            <QrCode className="w-24 h-24 text-[#C5A572]/60 animate-pulse" />
-            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#C5A572] -translate-x-1 -translate-y-1"></div>
-            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#C5A572] translate-x-1 -translate-y-1"></div>
-            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#C5A572] -translate-x-1 translate-y-1"></div>
-            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#C5A572] translate-x-1 translate-y-1"></div>
+          <p className="text-xs text-[#526777]">NFC cần Android có Web NFC và thẻ NDEF tương thích. Thiết bị khác: dùng QR, đầu đọc ngoài hoặc nhập mã.</p>
+          <div className={mode === 'camera' && active ? 'block' : 'hidden'}>
+            <video ref={videoRef} muted playsInline autoPlay aria-label="Camera quét QR" className="w-full aspect-[4/3] rounded-xl bg-[#0B1F33] object-cover" />
           </div>
-          <p className="text-xs text-[#F7F4ED]/80 mt-4">
-            Đang tìm mã QR vé tour hoặc thẻ RFID qua camera...
-          </p>
-        </div>
-
-        {/* Input fallback */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="flex rounded-xl bg-[#F7F4ED] p-1 border border-[#E5E0D7]">
-            <button
-              type="button"
-              onClick={() => setCodeType('TICKET')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer ${codeType === 'TICKET' ? 'bg-white shadow-xs text-[#102A43]' : 'text-[#252B32]/60 hover:text-[#102A43]'}`}
-            >
-              <QrCode className="w-3.5 h-3.5" /> Vé Tour (QR)
-            </button>
-            <button
-              type="button"
-              onClick={() => setCodeType('RFID')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer ${codeType === 'RFID' ? 'bg-white shadow-xs text-[#102A43]' : 'text-[#252B32]/60 hover:text-[#102A43]'}`}
-            >
-              <Radio className="w-3.5 h-3.5" /> Thẻ RFID
-            </button>
-            <button
-              type="button"
-              onClick={() => setCodeType('CABIN')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer ${codeType === 'CABIN' ? 'bg-white shadow-xs text-[#102A43]' : 'text-[#252B32]/60 hover:text-[#102A43]'}`}
-            >
-              <Keyboard className="w-3.5 h-3.5" /> Số Cabin
-            </button>
-          </div>
-
-          <div className="relative">
-            <input
-              type="text"
+          {active && <div className="flex items-center justify-between gap-2 text-sm" role="status"><span>{mode === 'nfc' ? 'Đưa thẻ đến gần đầu đọc NFC…' : 'Đưa mã QR vào khung camera…'}</span><button onClick={stop} className="min-h-12 px-4 border rounded-xl">Dừng quét</button></div>}
+          {busy && <p role="status">Đang xác thực với máy chủ…</p>}
+          {error && <p role="alert" className="rounded-xl bg-rose-50 border border-rose-200 p-4 text-rose-800 text-sm">{error}</p>}
+          {result && <div role="status" className="rounded-xl bg-emerald-50 border border-emerald-200 p-4 text-emerald-800"><CheckCircle2 className="mb-2" /><strong>{result.passengerName} (Cabin {result.cabinNumber})</strong><p>{result.message}</p><p className="text-sm">{statusLabels[result.currentStatus] ?? 'Máy chủ đã xác nhận'}</p></div>}
+          <form onSubmit={(event) => { event.preventDefault(); void submit(manualCode, codeType); }} className="space-y-3 border-t border-[#E5E0D7] pt-4">
+            <label className="block text-sm font-semibold">Nhập mã / đầu đọc ngoài
+              <select aria-label="Loại mã điểm danh" value={codeType} disabled={busy} onChange={(event) => { stop(); setCodeType(event.target.value as typeof codeType); setManualCode(''); }} className="mt-2 min-h-12 w-full rounded-xl border border-[#E5E0D7] px-3 text-base">
+                <option value="TICKET">Vé Tour (QR)</option><option value="RFID">Thẻ RFID</option><option value="CABIN">Số Cabin</option>
+              </select>
+            </label>
+            <input aria-label="Mã điểm danh" value={manualCode} onChange={(event) => setManualCode(event.target.value)} disabled={busy} autoComplete="off" enterKeyHint="go"
               placeholder={codeType === 'TICKET' ? 'Nhập mã vé (VD: EXC-TKT-001)...' : codeType === 'RFID' ? 'Nhập mã thẻ RFID...' : 'Nhập số cabin (VD: 402)...'}
-              value={manualCode}
-              onChange={(e) => setManualCode(e.target.value)}
-              className="w-full px-4 py-2.5 text-xs bg-white border border-[#E5E0D7] rounded-xl text-[#102A43] placeholder-[#252B32]/40 focus:bg-white focus:outline-none focus:border-[#397C80] focus:ring-1 focus:ring-[#397C80]"
-              autoFocus
-            />
-          </div>
-
-          {errorMsg && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-xs text-rose-800 font-medium">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-              {errorMsg}
-            </div>
-          )}
-
-          {lastResult && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-800">
-              <div className="flex items-center gap-2 font-semibold">
-                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-                <span>{lastResult.passengerName} (Cabin {lastResult.cabinNumber})</span>
-              </div>
-              <span className="font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
-                {lastResult.currentStatus}
-              </span>
-            </div>
-          )}
-
-          <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-[#252B32] hover:bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl transition cursor-pointer"
-            >
-              Đóng
-            </button>
-            <button
-              type="submit"
-              disabled={isScanning || !manualCode.trim()}
-              className="px-5 py-2 text-xs font-semibold bg-[#102A43] hover:bg-[#0B1F33] disabled:opacity-50 text-white rounded-xl shadow-xs transition active:scale-95 cursor-pointer"
-            >
-              {isScanning ? 'Đang xác thực...' : 'Xác nhận Điểm Danh'}
-            </button>
-          </div>
-        </form>
-      </div>
+              className="min-h-14 w-full rounded-xl border border-[#E5E0D7] px-4 text-base" />
+            <button type="submit" disabled={busy || !manualCode.trim()} className="min-h-14 w-full rounded-xl bg-[#397C80] text-white font-semibold disabled:opacity-50">{busy ? 'Đang xác thực...' : 'Xác nhận Điểm Danh'}</button>
+          </form>
+        </div>
+      </section>
     </div>
   );
-};
+}
