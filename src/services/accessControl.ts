@@ -42,23 +42,23 @@ export function homeForRole(role: unknown): string {
 
 const routeRules: [RegExp, Permission][] = [
   [/^\/$/, 'OPERATIONS_MANAGE'],
-  [/^\/users(?:\/|$)/, 'USERS_MANAGE'],
-  [/^\/(?:ships|itinerary)(?:\/|$)/, 'ITINERARY_MANAGE'],
-  [/^\/admin\/cruise-area-policies(?:\/|$)/, 'ITINERARY_MANAGE'],
-  [/^\/voyage(?:\/|$)/, 'OPERATIONS_MANAGE'],
-  [/^\/(?:excursions|excursion-attendance|excursion-dispatcher|excursion-analytics)(?:\/|$)/, 'EXCURSIONS_MANAGE'],
-  [/^\/(?:activities|activity-attendance|activity-roster)(?:\/|$)/, 'ACTIVITIES_MANAGE'],
-  [/^\/pos(?:\/|$)/, 'POS_OPERATE'],
-  [/^\/passengers(?:\/|$)/, 'PASSENGERS_READ'],
-  [/^\/embarkation(?:\/|$)/, 'PASSENGERS_MANAGE'],
-  [/^\/(?:billing\/settlement|provider-settlement)(?:\/|$)/, 'FINANCE_MANAGE'],
-  [/^\/reports\/operational(?:\/|$)/, 'REPORTS_READ'],
+  [/^\/users(?:\/|$)/i, 'USERS_MANAGE'],
+  [/^\/(?:ships|itinerary)(?:\/|$)/i, 'ITINERARY_MANAGE'],
+  [/^\/admin\/cruise-area-policies(?:\/|$)/i, 'ITINERARY_MANAGE'],
+  [/^\/voyage(?:\/|$)/i, 'OPERATIONS_MANAGE'],
+  [/^\/(?:excursions|excursion-attendance|excursion-dispatcher|excursion-analytics)(?:\/|$)/i, 'EXCURSIONS_MANAGE'],
+  [/^\/(?:activities|activity-attendance|activity-roster)(?:\/|$)/i, 'ACTIVITIES_MANAGE'],
+  [/^\/pos(?:\/|$)/i, 'POS_OPERATE'],
+  [/^\/passengers(?:\/|$)/i, 'PASSENGERS_READ'],
+  [/^\/embarkation(?:\/|$)/i, 'PASSENGERS_MANAGE'],
+  [/^\/(?:billing\/settlement|provider-settlement)(?:\/|$)/i, 'FINANCE_MANAGE'],
+  [/^\/reports\/operational(?:\/|$)/i, 'REPORTS_READ'],
 ];
 
 /** UI convenience only: the backend verifies every request independently. */
 export function canAccessPath(role: unknown, path: string): boolean {
   if (!isKnownRole(role) || role === 'PASSENGER') return false;
-  if (path === '/forbidden') return true;
+  if (path.toLowerCase() === '/forbidden') return true;
   const permission = routeRules.find(([pattern]) => pattern.test(path))?.[1];
   return permission !== undefined && hasPermission(role, permission);
 }

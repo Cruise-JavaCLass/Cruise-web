@@ -26,7 +26,14 @@ apiClient.interceptors.response.use(response => response, error => {
   const status = error.response?.status;
   const url = error.config?.url || '';
   if ((status === 401 || status === 403) && !url.startsWith('/auth/login') && typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent(ACCESS_DENIED_EVENT, { detail: { status } }));
+    const currentToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    const authHeader = error.config?.headers?.Authorization || error.config?.headers?.get?.('Authorization');
+    const requestToken = typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
+      ? authHeader.slice(7)
+      : null;
+    if (!requestToken || !currentToken || requestToken === currentToken) {
+      window.dispatchEvent(new CustomEvent(ACCESS_DENIED_EVENT, { detail: { status } }));
+    }
   }
   return Promise.reject(error);
 });

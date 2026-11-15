@@ -103,9 +103,10 @@ export const authService = {
       // Backend offline or unreachable: fall back to authorized demo crew verification
     }
 
-    // 2. Check demo accounts fallback in development / test environments
+    // 2. Check demo accounts fallback in development / test environments (disabled in production)
     const isDevOrTest =
       typeof import.meta !== 'undefined' &&
+      !import.meta.env?.PROD &&
       (import.meta.env?.MODE === 'test' ||
         (import.meta.env?.DEV && import.meta.env?.VITE_ENABLE_DEMO_ACCOUNTS === 'true'));
 

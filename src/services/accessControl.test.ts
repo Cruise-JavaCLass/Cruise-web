@@ -7,7 +7,7 @@ describe('KAN-70 permission rules', () => {
     ['ITINERARY_COORDINATOR', '/ships/1', true], ['POS_STAFF', '/ships/1', false],
     ['ACTIVITY_MANAGER', '/activities/1/attendance', true], ['ACTIVITY_MANAGER', '/excursions/1', false],
     ['SHORE_EXCURSION_MANAGER', '/excursions/1/roster', true], ['SHORE_EXCURSION_MANAGER', '/activities', false],
-    ['POS_STAFF', '/pos', true], ['POS_STAFF', '/billing/settlement', false],
+    ['POS_STAFF', '/pos', true], ['POS_STAFF', '/POS', true], ['POS_STAFF', '/billing/settlement', false],
     ['FINANCE_FRONT_DESK', '/billing/settlement', true], ['FINANCE_FRONT_DESK', '/reports/operational', true],
     ['FINANCE_FRONT_DESK', '/pos', false], ['PASSENGER', '/passengers', false],
     ['SYSTEM_ADMIN', '/users-evil', false], ['SYSTEM_ADMIN', '/unknown-feature', false],
