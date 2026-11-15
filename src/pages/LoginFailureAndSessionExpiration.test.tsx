@@ -8,9 +8,13 @@ import { AdminAuthGuard } from '../components/auth/AdminAuthGuard';
 import { authService } from '../services/authService';
 import { apiClient } from '../services/api';
 
-vi.mock('../services/api', () => ({
-  apiClient: { post: vi.fn(), get: vi.fn() },
-}));
+vi.mock('../services/api', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../services/api')>();
+  return {
+    ...actual,
+    apiClient: { post: vi.fn(), get: vi.fn() },
+  };
+});
 
 const postMock = vi.mocked(apiClient.post);
 
