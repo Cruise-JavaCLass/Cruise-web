@@ -12,6 +12,20 @@ export default defineConfig({
   server: {
     port: 3000,
     open: false,
+    proxy: {
+      '/api/auth': 'http://localhost:8081',
+      '/api/itinerary': 'http://localhost:8082',
+      '/api/admin/cruise-area-policy': 'http://localhost:8082',
+      '^/api/passengers/[^/]+/folio': 'http://localhost:8084',
+      '/api/pos': 'http://localhost:8084',
+      '/api/v1/pos': 'http://localhost:8084',
+      '/api/admin/pos': 'http://localhost:8084',
+      '/api/admin/voyage': 'http://localhost:8084',
+      '/api/admin/audit': 'http://localhost:8084',
+      '/api/service-recovery': 'http://localhost:8084',
+      '^/api/(activities|excursions|operations|passengers|passenger-portal|feedback|v1/tour-providers|v1/shore-excursions)(/|$)': 'http://localhost:8083',
+      '/api': 'http://localhost:8080',
+    },
   },
   test: {
     globals: true,

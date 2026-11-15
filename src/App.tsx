@@ -3,6 +3,8 @@ import { MainLayout } from './layouts/MainLayout';
 import { PassengerLayout } from './layouts/PassengerLayout';
 import { AdminAuthGuard } from './components/auth/AdminAuthGuard';
 import { RoleGuard } from './components/auth/RoleGuard';
+import { RouteAccessGuard } from './components/auth/RouteAccessGuard';
+import { ForbiddenPage } from './pages/ForbiddenPage';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ActivitiesPage } from './pages/ActivitiesPage';
@@ -68,7 +70,9 @@ export function App() {
 
       {/* Protected Maritime Operations & Administrative Fleet Console */}
       <Route element={<AdminAuthGuard />}>
+        <Route element={<RouteAccessGuard />}>
         <Route path="/" element={<MainLayout />}>
+          <Route path="forbidden" element={<ForbiddenPage />} />
           <Route index element={<DashboardPage />} />
           <Route path="ships" element={<ShipsPage />} />
           <Route path="ships/:id" element={<ShipDetailPage />} />
@@ -100,6 +104,7 @@ export function App() {
           <Route path="reports/operational" element={<OperationalReportsPage />} />
           <Route path="provider-settlement" element={<ProviderSettlementDashboard />} />
           <Route path="*" element={<NotFoundPage />} />
+        </Route>
         </Route>
       </Route>
     </Routes>
