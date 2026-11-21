@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Users,
   Bus,
@@ -142,6 +143,7 @@ export const ExcursionAttendancePage: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap gap-2 items-center">
+          <Link to={`/excursion-attendance/mobile?excursionId=${selectedExcursionId}`} className="min-h-12 inline-flex items-center rounded-lg border border-[#E5E0D7] px-4 text-sm font-semibold text-[#102A43]">Chế độ cầm tay</Link>
           <select
             value={selectedExcursionId}
             onChange={(e) => {

@@ -436,7 +436,7 @@ export async function fetchExcursions(params?: {
   status?: ExcursionStatus;
   category?: string;
   keyword?: string;
-}): Promise<ShoreExcursion[]> {
+}, options: { allowMockFallback?: boolean } = {}): Promise<ShoreExcursion[]> {
   try {
     const res = await apiClient.get<{ success: boolean; data: ShoreExcursion[] | { content: ShoreExcursion[] } }>(
       '/excursions',
@@ -444,11 +444,15 @@ export async function fetchExcursions(params?: {
     );
     if (res.data?.data) {
       const list = Array.isArray(res.data.data) ? res.data.data : res.data.data.content;
+      if (Array.isArray(list) && options.allowMockFallback === false) return list;
       if (list && list.length > 0) return list;
     }
-  } catch {
+  } catch (error) {
+    if (options.allowMockFallback === false) throw error;
     // fallback to local mock
   }
+
+  if (options.allowMockFallback === false) throw new Error('Phản hồi danh sách tour không hợp lệ từ máy chủ');
 
   let filtered = [...localExcursions];
   if (params?.tourId) {
