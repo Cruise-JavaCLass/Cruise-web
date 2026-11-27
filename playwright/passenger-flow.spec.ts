@@ -49,12 +49,18 @@ test.describe('Passenger Portal — Toàn bộ luồng, mọi nút & mọi ô nh
       await page.getByText('Tra cứu thẻ lên tàu của hành khách hoặc phòng khác').click();
       await page.locator('#lookup-input').fill('718');
       await page.getByRole('button', { name: 'Tra Cứu & Tải Thẻ Lên Tàu' }).click();
-      await expect(page.getByText('Trần Thị Thu Thảo').first()).toBeVisible();
+      const boardingPassCard = page
+        .locator('div.max-w-md')
+        .filter({ has: page.getByRole('heading', { name: 'CRUISE EMBARKATION' }) })
+        .first();
+      await expect(boardingPassCard).toContainText('Trần Thị Thu Thảo');
+      await expect(boardingPassCard).toContainText('718');
 
       // Quay lại bấm gợi ý nhanh Phòng 402
       await page.getByText('Tra cứu thẻ lên tàu của hành khách hoặc phòng khác').click();
       await page.getByRole('button', { name: /Phòng 402/ }).click();
-      await expect(page.getByText('Nguyễn Văn Minh').first()).toBeVisible();
+      await expect(boardingPassCard).toContainText('Nguyễn Văn Minh');
+      await expect(boardingPassCard).toContainText('402');
     });
 
     await test.step('4. Lịch Trình (/my-schedule): bấm đủ 6 tab ngày, 2 scope, drawer thông báo & làm mới', async () => {
@@ -129,12 +135,10 @@ test.describe('Passenger Portal — Toàn bộ luồng, mọi nút & mọi ô nh
       const detailBtn = page.getByRole('button', { name: /Xem chi tiết|Đặt chỗ|Khám phá|Đăng ký/i }).first();
       if (await detailBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
         await detailBtn.click();
-        const closeModal = page.locator('button[aria-label="Đóng"], button:has-text("Đóng")').first();
-        if (await closeModal.isVisible({ timeout: 1500 }).catch(() => false)) {
-          await closeModal.click();
-        } else {
-          await page.keyboard.press('Escape');
-        }
+        const detailDialog = page.getByRole('dialog');
+        await expect(detailDialog).toBeVisible();
+        await detailDialog.getByRole('button', { name: 'Đóng cửa sổ chi tiết' }).click();
+        await expect(detailDialog).toBeHidden();
       }
     });
 

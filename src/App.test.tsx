@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { App } from './App';
 import { authService } from './services/authService';
 
@@ -162,6 +162,8 @@ describe('App Routing Integration Tests', () => {
       // Passenger portal branding
       expect(screen.getByText('GRAND PEARL')).toBeInTheDocument();
       expect(screen.getByText('Guest Experience Portal')).toBeInTheDocument();
+      // PassengerHomePage content rendered inside PassengerAuthGuard
+      expect(screen.getByText(/Hải trình Di sản Vịnh Hạ Long - Đà Nẵng/i)).toBeInTheDocument();
       // Admin operations sidebar must NOT be present
       expect(screen.queryByText('CRUISE MANAGER')).not.toBeInTheDocument();
       expect(screen.queryByText('MARITIME COMPUTE')).not.toBeInTheDocument();
@@ -175,15 +177,23 @@ describe('App Routing Integration Tests', () => {
       JSON.stringify({ id: 42, fullName: 'Nguyễn Văn Minh', cabinNumber: '402' })
     );
 
+    function LocationProbe() {
+      const loc = useLocation();
+      return <span data-testid="app-location">{loc.pathname + loc.search}</span>;
+    }
+
     render(
       <MemoryRouter initialEntries={['/passenger?passengerId=42']}>
         <App />
+        <LocationProbe />
       </MemoryRouter>
     );
 
     await waitFor(() => {
+      expect(screen.getByTestId('app-location')).toHaveTextContent('/passenger-home?passengerId=42');
       expect(screen.getByText('GRAND PEARL')).toBeInTheDocument();
       expect(screen.getByText('Guest Experience Portal')).toBeInTheDocument();
+      expect(screen.getByText(/Hải trình Di sản Vịnh Hạ Long - Đà Nẵng/i)).toBeInTheDocument();
       expect(screen.queryByText('CRUISE MANAGER')).not.toBeInTheDocument();
     });
   });

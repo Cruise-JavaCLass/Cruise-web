@@ -110,7 +110,8 @@ export const LoginPage: React.FC = () => {
 
     try {
       let authenticatedPassengerId: number | null = null;
-      let fallbackPassenger = INITIAL_PASSENGERS.find((p) => {
+      let authenticatedPassengerProfile: { fullName?: string; cabinNumber?: string } | null = null;
+      const fallbackPassenger = INITIAL_PASSENGERS.find((p) => {
         const matchCabin =
           p.cabinNumber.toLowerCase().includes(c) ||
           c.includes(p.cabinNumber.split(' ')[0].toLowerCase());
@@ -148,6 +149,10 @@ export const LoginPage: React.FC = () => {
         if (token && user) {
           const parsedPassengerId = Number(user.username) || fallbackPassenger?.id || 1;
           authenticatedPassengerId = parsedPassengerId;
+          authenticatedPassengerProfile = {
+            fullName: user.fullName,
+            cabinNumber: user.cabinNumber || cabinNumber.trim(),
+          };
           localStorage.setItem('authToken', token);
           localStorage.setItem(
             'currentUser',
@@ -169,8 +174,12 @@ export const LoginPage: React.FC = () => {
           );
           return;
         }
-        // Backend offline/unavailable: continue with local fallback if demo match exists
-        if (!fallbackPassenger) {
+        // Backend offline/unavailable: continue with local demo fallback in non-production environments
+        const isNonProdFallbackAllowed =
+          typeof import.meta !== 'undefined' &&
+          !import.meta.env?.PROD &&
+          (import.meta.env?.MODE === 'test' || import.meta.env?.DEV);
+        if (!isNonProdFallbackAllowed || !fallbackPassenger) {
           throw authErr;
         }
       }
@@ -178,7 +187,10 @@ export const LoginPage: React.FC = () => {
       const targetPassengerId = authenticatedPassengerId ?? fallbackPassenger?.id ?? null;
       if (targetPassengerId) {
         if (!authenticatedPassengerId && fallbackPassenger) {
-          localStorage.removeItem('authToken');
+          localStorage.setItem(
+            'authToken',
+            `mock-passenger-jwt-${fallbackPassenger.id}-${Date.now()}`
+          );
           localStorage.setItem(
             'currentUser',
             JSON.stringify({
@@ -194,6 +206,9 @@ export const LoginPage: React.FC = () => {
 
         try {
           const summary = await getPassengerBookingSummary(targetPassengerId);
+          if (summary.passengerId !== targetPassengerId) {
+            throw new Error('Passenger summary ID mismatch');
+          }
           const sessionData = {
             id: summary.passengerId,
             fullName: summary.fullName,
@@ -207,13 +222,17 @@ export const LoginPage: React.FC = () => {
           localStorage.setItem('currentPassenger', JSON.stringify(sessionData));
           localStorage.setItem('passengerId', String(summary.passengerId));
         } catch {
-          if (fallbackPassenger) {
+          if (fallbackPassenger && fallbackPassenger.id === targetPassengerId) {
             localStorage.setItem('currentPassenger', JSON.stringify(fallbackPassenger));
             localStorage.setItem('passengerId', String(fallbackPassenger.id));
           } else {
             localStorage.setItem(
               'currentPassenger',
-              JSON.stringify({ id: targetPassengerId, cabinNumber: cabinNumber.trim() })
+              JSON.stringify({
+                id: targetPassengerId,
+                fullName: authenticatedPassengerProfile?.fullName,
+                cabinNumber: authenticatedPassengerProfile?.cabinNumber || cabinNumber.trim(),
+              })
             );
             localStorage.setItem('passengerId', String(targetPassengerId));
           }

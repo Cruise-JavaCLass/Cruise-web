@@ -47,7 +47,7 @@ export const BoardingPassPage: React.FC = () => {
         summary.tourPackage?.includes('VIP') ||
         summary.isVip
     ),
-    healthDeclarationCompleted: true,
+    healthDeclarationCompleted: summary.healthDeclarationCompleted === true,
     rfidTag: summary.rfidTag || `RFID-9941${summary.passengerId ?? summary.id}`,
     qrCode: summary.qrCode || `QR-9941${summary.passengerId ?? summary.id}`,
     tourPackage: summary.tourPackage,
@@ -78,10 +78,19 @@ export const BoardingPassPage: React.FC = () => {
 
     if (!isCrossPassengerPreview) {
       try {
-        const summary = await getPassengerBookingSummary(id);
+        const [summary, embarkProfile] = await Promise.all([
+          getPassengerBookingSummary(id),
+          embarkationService.lookupPassenger(String(id)).catch(() => null),
+        ]);
         if (summary) {
-          setProfile(mapToProfile(summary));
-          localStorage.setItem('currentPassenger', JSON.stringify({ id: summary.passengerId, ...summary }));
+          const mapped = mapToProfile({
+            ...summary,
+            healthDeclarationCompleted:
+              embarkProfile?.healthDeclarationCompleted ??
+              (summary as { healthDeclarationCompleted?: boolean }).healthDeclarationCompleted,
+          });
+          setProfile(mapped);
+          localStorage.setItem('currentPassenger', JSON.stringify({ id: summary.passengerId, ...summary, healthDeclarationCompleted: mapped.healthDeclarationCompleted }));
           return true;
         }
       } catch {
@@ -130,7 +139,10 @@ export const BoardingPassPage: React.FC = () => {
         const backendProfile = await embarkationService.lookupPassenger(query);
         if (backendProfile) {
           setProfile(backendProfile);
-          localStorage.setItem('currentPassenger', JSON.stringify(backendProfile));
+          const authPassengerId = getAuthenticatedPassengerId();
+          if (authPassengerId === null || backendProfile.id === authPassengerId) {
+            localStorage.setItem('currentPassenger', JSON.stringify(backendProfile));
+          }
         } else {
           setVerificationError('Không tìm thấy thông tin đặt chỗ khớp với dữ liệu đã nhập. Vui lòng kiểm tra lại.');
         }
@@ -144,8 +156,6 @@ export const BoardingPassPage: React.FC = () => {
 
   const handleResetSession = () => {
     setProfile(null);
-    localStorage.removeItem('currentPassenger');
-    sessionStorage.removeItem('currentPassenger');
     setLookupKeyword('');
     setVerificationError(null);
   };

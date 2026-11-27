@@ -173,12 +173,20 @@ export function PosPage() {
         transactionQueueEngine.flushQueue(),
       ]);
       const statusText = heartbeat?.satelliteLinkStatus || 'EXCELLENT';
+      const hasErrors = flushRes.failed > 0 || flushRes.errors.length > 0;
+      let syncText: string;
+      if (flushRes.failed > 0) {
+        syncText = `Kết nối ${statusText} • Đồng bộ xong ${flushRes.succeeded} giao dịch, ${flushRes.failed} giao dịch thất bại${flushRes.errors[0] ? `: ${flushRes.errors[0]}` : '.'}`;
+      } else if (flushRes.errors.length > 0) {
+        syncText = `Kết nối ${statusText} • Không thể bắt đầu đồng bộ mới: ${flushRes.errors[0]}`;
+      } else if (flushRes.succeeded > 0) {
+        syncText = `Kết nối ${statusText} • Đã đồng bộ ${flushRes.succeeded} giao dịch ngoại tuyến.`;
+      } else {
+        syncText = `Kết nối máy chủ POS ổn định (${statusText}) • Không có giao dịch ngoại tuyến chờ đồng bộ.`;
+      }
       setSyncMessage({
-        text:
-          flushRes.succeeded > 0
-            ? `Kết nối ${statusText} • Đã đồng bộ ${flushRes.succeeded} giao dịch ngoại tuyến.`
-            : `Kết nối máy chủ POS ổn định (${statusText}) • Không có giao dịch ngoại tuyến chờ đồng bộ.`,
-        isError: flushRes.failed > 0,
+        text: syncText,
+        isError: hasErrors,
       });
     } catch (err: unknown) {
       const msg =

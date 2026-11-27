@@ -25,7 +25,12 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(response => response, error => {
   const status = error.response?.status;
   const url = error.config?.url || '';
-  if ((status === 401 || status === 403) && !url.startsWith('/auth/login') && typeof window !== 'undefined') {
+  if (
+    (status === 401 || status === 403) &&
+    !url.startsWith('/auth/login') &&
+    !url.startsWith('/auth/passenger-login') &&
+    typeof window !== 'undefined'
+  ) {
     const currentToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
     const authHeader = error.config?.headers?.Authorization || error.config?.headers?.get?.('Authorization');
     const requestToken = typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
