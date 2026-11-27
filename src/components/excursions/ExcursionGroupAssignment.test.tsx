@@ -1,11 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ExcursionManifestModal } from './ExcursionManifestModal';
+import { apiClient } from '../../services/api';
 import {
   INITIAL_EXCURSIONS,
   INITIAL_EXCURSION_PASSENGERS,
   DEFAULT_EXCURSION_GROUPS,
+  resetExcursionServiceState,
 } from '../../services/excursionService';
 
 describe('ExcursionGroupAssignment Tests (KAN-181)', () => {
@@ -20,6 +22,14 @@ describe('ExcursionGroupAssignment Tests (KAN-181)', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    resetExcursionServiceState();
+    vi.spyOn(apiClient, 'patch').mockRejectedValue(new Error('Network Error'));
+    vi.spyOn(apiClient, 'post').mockRejectedValue(new Error('Network Error'));
+    vi.spyOn(apiClient, 'delete').mockRejectedValue(new Error('Network Error'));
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   const setupModal = (props?: Partial<React.ComponentProps<typeof ExcursionManifestModal>>) =>

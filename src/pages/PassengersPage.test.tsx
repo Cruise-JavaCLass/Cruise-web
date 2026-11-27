@@ -49,15 +49,19 @@ describe('PassengersPage (Component & User Interaction Tests)', () => {
 
     // Search by cabin number
     await user.type(searchInput, '718');
-    expect(screen.getByText('Trần Thị Thu Thảo')).toBeInTheDocument();
-    expect(screen.getByText('718 (Suite)')).toBeInTheDocument();
-    expect(screen.queryByText('Nguyễn Văn Minh')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Trần Thị Thu Thảo')).toBeInTheDocument();
+      expect(screen.getByText('718 (Suite)')).toBeInTheDocument();
+      expect(screen.queryByText('Nguyễn Văn Minh')).not.toBeInTheDocument();
+    });
 
     // Clear and search by RFID
     await user.clear(searchInput);
     await user.type(searchInput, 'RFID-88102');
-    expect(screen.getByText('Lê Hoàng Nam')).toBeInTheDocument();
-    expect(screen.queryByText('Trần Thị Thu Thảo')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Lê Hoàng Nam')).toBeInTheDocument();
+      expect(screen.queryByText('Trần Thị Thu Thảo')).not.toBeInTheDocument();
+    });
   });
 
   it('displays empty state message when no passengers match search query', async () => {
