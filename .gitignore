@@ -30,3 +30,13 @@ coverage
 # AI Agent Skills (local tooling)
 .agents/
 skills-lock.json
+
+# CodeceptJS E2E artifacts
+e2e/output/
+
+# Playwright Test artifacts
+playwright-report/
+test-results/
+playwright/.cache/
+
+

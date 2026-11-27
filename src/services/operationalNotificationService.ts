@@ -35,7 +35,7 @@ export interface OperationalNotificationEvent {
 export const operationalNotificationService = {
   async broadcastAlert(req: OperationalBroadcastRequest): Promise<OperationalNotificationEvent> {
     const res = await apiClient.post<{ success: boolean; data: OperationalNotificationEvent }>(
-      '/api/operations/notifications/broadcast',
+      '/operations/notifications/broadcast',
       req
     );
     return res.data.data;

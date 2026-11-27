@@ -80,16 +80,16 @@ function createTextSprite(text: string, subText?: string, isPrimary = false): TH
     ctx.arc(42, 60, 10, 0, Math.PI * 2);
     ctx.fill();
 
-    // Main Destination Title (Serif Luxury)
+    // Main Destination Title (Times New Roman)
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 36px "Cinzel", "Playfair Display", "Times New Roman", serif';
+    ctx.font = 'bold 36px "Times New Roman", Times, serif';
     ctx.letterSpacing = '2px';
     ctx.fillText(text, 68, 70);
 
-    // Subtitle / Coordinates (Technical Monospace)
+    // Subtitle / Coordinates (Times New Roman)
     if (subText) {
       ctx.fillStyle = isPrimary ? '#FDE047' : '#90CAF9';
-      ctx.font = '500 22px "SF Mono", "Fira Code", monospace';
+      ctx.font = '500 22px "Times New Roman", Times, serif';
       ctx.letterSpacing = '1px';
       ctx.fillText(subText, 68, 112);
     }

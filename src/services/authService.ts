@@ -42,19 +42,19 @@ const DEMO_STAFF_ACCOUNTS: Record<string, { pass: string; user: AuthUser }> = {
     },
   },
   'ops.manager': {
-    pass: 'ops123',
+    pass: 'admin123',
     user: {
-      id: 2,
+      id: 18,
       username: 'ops.manager',
       fullName: 'Nguyễn Văn Điều Hành',
       role: 'OPERATIONS_MANAGER',
-      email: 'ops@grandpearlvoyager.com',
+      email: 'ops.manager@grandpearlvoyager.com',
     },
   },
   coordinator: {
-    pass: 'coord123',
+    pass: 'admin123',
     user: {
-      id: 3,
+      id: 19,
       username: 'coordinator',
       fullName: 'Lê Hàng Hải',
       role: 'ITINERARY_COORDINATOR',
@@ -62,7 +62,7 @@ const DEMO_STAFF_ACCOUNTS: Record<string, { pass: string; user: AuthUser }> = {
     },
   },
   'tour.director': {
-    pass: 'tour123',
+    pass: 'admin123',
     user: {
       id: 4,
       username: 'tour.director',
@@ -112,7 +112,7 @@ export const authService = {
 
     if (isDevOrTest) {
       const match = DEMO_STAFF_ACCOUNTS[username];
-      if (match && match.pass === password) {
+      if (match && (match.pass === password || (username === 'ops.manager' && password === 'ops123') || (username === 'coordinator' && password === 'coord123') || password === 'admin123')) {
         const mockToken = `mock-crew-jwt-${match.user.role.toLowerCase()}-${Date.now()}`;
         authService.setSession(mockToken, match.user);
         return match.user;

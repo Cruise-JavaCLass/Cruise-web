@@ -48,14 +48,14 @@ export interface OperationsLiveRadar {
 export const operationsDashboardService = {
   async getOperationsKpis(): Promise<OperationsKpiSummary> {
     const res = await apiClient.get<{ success: boolean; data: OperationsKpiSummary }>(
-      '/api/operations/dashboard/kpis'
+      '/operations/dashboard/kpis'
     );
     return res.data.data;
   },
 
   async getLiveOperationsRadar(): Promise<OperationsLiveRadar> {
     const res = await apiClient.get<{ success: boolean; data: OperationsLiveRadar }>(
-      '/api/operations/dashboard/live-radar'
+      '/operations/dashboard/live-radar'
     );
     return res.data.data;
   },

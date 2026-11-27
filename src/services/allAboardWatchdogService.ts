@@ -54,7 +54,7 @@ export interface UrgentAlertResponse {
 export const allAboardWatchdogService = {
   async getStatus(tourId: number, portCallId: number): Promise<AllAboardStatusDto> {
     const res = await apiClient.get<{ success: boolean; data: AllAboardStatusDto }>(
-      '/api/operations/all-aboard-watchdog/status',
+      '/operations/all-aboard-watchdog/status',
       {
         params: { tourId, portCallId },
       }
@@ -64,7 +64,7 @@ export const allAboardWatchdogService = {
 
   async dispatchAlert(payload: UrgentAlertPayload): Promise<UrgentAlertResponse> {
     const res = await apiClient.post<{ success: boolean; data: UrgentAlertResponse }>(
-      '/api/operations/all-aboard-watchdog/dispatch-alert',
+      '/operations/all-aboard-watchdog/dispatch-alert',
       payload
     );
     return res.data.data;
@@ -78,7 +78,7 @@ export const allAboardWatchdogService = {
     movementType: 'DISEMBARKED_SHORE' | 'EMBARKED_SHIP';
     gangwayTerminalId?: string;
   }) {
-    const res = await apiClient.post('/api/operations/all-aboard-watchdog/gangway-scan', scan);
+    const res = await apiClient.post('/operations/all-aboard-watchdog/gangway-scan', scan);
     return res.data.data;
   },
 };

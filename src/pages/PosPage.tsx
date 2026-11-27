@@ -40,6 +40,8 @@ import { DisputeManagementWorkspace } from '../components/pos/DisputeManagementW
 import { SyncControlPanel } from '../components/pos/SyncControlPanel';
 import { OfflineStatusBadge } from '../components/pos/OfflineStatusBadge';
 import { PendingQueueInspectorModal } from '../components/pos/PendingQueueInspectorModal';
+import { networkSyncService } from '../services/networkSyncService';
+import { transactionQueueEngine } from '../services/transactionQueueEngine';
 
 export function PosPage() {
   const [activeTab, setActiveTab] = useState<'REGISTER' | 'LEDGER' | 'CATALOG' | 'RECONCILIATION' | 'DISPUTES' | 'SYNC'>('REGISTER');
@@ -166,13 +168,17 @@ export function PosPage() {
     setIsSyncing(true);
     setSyncMessage(null);
     try {
-      const res = await posService.syncOfflineBatch({
-        deviceId: 'POS-TERMINAL-DECK-9',
-        transactions: [],
-      });
+      const [heartbeat, flushRes] = await Promise.all([
+        networkSyncService.pingHeartbeat(),
+        transactionQueueEngine.flushQueue(),
+      ]);
+      const statusText = heartbeat?.satelliteLinkStatus || 'EXCELLENT';
       setSyncMessage({
-        text: `Kiểm tra kết nối và đồng bộ hoàn tất: Đã nạp ${res.successfullyProcessed} GD ngoại tuyến.`,
-        isError: false,
+        text:
+          flushRes.succeeded > 0
+            ? `Kết nối ${statusText} • Đã đồng bộ ${flushRes.succeeded} giao dịch ngoại tuyến.`
+            : `Kết nối máy chủ POS ổn định (${statusText}) • Không có giao dịch ngoại tuyến chờ đồng bộ.`,
+        isError: flushRes.failed > 0,
       });
     } catch (err: unknown) {
       const msg =

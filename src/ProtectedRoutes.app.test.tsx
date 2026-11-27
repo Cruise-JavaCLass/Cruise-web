@@ -70,11 +70,23 @@ describe('KAN-82, KAN-85 Protected routes in App', () => {
       expect(screen.queryByText('Not Found Page')).not.toBeInTheDocument();
     });
 
-    it('keeps /login and the guest portal public', () => {
+    it('keeps /login public and redirects unauthenticated guests from /passenger-home to passenger login', () => {
       const first = renderAt('/login');
       expect(screen.getByText(/Login Page/)).toBeInTheDocument();
       first.unmount();
 
+      renderAt('/passenger-home');
+      expect(screen.getByText(/Login Page/)).toBeInTheDocument();
+      expect(screen.getByTestId('login-search')).toHaveTextContent('?tab=passenger&redirect=%2Fpassenger-home');
+      expect(screen.queryByText('Passenger Home Page')).not.toBeInTheDocument();
+    });
+
+    it('lets an authenticated passenger access the guest portal', () => {
+      localStorage.setItem('authToken', 'test-passenger-jwt');
+      localStorage.setItem(
+        'currentPassenger',
+        JSON.stringify({ id: 1, fullName: 'Nguyễn Văn Minh', cabinNumber: '402' })
+      );
       renderAt('/passenger-home');
       expect(screen.getByText('Passenger Home Page')).toBeInTheDocument();
     });

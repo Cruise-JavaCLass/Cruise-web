@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Bell,
   X,
@@ -136,7 +137,7 @@ export const NotificationCenterDrawer: React.FC<NotificationCenterDrawerProps> =
     }
   };
 
-  return (
+  const drawerContent = (
     <div
       className="fixed inset-0 z-50 overflow-hidden bg-[#0B1F33]/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-200"
       data-testid="notification-center-drawer"
@@ -294,4 +295,6 @@ export const NotificationCenterDrawer: React.FC<NotificationCenterDrawerProps> =
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(drawerContent, document.body) : drawerContent;
 };

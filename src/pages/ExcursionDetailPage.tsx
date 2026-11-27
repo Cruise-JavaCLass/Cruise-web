@@ -131,8 +131,8 @@ export function ExcursionDetailPage() {
     );
   }
 
-  const statusConfig = EXCURSION_STATUS_MAP[excursion.status];
-  const diffConfig = EXCURSION_DIFFICULTY_LABELS[excursion.difficulty];
+  const statusConfig = EXCURSION_STATUS_MAP[excursion.status] ?? EXCURSION_STATUS_MAP.SCHEDULED;
+  const diffConfig = EXCURSION_DIFFICULTY_LABELS[excursion.difficulty] ?? EXCURSION_DIFFICULTY_LABELS.MODERATE;
 
   // Return margin calculation
   const [retH, retM] = excursion.returnToShipTime.split(':').map(Number);

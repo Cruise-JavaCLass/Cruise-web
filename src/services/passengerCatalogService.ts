@@ -57,7 +57,7 @@ export const passengerCatalogService = {
   ): Promise<PagedResponse<PassengerCatalogItem>> {
     try {
       const response = await apiClient.get<{ success: boolean; data: PagedResponse<PassengerCatalogItem> }>(
-        `/api/passenger-portal/catalog/tour/${tourId}`,
+        `/passenger-portal/catalog/tour/${tourId}`,
         { params }
       );
       if (response.data && response.data.data) {
@@ -76,7 +76,7 @@ export const passengerCatalogService = {
   ): Promise<PassengerCatalogItem | null> {
     try {
       const response = await apiClient.get<{ success: boolean; data: PassengerCatalogItem }>(
-        `/api/passenger-portal/catalog/detail/${itemType}/${id}`
+        `/passenger-portal/catalog/detail/${itemType}/${id}`
       );
       if (response.data && response.data.data) {
         return response.data.data;

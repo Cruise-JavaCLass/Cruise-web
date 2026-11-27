@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, useSearchParams, useLocation } from 'react-rou
 import { MainLayout } from './layouts/MainLayout';
 import { PassengerLayout } from './layouts/PassengerLayout';
 import { AdminAuthGuard } from './components/auth/AdminAuthGuard';
+import { PassengerAuthGuard } from './components/auth/PassengerAuthGuard';
 import { RoleGuard } from './components/auth/RoleGuard';
 import { RouteAccessGuard } from './components/auth/RouteAccessGuard';
 import { ForbiddenPage } from './pages/ForbiddenPage';
@@ -54,15 +55,17 @@ function PassengerRedirect() {
 export function App() {
   return (
     <Routes>
-      {/* Dedicated Luxury Guest Portal Routes (Separated from Operations) */}
+      {/* Dedicated Luxury Guest Portal Routes (Protected for Authenticated Guests) */}
       <Route element={<PassengerLayout />}>
-        <Route path="passenger-home" element={<PassengerHomePage />} />
-        <Route path="boarding-pass" element={<BoardingPassPage />} />
-        <Route path="my-schedule" element={<MySchedulePage />} />
-        <Route path="passenger/folio" element={<PassengerFolioPage />} />
-        <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />
-        <Route path="catalog" element={<PassengerCatalogPage />} />
-        <Route path="passenger" element={<PassengerRedirect />} />
+        <Route element={<PassengerAuthGuard />}>
+          <Route path="passenger-home" element={<PassengerHomePage />} />
+          <Route path="catalog" element={<PassengerCatalogPage />} />
+          <Route path="passenger" element={<PassengerRedirect />} />
+          <Route path="boarding-pass" element={<BoardingPassPage />} />
+          <Route path="my-schedule" element={<MySchedulePage />} />
+          <Route path="passenger/folio" element={<PassengerFolioPage />} />
+          <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />
+        </Route>
       </Route>
 
       {/* Crew & Admin Authentication */}

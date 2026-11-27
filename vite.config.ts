@@ -23,7 +23,7 @@ export default defineConfig({
       '/api/admin/voyage': 'http://localhost:8084',
       '/api/admin/audit': 'http://localhost:8084',
       '/api/service-recovery': 'http://localhost:8084',
-      '^/api/(activities|excursions|operations|passengers|passenger-portal|feedback|v1/tour-providers|v1/shore-excursions)(/|$)': 'http://localhost:8083',
+      '^/api/(activities|excursions|operations|passengers|passenger-portal|feedback|v1/tour-providers|v1/shore-excursions)(/|$|\\?)': 'http://localhost:8083',
       '/api': 'http://localhost:8080',
     },
   },

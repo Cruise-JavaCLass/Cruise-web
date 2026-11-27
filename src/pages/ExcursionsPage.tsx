@@ -353,9 +353,12 @@ export function ExcursionsPage() {
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {excursions.map((exc) => {
-            const statusConfig = EXCURSION_STATUS_MAP[exc.status];
-            const diffConfig = EXCURSION_DIFFICULTY_LABELS[exc.difficulty];
-            const percentFilled = Math.min(100, Math.round((exc.bookedCount / exc.maxCapacity) * 100));
+            const statusConfig = EXCURSION_STATUS_MAP[exc.status] ?? EXCURSION_STATUS_MAP.SCHEDULED;
+            const diffConfig = EXCURSION_DIFFICULTY_LABELS[exc.difficulty] ?? EXCURSION_DIFFICULTY_LABELS.MODERATE;
+            const categoryLabel = EXCURSION_CATEGORY_LABELS[exc.category] ?? exc.category ?? 'Tham quan';
+            const percentFilled = exc.maxCapacity > 0
+              ? Math.min(100, Math.round(((exc.bookedCount ?? 0) / exc.maxCapacity) * 100))
+              : 0;
 
             return (
               <div
@@ -383,7 +386,7 @@ export function ExcursionsPage() {
                         {statusConfig.label}
                       </span>
                       <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-[#102A43]/10 text-[#102A43] border border-[#102A43]/20 shadow-xs">
-                        {EXCURSION_CATEGORY_LABELS[exc.category]}
+                        {categoryLabel}
                       </span>
                     </div>
 
@@ -584,7 +587,7 @@ export function ExcursionsPage() {
               </thead>
               <tbody className="divide-y divide-[#E5E0D7]">
                 {excursions.map((exc) => {
-                  const statusConfig = EXCURSION_STATUS_MAP[exc.status];
+                  const statusConfig = EXCURSION_STATUS_MAP[exc.status] ?? EXCURSION_STATUS_MAP.SCHEDULED;
                   return (
                     <tr key={exc.id} className="hover:bg-[#F7F4ED]/60 transition-colors">
                       <td className="py-3 px-4">
@@ -619,10 +622,10 @@ export function ExcursionsPage() {
                       </td>
                       <td className="py-3 px-4">
                         <span className="font-semibold text-[#252B32] tabular-nums">
-                          {exc.bookedCount} / {exc.maxCapacity}
+                          {exc.bookedCount ?? 0} / {exc.maxCapacity}
                         </span>
                         <span className="text-[10px] text-[#687787] block tabular-nums">
-                          ({Math.round((exc.bookedCount / exc.maxCapacity) * 100)}%)
+                          ({exc.maxCapacity > 0 ? Math.round(((exc.bookedCount ?? 0) / exc.maxCapacity) * 100) : 0}%)
                         </span>
                       </td>
                       <td className="py-3 px-4">

@@ -146,6 +146,12 @@ describe('App Routing Integration Tests', () => {
   });
 
   it('navigates to "/passenger-home" within dedicated PassengerLayout and without admin sidebar', async () => {
+    localStorage.setItem('authToken', 'test-passenger-jwt');
+    localStorage.setItem(
+      'currentPassenger',
+      JSON.stringify({ id: 1, fullName: 'Nguyễn Văn Minh', cabinNumber: '402' })
+    );
+
     render(
       <MemoryRouter initialEntries={['/passenger-home']}>
         <App />
@@ -163,6 +169,12 @@ describe('App Routing Integration Tests', () => {
   });
 
   it('redirects "/passenger" route to "/passenger-home" inside PassengerLayout and preserves search params', async () => {
+    localStorage.setItem('authToken', 'test-passenger-jwt');
+    localStorage.setItem(
+      'currentPassenger',
+      JSON.stringify({ id: 42, fullName: 'Nguyễn Văn Minh', cabinNumber: '402' })
+    );
+
     render(
       <MemoryRouter initialEntries={['/passenger?passengerId=42']}>
         <App />

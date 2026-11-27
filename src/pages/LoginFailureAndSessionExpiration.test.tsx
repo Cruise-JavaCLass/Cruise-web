@@ -28,6 +28,7 @@ function renderApp(entry: string) {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<div>Home Page</div>} />
+        <Route path="/pos" element={<div>POS Page</div>} />
         <Route element={<AdminAuthGuard />}>
           <Route path="/ships" element={<div>Ships Page</div>} />
         </Route>
@@ -157,7 +158,7 @@ describe('KAN-86 Test Login Failure and Session Expiration: login failure', () =
 
     await signIn(user, 'crew', 'password');
 
-    await waitFor(() => expect(screen.getByText('Home Page')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('POS Page')).toBeInTheDocument());
     expect(localStorage.getItem('authToken')).toBe('backend-token');
     expect(authService.getCurrentUser()?.role).toBe('POS_STAFF');
   });
