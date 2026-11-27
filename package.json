@@ -15,7 +15,16 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run && npm run test:jules",
     "test:ci": "vitest run --coverage --reporter=verbose && npm run test:jules",
-    "test:jules": "node --test .github/scripts/jules-client.test.mjs"
+    "test:jules": "node --test .github/scripts/jules-client.test.mjs",
+    "e2e": "codeceptjs run --steps",
+    "e2e:headless": "codeceptjs run --steps --override \"{\\\"helpers\\\":{\\\"Playwright\\\":{\\\"show\\\":false,\\\"waitForAction\\\":50}}}\"",
+    "e2e:ui": "codecept-ui --app",
+    "e2e:debug": "codeceptjs run --steps --debug",
+    "pw:ui": "playwright test --ui",
+    "pw:headed": "playwright test --headed",
+    "pw:test": "playwright test",
+    "pw:codegen": "playwright codegen http://localhost:3000",
+    "pw:report": "playwright show-report"
   },
   "dependencies": {
     "@hookform/resolvers": "^6.0.2",
@@ -34,6 +43,8 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@codeceptjs/ui": "^1.3.8",
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^7.0.1",
@@ -46,8 +57,10 @@
     "@types/three": "^0.186.0",
     "@vitejs/plugin-react": "^6.1.1",
     "@vitest/coverage-v8": "^5.0.3",
+    "codeceptjs": "^4.2.5",
     "jsdom": "^30.1.2",
     "oxlint": "^1.81.0",
+    "playwright": "^1.65.1",
     "tailwindcss": "^4.3.3",
     "typescript": "~7.0.0",
     "vite": "^8.3.0",
