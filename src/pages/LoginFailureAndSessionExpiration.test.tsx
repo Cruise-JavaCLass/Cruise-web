@@ -8,9 +8,13 @@ import { AdminAuthGuard } from '../components/auth/AdminAuthGuard';
 import { authService } from '../services/authService';
 import { apiClient } from '../services/api';
 
-vi.mock('../services/api', () => ({
-  apiClient: { post: vi.fn(), get: vi.fn() },
-}));
+vi.mock('../services/api', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../services/api')>();
+  return {
+    ...actual,
+    apiClient: { post: vi.fn(), get: vi.fn() },
+  };
+});
 
 const postMock = vi.mocked(apiClient.post);
 
@@ -24,6 +28,7 @@ function renderApp(entry: string) {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<div>Home Page</div>} />
+        <Route path="/pos" element={<div>POS Page</div>} />
         <Route element={<AdminAuthGuard />}>
           <Route path="/ships" element={<div>Ships Page</div>} />
         </Route>
@@ -153,7 +158,7 @@ describe('KAN-86 Test Login Failure and Session Expiration: login failure', () =
 
     await signIn(user, 'crew', 'password');
 
-    await waitFor(() => expect(screen.getByText('Home Page')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('POS Page')).toBeInTheDocument());
     expect(localStorage.getItem('authToken')).toBe('backend-token');
     expect(authService.getCurrentUser()?.role).toBe('POS_STAFF');
   });

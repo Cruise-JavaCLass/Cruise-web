@@ -11,7 +11,7 @@ export const posAuthService = {
   async identify(request: IdentifyPassengerRequest): Promise<PassengerIdentificationResponse> {
     try {
       const response = await apiClient.post<{ success: boolean; data: PassengerIdentificationResponse }>(
-        '/api/pos/auth/identify',
+        '/pos/auth/identify',
         request
       );
       return response.data.data;
@@ -27,7 +27,7 @@ export const posAuthService = {
 
   async syncManifestCache(): Promise<CredentialManifestCacheResponse> {
     const response = await apiClient.get<{ success: boolean; data: CredentialManifestCacheResponse }>(
-      '/api/pos/auth/manifest/cache'
+      '/pos/auth/manifest/cache'
     );
     const data = response.data.data;
     if (typeof window !== 'undefined' && window.localStorage) {

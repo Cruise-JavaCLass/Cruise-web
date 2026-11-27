@@ -79,18 +79,33 @@ const isMockEnabled = (): boolean => {
   );
 };
 
+const unwrapApiResponse = <T>(payload: T | { success?: boolean; data?: T }): T => {
+  if (
+    payload &&
+    typeof payload === 'object' &&
+    'data' in payload &&
+    'success' in payload &&
+    payload.data !== undefined
+  ) {
+    return payload.data;
+  }
+  return payload as T;
+};
+
 export const embarkationService = {
   async submitHealthDeclaration(
     passengerId: number,
     payload: HealthDeclarationPayload
   ): Promise<PassengerEmbarkationProfile> {
     try {
-      const response = await apiClient.post<PassengerEmbarkationProfile>(
+      const response = await apiClient.post<
+        PassengerEmbarkationProfile | { success: boolean; data: PassengerEmbarkationProfile }
+      >(
         `/activities/passengers/${passengerId}/embarkation/health-declaration`,
         payload
       );
       if (response && response.data) {
-        return response.data;
+        return unwrapApiResponse(response.data);
       }
       throw new Error('Empty response from health declaration');
     } catch (error) {
@@ -110,11 +125,13 @@ export const embarkationService = {
 
   async lookupPassenger(keyword: string): Promise<PassengerEmbarkationProfile> {
     try {
-      const response = await apiClient.get<PassengerEmbarkationProfile>(
+      const response = await apiClient.get<
+        PassengerEmbarkationProfile | { success: boolean; data: PassengerEmbarkationProfile }
+      >(
         `/activities/passengers/embarkation/lookup?keyword=${encodeURIComponent(keyword)}`
       );
       if (response && response.data) {
-        return response.data;
+        return unwrapApiResponse(response.data);
       }
       throw new Error('Empty response from passenger lookup');
     } catch (error) {
@@ -152,12 +169,14 @@ export const embarkationService = {
     payload: EmbarkationCheckInPayload
   ): Promise<EmbarkationCheckInResult> {
     try {
-      const response = await apiClient.post<EmbarkationCheckInResult>(
+      const response = await apiClient.post<
+        EmbarkationCheckInResult | { success: boolean; data: EmbarkationCheckInResult }
+      >(
         `/activities/passengers/${passengerId}/embarkation/check-in`,
         payload
       );
       if (response && response.data) {
-        return response.data;
+        return unwrapApiResponse(response.data);
       }
       throw new Error('Empty response from check-in');
     } catch (error) {
@@ -179,12 +198,14 @@ export const embarkationService = {
 
   async bindRfid(passengerId: number, payload: BindRfidPayload): Promise<BindRfidResult> {
     try {
-      const response = await apiClient.post<BindRfidResult>(
+      const response = await apiClient.post<
+        BindRfidResult | { success: boolean; data: BindRfidResult }
+      >(
         `/activities/passengers/${passengerId}/embarkation/bind-rfid`,
         payload
       );
       if (response && response.data) {
-        return response.data;
+        return unwrapApiResponse(response.data);
       }
       throw new Error('Empty response from bind-rfid');
     } catch (error) {
@@ -205,11 +226,13 @@ export const embarkationService = {
 
   async getEmbarkationSummary(tourId: number): Promise<EmbarkationSummary> {
     try {
-      const response = await apiClient.get<EmbarkationSummary>(
+      const response = await apiClient.get<
+        EmbarkationSummary | { success: boolean; data: EmbarkationSummary }
+      >(
         `/activities/passengers/embarkation/summary?tourId=${tourId}`
       );
       if (response && response.data) {
-        return response.data;
+        return unwrapApiResponse(response.data);
       }
       throw new Error('Empty response from embarkation summary');
     } catch (error) {

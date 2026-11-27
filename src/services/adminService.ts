@@ -67,7 +67,7 @@ export const adminDeviceService = {
 
   async renewCertificate(deviceId: string, payload?: RenewCertificateRequest): Promise<CertificateRenewalResponse> {
     const res = await apiClient.post<ApiResponse<CertificateRenewalResponse>>(
-      `/admin/pos/terminals/${encodeURIComponent(deviceId)}/renew-certificate`,
+      `/admin/pos/terminals/${encodeURIComponent(deviceId)}/renew-cert`,
       payload
     );
     return res.data.data;

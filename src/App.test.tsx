@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { App } from './App';
 import { authService } from './services/authService';
 
@@ -132,7 +132,7 @@ describe('App Routing Integration Tests', () => {
     });
   });
 
-  it('renders NotFoundPage when navigating to an unknown route', async () => {
+  it('denies an unclassified protected route', async () => {
     render(
       <MemoryRouter initialEntries={['/invalid-random-route']}>
         <App />
@@ -140,13 +140,18 @@ describe('App Routing Integration Tests', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 2, name: '404' })).toBeInTheDocument();
-      expect(screen.getByText('Trang không tồn tại')).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /Về Trang Chủ/i })).toHaveAttribute('href', '/');
+      expect(screen.getByRole('heading', { name: 'Bạn không có quyền truy cập' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Về trang làm việc' })).toHaveAttribute('href', '/');
     });
   });
 
   it('navigates to "/passenger-home" within dedicated PassengerLayout and without admin sidebar', async () => {
+    localStorage.setItem('authToken', 'test-passenger-jwt');
+    localStorage.setItem(
+      'currentPassenger',
+      JSON.stringify({ id: 1, fullName: 'Nguyễn Văn Minh', cabinNumber: '402' })
+    );
+
     render(
       <MemoryRouter initialEntries={['/passenger-home']}>
         <App />
@@ -157,6 +162,8 @@ describe('App Routing Integration Tests', () => {
       // Passenger portal branding
       expect(screen.getByText('GRAND PEARL')).toBeInTheDocument();
       expect(screen.getByText('Guest Experience Portal')).toBeInTheDocument();
+      // PassengerHomePage content rendered inside PassengerAuthGuard
+      expect(screen.getByText(/Hải trình Di sản Vịnh Hạ Long - Đà Nẵng/i)).toBeInTheDocument();
       // Admin operations sidebar must NOT be present
       expect(screen.queryByText('CRUISE MANAGER')).not.toBeInTheDocument();
       expect(screen.queryByText('MARITIME COMPUTE')).not.toBeInTheDocument();
@@ -164,15 +171,29 @@ describe('App Routing Integration Tests', () => {
   });
 
   it('redirects "/passenger" route to "/passenger-home" inside PassengerLayout and preserves search params', async () => {
+    localStorage.setItem('authToken', 'test-passenger-jwt');
+    localStorage.setItem(
+      'currentPassenger',
+      JSON.stringify({ id: 42, fullName: 'Nguyễn Văn Minh', cabinNumber: '402' })
+    );
+
+    function LocationProbe() {
+      const loc = useLocation();
+      return <span data-testid="app-location">{loc.pathname + loc.search}</span>;
+    }
+
     render(
       <MemoryRouter initialEntries={['/passenger?passengerId=42']}>
         <App />
+        <LocationProbe />
       </MemoryRouter>
     );
 
     await waitFor(() => {
+      expect(screen.getByTestId('app-location')).toHaveTextContent('/passenger-home?passengerId=42');
       expect(screen.getByText('GRAND PEARL')).toBeInTheDocument();
       expect(screen.getByText('Guest Experience Portal')).toBeInTheDocument();
+      expect(screen.getByText(/Hải trình Di sản Vịnh Hạ Long - Đà Nẵng/i)).toBeInTheDocument();
       expect(screen.queryByText('CRUISE MANAGER')).not.toBeInTheDocument();
     });
   });

@@ -81,7 +81,7 @@ export const activityRegistrationService = {
     data: { passengerId: number; cabinNumber?: string; notes?: string }
   ): Promise<ActivityRegistrationResponse> {
     const res = await apiClient.post<{ success: boolean; data: ActivityRegistrationResponse }>(
-      `/api/activities/${activityId}/registrations`,
+      `/activities/${activityId}/registrations`,
       data
     );
     return res.data.data;
@@ -101,7 +101,7 @@ export const activityRegistrationService = {
 
     const queryString = query.toString() ? `?${query.toString()}` : '';
     const res = await apiClient.delete<{ success: boolean; data: ActivityCancellationResponse }>(
-      `/api/activities/${activityId}/registrations/${registrationId}${queryString}`
+      `/activities/${activityId}/registrations/${registrationId}${queryString}`
     );
     return res.data.data;
   },
@@ -111,7 +111,7 @@ export const activityRegistrationService = {
    */
   async promoteWaitlist(activityId: number, waitlistId: number): Promise<ActivityRegistrationResponse> {
     const res = await apiClient.post<{ success: boolean; data: ActivityRegistrationResponse }>(
-      `/api/activities/${activityId}/waitlist/${waitlistId}/promote`
+      `/activities/${activityId}/waitlist/${waitlistId}/promote`
     );
     return res.data.data;
   },
@@ -140,7 +140,7 @@ export const activityRegistrationService = {
 
     const queryString = query.toString() ? `?${query.toString()}` : '';
     const res = await apiClient.get<{ success: boolean; data: PagedRosterResponse }>(
-      `/api/activities/${activityId}/registrations/roster${queryString}`
+      `/activities/${activityId}/registrations/roster${queryString}`
     );
     return res.data.data;
   },
@@ -150,7 +150,7 @@ export const activityRegistrationService = {
    */
   async getWaitlistQueue(activityId: number): Promise<WaitlistQueueItem[]> {
     const res = await apiClient.get<{ success: boolean; data: WaitlistQueueItem[] }>(
-      `/api/activities/${activityId}/waitlist`
+      `/activities/${activityId}/waitlist`
     );
     return res.data.data;
   },
@@ -160,7 +160,7 @@ export const activityRegistrationService = {
    */
   async getMyRegistrations(activityId: number, passengerId: number): Promise<PassengerRegistrationItem[]> {
     const res = await apiClient.get<{ success: boolean; data: PassengerRegistrationItem[] }>(
-      `/api/activities/${activityId}/registrations/my?passengerId=${passengerId}`
+      `/activities/${activityId}/registrations/my?passengerId=${passengerId}`
     );
     return res.data.data;
   },
@@ -169,7 +169,7 @@ export const activityRegistrationService = {
    * Xuất danh sách đăng ký dạng CSV (KAN-370)
    */
   async exportRosterCsv(activityId: number): Promise<Blob> {
-    const res = await apiClient.get(`/api/activities/${activityId}/registrations/export/csv`, {
+    const res = await apiClient.get(`/activities/${activityId}/registrations/export/csv`, {
       responseType: 'blob'
     });
     return res.data;

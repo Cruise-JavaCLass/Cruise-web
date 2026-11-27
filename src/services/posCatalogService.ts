@@ -237,18 +237,18 @@ export interface PosCatalogAuditLog {
 
 export const posCatalogService = {
   async getOutlets(): Promise<OutletDto[]> {
-    const res = await apiClient.get<{ success: boolean; data: OutletDto[] }>('/api/pos/outlets');
+    const res = await apiClient.get<{ success: boolean; data: OutletDto[] }>('/pos/outlets');
     return res.data.data;
   },
 
   async getOutletById(id: number): Promise<OutletDto> {
-    const res = await apiClient.get<{ success: boolean; data: OutletDto }>(`/api/pos/outlets/${id}`);
+    const res = await apiClient.get<{ success: boolean; data: OutletDto }>(`/pos/outlets/${id}`);
     return res.data.data;
   },
 
   async getCategories(outletId?: number): Promise<CategoryDto[]> {
     const params = outletId ? { outletId } : undefined;
-    const res = await apiClient.get<{ success: boolean; data: CategoryDto[] }>('/api/pos/categories', { params });
+    const res = await apiClient.get<{ success: boolean; data: CategoryDto[] }>('/pos/categories', { params });
     return res.data.data;
   },
 
@@ -263,28 +263,28 @@ export const posCatalogService = {
     const res = await apiClient.get<{
       success: boolean;
       data: { content: ProductDto[]; totalElements: number; totalPages: number };
-    }>('/api/pos/products', { params });
+    }>('/pos/products', { params });
     return res.data.data;
   },
 
   async getProductById(id: number): Promise<ProductDetailDto> {
-    const res = await apiClient.get<{ success: boolean; data: ProductDetailDto }>(`/api/pos/products/${id}`);
+    const res = await apiClient.get<{ success: boolean; data: ProductDetailDto }>(`/pos/products/${id}`);
     return res.data.data;
   },
 
   async createProduct(req: CreateProductRequest): Promise<ProductDetailDto> {
-    const res = await apiClient.post<{ success: boolean; data: ProductDetailDto }>('/api/pos/products', req);
+    const res = await apiClient.post<{ success: boolean; data: ProductDetailDto }>('/pos/products', req);
     return res.data.data;
   },
 
   async updateProduct(id: number, req: UpdateProductRequest): Promise<ProductDetailDto> {
-    const res = await apiClient.put<{ success: boolean; data: ProductDetailDto }>(`/api/pos/products/${id}`, req);
+    const res = await apiClient.put<{ success: boolean; data: ProductDetailDto }>(`/pos/products/${id}`, req);
     return res.data.data;
   },
 
   async updateProductStatus(id: number, req: ProductStatusUpdateRequest): Promise<ProductDetailDto> {
     const res = await apiClient.patch<{ success: boolean; data: ProductDetailDto }>(
-      `/api/pos/products/${id}/status`,
+      `/pos/products/${id}/status`,
       req
     );
     return res.data.data;
@@ -293,7 +293,7 @@ export const posCatalogService = {
   async lookupProduct(code: string, outletId?: number): Promise<ProductDetailDto> {
     const params: { code: string; outletId?: number } = { code };
     if (outletId) params.outletId = outletId;
-    const res = await apiClient.get<{ success: boolean; data: ProductDetailDto }>('/api/pos/products/lookup', {
+    const res = await apiClient.get<{ success: boolean; data: ProductDetailDto }>('/pos/products/lookup', {
       params,
     });
     return res.data.data;
@@ -301,7 +301,7 @@ export const posCatalogService = {
 
   async calculatePricing(req: CartPriceCalculationRequest): Promise<CartPriceCalculationResponse> {
     const res = await apiClient.post<{ success: boolean; data: CartPriceCalculationResponse }>(
-      '/api/pos/pricing/calculate',
+      '/pos/pricing/calculate',
       req
     );
     return res.data.data;
@@ -310,7 +310,7 @@ export const posCatalogService = {
   async getHappyHourRules(outletId?: number): Promise<HappyHourRuleDto[]> {
     const params = outletId ? { outletId } : undefined;
     const res = await apiClient.get<{ success: boolean; data: HappyHourRuleDto[] }>(
-      '/api/pos/pricing/happy-hour-rules',
+      '/pos/pricing/happy-hour-rules',
       { params }
     );
     return res.data.data;
@@ -318,7 +318,7 @@ export const posCatalogService = {
 
   async createHappyHourRule(req: Partial<HappyHourRuleDto>): Promise<HappyHourRuleDto> {
     const res = await apiClient.post<{ success: boolean; data: HappyHourRuleDto }>(
-      '/api/pos/pricing/happy-hour-rules',
+      '/pos/pricing/happy-hour-rules',
       req
     );
     return res.data.data;
@@ -326,14 +326,14 @@ export const posCatalogService = {
 
   async updateHappyHourRule(id: number, req: Partial<HappyHourRuleDto>): Promise<HappyHourRuleDto> {
     const res = await apiClient.put<{ success: boolean; data: HappyHourRuleDto }>(
-      `/api/pos/pricing/happy-hour-rules/${id}`,
+      `/pos/pricing/happy-hour-rules/${id}`,
       req
     );
     return res.data.data;
   },
 
   async deleteHappyHourRule(id: number): Promise<void> {
-    await apiClient.delete(`/api/pos/pricing/happy-hour-rules/${id}`);
+    await apiClient.delete(`/pos/pricing/happy-hour-rules/${id}`);
   },
 
   async getOfflinePackage(
@@ -345,7 +345,7 @@ export const posCatalogService = {
 
     try {
       const res = await apiClient.get<{ success: boolean; data: PosOfflineCatalogPackageDto }>(
-        '/api/pos/catalog/offline-package',
+        '/pos/catalog/offline-package',
         {
           params: outletId ? { outletId } : undefined,
           headers,
@@ -376,7 +376,7 @@ export const posCatalogService = {
 
   async bulkImportProducts(req: BulkCatalogImportRequest): Promise<BulkImportResponse> {
     const res = await apiClient.post<{ success: boolean; data: BulkImportResponse }>(
-      '/api/pos/catalog/bulk-import',
+      '/pos/catalog/bulk-import',
       req
     );
     return res.data.data;
@@ -384,7 +384,7 @@ export const posCatalogService = {
 
   async getAuditLogs(page = 0, size = 50): Promise<{ content: PosCatalogAuditLog[] }> {
     const res = await apiClient.get<{ success: boolean; data: { content: PosCatalogAuditLog[] } }>(
-      '/api/pos/catalog/audit-logs',
+      '/pos/catalog/audit-logs',
       { params: { page, size } }
     );
     return res.data.data;

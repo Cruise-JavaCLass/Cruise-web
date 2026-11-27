@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, Outlet, useLocation, Link } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
 import {
   Compass,
   Ship,
@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   ArrowRight,
   Radio,
+  LogOut,
 } from 'lucide-react';
 import { resolvePassengerId } from '../services/passengerIdentity';
 import { getPassengerBookingSummary } from '../services/passengerService';
@@ -31,6 +32,20 @@ export function PassengerLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [guestProfile, setGuestProfile] = useState<GuestProfile | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleGuestLogout = () => {
+    localStorage.removeItem('currentPassenger');
+    localStorage.removeItem('passengerId');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    sessionStorage.removeItem('currentPassenger');
+    sessionStorage.removeItem('passengerId');
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('currentUser');
+    setGuestProfile(null);
+    navigate('/login?tab=passenger');
+  };
 
   useEffect(() => {
     let isCancelled = false;
@@ -105,7 +120,7 @@ export function PassengerLayout() {
   const createNavTarget = (path: string) =>
     location.search ? { pathname: path, search: location.search } : path;
 
-  const passengerId = resolvePassengerId();
+  const passengerId = resolvePassengerId(1) || 1;
 
   return (
     <div
@@ -183,20 +198,49 @@ export function PassengerLayout() {
                 <span className="text-[#397C80] font-semibold">SHIP WI-FI</span>
               </div>
 
-              {/* Guest Profile Pill */}
-              <div className="flex items-center gap-2.5 px-3 py-1.5 bg-white border border-[#E5E0D7] rounded-xl shadow-xs">
-                <div className="w-8 h-8 bg-[#F7F4ED] text-[#102A43] border border-[#C5A572]/40 rounded-full flex items-center justify-center font-bold text-xs shadow-xs">
-                  <User className="w-4 h-4 text-[#102A43]" />
+              {/* Guest Profile Pill or Login Button */}
+              {guestProfile ? (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5 px-3 py-1.5 bg-white border border-[#E5E0D7] rounded-xl shadow-xs">
+                    <div className="w-8 h-8 bg-[#F7F4ED] text-[#102A43] border border-[#C5A572]/40 rounded-full flex items-center justify-center font-bold text-xs shadow-xs">
+                      <User className="w-4 h-4 text-[#102A43]" />
+                    </div>
+                    <div className="text-left hidden sm:block">
+                      <p className="text-xs font-semibold text-[#102A43] leading-tight truncate max-w-[140px]">
+                        {guestProfile.name}
+                      </p>
+                      <p className="text-[10px] font-mono text-[#397C80] font-semibold uppercase tracking-wider">
+                        Phòng {guestProfile.cabin} • {guestProfile.category}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleGuestLogout}
+                    title="Đăng xuất khỏi tài khoản hành khách"
+                    className="p-2 text-[#627D98] hover:text-rose-600 hover:bg-rose-50 border border-[#E5E0D7] hover:border-rose-200 rounded-xl transition-all cursor-pointer shadow-xs"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
                 </div>
-                <div className="text-left hidden sm:block">
-                  <p className="text-xs font-semibold text-[#102A43] leading-tight truncate max-w-[140px]">
-                    {guestProfile ? guestProfile.name : 'Chưa đăng nhập'}
-                  </p>
-                  <p className="text-[10px] font-mono text-[#397C80] font-semibold uppercase tracking-wider">
-                    {guestProfile ? `Phòng ${guestProfile.cabin} • ${guestProfile.category}` : 'Khách vãng lai'}
-                  </p>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-[#F7F4ED] border border-[#E5E0D7] rounded-xl text-left hidden sm:flex">
+                    <User className="w-4 h-4 text-[#627D98]" />
+                    <div>
+                      <p className="text-xs font-semibold text-[#102A43] leading-tight">Chưa đăng nhập</p>
+                      <p className="text-[10px] font-mono text-[#627D98] uppercase">Khách vãng lai</p>
+                    </div>
+                  </div>
+                  <Link
+                    to="/login?tab=passenger"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#102A43] hover:bg-[#0B1F33] text-white rounded-xl text-xs font-semibold uppercase tracking-wider transition-all shadow-xs cursor-pointer"
+                  >
+                    <User className="w-3.5 h-3.5 text-[#C5A572]" />
+                    <span>Đăng Nhập</span>
+                  </Link>
                 </div>
-              </div>
+              )}
 
               {/* Mobile Menu Hamburger Toggle */}
               <button

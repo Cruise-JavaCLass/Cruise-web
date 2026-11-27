@@ -25,8 +25,11 @@ import {
 } from '../services/passengerService';
 import { getTours, INITIAL_TOURS, type CruiseTour } from '../services/tourService';
 import { RegisterPassengerModal } from '../components/passengers/RegisterPassengerModal';
+import { authService } from '../services/authService';
+import { hasPermission } from '../services/accessControl';
 
 export function PassengersPage() {
+  const canManage = hasPermission(authService.getCurrentUser()?.role, 'PASSENGERS_MANAGE');
   const [tours, setTours] = useState<CruiseTour[]>(INITIAL_TOURS);
   const [selectedTourId, setSelectedTourId] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState('');
@@ -120,6 +123,7 @@ export function PassengersPage() {
   };
 
   const handleCheckInToggle = async (passenger: Passenger) => {
+    if (!canManage) return;
     const nextStatus = passenger.checkInStatus === 'BOARDED' ? 'NOT_CHECKED_IN' : 'BOARDED';
     try {
       await updateCheckInStatus(passenger.id, nextStatus);
@@ -131,6 +135,7 @@ export function PassengersPage() {
   };
 
   const handleRegistrationStatusChange = async (passengerId: number, status: RegistrationStatus) => {
+    if (!canManage) return;
     try {
       await updateRegistrationStatus(passengerId, status);
       showToast('Đã cập nhật trạng thái đăng ký thành công!');
@@ -141,6 +146,7 @@ export function PassengersPage() {
   };
 
   const handleRegisterSuccess = async (payload: RegisterPassengerPayload) => {
+    if (!canManage) return;
     await registerPassenger(payload);
     showToast(`Đã đăng ký thành công cho hành khách ${payload.fullName}!`);
     void loadPassengers();
@@ -202,6 +208,7 @@ export function PassengersPage() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setIsModalOpen(true)}
+            disabled={!canManage}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[#102A43] hover:bg-[#183B5B] text-white rounded-lg shadow-xs transition-colors cursor-pointer"
           >
             <UserPlus className="w-4 h-4" /> Đăng Ký Khách
@@ -436,6 +443,7 @@ export function PassengersPage() {
                         {getStatusBadge(p.registrationStatus)}
                         <select
                           aria-label={`Đổi trạng thái đăng ký của ${p.fullName}`}
+                          disabled={!canManage}
                           value={p.registrationStatus}
                           onChange={(e) =>
                             handleRegistrationStatusChange(p.id, e.target.value as RegistrationStatus)
@@ -452,6 +460,7 @@ export function PassengersPage() {
                       <div className="flex flex-col items-start gap-1">
                         <button
                           onClick={() => handleCheckInToggle(p)}
+                          disabled={!canManage}
                           className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
                             p.checkInStatus === 'BOARDED'
                               ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'

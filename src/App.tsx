@@ -2,7 +2,10 @@ import { Routes, Route, Navigate, useSearchParams, useLocation } from 'react-rou
 import { MainLayout } from './layouts/MainLayout';
 import { PassengerLayout } from './layouts/PassengerLayout';
 import { AdminAuthGuard } from './components/auth/AdminAuthGuard';
+import { PassengerAuthGuard } from './components/auth/PassengerAuthGuard';
 import { RoleGuard } from './components/auth/RoleGuard';
+import { RouteAccessGuard } from './components/auth/RouteAccessGuard';
+import { ForbiddenPage } from './pages/ForbiddenPage';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ActivitiesPage } from './pages/ActivitiesPage';
@@ -52,15 +55,17 @@ function PassengerRedirect() {
 export function App() {
   return (
     <Routes>
-      {/* Dedicated Luxury Guest Portal Routes (Separated from Operations) */}
+      {/* Dedicated Luxury Guest Portal Routes (Protected for Authenticated Guests) */}
       <Route element={<PassengerLayout />}>
-        <Route path="passenger-home" element={<PassengerHomePage />} />
-        <Route path="boarding-pass" element={<BoardingPassPage />} />
-        <Route path="my-schedule" element={<MySchedulePage />} />
-        <Route path="passenger/folio" element={<PassengerFolioPage />} />
-        <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />
-        <Route path="catalog" element={<PassengerCatalogPage />} />
-        <Route path="passenger" element={<PassengerRedirect />} />
+        <Route element={<PassengerAuthGuard />}>
+          <Route path="passenger-home" element={<PassengerHomePage />} />
+          <Route path="catalog" element={<PassengerCatalogPage />} />
+          <Route path="passenger" element={<PassengerRedirect />} />
+          <Route path="boarding-pass" element={<BoardingPassPage />} />
+          <Route path="my-schedule" element={<MySchedulePage />} />
+          <Route path="passenger/folio" element={<PassengerFolioPage />} />
+          <Route path="excursions/my-passes" element={<PassengerExcursionPassPage />} />
+        </Route>
       </Route>
 
       {/* Crew & Admin Authentication */}
@@ -68,7 +73,9 @@ export function App() {
 
       {/* Protected Maritime Operations & Administrative Fleet Console */}
       <Route element={<AdminAuthGuard />}>
+        <Route element={<RouteAccessGuard />}>
         <Route path="/" element={<MainLayout />}>
+          <Route path="forbidden" element={<ForbiddenPage />} />
           <Route index element={<DashboardPage />} />
           <Route path="ships" element={<ShipsPage />} />
           <Route path="ships/:id" element={<ShipDetailPage />} />
@@ -100,6 +107,7 @@ export function App() {
           <Route path="reports/operational" element={<OperationalReportsPage />} />
           <Route path="provider-settlement" element={<ProviderSettlementDashboard />} />
           <Route path="*" element={<NotFoundPage />} />
+        </Route>
         </Route>
       </Route>
     </Routes>

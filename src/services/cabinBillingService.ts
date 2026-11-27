@@ -103,7 +103,7 @@ export interface SignatureResponse {
 export const cabinBillingService = {
   async getCabinMembers(cabinNumber: string): Promise<CabinMemberDto[]> {
     const res = await apiClient.get<{ success: boolean; data: CabinMemberDto[] }>(
-      `/api/pos/cabin-billing/${cabinNumber}/members`
+      `/pos/cabin-billing/${cabinNumber}/members`
     );
     return res.data.data;
   },
@@ -113,7 +113,7 @@ export const cabinBillingService = {
     request: CabinCreditLimitCheckRequest
   ): Promise<CabinCreditLimitCheckResponse> {
     const res = await apiClient.post<{ success: boolean; data: CabinCreditLimitCheckResponse }>(
-      `/api/pos/cabin-billing/${cabinNumber}/check-limit`,
+      `/pos/cabin-billing/${cabinNumber}/check-limit`,
       request
     );
     return res.data.data;
@@ -121,7 +121,7 @@ export const cabinBillingService = {
 
   async splitBilling(request: CabinSplitBillingRequest): Promise<CabinSplitBillingResponse> {
     const res = await apiClient.post<{ success: boolean; data: CabinSplitBillingResponse }>(
-      '/api/pos/cabin-billing/split',
+      '/pos/cabin-billing/split',
       request
     );
     return res.data.data;
@@ -129,7 +129,7 @@ export const cabinBillingService = {
 
   async archiveSignature(request: ArchiveSignatureRequest): Promise<SignatureResponse> {
     const res = await apiClient.post<{ success: boolean; data: SignatureResponse }>(
-      '/api/pos/cabin-billing/signatures',
+      '/pos/cabin-billing/signatures',
       request
     );
     return res.data.data;
@@ -137,7 +137,7 @@ export const cabinBillingService = {
 
   async getSignature(transactionUuid: string): Promise<SignatureResponse> {
     const res = await apiClient.get<{ success: boolean; data: SignatureResponse }>(
-      `/api/pos/cabin-billing/signatures/${transactionUuid}`
+      `/pos/cabin-billing/signatures/${transactionUuid}`
     );
     return res.data.data;
   },

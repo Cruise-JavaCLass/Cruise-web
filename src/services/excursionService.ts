@@ -430,6 +430,46 @@ export function formatExcursionPayload(data: ExcursionFormData) {
   };
 }
 
+function normalizeExcursionStatus(status: unknown): ExcursionStatus {
+  const value = typeof status === 'string' ? status.toUpperCase() : '';
+  if (value === 'OPEN_FOR_BOOKING' || value === 'PUBLISHED' || value === 'SCHEDULED') return 'SCHEDULED';
+  if (value === 'IN_PROGRESS' || value === 'DEPARTED') return 'IN_PROGRESS';
+  if (value === 'DELAYED') return 'DELAYED';
+  if (value === 'COMPLETED') return 'COMPLETED';
+  if (value === 'CANCELLED') return 'CANCELLED';
+  return 'SCHEDULED';
+}
+
+function normalizeExcursion(raw: ShoreExcursion & Record<string, unknown>): ShoreExcursion {
+  const booked = Number(raw.bookedCount ?? raw.currentParticipants ?? 0);
+  const capacity = Number(raw.maxCapacity ?? 0);
+  const category = (raw.category && raw.category in EXCURSION_CATEGORY_LABELS
+    ? raw.category
+    : 'SIGHTSEEING') as ExcursionCategory;
+  const difficulty = (raw.difficulty && raw.difficulty in EXCURSION_DIFFICULTY_LABELS
+    ? raw.difficulty
+    : 'MODERATE') as ExcursionDifficulty;
+
+  return {
+    ...raw,
+    code: raw.code || `EXC-${raw.id ?? 'NEW'}`,
+    portCity: raw.portCity || raw.portName || 'Cảng dừng',
+    portName: raw.portName || 'Cảng dừng',
+    category,
+    difficulty,
+    operatorName: raw.operatorName || String(raw.localProvider ?? 'Đối tác địa phương'),
+    operatorContact: raw.operatorContact || String(raw.providerContact ?? ''),
+    meetingTime: raw.meetingTime || String(raw.gatheringTime ?? '08:00'),
+    departureTime: raw.departureTime || '08:30',
+    returnToShipTime: raw.returnToShipTime || '12:00',
+    allAboardTime: raw.allAboardTime || raw.returnToShipTime || '12:30',
+    bookedCount: Number.isFinite(booked) ? booked : 0,
+    maxCapacity: Number.isFinite(capacity) && capacity > 0 ? capacity : 50,
+    price: Number(raw.price ?? 0),
+    status: normalizeExcursionStatus(raw.status),
+  };
+}
+
 export async function fetchExcursions(params?: {
   tourId?: number;
   portId?: number;
@@ -444,7 +484,9 @@ export async function fetchExcursions(params?: {
     );
     if (res.data?.data) {
       const list = Array.isArray(res.data.data) ? res.data.data : res.data.data.content;
-      if (list && list.length > 0) return list;
+      if (list && list.length > 0) {
+        return list.map((item) => normalizeExcursion(item as ShoreExcursion & Record<string, unknown>));
+      }
     }
   } catch {
     // fallback to local mock
@@ -480,10 +522,11 @@ export async function getExcursionById(id: number): Promise<ShoreExcursion | nul
   try {
     const res = await apiClient.get<{ success: boolean; data: ShoreExcursion }>(`/excursions/${id}`);
     if (res.data?.data) {
+      const normalized = normalizeExcursion(res.data.data as ShoreExcursion & Record<string, unknown>);
       const idx = localExcursions.findIndex((e) => e.id === id);
-      if (idx !== -1) localExcursions[idx] = res.data.data;
-      else localExcursions.push(res.data.data);
-      return res.data.data;
+      if (idx !== -1) localExcursions[idx] = normalized;
+      else localExcursions.push(normalized);
+      return normalized;
     }
   } catch {
     // fallback

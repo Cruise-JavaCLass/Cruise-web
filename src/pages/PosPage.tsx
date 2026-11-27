@@ -40,6 +40,8 @@ import { DisputeManagementWorkspace } from '../components/pos/DisputeManagementW
 import { SyncControlPanel } from '../components/pos/SyncControlPanel';
 import { OfflineStatusBadge } from '../components/pos/OfflineStatusBadge';
 import { PendingQueueInspectorModal } from '../components/pos/PendingQueueInspectorModal';
+import { networkSyncService } from '../services/networkSyncService';
+import { transactionQueueEngine } from '../services/transactionQueueEngine';
 
 export function PosPage() {
   const [activeTab, setActiveTab] = useState<'REGISTER' | 'LEDGER' | 'CATALOG' | 'RECONCILIATION' | 'DISPUTES' | 'SYNC'>('REGISTER');
@@ -166,13 +168,25 @@ export function PosPage() {
     setIsSyncing(true);
     setSyncMessage(null);
     try {
-      const res = await posService.syncOfflineBatch({
-        deviceId: 'POS-TERMINAL-DECK-9',
-        transactions: [],
-      });
+      const [heartbeat, flushRes] = await Promise.all([
+        networkSyncService.pingHeartbeat(),
+        transactionQueueEngine.flushQueue(),
+      ]);
+      const statusText = heartbeat?.satelliteLinkStatus || 'EXCELLENT';
+      const hasErrors = flushRes.failed > 0 || flushRes.errors.length > 0;
+      let syncText: string;
+      if (flushRes.failed > 0) {
+        syncText = `Kết nối ${statusText} • Đồng bộ xong ${flushRes.succeeded} giao dịch, ${flushRes.failed} giao dịch thất bại${flushRes.errors[0] ? `: ${flushRes.errors[0]}` : '.'}`;
+      } else if (flushRes.errors.length > 0) {
+        syncText = `Kết nối ${statusText} • Không thể bắt đầu đồng bộ mới: ${flushRes.errors[0]}`;
+      } else if (flushRes.succeeded > 0) {
+        syncText = `Kết nối ${statusText} • Đã đồng bộ ${flushRes.succeeded} giao dịch ngoại tuyến.`;
+      } else {
+        syncText = `Kết nối máy chủ POS ổn định (${statusText}) • Không có giao dịch ngoại tuyến chờ đồng bộ.`;
+      }
       setSyncMessage({
-        text: `Kiểm tra kết nối và đồng bộ hoàn tất: Đã nạp ${res.successfullyProcessed} GD ngoại tuyến.`,
-        isError: false,
+        text: syncText,
+        isError: hasErrors,
       });
     } catch (err: unknown) {
       const msg =

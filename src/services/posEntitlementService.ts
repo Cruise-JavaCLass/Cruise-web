@@ -111,7 +111,7 @@ export const posEntitlementService = {
   async evaluateCart(request: EntitlementEvaluateRequest): Promise<EntitlementEvaluateResponse> {
     try {
       const response = await apiClient.post<{ success: boolean; data: EntitlementEvaluateResponse }>(
-        '/api/pos/entitlements/evaluate',
+        '/pos/entitlements/evaluate',
         request
       );
       return response.data.data;
@@ -131,7 +131,7 @@ export const posEntitlementService = {
   async getPassengerEntitlements(passengerId: number): Promise<GuestPackageEntitlement[]> {
     try {
       const response = await apiClient.get<{ success: boolean; data: GuestPackageEntitlement[] }>(
-        `/api/pos/entitlements/passengers/${passengerId}`
+        `/pos/entitlements/passengers/${passengerId}`
       );
       const data = response.data.data;
       void localEntitlementCache.saveEntitlements(passengerId, data);
@@ -144,7 +144,7 @@ export const posEntitlementService = {
   },
 
   async deductQuota(request: EntitlementDeductRequest): Promise<void> {
-    await apiClient.post('/api/pos/entitlements/deduct', request);
+    await apiClient.post('/pos/entitlements/deduct', request);
     const cached = await localEntitlementCache.getEntitlements(request.passengerId);
     if (cached && cached.length > 0) {
       const updated = cached.map((pkg) => {
@@ -167,7 +167,7 @@ export const posEntitlementService = {
   },
 
   async rollbackQuota(request: EntitlementRollbackRequest): Promise<void> {
-    await apiClient.post('/api/pos/entitlements/rollback', request);
+    await apiClient.post('/pos/entitlements/rollback', request);
   },
 
   evaluateOffline(request: EntitlementEvaluateRequest, entitlements: GuestPackageEntitlement[]): EntitlementEvaluateResponse {

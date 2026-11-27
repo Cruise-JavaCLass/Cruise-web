@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { MainLayout } from './MainLayout';
 import * as apiModule from '../services/api';
+import { authService } from '../services/authService';
 
 vi.mock('../services/api', () => ({
   checkBackendHealth: vi.fn(),
@@ -13,6 +14,7 @@ vi.mock('../services/api', () => ({
 describe('MainLayout (Layout & Async State Tests)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    authService.setSession('domain-test-admin', { id: 1, username: 'admin', fullName: 'Test Admin', role: 'SYSTEM_ADMIN' });
   });
 
   afterEach(() => {

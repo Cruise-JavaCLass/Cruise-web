@@ -41,7 +41,7 @@ export interface SolasMusterCheckinRequest {
 export const solasMusterService = {
   async getActiveMuster(): Promise<SolasMusterIncident | null> {
     const res = await apiClient.get<{ success: boolean; data: SolasMusterIncident | null }>(
-      '/api/operations/solas-muster/active'
+      '/operations/solas-muster/active'
     );
     return res.data.data;
   },
@@ -52,7 +52,7 @@ export const solasMusterService = {
     announcementText: string;
   }): Promise<SolasMusterIncident> {
     const res = await apiClient.post<{ success: boolean; data: SolasMusterIncident }>(
-      '/api/operations/solas-muster/trigger',
+      '/operations/solas-muster/trigger',
       req
     );
     return res.data.data;
@@ -60,7 +60,7 @@ export const solasMusterService = {
 
   async checkinPassenger(req: SolasMusterCheckinRequest): Promise<SolasMusterIncident> {
     const res = await apiClient.post<{ success: boolean; data: SolasMusterIncident }>(
-      '/api/operations/solas-muster/checkin',
+      '/operations/solas-muster/checkin',
       req
     );
     return res.data.data;
@@ -68,7 +68,7 @@ export const solasMusterService = {
 
   async setAllClear(incidentId: number): Promise<SolasMusterIncident> {
     const res = await apiClient.post<{ success: boolean; data: SolasMusterIncident }>(
-      `/api/operations/solas-muster/${incidentId}/all-clear`
+      `/operations/solas-muster/${incidentId}/all-clear`
     );
     return res.data.data;
   },

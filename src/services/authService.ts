@@ -1,4 +1,5 @@
 import { apiClient } from './api';
+import { isKnownRole } from './accessControl';
 
 export type StaffRole =
   | 'SYSTEM_ADMIN'
@@ -41,19 +42,19 @@ const DEMO_STAFF_ACCOUNTS: Record<string, { pass: string; user: AuthUser }> = {
     },
   },
   'ops.manager': {
-    pass: 'ops123',
+    pass: 'admin123',
     user: {
-      id: 2,
+      id: 18,
       username: 'ops.manager',
       fullName: 'Nguyễn Văn Điều Hành',
       role: 'OPERATIONS_MANAGER',
-      email: 'ops@grandpearlvoyager.com',
+      email: 'ops.manager@grandpearlvoyager.com',
     },
   },
   coordinator: {
-    pass: 'coord123',
+    pass: 'admin123',
     user: {
-      id: 3,
+      id: 19,
       username: 'coordinator',
       fullName: 'Lê Hàng Hải',
       role: 'ITINERARY_COORDINATOR',
@@ -61,7 +62,7 @@ const DEMO_STAFF_ACCOUNTS: Record<string, { pass: string; user: AuthUser }> = {
     },
   },
   'tour.director': {
-    pass: 'tour123',
+    pass: 'admin123',
     user: {
       id: 4,
       username: 'tour.director',
@@ -82,16 +83,17 @@ export const authService = {
 
     // 1. Attempt backend authentication if available
     try {
-      const res = await apiClient.post<{ success: boolean; data: { token: string; user?: AuthUser } }>(
+      const res = await apiClient.post<{ success: boolean; data: { accessToken?: string; token?: string; user?: AuthUser } }>(
         '/auth/login',
-        { username, password }
+        { usernameOrEmail: username, password }
       );
       const user = res.data?.data?.user;
-      if (res.data?.data?.token && user) {
-        if (user.role === 'PASSENGER') {
+      const token = res.data?.data?.accessToken || res.data?.data?.token;
+      if (token && user) {
+        if (!isKnownRole(user.role) || user.role === 'PASSENGER') {
           throw new Error('Tài khoản hành khách không có quyền truy cập hệ thống vận hành.');
         }
-        authService.setSession(res.data.data.token, user);
+        authService.setSession(token, user);
         return user;
       }
     } catch (err: unknown) {
@@ -101,16 +103,16 @@ export const authService = {
       // Backend offline or unreachable: fall back to authorized demo crew verification
     }
 
-    // 2. Check demo accounts fallback in development / test environments
+    // 2. Check demo accounts fallback in development / test environments (disabled in production)
     const isDevOrTest =
       typeof import.meta !== 'undefined' &&
-      (import.meta.env?.DEV ||
-        import.meta.env?.MODE === 'test' ||
-        import.meta.env?.VITE_ENABLE_DEMO_ACCOUNTS === 'true');
+      !import.meta.env?.PROD &&
+      (import.meta.env?.MODE === 'test' ||
+        (import.meta.env?.DEV && import.meta.env?.VITE_ENABLE_DEMO_ACCOUNTS === 'true'));
 
     if (isDevOrTest) {
       const match = DEMO_STAFF_ACCOUNTS[username];
-      if (match && match.pass === password) {
+      if (match && (match.pass === password || (username === 'ops.manager' && password === 'ops123') || (username === 'coordinator' && password === 'coord123') || password === 'admin123')) {
         const mockToken = `mock-crew-jwt-${match.user.role.toLowerCase()}-${Date.now()}`;
         authService.setSession(mockToken, match.user);
         return match.user;
@@ -137,12 +139,16 @@ export const authService = {
     try {
       await apiClient.post('/auth/logout').catch(() => {});
     } finally {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('currentUser');
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('currentUser');
-      }
+      authService.clearSession();
+    }
+  },
+
+  clearSession: (): void => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('currentUser');
+      sessionStorage.removeItem('authToken');
+      sessionStorage.removeItem('currentUser');
     }
   },
 
@@ -183,6 +189,6 @@ export const authService = {
       typeof window !== 'undefined' &&
       Boolean(localStorage.getItem('authToken') || sessionStorage.getItem('authToken'));
     if (!user || !hasToken) return false;
-    return user.role !== 'PASSENGER';
+    return isKnownRole(user.role) && user.role !== 'PASSENGER';
   },
 };

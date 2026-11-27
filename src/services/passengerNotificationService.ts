@@ -57,7 +57,7 @@ export const passengerNotificationService = {
   getNotifications: async (passengerId: number, category?: NotificationCategory): Promise<PassengerNotificationDto[]> => {
     const params = category ? { category } : {};
     const response = await apiClient.get<{ data: PassengerNotificationDto[] }>(
-      `/api/passengers/${passengerId}/notifications`,
+      `/passengers/${passengerId}/notifications`,
       { params }
     );
     return response.data?.data || [];
@@ -65,14 +65,14 @@ export const passengerNotificationService = {
 
   getNotificationSummary: async (passengerId: number): Promise<NotificationSummaryDto> => {
     const response = await apiClient.get<{ data: NotificationSummaryDto }>(
-      `/api/passengers/${passengerId}/notifications/summary`
+      `/passengers/${passengerId}/notifications/summary`
     );
     return response.data?.data || { totalUnread: 0, criticalUnread: 0, unreadByCategory: {} };
   },
 
   markAsRead: async (passengerId: number, notificationId: number): Promise<PassengerNotificationDto> => {
     const response = await apiClient.post<{ data: PassengerNotificationDto }>(
-      `/api/passengers/${passengerId}/notifications/${notificationId}/read`
+      `/passengers/${passengerId}/notifications/${notificationId}/read`
     );
     if (!response.data?.data) {
       throw new Error('Không nhận được dữ liệu phản hồi khi đánh dấu đã đọc');
@@ -81,7 +81,7 @@ export const passengerNotificationService = {
   },
 
   markAllAsRead: async (passengerId: number): Promise<void> => {
-    await apiClient.post(`/api/passengers/${passengerId}/notifications/read-all`);
+    await apiClient.post(`/passengers/${passengerId}/notifications/read-all`);
   },
 
   submitActivityFeedback: async (
@@ -89,7 +89,7 @@ export const passengerNotificationService = {
     feedback: ActivityFeedbackRequest
   ): Promise<ActivityFeedbackResponse> => {
     const response = await apiClient.post<{ data: ActivityFeedbackResponse }>(
-      `/api/activities/${activityId}/feedback`,
+      `/activities/${activityId}/feedback`,
       feedback
     );
     if (!response.data?.data) {
@@ -100,14 +100,14 @@ export const passengerNotificationService = {
 
   getActivityFeedbacks: async (activityId: number): Promise<ActivityFeedbackResponse[]> => {
     const response = await apiClient.get<{ data: ActivityFeedbackResponse[] }>(
-      `/api/activities/${activityId}/feedback`
+      `/activities/${activityId}/feedback`
     );
     return response.data?.data || [];
   },
 
   getActivityCsatSummary: async (activityId: number): Promise<ActivityCsatSummaryDto> => {
     const response = await apiClient.get<{ data: ActivityCsatSummaryDto }>(
-      `/api/activities/${activityId}/feedback/summary`
+      `/activities/${activityId}/feedback/summary`
     );
     if (!response.data?.data) {
       throw new Error('Không nhận được dữ liệu thống kê CSAT của hoạt động');

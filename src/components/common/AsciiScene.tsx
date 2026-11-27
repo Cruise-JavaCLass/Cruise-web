@@ -130,7 +130,7 @@ export function AsciiScene() {
       const centerX = w / 2;
       const centerY = h / 2;
 
-      ctx.font = '11px "JetBrains Mono", monospace';
+      ctx.font = '11px "Times New Roman", Times, serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 

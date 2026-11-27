@@ -70,11 +70,23 @@ describe('KAN-82, KAN-85 Protected routes in App', () => {
       expect(screen.queryByText('Not Found Page')).not.toBeInTheDocument();
     });
 
-    it('keeps /login and the guest portal public', () => {
+    it('keeps /login public and redirects unauthenticated guests from /passenger-home to passenger login', () => {
       const first = renderAt('/login');
       expect(screen.getByText(/Login Page/)).toBeInTheDocument();
       first.unmount();
 
+      renderAt('/passenger-home');
+      expect(screen.getByText(/Login Page/)).toBeInTheDocument();
+      expect(screen.getByTestId('login-search')).toHaveTextContent('?tab=passenger&redirect=%2Fpassenger-home');
+      expect(screen.queryByText('Passenger Home Page')).not.toBeInTheDocument();
+    });
+
+    it('lets an authenticated passenger access the guest portal', () => {
+      localStorage.setItem('authToken', 'test-passenger-jwt');
+      localStorage.setItem(
+        'currentPassenger',
+        JSON.stringify({ id: 1, fullName: 'Nguyễn Văn Minh', cabinNumber: '402' })
+      );
       renderAt('/passenger-home');
       expect(screen.getByText('Passenger Home Page')).toBeInTheDocument();
     });
@@ -92,11 +104,11 @@ describe('KAN-82, KAN-85 Protected routes in App', () => {
     });
 
     it.each<StaffRole>(['OPERATIONS_MANAGER', 'ITINERARY_COORDINATOR', 'SHORE_EXCURSION_MANAGER', 'POS_STAFF'])(
-      'keeps %s out of /users and shows the dashboard',
+      'keeps %s out of /users and shows forbidden page',
       (role) => {
         loginAs(role);
         renderAt('/users');
-        expect(screen.getByText('Dashboard Page')).toBeInTheDocument();
+        expect(screen.getByText('Bạn không có quyền truy cập')).toBeInTheDocument();
         expect(screen.queryByText('Users Page')).not.toBeInTheDocument();
       }
     );
@@ -104,7 +116,7 @@ describe('KAN-82, KAN-85 Protected routes in App', () => {
     it('keeps non-admin staff out of /users/:id', () => {
       loginAs('OPERATIONS_MANAGER');
       renderAt('/users/5');
-      expect(screen.getByText('Dashboard Page')).toBeInTheDocument();
+      expect(screen.getByText('Bạn không có quyền truy cập')).toBeInTheDocument();
       expect(screen.queryByText('User Detail Page')).not.toBeInTheDocument();
     });
 
@@ -121,10 +133,10 @@ describe('KAN-82, KAN-85 Protected routes in App', () => {
       expect(screen.queryByText('Users Page')).not.toBeInTheDocument();
     });
 
-    it('shows the 404 page for unknown paths', () => {
+    it('denies unknown paths for signed-in staff', () => {
       loginAs('SYSTEM_ADMIN');
       renderAt('/does-not-exist');
-      expect(screen.getByText('Not Found Page')).toBeInTheDocument();
+      expect(screen.getByText('Bạn không có quyền truy cập')).toBeInTheDocument();
     });
   });
 });

@@ -66,7 +66,7 @@ export class MasterDataIngestionEngine {
       this.updateProgress('DOWNLOADING_DELTA', 40, 'Đang tải gói cập nhật thay đổi (Delta)...', 0);
       let delta: PosDeltaCatalogChangefeedDto;
       try {
-        const deltaRes = await apiClient.get<{ success: boolean; data: PosDeltaCatalogChangefeedDto }>('/api/pos/catalog/delta', {
+        const deltaRes = await apiClient.get<{ success: boolean; data: PosDeltaCatalogChangefeedDto }>('/pos/catalog/delta', {
           params: {
             outletId,
             versionHash: currentEtag,
@@ -108,7 +108,7 @@ export class MasterDataIngestionEngine {
 
   private async downloadFullPackage(outletId?: number): Promise<{ success: boolean; itemCount: number }> {
     this.updateProgress('DOWNLOADING_SNAPSHOT', 45, 'Đang tải toàn bộ dữ liệu danh mục & bảng giá từ máy chủ...', 0);
-    const res = await apiClient.get<{ success: boolean; data: PosOfflineCatalogPackageDto }>('/api/pos/catalog/offline-package', {
+    const res = await apiClient.get<{ success: boolean; data: PosOfflineCatalogPackageDto }>('/pos/catalog/offline-package', {
       params: outletId ? { outletId } : undefined,
       timeout: 60_000,
     });
